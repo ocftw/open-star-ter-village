@@ -98,7 +98,7 @@ const EventDeck = (function () {
   const discard = (cards) => {
     // update discard deck
     const values = cards.map(card => [card]);
-    deck.getRange(`E${2 + numOfDiscards}`).setValues(values);
+    deck.getRange(`G${2 + numOfDiscards}`).setValues(values);
     numOfDiscards += cards.length;
   };
 
