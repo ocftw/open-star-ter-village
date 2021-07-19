@@ -1,3 +1,5 @@
+// ts-check
+
 /** @OnlyCurrentDoc */
 var spreadsheet = SpreadsheetApp.getActive();
 var deck = spreadsheet.getSheetByName('牌庫');
@@ -13,6 +15,41 @@ function onOpen(){
     .addItem('重設表單', 'resetSpreadsheet')
     .addToUi();
 }
+
+/**
+ * @typedef {Object} Card
+ */
+
+/**
+ * @typedef {Object} Deck - deck operation on the spread sheet
+ * @property {(n: number) => Card[]} draw - draw n cards from pile
+ * @property {(cards: Card[]) => void} discard - discard n cards to discard pile
+ * @property {() => void} shuffle - shuffle pile
+ * @property {() => void} reset - reset pile and discard pile to default
+ */
+
+/** @type {Deck} */
+const ProjectDeck = (function () {
+  const draw = (n = 1) => { };
+  const discard = (cards) => { };
+  const shuffle = () => { };
+  const reset = () => {
+    // clear discard pile
+    deck.getRange('B2:B31').clearContent();
+    // clear pile
+    deck.getRange('A2:A31').clearContent();
+    // set pile as default pile
+    deckList.getRange('A2:A31').copyTo(deck.getRange('A2:A31'));
+  };
+
+  return {
+    draw,
+    discard,
+    reset,
+    shuffle,
+  };
+})();
+
 //shuffle before game start
 function initialShuffle() {
   deck.getRange('A2:A31').randomize();
@@ -33,13 +70,13 @@ function drawEventCard(){
   deck.getRange('E3').offset(0,0,eventCardNum,1).moveTo(deck.getRange('E2').offset(0,0,eventCardNum,1));
 }
 //reset whole spreadsheet
-function resetSpreadsheet(){
+function resetSpreadsheet() {
   //reset all three decks
-  deck.getRange('A2:A31').setValues(deckList.getRange('A2:A31').getValues());
+  ProjectDeck.reset();
   deck.getRange('C2:C73').setValues(deckList.getRange('B2:B73').getValues());
   deck.getRange('E2:E19').setValues(deckList.getRange('C2:C19').getValues());
   //clear discard pile and current event card
-  deck.getRangeList(['B2:B31','D2:D73','F2','G2:G19']).clear();
+  deck.getRangeList(['D2:D73', 'F2', 'G2:G19']).clear();
   //clear player hands
   playerHand.getRangeList(['A3:F5','A7:F14']).clear();
 }
