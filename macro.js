@@ -88,7 +88,7 @@ const EventDeck = (function () {
     const cards = deck.getRange(`E2:E${1 + n}`).getDisplayValues()
       .map(row => row[0]);
     // update card deck
-    deck.getRange(`E${2 + n}:E${1 + numOfCards}`).moveTo('E2');
+    deck.getRange(`E${2 + n}:E${1 + numOfCards}`).moveTo(deck.getRange('E2'));
     // update numOfCards
     numOfCards -= n;
     return cards;
