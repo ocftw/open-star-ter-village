@@ -17,7 +17,7 @@ function onOpen(){
 }
 
 /**
- * @typedef {Object} Card
+ * @typedef {string[]} Card
  */
 
 /**
@@ -76,33 +76,83 @@ const ResourceDeck = (function () {
   };
 })();
 
+/** @type {Deck} */
+const EventDeck = (function () {
+  let numOfCards = 18;
+  const draw = (n = 1) => {
+    // out of cards
+    if (n > numOfCards) {
+      return [];
+    }
+    // get cards
+    const cards = deck.getRange(`E2:E${1 + n}`).getDisplayValues()
+      .map(row => row[0]);
+    // update card deck
+    deck.getRange(`E${2 + n}:E${1 + numOfCards}`).moveTo('E2');
+    // update numOfCards
+    numOfCards -= n;
+    return cards;
+  };
+
+  let numOfDiscards = 0;
+  const discard = (cards) => {
+    // update discard deck
+    const values = cards.map(card => [card]);
+    deck.getRange(`E${2 + numOfDiscards}`).setValues(values);
+    numOfDiscards += cards.length;
+  };
+
+  const shuffle = () => {
+    deck.getRange('E2:E19').randomize();
+  };
+  const reset = () => {
+    // clear discard pile
+    deck.getRange('G2:G19').clearContent();
+    // clear pile
+    deck.getRange('E2:E19').clearContent();
+    // set pile as default pile
+    deckList.getRange('E2:E19').copyTo(deck.getRange('C2:C19'));
+    numOfCards = 18;
+  };
+
+  return {
+    draw,
+    discard,
+    reset,
+    shuffle,
+  };
+})();
+
 //shuffle before game start
 function initialShuffle() {
   ProjectDeck.shuffle();
   ResourceDeck.shuffle();
-  deck.getRange('E2:E19').randomize();
+  EventDeck.shuffle();
 };
 //draw a new event card
-function drawEventCard(){
-  //get current size of event card deck
-  var eventCardNum = deck.getRange('E2').getDataRegion(SpreadsheetApp.Dimension.ROWS).getNumRows()-1
-  if (eventCardNum<18){ 
-    //prevent overwrite of event card discard pile title
-    //discard current event card
-    deck.getRange('F2').moveTo(deck.getRange('G2').offset(17-eventCardNum,0,1,1));
+function drawEventCard() {
+  // get current event card from table
+  const currentEventCard = deck.getRange('F2').getDisplayValue();
+  if (currentEventCard) {
+    // remove current event card from table
+    deck.getRange('F2').clearContent();
+    // discard current event card to deck
+    EventDeck.discard([currentEventCard]);
   }
-  //draw a new event card and organize event card deck
-  deck.getRange('E2').moveTo(deck.getRange('F2'));
-  deck.getRange('E3').offset(0,0,eventCardNum,1).moveTo(deck.getRange('E2').offset(0,0,eventCardNum,1));
+  // draw event card from deck
+  const [newEventCard] = EventDeck.draw();
+  // play event card on table
+  deck.getRange('F2').setValue(newEventCard);
 }
 //reset whole spreadsheet
 function resetSpreadsheet() {
   //reset all three decks
   ProjectDeck.reset();
   ResourceDeck.reset();
-  deck.getRange('E2:E19').setValues(deckList.getRange('C2:C19').getValues());
-  //clear discard pile and current event card
-  deck.getRangeList(['F2', 'G2:G19']).clear();
+  EventDeck.reset();
+  // reset table
+  // TODO: move current event from deck to table
+  deck.getRange('F2').clearContent();
   //clear player hands
   playerHand.getRangeList(['A3:F5','A7:F14']).clear();
 }
