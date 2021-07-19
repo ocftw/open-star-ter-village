@@ -1,4 +1,7 @@
 {
+  "devDependencies": {
+    "@types/google-apps-script": "^1.0.36"
+  },
   "name": "open-source-board-game",
   "version": "1.0.0",
   "description": "open source board game to encourage people join open culture community",
