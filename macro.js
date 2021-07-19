@@ -52,10 +52,34 @@ const ProjectDeck = (function () {
   };
 })();
 
+/** @type {Deck} */
+const ResourceDeck = (function () {
+  const draw = (n = 1) => { };
+  const discard = (cards) => { };
+  const shuffle = () => {
+    deck.getRange('C2:C73').randomize();
+  };
+  const reset = () => {
+    // clear discard pile
+    deck.getRange('D2:D73').clearContent();
+    // clear pile
+    deck.getRange('C2:C73').clearContent();
+    // set pile as default pile
+    deckList.getRange('C2:C73').copyTo(deck.getRange('B2:B73'));
+  };
+
+  return {
+    draw,
+    discard,
+    reset,
+    shuffle,
+  };
+})();
+
 //shuffle before game start
 function initialShuffle() {
   ProjectDeck.shuffle();
-  deck.getRange('C2:C73').randomize();
+  ResourceDeck.shuffle();
   deck.getRange('E2:E19').randomize();
 };
 //draw a new event card
@@ -75,10 +99,10 @@ function drawEventCard(){
 function resetSpreadsheet() {
   //reset all three decks
   ProjectDeck.reset();
-  deck.getRange('C2:C73').setValues(deckList.getRange('B2:B73').getValues());
+  ResourceDeck.reset();
   deck.getRange('E2:E19').setValues(deckList.getRange('C2:C19').getValues());
   //clear discard pile and current event card
-  deck.getRangeList(['D2:D73', 'F2', 'G2:G19']).clear();
+  deck.getRangeList(['F2', 'G2:G19']).clear();
   //clear player hands
   playerHand.getRangeList(['A3:F5','A7:F14']).clear();
 }
