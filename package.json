@@ -8,6 +8,6 @@
   "description": "open source board game to encourage people join open culture community",
   "main": "macro.js",
   "author": "Ben Liu <ben196888@gmail.com>",
-  "license": "CC0",
+  "license": "CC0-1.0",
   "private": false
 }
