@@ -32,7 +32,9 @@ function onOpen(){
 const ProjectDeck = (function () {
   const draw = (n = 1) => { };
   const discard = (cards) => { };
-  const shuffle = () => { };
+  const shuffle = () => {
+    deck.getRange('A2:A31').randomize();
+  };
   const reset = () => {
     // clear discard pile
     deck.getRange('B2:B31').clearContent();
@@ -52,7 +54,7 @@ const ProjectDeck = (function () {
 
 //shuffle before game start
 function initialShuffle() {
-  deck.getRange('A2:A31').randomize();
+  ProjectDeck.shuffle();
   deck.getRange('C2:C73').randomize();
   deck.getRange('E2:E19').randomize();
 };
