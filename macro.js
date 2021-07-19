@@ -65,7 +65,7 @@ const ResourceDeck = (function () {
     // clear pile
     deck.getRange('C2:C73').clearContent();
     // set pile as default pile
-    deckList.getRange('C2:C73').copyTo(deck.getRange('B2:B73'));
+    deckList.getRange('B2:B73').copyTo(deck.getRange('C2:C73'));
   };
 
   return {
@@ -111,7 +111,7 @@ const EventDeck = (function () {
     // clear pile
     deck.getRange('E2:E19').clearContent();
     // set pile as default pile
-    deckList.getRange('E2:E19').copyTo(deck.getRange('C2:C19'));
+    deckList.getRange('C2:C19').copyTo(deck.getRange('E2:E19'));
     numOfCards = 18;
   };
 
