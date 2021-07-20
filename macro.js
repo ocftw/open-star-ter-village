@@ -30,18 +30,32 @@ function onOpen(){
 
 /** @type {Deck} */
 const ProjectDeck = (function () {
-  const draw = (n = 1) => { };
-  const discard = (cards) => { };
+  const pile = spreadsheet.getSheetByName('ProjectDeck');
+  const draw = (n = 1) => {
+    // get cards
+    const cards = pile.getRange(`A1:A${n}`).getDisplayValues()
+      .map(row => row[0]);
+    // update card deck
+    pile.deleteRows(1, n);
+    return cards;
+  };
+  const discardPile = spreadsheet.getSheetByName('ProjectDiscardDeck');
+  const discard = (cards) => {
+    const numOfDiscards = discardPile.getLastRow();
+    // update discard deck
+    const values = cards.map(card => [card]);
+    discardPile.getRange(`A${numOfDiscards + 1}`).setValues(values);
+  };
   const shuffle = () => {
-    deck.getRange('A2:A31').randomize();
+    pile.getDataRange().randomize();
   };
   const reset = () => {
     // clear discard pile
-    deck.getRange('B2:B31').clearContent();
+    discardPile.clearContents();
     // clear pile
-    deck.getRange('A2:A31').clearContent();
+    pile.clearContents();
     // set pile as default pile
-    deckList.getRange('A2:A31').copyTo(deck.getRange('A2:A31'));
+    deckList.getRange('A2:A31').copyTo(pile.getRange('A1'));
   };
 
   return {
@@ -122,6 +136,15 @@ function initialShuffle() {
   ResourceDeck.shuffle();
   EventDeck.shuffle();
 };
+
+/** @type {(player: Player, n?: number) => void} */
+function drawProjectCards(player, n) {
+  // draw cards from deck
+  const projectCards = ProjectDeck.draw(n);
+  // TODO: distribute cards to player hand
+  // playerBoard(player).insertProjectCard(projectCards);
+}
+
 //draw a new event card
 function drawEventCard() {
   // get current event card from table
