@@ -11,7 +11,7 @@ const treeBoard = spreadsheet.getSheetByName('開源生態樹');
 //build custom menu
 function onOpen() {
   var ui = SpreadsheetApp.getUi();
-  ui.createMenu('開源星手村')
+  ui.createMenu('🌟開源星手村🌟')
     .addItem('開場洗牌', 'initialShuffle')
     .addItem('翻事件卡', 'drawEventCard')
     .addSeparator()
