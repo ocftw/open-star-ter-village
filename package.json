@@ -3,11 +3,11 @@
     "@google/clasp": "^2.4.0",
     "@types/google-apps-script": "^1.0.36"
   },
-  "name": "open-source-board-game",
-  "version": "1.0.0",
+  "name": "open-star-ter-village",
+  "version": "0.2.0",
   "description": "open source board game to encourage people join open culture community",
   "main": "macro.js",
-  "author": "Ben Liu <ben196888@gmail.com>",
+  "author": "Ben Liu <ben196888@gmail.com>, renovirtony <renovirtony@gmail.com>",
   "license": "CC0-1.0",
   "private": false
 }
