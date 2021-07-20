@@ -78,41 +78,34 @@ const ResourceDeck = (function () {
 
 /** @type {Deck} */
 const EventDeck = (function () {
-  let numOfCards = 18;
+  const pile = spreadsheet.getSheetByName('EventDeck');
   const draw = (n = 1) => {
-    // out of cards
-    if (n > numOfCards) {
-      return [];
-    }
     // get cards
-    const cards = deck.getRange(`E2:E${1 + n}`).getDisplayValues()
+    const cards = pile.getRange(`A1:A${n}`).getDisplayValues()
       .map(row => row[0]);
     // update card deck
-    deck.getRange(`E${2 + n}:E${1 + numOfCards}`).moveTo(deck.getRange('E2'));
-    // update numOfCards
-    numOfCards -= n;
+    pile.deleteRows(1, n);
     return cards;
   };
 
-  let numOfDiscards = 0;
+  const discardPile = spreadsheet.getSheetByName('EventDiscardDeck');
   const discard = (cards) => {
+    const numOfDiscards = discardPile.getLastRow();
     // update discard deck
     const values = cards.map(card => [card]);
-    deck.getRange(`G${2 + numOfDiscards}`).setValues(values);
-    numOfDiscards += cards.length;
+    discardPile.getRange(`A${numOfDiscards + 1}`).setValues(values);
   };
 
   const shuffle = () => {
-    deck.getRange('E2:E19').randomize();
+    pile.getDataRange().randomize();
   };
   const reset = () => {
     // clear discard pile
-    deck.getRange('G2:G19').clearContent();
+    discardPile.clearContents();
     // clear pile
-    deck.getRange('E2:E19').clearContent();
+    pile.clearContents();
     // set pile as default pile
-    deckList.getRange('C2:C19').copyTo(deck.getRange('E2:E19'));
-    numOfCards = 18;
+    deckList.getRange('C2:C19').copyTo(pile.getRange('A1'));
   };
 
   return {
