@@ -17,7 +17,7 @@ function onOpen(){
 }
 
 /**
- * @typedef {string[]} Card
+ * @typedef {any} Card
  */
 
 /**
