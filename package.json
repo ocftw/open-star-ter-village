@@ -3,6 +3,10 @@
     "@google/clasp": "^2.4.0",
     "@types/google-apps-script": "^1.0.36"
   },
+  "scripts": {
+    "pull": "clasp pull",
+    "push": "clasp push"
+  },
   "name": "open-star-ter-village",
   "version": "0.2.0",
   "description": "open source board game to encourage people join open culture community",
