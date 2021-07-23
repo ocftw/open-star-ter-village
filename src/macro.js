@@ -2,7 +2,6 @@
 
 /** @OnlyCurrentDoc */
 var spreadsheet = SpreadsheetApp.getActive();
-var deck = spreadsheet.getSheetByName('牌庫');
 var deckList = spreadsheet.getSheetByName('各牌庫備考');
 var playerHand = spreadsheet.getSheetByName('玩家手牌');
 const mainBoard = spreadsheet.getSheetByName('專案圖板/記分板');
