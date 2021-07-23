@@ -152,6 +152,7 @@ function initialShuffle() {
   ProjectDeck.shuffle();
   ResourceDeck.shuffle();
   EventDeck.shuffle();
+  SpreadsheetApp.getActive().toast("已洗勻專案卡、資源卡、事件卡");
 };
 
 /** @type {(player: Player, n?: number) => void} */
@@ -184,9 +185,18 @@ function drawEventCard() {
   const [newEventCard] = EventDeck.draw();
   // play event card on table
   mainBoard.getRange('G20').setValue(newEventCard);
+  SpreadsheetApp.getActive().toast("已翻開新的事件卡");
 }
 //reset whole spreadsheet
 function resetSpreadsheet() {
+  //pop up alert for confirmation
+  response = SpreadsheetApp.getUi()
+    .alert("⚠️確定重整表單？", "目前的遊戲進度會全部刪除", SpreadsheetApp.getUi().ButtonSet.OK_CANCEL);
+  if (response === SpreadsheetApp.getUi().Button.CANCEL) {
+    SpreadsheetApp.getActive().toast("已取消重設表單");
+    return;
+  }
+
   //reset all three decks
   ProjectDeck.reset();
   ResourceDeck.reset();
@@ -225,6 +235,7 @@ function resetSpreadsheet() {
 
   // set UI back to main board
   spreadsheet.setActiveSheet(mainBoard);
+  SpreadsheetApp.getActive().toast("已重設表單");
 }
 
 function onEdit(e) {
