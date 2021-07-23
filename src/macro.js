@@ -3,7 +3,7 @@
 /** @OnlyCurrentDoc */
 var spreadsheet = SpreadsheetApp.getActive();
 var deckList = spreadsheet.getSheetByName('各牌庫備考');
-var playerHand = spreadsheet.getSheetByName('玩家手牌');
+const playerHand = spreadsheet.getSheetByName('PlayerHand');
 const mainBoard = spreadsheet.getSheetByName('專案圖板/記分板');
 const treeBoard = spreadsheet.getSheetByName('開源生態樹');
 
