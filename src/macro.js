@@ -187,6 +187,54 @@ function drawEventCard() {
   mainBoard.getRange('G20').setValue(newEventCard);
   SpreadsheetApp.getActive().toast("已翻開新的事件卡");
 }
+
+// peek next event card
+function peekNextEventCard() {
+  // open source tree is level 1
+  if (mainBoard.getRange('D11').getValue() > 0) {
+    mainBoard.getRange('G21').setValue(spreadsheet.getSheetByName('EventDeck').getRange('A1').getDisplayValue());
+  }
+}
+
+/**
+ * Game cycle design inspected by react component life cycle
+ * Game cycle
+ * game will start
+ * > round 1
+ *   round will start
+ *   > player 1
+ *     turn will start
+ *     player 1 actions
+ *     turn did end
+ *   > player 2
+ *     turn will start
+ *     player 2 actions
+ *     turn did end
+ *   > ... and so on
+ *   round did end
+ * > ... and so on
+ * game did end
+ */
+function gameWillStart() { }
+
+function roundWillStart() {
+  // draw new event card
+  drawEventCard();
+  // peek next event card
+  peekNextEventCard();
+}
+
+function turnWillStart() { }
+
+function turnDidEnd() {
+  // peek next event card
+  peekNextEventCard();
+}
+
+function roundDidEnd() { }
+
+function gameDidEnd() { }
+
 //reset whole spreadsheet
 function resetSpreadsheet() {
   //pop up alert for confirmation
@@ -211,6 +259,8 @@ function resetSpreadsheet() {
   // reset table
   // reset current event
   mainBoard.getRange('G20').clearContent();
+  // reset next event
+  mainBoard.getRange('G21').setValue('不顯示');
   //reset left column
   mainBoard.getRangeList(['C3:C8', 'D10:D12']).setValue('0');
   mainBoard.getRange('D3:D8').setValue('10');
