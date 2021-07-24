@@ -19,10 +19,50 @@ function onOpen() {
     .addToUi();
 }
 
+//set PlayerId with button
+function setPlayer1() {
+  const userProperties = PropertiesService.getUserProperties();
+  userProperties.setProperty('playerId', 'A');
+  SpreadsheetApp.getActive().toast('已設定為玩家1');
+}
+
+function setPlayer2() {
+  const userProperties = PropertiesService.getUserProperties();
+  userProperties.setProperty('playerId', 'B');
+  SpreadsheetApp.getActive().toast('已設定為玩家2');
+}
+
+function setPlayer3() {
+  const userProperties = PropertiesService.getUserProperties();
+  userProperties.setProperty('playerId', 'C');
+  SpreadsheetApp.getActive().toast('已設定為玩家3');
+}
+
+function setPlayer4() {
+  const userProperties = PropertiesService.getUserProperties();
+  userProperties.setProperty('playerId', 'D');
+  SpreadsheetApp.getActive().toast('已設定為玩家4');
+}
+
+function setPlayer5() {
+  const userProperties = PropertiesService.getUserProperties();
+  userProperties.setProperty('playerId', 'E');
+  SpreadsheetApp.getActive().toast('已設定為玩家5');
+}
+
+function setPlayer6() {
+  const userProperties = PropertiesService.getUserProperties();
+  userProperties.setProperty('playerId', 'F');
+  SpreadsheetApp.getActive().toast('已設定為玩家6');
+}
+
+
+//show sidebar according to playerId
 function showUserSidebar() {
+  const playerId = getPlayerId();
   const htmlTemplate = HtmlService.createTemplateFromFile('userSidebar');
-  htmlTemplate.player = '測試玩家1';
-  const sidebar = htmlTemplate.evaluate().setTitle('玩家1 sidebar');
+  htmlTemplate.player = playerHand.getRange(`${playerId}1`).getDisplayValue();
+  const sidebar = htmlTemplate.evaluate().setTitle(playerHand.getRange(`${playerId}1`).getDisplayValue());
   SpreadsheetApp.getUi().showSidebar(sidebar);
 }
 
@@ -158,7 +198,9 @@ function gameDidEnd() { }
  */
 
 function getPlayerId() {
-  return 'A';
+  const userProperties = PropertiesService.getUserProperties();
+  const playerId = userProperties.getProperty('playerId');
+  return playerId;
 }
 
 /** @type {PlayerHand} */
