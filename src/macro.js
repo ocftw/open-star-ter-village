@@ -14,7 +14,18 @@ function onOpen() {
     .addItem('翻事件卡', 'drawEventCard')
     .addSeparator()
     .addItem('重設表單', 'resetSpreadsheet')
+    .addSeparator()
+    .addItem('顯示玩家1手牌', 'showUserSidebar')
     .addToUi();
+}
+
+function showUserSidebar() {
+  const htmlTemplate = HtmlService.createTemplateFromFile('userSidebar');
+  htmlTemplate.player = '測試玩家1';
+  htmlTemplate.projectCards = ['prjCard0', 'prjCard1'];
+  htmlTemplate.resourceCards = ['rsrcCard0', 'rsrcCard1', 'rsrcCard2', 'rsrcCard3', 'rsrcCard4', 'rsrcCard5'];
+  const sidebar = htmlTemplate.evaluate().setTitle('玩家1 sidebar');
+  SpreadsheetApp.getUi().showSidebar(sidebar);
 }
 
 //shuffle before game start

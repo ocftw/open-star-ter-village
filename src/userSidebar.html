@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <base target="_top">
+</head>
+
+<body>
+  <h1>玩家
+    <?= player ?>
+  </h1>
+  <h2>專案卡</h2>
+  <? for(var i=0; i<projectCards.length; i++) { ?>
+  <span>
+    <?= projectCards[i] ?>
+  </span>
+  <? } ?>
+  <h2>資源卡</h2>
+  <? for(var i=0; i<resourceCards.length; i++) { ?>
+  <span>
+    <?= resourceCards[i] ?>
+  </span>
+  <? } ?>
+</body>
+
+</html>
