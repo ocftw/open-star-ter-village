@@ -64,6 +64,19 @@ function drawResourceCards(player, n) {
   // playerBoard(player).insertResourceCard(resourceCards);
 }
 
+/** @type {(resourceCards: Card[], player: Player) => void} */
+function discardResourceCards(resourceCards, player) {
+  ResourceDeck.discard(resourceCards);
+  SpreadsheetApp.getActive().toast(`玩家${player}已經丟棄資源卡${JSON.stringify(resourceCards)}`);
+}
+
+/** @type {(resourceCard: Card, projectCard: Card, player: Player) => void} */
+function playResourceCard(resourceCard, project, player) {
+  // TODO: find project from table
+  // TODO: play resource card on project on the table
+  // TODO: label resource card owner as player
+}
+
 //draw a new event card
 function drawEventCard() {
   // get current event card from table
