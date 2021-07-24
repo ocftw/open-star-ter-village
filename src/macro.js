@@ -20,18 +20,17 @@ function onOpen() {
 }
 
 //set PlayerId and show sidebar
-function setPlayerAndShowSidebar (playerId) {
-  const currentPlayerId = getPlayerId();
+function setPlayerAndShowSidebar(playerId) {
+  const currentPlayerId = Player.getId();
   if (currentPlayerId !== playerId) {
     //pop up alert for confirmation
     const response = SpreadsheetApp.getUi()
-    .alert('更換玩家', '確定換成' + playerHand.getRange(`${playerId}1`).getDisplayValue() + '？', SpreadsheetApp.getUi().ButtonSet.OK_CANCEL);
+      .alert('更換玩家', '確定換成' + playerHand.getRange(`${playerId}1`).getDisplayValue() + '？', SpreadsheetApp.getUi().ButtonSet.OK_CANCEL);
     if (response === SpreadsheetApp.getUi().Button.CANCEL) {
       SpreadsheetApp.getActive().toast('取消更換玩家');
       return;
     }
-    const userProperties = PropertiesService.getUserProperties();
-    userProperties.setProperty('playerId', playerId);
+    Player.setId(playerId);
     SpreadsheetApp.getActive().toast('已設定為' + playerHand.getRange(`${playerId}1`).getDisplayValue());
   }
   showUserSidebar();
@@ -66,10 +65,10 @@ function setPlayer6() {
 
 //show sidebar according to playerId
 function showUserSidebar() {
-  const playerId = getPlayerId();
+  const playerNickname = Player.getNickname();
   const htmlTemplate = HtmlService.createTemplateFromFile('userSidebar');
-  htmlTemplate.player = playerHand.getRange(`${playerId}1`).getDisplayValue();
-  const sidebar = htmlTemplate.evaluate().setTitle(playerHand.getRange(`${playerId}1`).getDisplayValue());
+  htmlTemplate.player = playerNickname;
+  const sidebar = htmlTemplate.evaluate().setTitle(playerNickname);
   SpreadsheetApp.getUi().showSidebar(sidebar);
 }
 
@@ -81,44 +80,69 @@ function initialShuffle() {
   SpreadsheetApp.getActive().toast("已洗勻專案卡、資源卡、事件卡");
 };
 
-/** @typedef {string} Player */
+/**
+ * @typedef {Object} Player player methods
+ * @property {() => string} getId get player id
+ * @property {(playerId: string) => void} setId set player id
+ * @property {() => string} getNickname get player nick name
+ * @property {(nickname) => void} setNickname set player nick name
+ */
 
-/** @type {(player: Player, n?: number) => void} */
-function drawProjectCards(player, n) {
+/** @type {Player} */
+const Player = {
+  getId: () => {
+    const userProperties = PropertiesService.getUserProperties();
+    const playerId = userProperties.getProperty('playerId');
+    return playerId;
+  },
+  setId: (playerId) => {
+    const userProperties = PropertiesService.getUserProperties();
+    userProperties.setProperty('playerId', playerId);
+  },
+  getNickname: () => {
+    return playerHand.getRange(`${Player.getId()}1`).getDisplayValue();
+  },
+  setNickname: (nickname) => {
+    playerHand.getRange(`${Player.getId()}1`).setValue(nickname);
+  },
+};
+
+/** @type {(n?: number) => void} */
+function drawProjectCards(n) {
   // draw cards from deck
   const projectCards = ProjectDeck.draw(n);
   // TODO: distribute cards to player hand
   // playerBoard(player).insertProjectCard(projectCards);
 }
 
-/** @type {(projects: Card[], player: Player) => void} */
-function discardProjectCards(projects, player) {
+/** @type {(projects: Card[]) => void} */
+function discardProjectCards(projects) {
   ProjectDeck.discard(projects);
-  SpreadsheetApp.getActive().toast(`玩家${player}已經丟棄專案卡${JSON.stringify(projects)}`);
+  SpreadsheetApp.getActive().toast(`玩家${Player.getNickname()}已經丟棄專案卡${JSON.stringify(projects)}`);
 }
 
-/** @type {(project: Card, player: Player) => void} */
-function playProjectCard(project, player) {
+/** @type {(project: Card) => void} */
+function playProjectCard(project) {
   // TODO: place project card on the table
   // TODO: label project owner as player
 }
 
-/** @type {(player: Player, n?: number) => void} */
-function drawResourceCards(player, n) {
+/** @type {(n?: number) => void} */
+function drawResourceCards(n) {
   // draw cards from deck
   const resourceCards = ResourceDeck.draw(n);
   // TODO: distriubte cards to player hand
   // playerBoard(player).insertResourceCard(resourceCards);
 }
 
-/** @type {(resourceCards: Card[], player: Player) => void} */
-function discardResourceCards(resourceCards, player) {
+/** @type {(resourceCards: Card[]) => void} */
+function discardResourceCards(resourceCards) {
   ResourceDeck.discard(resourceCards);
-  SpreadsheetApp.getActive().toast(`玩家${player}已經丟棄資源卡${JSON.stringify(resourceCards)}`);
+  SpreadsheetApp.getActive().toast(`玩家${Player.getNickname()}已經丟棄資源卡${JSON.stringify(resourceCards)}`);
 }
 
-/** @type {(resourceCard: Card, projectCard: Card, player: Player) => void} */
-function playResourceCard(resourceCard, project, player) {
+/** @type {(resourceCard: Card, projectCard: Card) => void} */
+function playResourceCard(resourceCard, project) {
   // TODO: find project from table
   // TODO: play resource card on project on the table
   // TODO: label resource card owner as player
@@ -204,16 +228,10 @@ function gameDidEnd() { }
  * @property {(cards: Card[]) => Card[]} addResoureCards add resource cards and return all resource cards
  */
 
-function getPlayerId() {
-  const userProperties = PropertiesService.getUserProperties();
-  const playerId = userProperties.getProperty('playerId');
-  return playerId;
-}
-
 /** @type {PlayerHand} */
 const PlayerHand = {
   listProjectCards: () => {
-    const playerId = getPlayerId();
+    const playerId = Player.getId();
     return playerHand.getRange(`${playerId}3:${playerId}5`).getValues()
       .map((row) => row[0]).filter(x => x);
   },
@@ -221,7 +239,7 @@ const PlayerHand = {
     // append cards to the current hand
     const newCards = [PlayerHand.listProjectCards(), ...cards];
 
-    const playerId = getPlayerId();
+    const playerId = Player.getId();
     // transform the cards
     const values = newCards.map(card => [card]);
     // save new cards on spreadsheet
@@ -232,7 +250,7 @@ const PlayerHand = {
     // remove cards from the current hand
     const newCards = PlayerHand.listProjectCards().filter(hand => cards.every(card => hand !== card));
 
-    const playerId = getPlayerId();
+    const playerId = Player.getId();
     // transform the cards
     const values = newCards.map(card => [card]);
     // clean up the spreadsheet and rewrite cards
@@ -241,7 +259,7 @@ const PlayerHand = {
     return newCards;
   },
   listResourceCards: () => {
-    const playerId = getPlayerId();
+    const playerId = Player.getId();
     return playerHand.getRange(`${playerId}7:${playerId}14`).getValues()
       .map((row) => row[0]).filter(x => x);
   },
@@ -249,7 +267,7 @@ const PlayerHand = {
     // append cards to the current hand
     const newCards = [PlayerHand.listResourceCards(), ...cards];
 
-    const playerId = getPlayerId();
+    const playerId = Player.getId();
     // transform the cards
     const values = newCards.map(card => [card]);
     // save new cards on spreadsheet
@@ -260,7 +278,7 @@ const PlayerHand = {
     // remove cards from the current hand
     const newCards = PlayerHand.listResourceCards().filter(hand => cards.every(card => hand !== card));
 
-    const playerId = getPlayerId();
+    const playerId = Player.getId();
     // transform the cards
     const values = newCards.map(card => [card]);
     // clean up the spreadsheet and rewrite cards
