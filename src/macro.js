@@ -22,8 +22,6 @@ function onOpen() {
 function showUserSidebar() {
   const htmlTemplate = HtmlService.createTemplateFromFile('userSidebar');
   htmlTemplate.player = '測試玩家1';
-  htmlTemplate.projectCards = ['prjCard0', 'prjCard1'];
-  htmlTemplate.resourceCards = ['rsrcCard0', 'rsrcCard1', 'rsrcCard2', 'rsrcCard3', 'rsrcCard4', 'rsrcCard5'];
   const sidebar = htmlTemplate.evaluate().setTitle('玩家1 sidebar');
   SpreadsheetApp.getUi().showSidebar(sidebar);
 }
@@ -142,6 +140,96 @@ function turnDidEnd() {
 function roundDidEnd() { }
 
 function gameDidEnd() { }
+
+/**
+ * @typedef {Object} Hand player hand cards
+ * @property {Card[]} projectCards project cards
+ * @property {Card[]} resourceCards resource cards
+ */
+
+/**
+ * @typedef {Object} PlayerHand player hand methods
+ * @property {() => Card[]} listProjectCards list project cards in the hand
+ * @property {(cards: Card[]) => Card[]} removeProjectCards remove project cards and return the rest of project cards
+ * @property {(cards: Card[]) => Card[]} addProjectCards add project cards and return all project cards
+ * @property {() => Card[]} listResourceCards list resource cards in the hand
+ * @property {(cards: Card[]) => Card[]} removeResourceCards remove resource cards and return the rest of resource cards
+ * @property {(cards: Card[]) => Card[]} addResoureCards add resource cards and return all resource cards
+ */
+
+function getPlayerId() {
+  return 'A';
+}
+
+/** @type {PlayerHand} */
+const PlayerHand = {
+  listProjectCards: () => {
+    const playerId = getPlayerId();
+    return playerHand.getRange(`${playerId}3:${playerId}5`).getValues()
+      .map((row) => row[0]).filter(x => x);
+  },
+  addProjectCards: (cards) => {
+    // append cards to the current hand
+    const newCards = [PlayerHand.listProjectCards(), ...cards];
+
+    const playerId = getPlayerId();
+    // transform the cards
+    const values = newCards.map(card => [card]);
+    // save new cards on spreadsheet
+    playerHand.getRange(`${playerId}3`).setValues(values);
+    return newCards;
+  },
+  removeProjectCards: (cards) => {
+    // remove cards from the current hand
+    const newCards = PlayerHand.listProjectCards().filter(hand => cards.every(card => hand !== card));
+
+    const playerId = getPlayerId();
+    // transform the cards
+    const values = newCards.map(card => [card]);
+    // clean up the spreadsheet and rewrite cards
+    playerHand.getRange(`${playerId}3:${playerId}5`).clearContent();
+    playerHand.getRange(`${playerId}3`).setValues(values);
+    return newCards;
+  },
+  listResourceCards: () => {
+    const playerId = getPlayerId();
+    return playerHand.getRange(`${playerId}7:${playerId}14`).getValues()
+      .map((row) => row[0]).filter(x => x);
+  },
+  addResoureCards: (cards) => {
+    // append cards to the current hand
+    const newCards = [PlayerHand.listResourceCards(), ...cards];
+
+    const playerId = getPlayerId();
+    // transform the cards
+    const values = newCards.map(card => [card]);
+    // save new cards on spreadsheet
+    playerHand.getRange(`${playerId}7`).setValues(values);
+    return newCards;
+  },
+  removeResourceCards: (cards) => {
+    // remove cards from the current hand
+    const newCards = PlayerHand.listResourceCards().filter(hand => cards.every(card => hand !== card));
+
+    const playerId = getPlayerId();
+    // transform the cards
+    const values = newCards.map(card => [card]);
+    // clean up the spreadsheet and rewrite cards
+    playerHand.getRange(`${playerId}7:${playerId}14`).clearContent();
+    playerHand.getRange(`${playerId}7`).setValues(values);
+    return newCards;
+  },
+}
+
+// export function for
+function getPlayerCards() {
+  const projectCards = PlayerHand.listProjectCards();
+  const resourceCards = PlayerHand.listResourceCards();
+  return {
+    projectCards,
+    resourceCards,
+  };
+};
 
 //reset whole spreadsheet
 function resetSpreadsheet() {

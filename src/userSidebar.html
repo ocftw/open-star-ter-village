@@ -2,6 +2,27 @@
 <html>
 
 <head>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>
+    // The code in this function runs when the page is loaded.
+    $(function () {
+      google.script.run.withSuccessHandler(showCards)
+        .getPlayerCards();
+    });
+
+    function showCards(hand) {
+      let list = $('#project-cards');
+      list.empty();
+      for (var i = 0; i < hand.projectCards.length; i++) {
+        list.append('<div>' + hand.projectCards[i] + '</div>');
+      }
+      list = $('#resource-cards');
+      list.empty();
+      for (var i = 0; i < hand.resourceCards.length; i++) {
+        list.append('<div>' + hand.resourceCards[i] + '</div>');
+      }
+    }
+  </script>
   <base target="_top">
 </head>
 
@@ -10,17 +31,9 @@
     <?= player ?>
   </h1>
   <h2>專案卡</h2>
-  <? for(var i=0; i<projectCards.length; i++) { ?>
-  <span>
-    <?= projectCards[i] ?>
-  </span>
-  <? } ?>
+  <div id="project-cards">Loading...</div>
   <h2>資源卡</h2>
-  <? for(var i=0; i<resourceCards.length; i++) { ?>
-  <span>
-    <?= resourceCards[i] ?>
-  </span>
-  <? } ?>
+  <div id="resource-cards">Loading...</div>
 </body>
 
 </html>
