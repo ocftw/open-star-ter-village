@@ -146,7 +146,7 @@ function gameDidEnd() { }
 //reset whole spreadsheet
 function resetSpreadsheet() {
   //pop up alert for confirmation
-  response = SpreadsheetApp.getUi()
+  const response = SpreadsheetApp.getUi()
     .alert("⚠️確定重整表單？", "目前的遊戲進度會全部刪除", SpreadsheetApp.getUi().ButtonSet.OK_CANCEL);
   if (response === SpreadsheetApp.getUi().Button.CANCEL) {
     SpreadsheetApp.getActive().toast("已取消重設表單");
