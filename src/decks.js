@@ -1,3 +1,5 @@
+// @ts-check
+
 var spreadsheet = SpreadsheetApp.getActive();
 const defaultDeck = spreadsheet.getSheetByName('各牌庫備考');
 
@@ -7,7 +9,7 @@ const defaultDeck = spreadsheet.getSheetByName('各牌庫備考');
 
 /**
  * @typedef {Object} Deck - deck operation on the spread sheet
- * @property {(n: number) => Card[]} draw - draw n cards from pile
+ * @property {(n?: number) => Card[]} draw - draw n cards from pile
  * @property {(cards: Card[]) => void} discard - discard n cards to discard pile
  * @property {() => void} shuffle - shuffle pile
  * @property {() => void} reset - reset pile and discard pile to default

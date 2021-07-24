@@ -1,4 +1,4 @@
-// ts-check
+// @ts-check
 
 /** @OnlyCurrentDoc */
 var spreadsheet = SpreadsheetApp.getActive();
@@ -35,6 +35,8 @@ function initialShuffle() {
   EventDeck.shuffle();
   SpreadsheetApp.getActive().toast("已洗勻專案卡、資源卡、事件卡");
 };
+
+/** @typedef {string} Player */
 
 /** @type {(player: Player, n?: number) => void} */
 function drawProjectCards(player, n) {
