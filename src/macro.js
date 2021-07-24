@@ -19,41 +19,48 @@ function onOpen() {
     .addToUi();
 }
 
-//set PlayerId with button
+//set PlayerId and show sidebar
+function setPlayerAndShowSidebar (playerId) {
+  const currentPlayerId = getPlayerId();
+  if (currentPlayerId !== playerId) {
+    //pop up alert for confirmation
+    const response = SpreadsheetApp.getUi()
+    .alert('更換玩家', '確定換成' + playerHand.getRange(`${playerId}1`).getDisplayValue() + '？', SpreadsheetApp.getUi().ButtonSet.OK_CANCEL);
+    if (response === SpreadsheetApp.getUi().Button.CANCEL) {
+      SpreadsheetApp.getActive().toast('取消更換玩家');
+      return;
+    }
+    const userProperties = PropertiesService.getUserProperties();
+    userProperties.setProperty('playerId', playerId);
+    SpreadsheetApp.getActive().toast('已設定為' + playerHand.getRange(`${playerId}1`).getDisplayValue());
+  }
+  showUserSidebar();
+}
+
+
+//bound setPlayerAndShowSidebar function to button
 function setPlayer1() {
-  const userProperties = PropertiesService.getUserProperties();
-  userProperties.setProperty('playerId', 'A');
-  SpreadsheetApp.getActive().toast('已設定為玩家1');
+  setPlayerAndShowSidebar('A');
 }
 
 function setPlayer2() {
-  const userProperties = PropertiesService.getUserProperties();
-  userProperties.setProperty('playerId', 'B');
-  SpreadsheetApp.getActive().toast('已設定為玩家2');
+  setPlayerAndShowSidebar('B');
 }
 
 function setPlayer3() {
-  const userProperties = PropertiesService.getUserProperties();
-  userProperties.setProperty('playerId', 'C');
-  SpreadsheetApp.getActive().toast('已設定為玩家3');
+  setPlayerAndShowSidebar('C');
 }
 
 function setPlayer4() {
-  const userProperties = PropertiesService.getUserProperties();
-  userProperties.setProperty('playerId', 'D');
-  SpreadsheetApp.getActive().toast('已設定為玩家4');
+  setPlayerAndShowSidebar('D');
 }
 
 function setPlayer5() {
-  const userProperties = PropertiesService.getUserProperties();
-  userProperties.setProperty('playerId', 'E');
-  SpreadsheetApp.getActive().toast('已設定為玩家5');
+  setPlayerAndShowSidebar('E');
 }
 
 function setPlayer6() {
-  const userProperties = PropertiesService.getUserProperties();
-  userProperties.setProperty('playerId', 'F');
-  SpreadsheetApp.getActive().toast('已設定為玩家6');
+  setPlayerAndShowSidebar('F');
 }
 
 
