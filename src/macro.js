@@ -44,6 +44,18 @@ function drawProjectCards(player, n) {
   // playerBoard(player).insertProjectCard(projectCards);
 }
 
+/** @type {(projects: Card[], player: Player) => void} */
+function discardProjectCards(projects, player) {
+  ProjectDeck.discard(projects);
+  SpreadsheetApp.getActive().toast(`玩家${player}已經丟棄專案卡${JSON.stringify(projects)}`);
+}
+
+/** @type {(project: Card, player: Player) => void} */
+function playProjectCard(project, player) {
+  // TODO: place project card on the table
+  // TODO: label project owner as player
+}
+
 /** @type {(player: Player, n?: number) => void} */
 function drawResourceCards(player, n) {
   // draw cards from deck
