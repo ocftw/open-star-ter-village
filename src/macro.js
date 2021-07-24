@@ -15,7 +15,7 @@ function onOpen() {
     .addSeparator()
     .addItem('重設表單', 'resetSpreadsheet')
     .addSeparator()
-    .addItem('顯示玩家1手牌', 'showUserSidebar')
+    .addItem('顯示玩家手牌', 'showUserSidebar')
     .addToUi();
 }
 
