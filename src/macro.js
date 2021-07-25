@@ -17,6 +17,7 @@ function onOpen() {
     .addItem('重設表單', 'resetSpreadsheet')
     .addSeparator()
     .addItem('顯示玩家手牌', 'showUserSidebar')
+    .addItem('測試ProjectCard', 'testProjectCards')
     .addToUi();
 }
 
@@ -211,6 +212,15 @@ function playResourceCard(resourceCard, project) {
   // TODO: find project from table
   // TODO: play resource card on project on the table
   // TODO: label resource card owner as player
+}
+
+function testProjectCards() {
+  playProjectCard('OCF Lab');
+  playProjectCard('Firebox');
+  removeProjectCard('OCF Lab');
+  playProjectCard('資料申請小精靈');
+  removeProjectCard('Firebox');
+  removeProjectCard('資料申請小精靈');
 }
 
 //draw a new event card
