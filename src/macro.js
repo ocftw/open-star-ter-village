@@ -103,6 +103,7 @@ function discardProjectCards(projects) {
  * @property {() => number} getCount get number of project cards on table
  * @property {() => boolean} isPlayable whether table is able to placed a project card
  * @property {(card: Card) => void} play play a project card on table
+ * @property {(card: Card) => void} remove remove a project card on table
  * @property {(projectCard: Card, resourceCard: Card) => void} placeResourceCard place a resource card on the project
  */
 
@@ -148,6 +149,27 @@ const ProjectCard = {
     if (cardRange !== null) {
       cardRange.copyTo(tableRange);
     }
+  },
+  remove: (card) => {
+    const cards = tableProjectCard.getRange(11, 1, ProjectCard.getMax(), 1).getValues().map(row => row[0]);
+    const cardIdx = cards.findIndex(c => c === card);
+    if (cardIdx < 0) {
+      Logger.log(`Cannot find project card ${card} on table`);
+      throw new Error(`Cannot find project card ${card} on table`);
+    }
+    // remove card data on hidden board
+    tableProjectCard.getRange(11 + cardIdx, 1).clearContent();
+    // decreament the project card count
+    tableProjectCard.getRange('B2').setValue(ProjectCard.getCount() - 1);
+
+    // render card on table
+    const defaultCardRange = tableProjectCard.getRange('D1:H9');
+    // find table range to paste the default card
+    const row = cardIdx % 2;
+    const col = Math.floor(cardIdx / 2);
+    const tableRange = mainBoard.getRange(2 + 9 * row, 7 + 5 * col, 9, 5);
+
+    defaultCardRange.copyTo(tableRange);
   },
   placeResourceCard: () => { },
 };
