@@ -1,7 +1,7 @@
 // @ts-check
 
 var spreadsheet = SpreadsheetApp.getActive();
-var playerHand = spreadsheet.getSheetByName('PlayerHand');
+const playerHand = spreadsheet.getSheetByName('PlayerHand');
 
 /**
  * @typedef {Object} Player player methods
@@ -98,3 +98,16 @@ const PlayerHand = {
     return newCards;
   },
 };
+
+/**
+ * @typedef {Object} PlayerHands player hands batch operation methods
+ * @property {() => void} reset reset all player hands to empty
+ */
+
+/** @type {PlayerHands} */
+const PlayerHands = {
+  reset: () => {
+    // clear project cards and resource cards
+    playerHand.getRangeList(['A3:F5', 'A7:F14']).clear();
+  }
+}

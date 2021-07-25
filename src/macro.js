@@ -2,7 +2,6 @@
 
 /** @OnlyCurrentDoc */
 var spreadsheet = SpreadsheetApp.getActive();
-var playerHand = spreadsheet.getSheetByName('PlayerHand');
 const mainBoard = spreadsheet.getSheetByName('專案圖板/記分板');
 const treeBoard = spreadsheet.getSheetByName('開源生態樹');
 
@@ -19,19 +18,20 @@ function onOpen() {
     .addToUi();
 }
 
-//set PlayerId and show sidebar
-function setPlayerAndShowSidebar(playerId) {
+// set PlayerId and show sidebar
+function setPlayerAndShowSidebar(playerId, playerNickname) {
   const currentPlayerId = Player.getId();
   if (currentPlayerId !== playerId) {
     //pop up alert for confirmation
     const response = SpreadsheetApp.getUi()
-      .alert('更換玩家', '確定換成' + playerHand.getRange(`${playerId}1`).getDisplayValue() + '？', SpreadsheetApp.getUi().ButtonSet.OK_CANCEL);
+      .alert('更換玩家', `確定換成${playerNickname}？`, SpreadsheetApp.getUi().ButtonSet.OK_CANCEL);
     if (response === SpreadsheetApp.getUi().Button.CANCEL) {
       SpreadsheetApp.getActive().toast('取消更換玩家');
       return;
     }
     Player.setId(playerId);
-    SpreadsheetApp.getActive().toast('已設定為' + playerHand.getRange(`${playerId}1`).getDisplayValue());
+    Player.setNickname(playerNickname);
+    SpreadsheetApp.getActive().toast(`已設定為${playerNickname}`);
   }
   showUserSidebar();
 }
@@ -39,27 +39,27 @@ function setPlayerAndShowSidebar(playerId) {
 
 //bound setPlayerAndShowSidebar function to button
 function setPlayer1() {
-  setPlayerAndShowSidebar('A');
+  setPlayerAndShowSidebar('A', '玩家1');
 }
 
 function setPlayer2() {
-  setPlayerAndShowSidebar('B');
+  setPlayerAndShowSidebar('B', '玩家2');
 }
 
 function setPlayer3() {
-  setPlayerAndShowSidebar('C');
+  setPlayerAndShowSidebar('C', '玩家3');
 }
 
 function setPlayer4() {
-  setPlayerAndShowSidebar('D');
+  setPlayerAndShowSidebar('D', '玩家4');
 }
 
 function setPlayer5() {
-  setPlayerAndShowSidebar('E');
+  setPlayerAndShowSidebar('E', '玩家5');
 }
 
 function setPlayer6() {
-  setPlayerAndShowSidebar('F');
+  setPlayerAndShowSidebar('F', '玩家6');
 }
 
 
@@ -218,7 +218,7 @@ function resetSpreadsheet() {
   EventDeck.reset();
 
   //clear player hands
-  playerHand.getRangeList(['A3:F5', 'A7:F14']).clear();
+  PlayerHands.reset();
 
   //reset treeBoard display
   treeBoard.getRange('C3:E7').setBackground(null).setFontWeight('normal');
