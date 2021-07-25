@@ -255,7 +255,7 @@ function resetSpreadsheet() {
   SpreadsheetApp.getActive().toast("已重設表單");
 }
 
-function onEdit(e) {
+function treeChange(e) {
   //TODO:maybe revise code mechanics to prevent use of onEdit?
   //update treeBoard
   switch (e.range.getA1Notation()) {
