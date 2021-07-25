@@ -21,6 +21,56 @@ function onOpen() {
     .addToUi();
 }
 
+/**
+ * Game cycle design inspected by react component life cycle
+ * Game cycle
+ * game will start
+ * > round 1
+ *   round will start
+ *   > player 1
+ *     turn will start
+ *     player 1 actions
+ *     turn did end
+ *   > player 2
+ *     turn will start
+ *     player 2 actions
+ *     turn did end
+ *   > ... and so on
+ *   round did end
+ * > ... and so on
+ * game did end
+ */
+ function gameWillStart() {
+  //shuffle before game started
+  initialShuffle();
+}
+
+function roundWillStart() {
+  // draw new event card
+  drawEventCard();
+  // peek next event card
+  peekNextEventCard();
+}
+
+function turnWillStart() { }
+
+function turnDidEnd() {
+  // peek next event card
+  peekNextEventCard();
+}
+
+function roundDidEnd() { }
+
+function gameDidEnd() { }
+
+//shuffle before game start
+function initialShuffle() {
+  ProjectDeck.shuffle();
+  ResourceDeck.shuffle();
+  EventDeck.shuffle();
+  SpreadsheetApp.getActive().toast("已洗勻專案卡、資源卡、事件卡");
+};
+
 // set PlayerId and show sidebar
 function setPlayerAndShowSidebar(playerId, playerNickname) {
   const currentPlayerId = Player.getId();
@@ -75,12 +125,21 @@ function showUserSidebar() {
   SpreadsheetApp.getUi().showSidebar(sidebar);
 }
 
-//shuffle before game start
-function initialShuffle() {
-  ProjectDeck.shuffle();
-  ResourceDeck.shuffle();
-  EventDeck.shuffle();
-  SpreadsheetApp.getActive().toast("已洗勻專案卡、資源卡、事件卡");
+/**
+ * @typedef {Object} Hand player hand cards
+ * @property {Card[]} projectCards project cards
+ * @property {Card[]} resourceCards resource cards
+ */
+
+// export functions for sidebar
+/** @type {() => Hand} */
+function getPlayerCards() {
+  const projectCards = PlayerHand.listProjectCards();
+  const resourceCards = PlayerHand.listResourceCards();
+  return {
+    projectCards,
+    resourceCards,
+  };
 };
 
 /** @type {(n?: number) => void} */
@@ -247,62 +306,6 @@ function peekNextEventCard() {
     mainBoard.getRange('G21').setValue(spreadsheet.getSheetByName('EventDeck').getRange('A1').getDisplayValue());
   }
 }
-
-/**
- * Game cycle design inspected by react component life cycle
- * Game cycle
- * game will start
- * > round 1
- *   round will start
- *   > player 1
- *     turn will start
- *     player 1 actions
- *     turn did end
- *   > player 2
- *     turn will start
- *     player 2 actions
- *     turn did end
- *   > ... and so on
- *   round did end
- * > ... and so on
- * game did end
- */
-function gameWillStart() { }
-
-function roundWillStart() {
-  // draw new event card
-  drawEventCard();
-  // peek next event card
-  peekNextEventCard();
-}
-
-function turnWillStart() { }
-
-function turnDidEnd() {
-  // peek next event card
-  peekNextEventCard();
-}
-
-function roundDidEnd() { }
-
-function gameDidEnd() { }
-
-/**
- * @typedef {Object} Hand player hand cards
- * @property {Card[]} projectCards project cards
- * @property {Card[]} resourceCards resource cards
- */
-
-// export functions for sidebar
-/** @type {() => Hand} */
-function getPlayerCards() {
-  const projectCards = PlayerHand.listProjectCards();
-  const resourceCards = PlayerHand.listResourceCards();
-  return {
-    projectCards,
-    resourceCards,
-  };
-};
 
 //reset whole spreadsheet
 function resetSpreadsheet() {
