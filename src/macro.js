@@ -2,6 +2,8 @@
 
 /** @OnlyCurrentDoc */
 var spreadsheet = SpreadsheetApp.getActive();
+const projectCardsBoard = spreadsheet.getSheetByName('專案卡列表');
+const tableProjectCard = spreadsheet.getSheetByName('TableProjectCard');
 const mainBoard = spreadsheet.getSheetByName('專案圖板/記分板');
 const treeBoard = spreadsheet.getSheetByName('開源生態樹');
 
@@ -15,6 +17,7 @@ function onOpen() {
     .addItem('重設表單', 'resetSpreadsheet')
     .addSeparator()
     .addItem('顯示玩家手牌', 'showUserSidebar')
+    .addItem('測試ProjectCard', 'testProjectCards')
     .addToUi();
 }
 
@@ -94,10 +97,100 @@ function discardProjectCards(projects) {
   SpreadsheetApp.getActive().toast(`玩家${Player.getNickname()}已經丟棄專案卡${JSON.stringify(projects)}`);
 }
 
+/**
+ * @typedef {Object} ProjectCard
+ * @property {() => number} getMax get maximum project card on table
+ * @property {(max: number) => void} setMax set maximum project card on table
+ * @property {() => number} getCount get number of project cards on table
+ * @property {() => boolean} isPlayable whether table is able to placed a project card
+ * @property {(card: Card) => void} play play a project card on table
+ * @property {(card: Card) => void} remove remove a project card on table
+ * @property {(projectCard: Card, resourceCard: Card) => void} placeResourceCard place a resource card on the project
+ */
+
+/** @type {ProjectCard} */
+const ProjectCard = {
+  getMax: () => tableProjectCard.getRange('B1').getValue(),
+  setMax: (max) => {
+    tableProjectCard.getRange('B1').setValue(max);
+  },
+  getCount: () => tableProjectCard.getRange('B2').getValue(),
+  isPlayable: () => ProjectCard.getMax() > ProjectCard.getCount(),
+  play: (card) => {
+    const cards = tableProjectCard.getRange(11, 1, ProjectCard.getMax(), 1).getValues().map(row => row[0]);
+    const emptyIdx = cards.findIndex(c => !c);
+    if (emptyIdx < 0) {
+      Logger.log('Cannot find project card slot on table');
+      throw new Error('Cannot find project card slot on table');
+    }
+    // set card data on hidden board
+    tableProjectCard.getRange(11 + emptyIdx, 1).setValue(card);
+    // increament the project card count
+    tableProjectCard.getRange('B2').setValue(ProjectCard.getCount() + 1);
+
+    // render card on table
+    // find card range from default deck
+    const findCardRange = (card) => {
+      const idx = defaultDeck.getRange('A2:A31').getDisplayValues().map(row => row[0]).findIndex(c => c === card);
+      if (idx > -1) {
+        const row = idx % 10;
+        const column = Math.floor(idx / 10);
+        return projectCardsBoard.getRange(9 * row + 1, 5 * column + 1, 9, 5);
+      }
+      Logger.log('failed to find project card' + card);
+      return null;
+    };
+    const cardRange = findCardRange(card);
+
+    // find table range to paste the card
+    const row = emptyIdx % 2;
+    const col = Math.floor(emptyIdx / 2);
+    const tableRange = mainBoard.getRange(2 + 9 * row, 7 + 5 * col, 9, 5);
+
+    if (cardRange !== null) {
+      cardRange.copyTo(tableRange);
+    }
+  },
+  remove: (card) => {
+    const cards = tableProjectCard.getRange(11, 1, ProjectCard.getMax(), 1).getValues().map(row => row[0]);
+    const cardIdx = cards.findIndex(c => c === card);
+    if (cardIdx < 0) {
+      Logger.log(`Cannot find project card ${card} on table`);
+      throw new Error(`Cannot find project card ${card} on table`);
+    }
+    // remove card data on hidden board
+    tableProjectCard.getRange(11 + cardIdx, 1).clearContent();
+    // decreament the project card count
+    tableProjectCard.getRange('B2').setValue(ProjectCard.getCount() - 1);
+
+    // render card on table
+    const defaultCardRange = tableProjectCard.getRange('D1:H9');
+    // find table range to paste the default card
+    const row = cardIdx % 2;
+    const col = Math.floor(cardIdx / 2);
+    const tableRange = mainBoard.getRange(2 + 9 * row, 7 + 5 * col, 9, 5);
+
+    defaultCardRange.copyTo(tableRange);
+  },
+  placeResourceCard: () => { },
+};
+
+const Table = {
+  ProjectCard,
+};
+
 /** @type {(project: Card) => void} */
 function playProjectCard(project) {
-  // TODO: place project card on the table
+  if (Table.ProjectCard.isPlayable()) {
+    Table.ProjectCard.play(project);
+  }
   // TODO: label project owner as player
+}
+
+/** @type {(project: Card) => void} */
+function removeProjectCard(project) {
+  // TODO: return the resource token to players
+  Table.ProjectCard.remove(project);
 }
 
 /** @type {(n?: number) => void} */
@@ -119,6 +212,15 @@ function playResourceCard(resourceCard, project) {
   // TODO: find project from table
   // TODO: play resource card on project on the table
   // TODO: label resource card owner as player
+}
+
+function testProjectCards() {
+  playProjectCard('OCF Lab');
+  playProjectCard('Firebox');
+  removeProjectCard('OCF Lab');
+  playProjectCard('資料申請小精靈');
+  removeProjectCard('Firebox');
+  removeProjectCard('資料申請小精靈');
 }
 
 //draw a new event card
