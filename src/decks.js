@@ -19,6 +19,13 @@ const defaultDeck = spreadsheet.getSheetByName('各牌庫備考');
 const ProjectDeck = (function () {
   const pile = spreadsheet.getSheetByName('ProjectDeck');
   const draw = (n = 1) => {
+    // get number of remaining card
+    const remainCardNum = pile.getDataRange().getNumRows();
+    // refill pile if remaining cards are not enough
+    if (remainCardNum < n) {
+      discardPile.getDataRange().randomize().copyTo(pile.getRange(`A${remainCardNum + 1}`));
+      discardPile.clearContents();
+    }
     // get cards
     const cards = pile.getRange(`A1:A${n}`).getDisplayValues()
       .map(row => row[0]);
@@ -57,6 +64,13 @@ const ProjectDeck = (function () {
 const ResourceDeck = (function () {
   const pile = spreadsheet.getSheetByName('ResourceDeck');
   const draw = (n = 1) => {
+    // get number of remaining card
+    const remainCardNum = pile.getDataRange().getNumRows();
+    // refill pile if remaining cards are not enough
+    if (remainCardNum < n) {
+      discardPile.getDataRange().randomize().copyTo(pile.getRange(`A${remainCardNum + 1}`));
+      discardPile.clearContents();
+    }
     // get cards
     const cards = pile.getRange(`A1:A${n}`).getDisplayValues()
       .map(row => row[0]);
