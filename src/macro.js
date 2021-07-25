@@ -186,6 +186,12 @@ function playProjectCard(project) {
   // TODO: label project owner as player
 }
 
+/** @type {(project: Card) => void} */
+function removeProjectCard(project) {
+  // TODO: return the resource token to players
+  Table.ProjectCard.remove(project);
+}
+
 /** @type {(n?: number) => void} */
 function drawResourceCards(n) {
   // draw cards from deck
