@@ -162,6 +162,7 @@ function discardProjectCards(projects) {
  * @property {(card: Card) => void} play play a project card on table
  * @property {(card: Card) => void} remove remove a project card on table
  * @property {() => void} reset remove all project cards and reset max slots
+ * @property {(n: number) => void} activateNSlots activate N project card slots on table
  * @property {(projectCard: Card, resourceCard: Card) => void} placeResourceCard place a resource card on the project
  */
 
@@ -268,6 +269,25 @@ const ProjectCard = (() => {
     // reset max
     setMax(6);
   };
+  const activateNSlots = (n) => {
+    const currentMax = getMax();
+    if (n > currentMax) {
+      // activate slots
+      [...new Array(n - currentMax)].map((_, i) => i + currentMax)
+        .map(findTableRangeById).forEach(range => {
+          getDefaultCardRange().copyTo(range);
+        });
+    }
+    if (n < currentMax) {
+      // deactivate slots
+      [...new Array(currentMax - n)].map((_, i) => i + n)
+        .map(findTableRangeById).forEach(range => {
+          getDeactiveCardRange().copyTo(range);
+        });
+    }
+    // update maximum
+    setMax(n);
+  };
   const placeResourceCard = () => { };
 
   return {
@@ -275,6 +295,7 @@ const ProjectCard = (() => {
     play,
     remove,
     reset,
+    activateNSlots,
     placeResourceCard,
   };
 })();
@@ -319,12 +340,16 @@ function playResourceCard(resourceCard, project) {
 }
 
 function testProjectCards() {
+  Table.ProjectCard.activateNSlots(4);
   playProjectCard('OCF Lab');
   playProjectCard('Firebox');
   removeProjectCard('OCF Lab');
   playProjectCard('資料申請小精靈');
+  playProjectCard('全民追公車');
   removeProjectCard('Firebox');
   removeProjectCard('資料申請小精靈');
+  Table.ProjectCard.activateNSlots(8);
+  removeProjectCard('全民追公車');
 }
 
 //draw a new event card
