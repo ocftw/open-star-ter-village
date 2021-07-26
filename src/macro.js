@@ -226,7 +226,7 @@ const ProjectCard = (() => {
       throw new Error('Cannot find project card slot on table');
     }
     // set card data on hidden board
-    addCardById(emptyIdx);
+    addCardById(card, emptyIdx);
 
     // render card on table
     const cardRange = findCardTemplateRange(card);
