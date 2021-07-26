@@ -101,13 +101,27 @@ const PlayerHand = {
 
 /**
  * @typedef {Object} PlayerHands player hands batch operation methods
+ * @property {(cards: Card[], playerId: string) => Card[]} dealProjectCardsToPlayerById deal project cards to player and return all project cards
  * @property {() => void} reset reset all player hands to empty
  */
 
 /** @type {PlayerHands} */
 const PlayerHands = {
+  dealProjectCardsToPlayerById: (cards, playerId) => {
+    const listProjectCardsByPlayerId = (id) => {
+      return playerHand.getRange(`${id}3:${id}5`).getValues()
+        .map((row) => row[0]).filter(x => x);
+    };
+    const newCards = [...listProjectCardsByPlayerId(playerId), ...cards];
+
+    // transform the cards
+    const values = newCards.map(card => [card]);
+    // save new cards on spreadsheet
+    playerHand.getRange(`${playerId}3:${playerId}${3 + newCards.length - 1}`).setValues(values);
+    return newCards;
+  },
   reset: () => {
     // clear project cards and resource cards
     playerHand.getRangeList(['A3:F5', 'A7:F14']).clear();
-  }
-}
+  },
+};

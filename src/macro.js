@@ -43,6 +43,10 @@ function onOpen() {
 function gameWillStart() {
   //shuffle before game started
   initialShuffle();
+  // deal project cards
+  ['A', 'B', 'C', 'D', 'E', 'F'].forEach(id => {
+    PlayerHands.dealProjectCardsToPlayerById(ProjectDeck.draw(2), id);
+  });
 }
 
 function roundWillStart() {
