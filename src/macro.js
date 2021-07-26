@@ -40,7 +40,7 @@ function onOpen() {
  * > ... and so on
  * game did end
  */
- function gameWillStart() {
+function gameWillStart() {
   //shuffle before game started
   initialShuffle();
 }
@@ -158,9 +158,6 @@ function discardProjectCards(projects) {
 
 /**
  * @typedef {Object} ProjectCard
- * @property {() => number} getMax get maximum project card on table
- * @property {(max: number) => void} setMax set maximum project card on table
- * @property {() => number} getCount get number of project cards on table
  * @property {() => boolean} isPlayable whether table is able to placed a project card
  * @property {(card: Card) => void} play play a project card on table
  * @property {(card: Card) => void} remove remove a project card on table
@@ -168,71 +165,99 @@ function discardProjectCards(projects) {
  */
 
 /** @type {ProjectCard} */
-const ProjectCard = {
-  getMax: () => tableProjectCard.getRange('B1').getValue(),
-  setMax: (max) => {
+const ProjectCard = (() => {
+  // table helpers
+  const getMax = () => tableProjectCard.getRange('B1').getValue();
+  const setMax = (max) => {
     tableProjectCard.getRange('B1').setValue(max);
-  },
-  getCount: () => tableProjectCard.getRange('B2').getValue(),
-  isPlayable: () => ProjectCard.getMax() > ProjectCard.getCount(),
-  play: (card) => {
-    const cards = tableProjectCard.getRange(11, 1, ProjectCard.getMax(), 1).getValues().map(row => row[0]);
-    const emptyIdx = cards.findIndex(c => !c);
+  };
+  const getCount = () => tableProjectCard.getRange('B2').getValue();
+  const setCount = (count) => tableProjectCard.getRange('B2').setValue(count);
+  const findEmptyId = () => {
+    const cards = tableProjectCard.getRange(11, 1, getMax(), 1).getValues().map(row => row[0]);
+    return cards.findIndex(c => !c);
+  };
+  const findCardId = (card) => {
+    const cards = tableProjectCard.getRange(11, 1, getMax(), 1).getValues().map(row => row[0]);
+    return cards.findIndex(c => c === card);
+  };
+  const addCardById = (card, id) => {
+    tableProjectCard.getRange(11 + id, 1).setValue(card);
+    // increament the project card count
+    setCount(getCount() + 1);
+  };
+  const removeCardById = (id) => {
+    tableProjectCard.getRange(11 + id, 1).clearContent();
+    // decreament the project card count
+    setCount(getCount() - 1);
+  };
+
+  // table render helpers
+  const getDefaultCardRange = () => tableProjectCard.getRange('D1:H9');
+  // find card template range from default deck
+  const findCardTemplateRange = (card) => {
+    const idx = defaultDeck.getRange('A2:A31').getDisplayValues().map(row => row[0]).findIndex(c => c === card);
+    if (idx > -1) {
+      const row = idx % 10;
+      const column = Math.floor(idx / 10);
+      return projectCardsBoard.getRange(9 * row + 1, 5 * column + 1, 9, 5);
+    }
+    Logger.log('failed to find project card range' + card);
+    return null;
+  };
+  // find card range on table
+  const findTableRangeById = (id) => {
+    const row = id % 2;
+    const col = Math.floor(id / 2);
+    return mainBoard.getRange(2 + 9 * row, 7 + 5 * col, 9, 5);
+  };
+
+  const isPlayable = () => getMax() > getCount();
+  const play = (card) => {
+    const emptyIdx = findEmptyId();
     if (emptyIdx < 0) {
       Logger.log('Cannot find project card slot on table');
       throw new Error('Cannot find project card slot on table');
     }
     // set card data on hidden board
-    tableProjectCard.getRange(11 + emptyIdx, 1).setValue(card);
-    // increament the project card count
-    tableProjectCard.getRange('B2').setValue(ProjectCard.getCount() + 1);
+    addCardById(emptyIdx);
 
     // render card on table
-    // find card range from default deck
-    const findCardRange = (card) => {
-      const idx = defaultDeck.getRange('A2:A31').getDisplayValues().map(row => row[0]).findIndex(c => c === card);
-      if (idx > -1) {
-        const row = idx % 10;
-        const column = Math.floor(idx / 10);
-        return projectCardsBoard.getRange(9 * row + 1, 5 * column + 1, 9, 5);
-      }
-      Logger.log('failed to find project card' + card);
-      return null;
-    };
-    const cardRange = findCardRange(card);
+    const cardRange = findCardTemplateRange(card);
 
     // find table range to paste the card
-    const row = emptyIdx % 2;
-    const col = Math.floor(emptyIdx / 2);
-    const tableRange = mainBoard.getRange(2 + 9 * row, 7 + 5 * col, 9, 5);
+    const tableRange = findTableRangeById(emptyIdx);
 
-    if (cardRange !== null) {
-      cardRange.copyTo(tableRange);
+    if (cardRange === null) {
+      throw new Error('failed to find render project card range');
     }
-  },
-  remove: (card) => {
-    const cards = tableProjectCard.getRange(11, 1, ProjectCard.getMax(), 1).getValues().map(row => row[0]);
-    const cardIdx = cards.findIndex(c => c === card);
+    cardRange.copyTo(tableRange);
+  };
+  const remove = (card) => {
+    const cardIdx = findCardId(card);
     if (cardIdx < 0) {
       Logger.log(`Cannot find project card ${card} on table`);
       throw new Error(`Cannot find project card ${card} on table`);
     }
     // remove card data on hidden board
-    tableProjectCard.getRange(11 + cardIdx, 1).clearContent();
-    // decreament the project card count
-    tableProjectCard.getRange('B2').setValue(ProjectCard.getCount() - 1);
+    removeCardById(cardIdx);
 
     // render card on table
-    const defaultCardRange = tableProjectCard.getRange('D1:H9');
+    const defaultCardRange = getDefaultCardRange();
     // find table range to paste the default card
-    const row = cardIdx % 2;
-    const col = Math.floor(cardIdx / 2);
-    const tableRange = mainBoard.getRange(2 + 9 * row, 7 + 5 * col, 9, 5);
+    const tableRange = findTableRangeById(cardIdx);
 
     defaultCardRange.copyTo(tableRange);
-  },
-  placeResourceCard: () => { },
-};
+  };
+  const placeResourceCard = () => { };
+
+  return {
+    isPlayable,
+    play,
+    remove,
+    placeResourceCard,
+  };
+})();
 
 const Table = {
   ProjectCard,
