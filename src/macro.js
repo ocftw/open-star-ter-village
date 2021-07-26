@@ -161,6 +161,7 @@ function discardProjectCards(projects) {
  * @property {() => boolean} isPlayable whether table is able to placed a project card
  * @property {(card: Card) => void} play play a project card on table
  * @property {(card: Card) => void} remove remove a project card on table
+ * @property {() => void} reset remove all project cards and reset max slots
  * @property {(projectCard: Card, resourceCard: Card) => void} placeResourceCard place a resource card on the project
  */
 
@@ -191,9 +192,14 @@ const ProjectCard = (() => {
     // decreament the project card count
     setCount(getCount() - 1);
   };
+  const removeAllCards = () => {
+    tableProjectCard.getRange(11, 1, getMax(), 1).clearContent();
+    setCount(0);
+  };
 
   // table render helpers
   const getDefaultCardRange = () => tableProjectCard.getRange('D1:H9');
+  const getDeactiveCardRange = () => tableProjectCard.getRange('J1:N9');
   // find card template range from default deck
   const findCardTemplateRange = (card) => {
     const idx = defaultDeck.getRange('A2:A31').getDisplayValues().map(row => row[0]).findIndex(c => c === card);
@@ -249,12 +255,26 @@ const ProjectCard = (() => {
 
     defaultCardRange.copyTo(tableRange);
   };
+  const reset = () => {
+    // reset rendering
+    [0, 1, 2, 3, 4, 5].map(findTableRangeById).forEach(range => {
+      getDefaultCardRange().copyTo(range);
+    });
+    [6, 7].map(findTableRangeById).forEach(range => {
+      getDeactiveCardRange().copyTo(range);
+    });
+    // reset cards
+    removeAllCards();
+    // reset max
+    setMax(6);
+  };
   const placeResourceCard = () => { };
 
   return {
     isPlayable,
     play,
     remove,
+    reset,
     placeResourceCard,
   };
 })();
@@ -362,23 +382,7 @@ function resetSpreadsheet() {
   mainBoard.getRangeList(['C3:C8', 'D10:D12']).setValue('0');
   mainBoard.getRange('D3:D8').setValue('10');
   //clear project slot and break merged cells
-  mainBoard.getRangeList([
-    'B14:B24',
-    'G2:G3', 'I2:J3', 'G5:J10', 'G11:G12', 'I11:J12', 'G14:J19',
-    'L2:L3', 'N2:O3', 'L5:O10', 'L11:L12', 'N11:O12', 'L14:O19',
-    'Q2:Q3', 'S2:T3', 'Q5:T10', 'Q11:Q12', 'S11:T12', 'Q14:T19',
-    'V2:V3', 'X2:Y3', 'V5:Y10', 'V11:V12', 'X11:Y12', 'V14:Y19',
-  ]).clear({ contentsOnly: true }).breakApart();
-  mainBoard.getRangeList([
-    'F5:F10', 'K5:K10',
-    'P5:P10', 'U5:U10',
-    'F14:F19', 'K14:K19',
-    'P14:P19', 'U14:U19',
-  ]).setValue(false);
-  //change the color of 7th and 8th project slot
-  mainBoard.getRangeList(['U2:Y3', 'U4:Y10', 'U11:Y12', 'U13:Y19'])
-    .setFontColor("grey")
-    .setBorder(true, null, true, true, null, null, "grey", SpreadsheetApp.BorderStyle.DASHED);
+  Table.ProjectCard.reset();
 
   // set UI back to main board
   spreadsheet.setActiveSheet(mainBoard);
