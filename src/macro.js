@@ -408,12 +408,13 @@ function resetSpreadsheet() {
 
   // reset table
   // reset current event
-  mainBoard.getRange('G20').clearContent();
+  mainBoard.getRange('H20').clearContent();
   // reset next event
-  mainBoard.getRange('G21').setValue('不顯示');
+  mainBoard.getRange('H21').setValue('不顯示');
   //reset left column
-  mainBoard.getRangeList(['C3:C8', 'D10:D12']).setValue('0');
-  mainBoard.getRange('D3:D8').setValue('10');
+  mainBoard.getRangeList(['C3:C8', 'E10:E12']).setValue('0');
+  mainBoard.getRange('D3:D8').setValue('3');
+  mainBoard.getRange('E3:E8').setValue('10');
   //clear project slot and break merged cells
   Table.ProjectCard.reset();
 
