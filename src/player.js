@@ -48,13 +48,13 @@ const PlayerHand = {
   },
   addProjectCards: (cards) => {
     // append cards to the current hand
-    const newCards = [PlayerHand.listProjectCards(), ...cards];
+    const newCards = [...PlayerHand.listProjectCards(), ...cards];
 
     const playerId = Player.getId();
     // transform the cards
     const values = newCards.map(card => [card]);
     // save new cards on spreadsheet
-    playerHand.getRange(`${playerId}3`).setValues(values);
+    playerHand.getRange(`${playerId}3:${playerId}${3 + newCards.length - 1}`).setValues(values);
     return newCards;
   },
   removeProjectCards: (cards) => {
@@ -66,7 +66,7 @@ const PlayerHand = {
     const values = newCards.map(card => [card]);
     // clean up the spreadsheet and rewrite cards
     playerHand.getRange(`${playerId}3:${playerId}5`).clearContent();
-    playerHand.getRange(`${playerId}3`).setValues(values);
+    playerHand.getRange(`${playerId}3:${playerId}${3 + newCards.length - 1}`).setValues(values);
     return newCards;
   },
   listResourceCards: () => {
@@ -76,13 +76,13 @@ const PlayerHand = {
   },
   addResoureCards: (cards) => {
     // append cards to the current hand
-    const newCards = [PlayerHand.listResourceCards(), ...cards];
+    const newCards = [...PlayerHand.listResourceCards(), ...cards];
 
     const playerId = Player.getId();
     // transform the cards
     const values = newCards.map(card => [card]);
     // save new cards on spreadsheet
-    playerHand.getRange(`${playerId}7`).setValues(values);
+    playerHand.getRange(`${playerId}7:${playerId}${7 + newCards.length - 1}`).setValues(values);
     return newCards;
   },
   removeResourceCards: (cards) => {
@@ -94,7 +94,7 @@ const PlayerHand = {
     const values = newCards.map(card => [card]);
     // clean up the spreadsheet and rewrite cards
     playerHand.getRange(`${playerId}7:${playerId}14`).clearContent();
-    playerHand.getRange(`${playerId}7`).setValues(values);
+    playerHand.getRange(`${playerId}7:${playerId}${7 + newCards.length - 1}`).setValues(values);
     return newCards;
   },
 };
