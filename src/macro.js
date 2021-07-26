@@ -47,6 +47,10 @@ function gameWillStart() {
   ['A', 'B', 'C', 'D', 'E', 'F'].forEach(id => {
     PlayerHands.dealProjectCardsToPlayerById(ProjectDeck.draw(2), id);
   });
+  // deal resource cards
+  ['A', 'B', 'C', 'D', 'E', 'F'].forEach(id => {
+    PlayerHands.dealResourceCardsToPlayerById(ResourceDeck.draw(5), id);
+  });
 }
 
 function roundWillStart() {
