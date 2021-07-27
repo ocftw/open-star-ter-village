@@ -112,7 +112,9 @@ const CurrentPlayerHand = {
     const values = newCards.map(card => [card]);
     // clean up the spreadsheet and rewrite cards
     playerHand.getRange(`${playerId}3:${playerId}5`).clearContent();
-    playerHand.getRange(`${playerId}3:${playerId}${3 + newCards.length - 1}`).setValues(values);
+    if (newCards.length > 0) {
+      playerHand.getRange(`${playerId}3:${playerId}${3 + newCards.length - 1}`).setValues(values);
+    }
     return newCards;
   },
   listResourceCards: () => {
@@ -140,7 +142,9 @@ const CurrentPlayerHand = {
     const values = newCards.map(card => [card]);
     // clean up the spreadsheet and rewrite cards
     playerHand.getRange(`${playerId}7:${playerId}14`).clearContent();
-    playerHand.getRange(`${playerId}7:${playerId}${7 + newCards.length - 1}`).setValues(values);
+    if (newCards.length > 0) {
+      playerHand.getRange(`${playerId}7:${playerId}${7 + newCards.length - 1}`).setValues(values);
+    }
     return newCards;
   },
 };
