@@ -2,13 +2,23 @@
 
 var spreadsheet = SpreadsheetApp.getActive();
 const playerHand = spreadsheet.getSheetByName('PlayerHand');
+const playerProperty = spreadsheet.getSheetByName('PlayerProperty');
 
 /**
  * @typedef {Object} Player player methods
  * @property {() => string} getId get player id
  * @property {(playerId: string) => void} setId set player id
- * @property {() => string} getNickname get player nickname
- * @property {(nickname) => void} setNickname set player nick name
+ * @property {(playerId: string) => string} getNickname get player nickname
+ * @property {(nickname, playerId: string) => void} setNickname set player nick name
+ * @property {(playerId: string) => number} getScore get player score
+ * @property {(score: number, playerId: string) => void} setScore set player score
+ * @property {(playerId: string) => number} getActionPoint get player action point
+ * @property {(actionPoint: number, playerId: string) => void} setActionPoint set player action point
+ * @property {(playerId: string) => number} getWorkerToken get player remaining worker token
+ * @property {(workerToken: number, playerId: string) => void} setWorkerToken set player remaining worker token
+ * @property {(playerId: string) => number} getClosedProject get closed project number of player
+ * @property {(closedProject: number, playerId: string) => void} setClosedProject set closed project number of player
+ * @property {(playerId: string, defaultNickname: string) => void} reset reset all player properties except playerId
  */
 /** @type {Player} */
 const Player = {
@@ -21,12 +31,41 @@ const Player = {
     const userProperties = PropertiesService.getUserProperties();
     userProperties.setProperty('playerId', playerId);
   },
-  getNickname: () => {
-    return playerHand.getRange(`${Player.getId()}1`).getDisplayValue();
+  //TODO: add playerId param to following methods
+  getNickname: (playerId) => {
+    return playerProperty.getRange(`${playerId}1`).getDisplayValue();
   },
-  setNickname: (nickname) => {
-    playerHand.getRange(`${Player.getId()}1`).setValue(nickname);
+  setNickname: (nickname, playerId) => {
+    playerProperty.getRange(`${playerId}1`).setValue(nickname);
   },
+  getScore: (playerId) => {
+    return playerProperty.getRange(`${playerId}2`).getValue();
+  },
+  setScore: (score, playerId) => {
+    playerProperty.getRange(`${playerId}2`).setValue(score);
+  },
+  getActionPoint: (playerId) => {
+    return playerProperty.getRange(`${playerId}3`).getValue();
+  },
+  setActionPoint: (actionPoint, playerId) => {
+    playerProperty.getRange(`${playerId}3`).setValue(actionPoint);
+  },
+  getWorkerToken: (playerId) => {
+    return playerProperty.getRange(`${playerId}4`).getValue();
+  },
+  setWorkerToken: (workerToken, playerId) => {
+    playerProperty.getRange(`${playerId}4`).setValue(workerToken);
+  },
+  getClosedProject: (playerId) => {
+    return playerProperty.getRange(`${playerId}5`).getValue();
+  },
+  setClosedProject: (closedProject, playerId) => {
+    playerProperty.getRange(`${playerId}5`).setValue(closedProject);
+  },
+  reset: (playerId, defaultNickname) => {
+    playerProperty.getRange(`${playerId}1`).setValue(defaultNickname);
+    playerProperty.getRange(`${playerId}2:${playerId}5`).clearContent();
+  }
 };
 
 /**
