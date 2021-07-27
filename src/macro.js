@@ -312,12 +312,22 @@ const Table = {
   ProjectCard,
 };
 
-/** @type {(project: Card) => void} */
+/**
+ * @type {(project: Card) => Card[]} Return the player project cards after played
+ */
 function playProjectCard(project) {
-  if (Table.ProjectCard.isPlayable()) {
-    Table.ProjectCard.play(project);
+  if (!Table.ProjectCard.isPlayable()) {
+    throw new Error('專案卡欄滿了！');
   }
-  // TODO: label project owner as player
+  // TODO: verify player has valid resource card of the project card
+  // if (Player does not have valid resource card) throw error
+  try {
+    Table.ProjectCard.play(project);
+    return CurrentPlayerHand.removeProjectCards([project]);
+  } catch (err) {
+    Logger.log(`playProjectCard failure. ${err}`);
+    throw new Error('something went wrong. Please try again');
+  }
 }
 
 /** @type {(project: Card) => void} */

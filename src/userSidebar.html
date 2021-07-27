@@ -12,45 +12,67 @@
         .withSuccessHandler(showCards)
         .withFailureHandler(showError)
         .getPlayerCards();
-      $('#play-card').click(playCard);
+      $('#play-project-card').click(playProjectCard);
     });
 
-    function showCards(hand) {
-      let list = $('#project-cards');
+    function showProjectCards(projectCards) {
+      const list = $('#project-cards');
       list.empty();
-      for (var i = 0; i < hand.projectCards.length; i++) {
+      for (var i = 0; i < projectCards.length; i++) {
         const id = `prj-${i}`;
         const dom = `<div>
-            <input type="checkbox" id="${id}" class="card card-project" name="project-cards" value="${hand.projectCards[i]}" />
-            <label for="${id}">${hand.projectCards[i]}</label>
+            <input type="checkbox" id="${id}" class="card card-project" name="project-cards" value="${projectCards[i]}" />
+            <label for="${id}">${projectCards[i]}</label>
           </div>`;
         list.append(dom);
       }
-      list = $('#resource-cards');
+    }
+    function showResourceCards(resourceCards) {
+      const list = $('#resource-cards');
       list.empty();
-      for (var i = 0; i < hand.resourceCards.length; i++) {
+      for (var i = 0; i < resourceCards.length; i++) {
         const id = `res-${i}`;
         const dom = `<div>
-            <input type="checkbox" id="${id}" class="card card-resource" name="resource-cards" value="${hand.projectCards[i]}" />
-            <label for="${id}">${hand.resourceCards[i]}</label>
+            <input type="checkbox" id="${id}" class="card card-resource" name="resource-cards" value="${resourceCards[i]}" />
+            <label for="${id}">${resourceCards[i]}</label>
           </div>`;
         list.append(dom);
       }
+    }
+
+    function showCards(hand) {
+      showProjectCards(hand.projectCards);
+      showResourceCards(hand.resourceCards);
     }
 
     function showError(msg) {
       $('#error').text(msg)
     }
 
-    function playCard() {
+    function playProjectCard() {
+      // disable the button
+      this.disabled = true;
       const selectedProjectCards = $('input[name="project-cards"]:checked').map(function () {
         return $(this).val();
       }).get();
       if (selectedProjectCards.length > 1) {
         showError('select too many cards');
+        this.disabled = false;
         return;
       }
-      google.script.run.withFailureHandler(showError).playProjectCard(selectedProjectCards[0]);
+      google.script.run
+        .withSuccessHandler(
+          function (projectCards, element) {
+            showProjectCards(projectCards);
+            element.disabled = false;
+          })
+        .withFailureHandler(
+          function (error, element) {
+            showError(error);
+            element.disabled = false;
+          })
+        .withUserObject(this)
+        .playProjectCard(selectedProjectCards[0]);
     }
   </script>
 </head>
@@ -65,8 +87,10 @@
       <div id="project-cards" class="form-group">Loading...</div>
       <h2>資源卡</h2>
       <div id="resource-cards" class="form-group">Loading...</div>
-      <button id="play-card" class="action">play card</button>
-      <button id="discard-card">discard card</button>
+      <h3>Actions</h3>
+      <div><button id="play-project-card" class="action">play project card</button></div>
+      <div><button id="play-resouce-card" class="action">play resource card</button></div>
+      <div><button id="discard-card">discard card and end turn</button></div>
     </form>
     <div id="error" class="error"></div>
   </div>
