@@ -11,7 +11,7 @@ const treeBoard = spreadsheet.getSheetByName('開源生態樹');
 function onOpen() {
   var ui = SpreadsheetApp.getUi();
   ui.createMenu('🌟開源星手村🌟')
-    .addItem('開場洗牌', 'initialShuffle')
+    .addItem('準備完成', 'gameWillStart')
     .addItem('翻事件卡', 'drawEventCard')
     .addSeparator()
     .addItem('重設表單', 'resetSpreadsheet')
