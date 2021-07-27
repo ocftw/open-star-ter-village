@@ -91,7 +91,7 @@ function setPlayerAndShowSidebar(playerId, playerNickname) {
       return;
     }
     Player.setId(playerId);
-    Player.setNickname(playerNickname);
+    Player.setNickname(playerNickname, playerId);
     SpreadsheetApp.getActive().toast(`已設定為${playerNickname}`);
   }
   showUserSidebar();
@@ -126,7 +126,7 @@ function setPlayer6() {
 
 //show sidebar according to playerId
 function showUserSidebar() {
-  const playerNickname = Player.getNickname();
+  const playerNickname = Player.getNickname(Player.getId());
   const htmlTemplate = HtmlService.createTemplateFromFile('userSidebar');
   htmlTemplate.player = playerNickname;
   const sidebar = htmlTemplate.evaluate().setTitle(playerNickname);
@@ -161,7 +161,7 @@ function drawProjectCards(n) {
 /** @type {(projects: Card[]) => void} */
 function discardProjectCards(projects) {
   ProjectDeck.discard(projects);
-  SpreadsheetApp.getActive().toast(`玩家${Player.getNickname()}已經丟棄專案卡${JSON.stringify(projects)}`);
+  SpreadsheetApp.getActive().toast(`已經丟棄專案卡${JSON.stringify(projects)}`);
 }
 
 /**
@@ -337,7 +337,7 @@ function drawResourceCards(n) {
 /** @type {(resourceCards: Card[]) => void} */
 function discardResourceCards(resourceCards) {
   ResourceDeck.discard(resourceCards);
-  SpreadsheetApp.getActive().toast(`玩家${Player.getNickname()}已經丟棄資源卡${JSON.stringify(resourceCards)}`);
+  SpreadsheetApp.getActive().toast(`已經丟棄資源卡${JSON.stringify(resourceCards)}`);
 }
 
 /** @type {(resourceCard: Card, projectCard: Card) => void} */
