@@ -400,6 +400,15 @@ function resetSpreadsheet() {
   ResourceDeck.reset();
   EventDeck.reset();
 
+  //clear player properties
+  [['A', '玩家1']
+  ,['B', '玩家2']
+  ,['C', '玩家3']
+  ,['D', '玩家4']
+  ,['E', '玩家5']
+  ,['F', '玩家6']]
+  .forEach(([playerId, defaultNickname]) => {Player.reset(playerId, defaultNickname)});
+
   //clear player hands
   PlayerHands.reset();
 
