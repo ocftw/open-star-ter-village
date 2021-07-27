@@ -5,9 +5,26 @@ const playerHand = spreadsheet.getSheetByName('PlayerHand');
 const playerProperty = spreadsheet.getSheetByName('PlayerProperty');
 
 /**
- * @typedef {Object} Player player methods
+ * @typedef {Object} CurrentPlayer current player method to access user property service
  * @property {() => string} getId get player id
  * @property {(playerId: string) => void} setId set player id
+ */
+
+/** @type {CurrentPlayer} */
+const CurrentPlayer = {
+  getId: () => {
+    const userProperties = PropertiesService.getUserProperties();
+    const playerId = userProperties.getProperty('playerId');
+    return playerId;
+  },
+  setId: (playerId) => {
+    const userProperties = PropertiesService.getUserProperties();
+    userProperties.setProperty('playerId', playerId);
+  },
+};
+
+/**
+ * @typedef {Object} Player player methods
  * @property {(playerId: string) => string} getNickname get player nickname
  * @property {(nickname, playerId: string) => void} setNickname set player nick name
  * @property {(playerId: string) => number} getScore get player score
@@ -22,16 +39,6 @@ const playerProperty = spreadsheet.getSheetByName('PlayerProperty');
  */
 /** @type {Player} */
 const Player = {
-  getId: () => {
-    const userProperties = PropertiesService.getUserProperties();
-    const playerId = userProperties.getProperty('playerId');
-    return playerId;
-  },
-  setId: (playerId) => {
-    const userProperties = PropertiesService.getUserProperties();
-    userProperties.setProperty('playerId', playerId);
-  },
-  //TODO: add playerId param to following methods
   getNickname: (playerId) => {
     return playerProperty.getRange(`${playerId}1`).getDisplayValue();
   },
@@ -69,7 +76,7 @@ const Player = {
 };
 
 /**
- * @typedef {Object} PlayerHand player hand methods
+ * @typedef {Object} CurrentPlayerHand player hand methods
  * @property {() => Card[]} listProjectCards list project cards in the hand
  * @property {(cards: Card[]) => Card[]} removeProjectCards remove project cards and return the rest of project cards
  * @property {(cards: Card[]) => Card[]} addProjectCards add project cards and return all project cards
@@ -78,18 +85,18 @@ const Player = {
  * @property {(cards: Card[]) => Card[]} addResoureCards add resource cards and return all resource cards
  */
 
-/** @type {PlayerHand} */
-const PlayerHand = {
+/** @type {CurrentPlayerHand} */
+const CurrentPlayerHand = {
   listProjectCards: () => {
-    const playerId = Player.getId();
+    const playerId = CurrentPlayer.getId();
     return playerHand.getRange(`${playerId}3:${playerId}5`).getValues()
       .map((row) => row[0]).filter(x => x);
   },
   addProjectCards: (cards) => {
     // append cards to the current hand
-    const newCards = [...PlayerHand.listProjectCards(), ...cards];
+    const newCards = [...CurrentPlayerHand.listProjectCards(), ...cards];
 
-    const playerId = Player.getId();
+    const playerId = CurrentPlayer.getId();
     // transform the cards
     const values = newCards.map(card => [card]);
     // save new cards on spreadsheet
@@ -98,9 +105,9 @@ const PlayerHand = {
   },
   removeProjectCards: (cards) => {
     // remove cards from the current hand
-    const newCards = PlayerHand.listProjectCards().filter(hand => cards.every(card => hand !== card));
+    const newCards = CurrentPlayerHand.listProjectCards().filter(hand => cards.every(card => hand !== card));
 
-    const playerId = Player.getId();
+    const playerId = CurrentPlayer.getId();
     // transform the cards
     const values = newCards.map(card => [card]);
     // clean up the spreadsheet and rewrite cards
@@ -109,15 +116,15 @@ const PlayerHand = {
     return newCards;
   },
   listResourceCards: () => {
-    const playerId = Player.getId();
+    const playerId = CurrentPlayer.getId();
     return playerHand.getRange(`${playerId}7:${playerId}14`).getValues()
       .map((row) => row[0]).filter(x => x);
   },
   addResoureCards: (cards) => {
     // append cards to the current hand
-    const newCards = [...PlayerHand.listResourceCards(), ...cards];
+    const newCards = [...CurrentPlayerHand.listResourceCards(), ...cards];
 
-    const playerId = Player.getId();
+    const playerId = CurrentPlayer.getId();
     // transform the cards
     const values = newCards.map(card => [card]);
     // save new cards on spreadsheet
@@ -126,9 +133,9 @@ const PlayerHand = {
   },
   removeResourceCards: (cards) => {
     // remove cards from the current hand
-    const newCards = PlayerHand.listResourceCards().filter(hand => cards.every(card => hand !== card));
+    const newCards = CurrentPlayerHand.listResourceCards().filter(hand => cards.every(card => hand !== card));
 
-    const playerId = Player.getId();
+    const playerId = CurrentPlayer.getId();
     // transform the cards
     const values = newCards.map(card => [card]);
     // clean up the spreadsheet and rewrite cards

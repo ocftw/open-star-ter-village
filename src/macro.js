@@ -81,7 +81,7 @@ function initialShuffle() {
 
 // set PlayerId and show sidebar
 function setPlayerAndShowSidebar(playerId, playerNickname) {
-  const currentPlayerId = Player.getId();
+  const currentPlayerId = CurrentPlayer.getId();
   if (currentPlayerId !== playerId) {
     //pop up alert for confirmation
     const response = SpreadsheetApp.getUi()
@@ -90,7 +90,7 @@ function setPlayerAndShowSidebar(playerId, playerNickname) {
       SpreadsheetApp.getActive().toast('取消更換玩家');
       return;
     }
-    Player.setId(playerId);
+    CurrentPlayer.setId(playerId);
     Player.setNickname(playerNickname, playerId);
     SpreadsheetApp.getActive().toast(`已設定為${playerNickname}`);
   }
@@ -126,7 +126,7 @@ function setPlayer6() {
 
 //show sidebar according to playerId
 function showUserSidebar() {
-  const playerNickname = Player.getNickname(Player.getId());
+  const playerNickname = Player.getNickname(CurrentPlayer.getId());
   const htmlTemplate = HtmlService.createTemplateFromFile('userSidebar');
   htmlTemplate.player = playerNickname;
   const sidebar = htmlTemplate.evaluate().setTitle(playerNickname);
@@ -142,8 +142,8 @@ function showUserSidebar() {
 // export functions for sidebar
 /** @type {() => Hand} */
 function getPlayerCards() {
-  const projectCards = PlayerHand.listProjectCards();
-  const resourceCards = PlayerHand.listResourceCards();
+  const projectCards = CurrentPlayerHand.listProjectCards();
+  const resourceCards = CurrentPlayerHand.listResourceCards();
   return {
     projectCards,
     resourceCards,
