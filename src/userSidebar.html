@@ -2,11 +2,15 @@
 <html>
 
 <head>
+  <base target="_top">
+  <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
   <script>
     // The code in this function runs when the page is loaded.
-    $(function () {
-      google.script.run.withSuccessHandler(showCards)
+    $(document).ready(function() {
+      google.script.run
+        .withSuccessHandler(showCards)
+        .withFailureHandler(showError)
         .getPlayerCards();
     });
 
@@ -14,26 +18,36 @@
       let list = $('#project-cards');
       list.empty();
       for (var i = 0; i < hand.projectCards.length; i++) {
-        list.append('<div>' + hand.projectCards[i] + '</div>');
+        const dom = `<div><input type="checkbox" id="prj-${i}" class="card card-project" /><label>${hand.projectCards[i]}</label></div>`
+        list.append(dom);
       }
       list = $('#resource-cards');
       list.empty();
       for (var i = 0; i < hand.resourceCards.length; i++) {
-        list.append('<div>' + hand.resourceCards[i] + '</div>');
+        const dom = `<div><input type="checkbox" id="res-${i}" class="card card-resource" /><label>${hand.resourceCards[i]}</label></div>`
+        list.append(dom);
       }
     }
+
+    function showError(msg) {
+      $('#error').text(msg)
+    }
   </script>
-  <base target="_top">
 </head>
 
 <body>
-  <h1>
-    <?= player ?>的手牌
-  </h1>
-  <h2>專案卡</h2>
-  <div id="project-cards">Loading...</div>
-  <h2>資源卡</h2>
-  <div id="resource-cards">Loading...</div>
+  <div class="sidebar">
+    <h1><?= player ?>的手牌</h1>
+    <form>
+      <h2>專案卡</h2>
+      <div id="project-cards" class="form-group">Loading...</div>
+      <h2>資源卡</h2>
+      <div id="resource-cards" class="form-group">Loading...</div>
+      <button id="play-card" class="action">play card</button>
+      <button id="discard-card">discard card</button>
+    </form>
+    <div id="error" class="error"></div>
+  </div>
 </body>
 
 </html>
