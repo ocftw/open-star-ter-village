@@ -7,24 +7,33 @@
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
   <script>
     // The code in this function runs when the page is loaded.
-    $(document).ready(function() {
+    $(document).ready(function () {
       google.script.run
         .withSuccessHandler(showCards)
         .withFailureHandler(showError)
         .getPlayerCards();
+      $('#play-card').click(playCard);
     });
 
     function showCards(hand) {
       let list = $('#project-cards');
       list.empty();
       for (var i = 0; i < hand.projectCards.length; i++) {
-        const dom = `<div><input type="checkbox" id="prj-${i}" class="card card-project" /><label>${hand.projectCards[i]}</label></div>`
+        const id = `prj-${i}`;
+        const dom = `<div>
+            <input type="checkbox" id="${id}" class="card card-project" name="project-cards" value="${hand.projectCards[i]}" />
+            <label for="${id}">${hand.projectCards[i]}</label>
+          </div>`;
         list.append(dom);
       }
       list = $('#resource-cards');
       list.empty();
       for (var i = 0; i < hand.resourceCards.length; i++) {
-        const dom = `<div><input type="checkbox" id="res-${i}" class="card card-resource" /><label>${hand.resourceCards[i]}</label></div>`
+        const id = `res-${i}`;
+        const dom = `<div>
+            <input type="checkbox" id="${id}" class="card card-resource" name="resource-cards" value="${hand.projectCards[i]}" />
+            <label for="${id}">${hand.resourceCards[i]}</label>
+          </div>`;
         list.append(dom);
       }
     }
@@ -32,12 +41,25 @@
     function showError(msg) {
       $('#error').text(msg)
     }
+
+    function playCard() {
+      const selectedProjectCards = $('input[name="project-cards"]:checked').map(function () {
+        return $(this).val();
+      }).get();
+      if (selectedProjectCards.length > 1) {
+        showError('select too many cards');
+        return;
+      }
+      google.script.run.withFailureHandler(showError).playProjectCard(selectedProjectCards[0]);
+    }
   </script>
 </head>
 
 <body>
   <div class="sidebar">
-    <h1><?= player ?>的手牌</h1>
+    <h1>
+      <?= player ?>的手牌
+    </h1>
     <form>
       <h2>專案卡</h2>
       <div id="project-cards" class="form-group">Loading...</div>
