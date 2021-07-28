@@ -52,6 +52,9 @@ function gameWillStart() {
   ['A', 'B', 'C', 'D', 'E', 'F'].forEach(id => {
     PlayerHands.dealResourceCardsToPlayerById(ResourceDeck.draw(5), id);
   });
+
+  // everything set, round start
+  roundWillStart();
 }
 
 function roundWillStart() {
@@ -59,6 +62,9 @@ function roundWillStart() {
   drawEventCard();
   // peek next event card
   peekNextEventCard();
+
+  // everything set, turn start
+  turnWillStart();
 }
 
 function turnWillStart() { }
