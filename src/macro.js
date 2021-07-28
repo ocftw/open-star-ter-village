@@ -18,6 +18,7 @@ function onOpen() {
     .addSeparator()
     .addItem('顯示玩家手牌', 'showUserSidebar')
     .addItem('測試ProjectCard', 'testProjectCards')
+    .addItem('Refill Action Points', 'refillActionPoints')
     .addToUi();
 }
 
@@ -312,10 +313,35 @@ const Table = {
   ProjectCard,
 };
 
+function refillActionPoints() {
+  Player.setActionPoint(3, CurrentPlayer.getId());
+}
+
+const Rule = (() => {
+  const playProjectCard = {
+    actionPoint: 2,
+  };
+  return {
+    playProjectCard,
+  };
+})();
+
+const CurrentPlayerHelper = (() => {
+  const reduceActionPoints = (n = 1) => {
+    Player.setActionPoint(Player.getActionPoint(CurrentPlayer.getId()) - n, CurrentPlayer.getId());
+  };
+  return {
+    reduceActionPoints,
+  }
+})();
+
 /**
  * @type {(project: Card) => Card[]} Return the player project cards after played
  */
 function playProjectCard(project) {
+  if (Player.getActionPoint(CurrentPlayer.getId()) < Rule.playProjectCard.actionPoint) {
+    throw new Error('行動點數不足！');
+  }
   if (!Table.ProjectCard.isPlayable()) {
     throw new Error('專案卡欄滿了！');
   }
@@ -323,9 +349,17 @@ function playProjectCard(project) {
   // if (Player does not have valid resource card) throw error
   try {
     Table.ProjectCard.play(project);
-    return CurrentPlayerHand.removeProjectCards([project]);
+    const newHand = CurrentPlayerHand.removeProjectCards([project]);
+    CurrentPlayerHelper.reduceActionPoints(Rule.playProjectCard.actionPoint);
+    return newHand;
   } catch (err) {
     Logger.log(`playProjectCard failure. ${err}`);
+    // fallback
+    try {
+      Table.ProjectCard.remove(project);
+    } catch (err) {
+      Logger.log(`playPorjectCard fallback failure. ${err}`);
+    }
     throw new Error('something went wrong. Please try again');
   }
 }
