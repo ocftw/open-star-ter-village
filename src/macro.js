@@ -336,11 +336,11 @@ const CurrentPlayerHelper = (() => {
 })();
 
 /**
- * @type {(project: Card) => Card[]} Return the player project cards after played
+ * @type {(project: Card, resource: Card) => Card[]} Return the player project cards after played
  */
-function playProjectCard(project) {
-  if (!project) {
-    throw new Error('請選擇一張專案卡！');
+function playProjectCard(project, resource) {
+  if (!project || !resource) {
+    throw new Error('請選擇一張專案卡與一張源力卡！');
   }
   if (Player.getActionPoint(CurrentPlayer.getId()) < Rule.playProjectCard.actionPoint) {
     throw new Error('行動點數不足！');
