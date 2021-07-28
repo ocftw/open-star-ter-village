@@ -346,7 +346,7 @@ const CurrentPlayerHelper = (() => {
  */
 function playProjectCard(project, resource) {
   if (!project || !resource) {
-    throw new Error('請選擇一張專案卡與一張源力卡！');
+    throw new Error('請選擇一張專案卡與一張人力卡！');
   }
   if (Player.getActionPoint(CurrentPlayer.getId()) < Rule.playProjectCard.actionPoint) {
     throw new Error('行動點數不足！');
