@@ -45,18 +45,23 @@
       showResourceCards(hand.resourceCards);
     }
 
-    function showError(msg) {
-      $('#error').text(msg)
+    function showError(msg, element) {
+      const div = $(`<div id="error" class="error">${msg}</div>`);
+      $(element).after(div);
+    }
+    function removeError() {
+      $('#error').remove();
     }
 
     function playProjectCard() {
+      removeError();
       // disable the button
       this.disabled = true;
       const selectedProjectCards = $('input[name="project-cards"]:checked').map(function () {
         return $(this).val();
       }).get();
-      if (selectedProjectCards.length > 1) {
-        showError('select too many cards');
+      if (selectedProjectCards.length !== 1) {
+        showError('請選擇一張專案卡', this);
         this.disabled = false;
         return;
       }
@@ -68,7 +73,7 @@
           })
         .withFailureHandler(
           function (error, element) {
-            showError(error);
+            showError(error, element);
             element.disabled = false;
           })
         .withUserObject(this)
@@ -92,7 +97,6 @@
       <div><button id="play-resouce-card" class="action">play resource card</button></div>
       <div><button id="discard-card">discard card and end turn</button></div>
     </form>
-    <div id="error" class="error"></div>
   </div>
 </body>
 

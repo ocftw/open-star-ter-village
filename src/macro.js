@@ -339,6 +339,9 @@ const CurrentPlayerHelper = (() => {
  * @type {(project: Card) => Card[]} Return the player project cards after played
  */
 function playProjectCard(project) {
+  if (!project) {
+    throw new Error('請選擇一張專案卡！');
+  }
   if (Player.getActionPoint(CurrentPlayer.getId()) < Rule.playProjectCard.actionPoint) {
     throw new Error('行動點數不足！');
   }
