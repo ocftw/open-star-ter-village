@@ -4,7 +4,7 @@ var spreadsheet = SpreadsheetApp.getActive();
 const defaultDeck = spreadsheet.getSheetByName('各牌庫備考');
 
 /**
- * @typedef {any} Card
+ * @typedef {string} Card
  */
 
 /**
