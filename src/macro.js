@@ -3,7 +3,6 @@
 /** @OnlyCurrentDoc */
 var spreadsheet = SpreadsheetApp.getActive();
 const projectCardsBoard = spreadsheet.getSheetByName('專案卡列表');
-const tableProjectCard = spreadsheet.getSheetByName('TableProjectCard');
 const mainBoard = spreadsheet.getSheetByName('專案圖板/記分板');
 const treeBoard = spreadsheet.getSheetByName('開源生態樹');
 
@@ -172,17 +171,20 @@ function discardProjectCards(projects) {
 }
 
 /**
- * @typedef {Object} ProjectCard
+ * @typedef {Object} TableProjectCardHelpers
  * @property {() => boolean} isPlayable whether table is able to placed a project card
  * @property {(card: Card) => void} play play a project card on table
  * @property {(card: Card) => void} remove remove a project card on table
  * @property {() => void} reset remove all project cards and reset max slots
  * @property {(n: number) => void} activateNSlots activate N project card slots on table
- * @property {(projectCard: Card, resourceCard: Card) => void} placeResourceCard place a resource card on the project
+ * @property {(projectCard: Card, slotIdx: number, playerId: string, initialPoints: number,
+ *  isOwner?: boolean) => void} placeResourceCard place an arbitrary resource card on the project slot by slot index
+ *  with initial contribution points
  */
 
-/** @type {ProjectCard} */
+/** @type {TableProjectCardHelpers} */
 const ProjectCard = (() => {
+  const tableProjectCard = SpreadsheetApp.getActive().getSheetByName('TableProjectCard');
   // table helpers
   const getMax = () => tableProjectCard.getRange('B1').getValue();
   const setMax = (max) => {
@@ -214,14 +216,27 @@ const ProjectCard = (() => {
     setCount(getCount() + 1);
   };
   const removeCardById = (id) => {
-    tableProjectCard.getRange(11 + id, 1).clearContent();
+    // clear name and slots
+    tableProjectCard.getRange(11 + id, 1, 1, 14).clearContent();
     // decreament the project card count
     setCount(getCount() - 1);
   };
   const removeAllCards = () => {
-    tableProjectCard.getRange(11, 1, getMax(), 1).clearContent();
+    // clear name and slots
+    tableProjectCard.getRange(11, 1, getMax(), 14).clearContent();
     setCount(0);
   };
+  const getProjectOnwerById = (id) => tableProjectCard.getRange(11 + id, 2).getValue();
+  const setProjectOnwerById = (ownerId, id) => tableProjectCard.getRange(11 + id, 2).setValue(ownerId);
+  const setPlayerOnSlotById = (playerId, id, slotId) => {
+    if (tableProjectCard.getRange(11 + id, 3 + 2 * slotId).getValue()) {
+      Logger.log(`Slot ${slotId} on card ${id} is occupied`);
+      throw new Error(`Slot ${slotId} on card ${id} is occupied`);
+    }
+    tableProjectCard.getRange(11 + id, 3 + 2 * slotId).setValue(playerId);
+  };
+  const getContributionPointOnSlotById = (id, slotId) => tableProjectCard.getRange(11 + id, 3 + 2 * slotId + 1).getValue();
+  const setContributionPointOnSlotById = (points, id, slotId) => tableProjectCard.getRange(11 + id, 3 + 2 * slotId + 1).setValue(points);
 
   // table render helpers
   const getDefaultCardRange = () => tableProjectCard.getRange('D1:H9');
@@ -242,6 +257,15 @@ const ProjectCard = (() => {
     const row = id % 2;
     const col = Math.floor(id / 2);
     return mainBoard.getRange(2 + 9 * row, 7 + 5 * col, 9, 5);
+  };
+  const setPlayerOnTableSlotById = (playerId, id, slotId, isOwner = false) => {
+    const range = findTableRangeById(id);
+    range.offset(3 + slotId, 1, 1, 1).setValue(playerId);
+    range.offset(3 + slotId, 0, 1, 1).setValue(isOwner);
+  };
+  const setContributionPointOnTableSlotById = (points, id, slotId) => {
+    const range = findTableRangeById(id);
+    range.offset(3 + slotId, 4, 1, 1).setValue(points);
   };
 
   const isPlayable = () => getMax() > getCount();
@@ -302,7 +326,24 @@ const ProjectCard = (() => {
     // update maximum
     setMax(n);
   };
-  const placeResourceCard = () => { };
+  const placeResourceCard = (project, slotId, playerId, initialPoints, isOwner = false) => {
+    const cardId = findCardId(project);
+    // set player on slot
+    setPlayerOnSlotById(playerId, cardId, slotId);
+    // set initial contribution point
+    setContributionPointOnSlotById(initialPoints, cardId, slotId);
+    if (isOwner) {
+      setProjectOnwerById(playerId, cardId);
+    }
+    Logger.log(`player ${playerId} occupy slot ${slotId} on project ${project} on data table`);
+
+    // render on table
+    // set player on slot
+    setPlayerOnTableSlotById(playerId, cardId, slotId, isOwner);
+    // set initial contribution point
+    setContributionPointOnTableSlotById(initialPoints, cardId, slotId);
+    Logger.log(`render the player ${playerId} takes slot ${slotId} on project ${project} on table`);
+  };
 
   return {
     isPlayable,
@@ -358,6 +399,7 @@ function playProjectCard(project, resource) {
   try {
     Table.ProjectCard.play(project);
     const newHand = CurrentPlayerHand.removeProjectCards([project]);
+    Table.ProjectCard.placeResourceCard(project, 0, CurrentPlayer.getId(), 1, true);
     CurrentPlayerHelper.reduceActionPoints(Rule.playProjectCard.actionPoint);
     return newHand;
   } catch (err) {
@@ -400,15 +442,13 @@ function playResourceCard(resourceCard, project) {
 }
 
 function testProjectCards() {
-  Table.ProjectCard.activateNSlots(4);
-  playProjectCard('OCF Lab');
-  playProjectCard('Firebox');
+  playProjectCard('OCF Lab', '工程師');
+  playProjectCard('Firebox', '工程師');
   removeProjectCard('OCF Lab');
-  playProjectCard('資料申請小精靈');
-  playProjectCard('全民追公車');
+  playProjectCard('資料申請小精靈', '工程師');
+  playProjectCard('全民追公車', '工程師');
   removeProjectCard('Firebox');
   removeProjectCard('資料申請小精靈');
-  Table.ProjectCard.activateNSlots(8);
   removeProjectCard('全民追公車');
 }
 
@@ -453,13 +493,12 @@ function resetSpreadsheet() {
   EventDeck.reset();
 
   //clear player properties
-  [['A', '玩家1']
-  ,['B', '玩家2']
-  ,['C', '玩家3']
-  ,['D', '玩家4']
-  ,['E', '玩家5']
-  ,['F', '玩家6']]
-  .forEach(([playerId, defaultNickname]) => {Player.reset(playerId, defaultNickname)});
+  [
+    ['A', '玩家1'], ['B', '玩家2'], ['C', '玩家3'],
+    ['D', '玩家4'], ['E', '玩家5'], ['F', '玩家6'],
+  ].forEach(([playerId, defaultNickname]) => {
+    Player.reset(playerId, defaultNickname);
+  });
 
   //clear player hands
   PlayerHands.reset();
