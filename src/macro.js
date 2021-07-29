@@ -192,11 +192,21 @@ const ProjectCard = (() => {
   const setCount = (count) => tableProjectCard.getRange('B2').setValue(count);
   const findEmptyId = () => {
     const cards = tableProjectCard.getRange(11, 1, getMax(), 1).getValues().map(row => row[0]);
-    return cards.findIndex(c => !c);
+    const idx = cards.findIndex(c => !c);
+    if (idx < 0) {
+      Logger.log('Cannot find project card slot on table');
+      throw new Error('Cannot find project card slot on table');
+    }
+    return idx;
   };
   const findCardId = (card) => {
     const cards = tableProjectCard.getRange(11, 1, getMax(), 1).getValues().map(row => row[0]);
-    return cards.findIndex(c => c === card);
+    const idx = cards.findIndex(c => c === card);
+    if (idx < 0) {
+      Logger.log(`Cannot find project card ${card} on table`);
+      throw new Error(`Cannot find project card ${card} on table`);
+    }
+    return idx;
   };
   const addCardById = (card, id) => {
     tableProjectCard.getRange(11 + id, 1).setValue(card);
@@ -219,13 +229,13 @@ const ProjectCard = (() => {
   // find card template range from default deck
   const findCardTemplateRange = (card) => {
     const idx = defaultDeck.getRange('A2:A31').getDisplayValues().map(row => row[0]).findIndex(c => c === card);
-    if (idx > -1) {
-      const row = idx % 10;
-      const column = Math.floor(idx / 10);
-      return projectCardsBoard.getRange(9 * row + 1, 5 * column + 1, 9, 5);
+    if (idx < 0) {
+      Logger.log('failed to find project card range' + card);
+      throw new Error('failed to find render project card range');
     }
-    Logger.log('failed to find project card range' + card);
-    return null;
+    const row = idx % 10;
+    const column = Math.floor(idx / 10);
+    return projectCardsBoard.getRange(9 * row + 1, 5 * column + 1, 9, 5);
   };
   // find card range on table
   const findTableRangeById = (id) => {
@@ -237,10 +247,6 @@ const ProjectCard = (() => {
   const isPlayable = () => getMax() > getCount();
   const play = (card) => {
     const emptyIdx = findEmptyId();
-    if (emptyIdx < 0) {
-      Logger.log('Cannot find project card slot on table');
-      throw new Error('Cannot find project card slot on table');
-    }
     // set card data on hidden board
     addCardById(card, emptyIdx);
 
@@ -250,17 +256,10 @@ const ProjectCard = (() => {
     // find table range to paste the card
     const tableRange = findTableRangeById(emptyIdx);
 
-    if (cardRange === null) {
-      throw new Error('failed to find render project card range');
-    }
     cardRange.copyTo(tableRange);
   };
   const remove = (card) => {
     const cardIdx = findCardId(card);
-    if (cardIdx < 0) {
-      Logger.log(`Cannot find project card ${card} on table`);
-      throw new Error(`Cannot find project card ${card} on table`);
-    }
     // remove card data on hidden board
     removeCardById(cardIdx);
 
