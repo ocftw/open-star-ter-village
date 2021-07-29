@@ -472,7 +472,7 @@ function drawEventCard() {
 // peek next event card
 function peekNextEventCard() {
   // open source tree is level 1
-  if (mainBoard.getRange('D11').getValue() > 0) {
+  if (mainBoard.getRange('E11').getValue() > 0) {
     mainBoard.getRange('H21').setValue(spreadsheet.getSheetByName('EventDeck').getRange('A1').getDisplayValue());
   }
 }
