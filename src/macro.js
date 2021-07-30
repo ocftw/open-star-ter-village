@@ -199,6 +199,8 @@ function discardProjectCards(projects) {
 /**
  * @typedef {Object} ProjectCardReference
  * @property {(card: Card) => ProjectCardSpecObject} getSpecByCard
+ * @property {(resourceCard: Card, projectCard: Card, slotIdx: number) => boolean} checkSlotEligibility
+ *  check the slot is eligible for the resource card
  */
 /** @type {ProjectCardReference} */
 const ProjectCardRef = (() => {
@@ -236,9 +238,25 @@ const ProjectCardRef = (() => {
       groups,
     };
   };
+  const checkSlotEligibility = (resource, project, slotId) => {
+    const spec = ProjectCardRef.getSpecByCard(project);
+    let s = slotId;
+    const result = spec.groups.find((group) => {
+      if (s < 0) {
+        return false;
+      }
+      const found = s < group.slots && group.title === resource;
+      s -= group.slots;
+      return found;
+    });
+
+    Logger.log(`check project ${project} slot ${slotId} eligibility for resource ${resource}`);
+    return !!result;
+  };
 
   return {
     getSpecByCard: withCache(getSpecByCard),
+    checkSlotEligibility,
   };
 })();
 
@@ -508,6 +526,9 @@ function playProjectCard(project, resource) {
   }
   // TODO: verify player has valid resource card of the project card
   // if (Player does not have valid resource card) throw error
+  if (!ProjectCardRef.checkSlotEligibility(resource, project, 0)) {
+    throw new Error('源力卡不符合需求！');
+  }
   try {
     Table.ProjectCard.play(project);
     const newHand = CurrentPlayerHand.removeProjectCards([project]);
