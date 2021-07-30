@@ -178,14 +178,18 @@ function discardProjectCards(projects) {
  * @property {() => void} reset remove all project cards and reset max slots
  * @property {(n: number) => void} activateNSlots activate N project card slots on table
  * @property {(projectCard: Card, slotIdx: number, playerId: string, initialPoints: number,
- *  isOwner?: boolean) => void} placeResourceCard place an arbitrary resource card on the project slot by slot index
+ *  isOwner?: boolean) => void} placeSlotById place an arbitrary resource card on the project slot by slot index
  *  with initial contribution points
  */
 
 /**
+ * The method collection to play card, remove card, update score, ... etc. from/on the table.
+ * Each property represent a disjoint functionality includes data store and main board rendering update
  * @typedef {object} Table
- * @property {TableProjectCardHelpers} ProjectCard project card methods to operate table data sheet and table render sheet(main board)
+ * @property {TableProjectCardHelpers} ProjectCard project card methods includes play, isPlayable, place
  */
+
+/** @type {Table} */
 const Table = (() => {
   /** @type {TableProjectCardHelpers} */
   const ProjectCard = (() => {
@@ -331,7 +335,7 @@ const Table = (() => {
       // update maximum
       setMax(n);
     };
-    const placeResourceCard = (project, slotId, playerId, initialPoints, isOwner = false) => {
+    const placeSlotById = (project, slotId, playerId, initialPoints, isOwner = false) => {
       const cardId = findCardId(project);
       // set player on slot
       setPlayerOnSlotById(playerId, cardId, slotId);
@@ -356,13 +360,13 @@ const Table = (() => {
       remove,
       reset,
       activateNSlots,
-      placeResourceCard,
+      placeSlotById,
     };
   })();
 
   return {
     ProjectCard,
-  }
+  };
 })();
 
 function refillActionPoints() {
@@ -405,7 +409,7 @@ function playProjectCard(project, resource) {
   try {
     Table.ProjectCard.play(project);
     const newHand = CurrentPlayerHand.removeProjectCards([project]);
-    Table.ProjectCard.placeResourceCard(project, 0, CurrentPlayer.getId(), 1, true);
+    Table.ProjectCard.placeSlotById(project, 0, CurrentPlayer.getId(), 1, true);
     CurrentPlayerHelper.reduceActionPoints(Rule.playProjectCard.actionPoint);
     return newHand;
   } catch (err) {
