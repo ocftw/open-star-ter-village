@@ -225,27 +225,39 @@ const Table = (() => {
       setCount(getCount() + 1);
     };
     const removeCardById = (id) => {
-      // clear name and slots
-      tableProjectCard.getRange(11 + id, 1, 1, 14).clearContent();
+      // clear name, type, owner, and exts. 4 is the ext buffers
+      tableProjectCard.getRange(11 + id, 1, 1, 3 + 4).clearContent();
+      // clear slots info
+      tableProjectCard.getRange(21 + 10 * id, 1, 6, 4).clearContent();
+      // clear groups info
+      tableProjectCard.getRange(21 + 10 * id, 5, 6, 3).clearContent();
       // decreament the project card count
       setCount(getCount() - 1);
     };
     const removeAllCards = () => {
-      // clear name and slots
-      tableProjectCard.getRange(11, 1, getMax(), 14).clearContent();
+      // clear name, type, owner, and exts. 4 is the ext buffers
+      tableProjectCard.getRange(11, 1, getMax(), 3 + 4).clearContent();
+      [...new Array(getMax() - 0)].map((_, i) => i + 0).forEach((id) => {
+        // clear slots info
+        tableProjectCard.getRange(21 + 10 * id, 1, 6, 4).clearContent();
+        // clear groups info
+        tableProjectCard.getRange(21 + 10 * id, 5, 6, 3).clearContent();
+      });
       setCount(0);
     };
-    const getProjectOnwerById = (id) => tableProjectCard.getRange(11 + id, 2).getValue();
-    const setProjectOnwerById = (ownerId, id) => tableProjectCard.getRange(11 + id, 2).setValue(ownerId);
+    const getProjectTypeById = (id) => tableProjectCard.getRange(11 + id, 2).getValue();
+    const setProjectTypeById = (type, id) => tableProjectCard.getRange(11 + id, 2).setValue(type);
+    const getProjectOnwerById = (id) => tableProjectCard.getRange(11 + id, 3).getValue();
+    const setProjectOnwerById = (ownerId, id) => tableProjectCard.getRange(11 + id, 3).setValue(ownerId);
     const setPlayerOnSlotById = (playerId, id, slotId) => {
-      if (tableProjectCard.getRange(11 + id, 3 + 2 * slotId).getValue()) {
+      if (tableProjectCard.getRange(21 + 10 * id + slotId, 2).getValue()) {
         Logger.log(`Slot ${slotId} on card ${id} is occupied`);
         throw new Error(`Slot ${slotId} on card ${id} is occupied`);
       }
-      tableProjectCard.getRange(11 + id, 3 + 2 * slotId).setValue(playerId);
+      tableProjectCard.getRange(21 + 10 * id + slotId, 2).setValue(playerId);
     };
-    const getContributionPointOnSlotById = (id, slotId) => tableProjectCard.getRange(11 + id, 3 + 2 * slotId + 1).getValue();
-    const setContributionPointOnSlotById = (points, id, slotId) => tableProjectCard.getRange(11 + id, 3 + 2 * slotId + 1).setValue(points);
+    const getContributionPointOnSlotById = (id, slotId) => tableProjectCard.getRange(21 + 10 * id + slotId, 3).getValue();
+    const setContributionPointOnSlotById = (points, id, slotId) => tableProjectCard.getRange(21 + 10 * id + slotId, 3).setValue(points);
 
     // table render helpers
     const getDefaultCardRange = () => tableProjectCard.getRange('D1:H9');
@@ -341,6 +353,7 @@ const Table = (() => {
       setPlayerOnSlotById(playerId, cardId, slotId);
       // set initial contribution point
       setContributionPointOnSlotById(initialPoints, cardId, slotId);
+      // TODO: add contribution point to group
       if (isOwner) {
         setProjectOnwerById(playerId, cardId);
       }
