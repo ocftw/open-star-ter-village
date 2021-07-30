@@ -169,6 +169,60 @@ function discardProjectCards(projects) {
   ProjectDeck.discard(projects);
   SpreadsheetApp.getActive().toast(`已經丟棄專案卡${JSON.stringify(projects)}`);
 }
+/**
+ * @typedef {Object} ProjectCardSpecObject
+ * @property {string} name
+ * @property {string} type
+ * @property {string} ownerScore
+ * @property {string} contributorScore
+ * @property {{ title: string, slots: number, goalContributionPoints: number }[]} groups
+ */
+
+/**
+ * @typedef {Object} ProjectCardReference
+ * @property {(card: Card) => ProjectCardSpecObject} getSpecByCard
+ */
+/** @type {ProjectCardReference} */
+const ProjectCardRef = (() => {
+  // project spec helper
+  const ProjectCardSpecs = SpreadsheetApp.getActive().getSheetByName('ProjectCardSpecs');
+
+  const getSpecByCard = (card) => {
+    const [headers, ...data] = ProjectCardSpecs.getDataRange().getValues();
+    const name = headers.findIndex(header => header === 'name');
+    const result = data.find(row => row[name] === card);
+
+    const type = headers.findIndex(header => header === 'type');
+    const ownerScore = headers.findIndex(header => header === 'ownerScore');
+    const contributorScore = headers.findIndex(header => header === 'contributorScore');
+    const groups = [0, 1, 2, 3, 4, 5].reduce((arr, i) => {
+      const titleIdx = headers.findIndex(header => header === `resource[${i}].title`);
+      const slotsIdx = headers.findIndex(header => header === `resource[${i}].slots`);
+      const goalContributionPointsIdx = headers.findIndex(header => header === `resource[${i}].goalContributionPoints`);
+      const title = result[titleIdx];
+      const slots = result[slotsIdx];
+      const goalContributionPoints = result[goalContributionPointsIdx];
+      if (title && slots && goalContributionPoints) {
+        return [...arr, { title, slots, goalContributionPoints }];
+      }
+      return arr;
+    }, []);
+
+    Logger.log(`get project card ${card} spec ${JSON.stringify(result)}`);
+
+    return {
+      name: result[name],
+      type: result[type],
+      ownerScore: result[ownerScore],
+      contributorScore: result[contributorScore],
+      groups,
+    };
+  };
+
+  return {
+    getSpecByCard,
+  };
+})();
 
 /**
  * @typedef {Object} TableProjectCardHelpers
@@ -219,8 +273,26 @@ const Table = (() => {
       }
       return idx;
     };
-    const addCardById = (card, id) => {
-      tableProjectCard.getRange(11 + id, 1).setValue(card);
+    /** @type {(spec: ProjectCardSpecObject, id: number) => void} */
+    const addCardSpecById = (spec, id) => {
+      Logger.log(`add card spec by id ${id}`);
+      // set basis info
+      const basicInfoRow = [spec.name, spec.type];
+      tableProjectCard.getRange(11 + id, 1, 1, 2).setValues([basicInfoRow]);
+
+      // set slots info
+      const slotInfoRows = spec.groups.map((group, idx) => {
+        const row = [group.title, /* palyerId */, /* points */, idx];
+        return [...new Array(group.slots)].map(_ => row);
+      }).reduce((rows, slotRows) => [...rows, ...slotRows], []);
+      tableProjectCard.getRange(21 + 10 * id, 1, 6, 4).setValues(slotInfoRows);
+
+      // set groups info
+      const groupInfoRows = spec.groups.map((group) => {
+        const row = [group.title, /* current */, group.goalContributionPoints];
+        return row;
+      });
+      tableProjectCard.getRange(21 + 10 * id, 5, spec.groups.length, 3).setValues(groupInfoRows);
       // increament the project card count
       setCount(getCount() + 1);
     };
@@ -291,16 +363,15 @@ const Table = (() => {
 
     const isPlayable = () => getMax() > getCount();
     const play = (card) => {
+      const cardSpec = ProjectCardRef.getSpecByCard(card);
       const emptyIdx = findEmptyId();
       // set card data on hidden board
-      addCardById(card, emptyIdx);
+      addCardSpecById(cardSpec, emptyIdx);
 
       // render card on table
       const cardRange = findCardTemplateRange(card);
-
       // find table range to paste the card
       const tableRange = findTableRangeById(emptyIdx);
-
       cardRange.copyTo(tableRange);
     };
     const remove = (card) => {
@@ -465,6 +536,7 @@ function playResourceCard(resourceCard, project) {
 }
 
 function testProjectCards() {
+  Player.setActionPoint(100, CurrentPlayer.getId());
   playProjectCard('OCF Lab', '工程師');
   playProjectCard('Firebox', '工程師');
   removeProjectCard('OCF Lab');
