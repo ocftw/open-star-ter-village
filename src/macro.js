@@ -51,6 +51,11 @@ function gameWillStart() {
   ['A', 'B', 'C', 'D', 'E', 'F'].forEach(id => {
     PlayerHands.dealResourceCardsToPlayerById(ResourceDeck.draw(5), id);
   });
+  // refill default action points
+  ['A', 'B', 'C', 'D', 'E', 'F'].forEach(id => {
+    // TODO: replace 3 with rule.actionPoint.default
+    Player.setActionPoint(3, id);
+  });
 
   // everything set, round start
   roundWillStart();
