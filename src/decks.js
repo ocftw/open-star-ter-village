@@ -38,7 +38,7 @@ const ProjectDeck = (function () {
     const numOfDiscards = discardPile.getLastRow();
     // update discard deck
     const values = cards.map(card => [card]);
-    discardPile.getRange(`A${numOfDiscards + 1}`).setValues(values);
+    discardPile.getRange(numOfDiscards + 1, 1, cards.length, 1).setValues(values);
   };
   const shuffle = () => {
     pile.getDataRange().randomize();
@@ -84,7 +84,7 @@ const ResourceDeck = (function () {
     const numOfDiscards = discardPile.getLastRow();
     // update discard deck
     const values = cards.map(card => [card]);
-    discardPile.getRange(`A${numOfDiscards + 1}`).setValues(values);
+    discardPile.getRange(numOfDiscards + 1, 1, cards.length, 1).setValues(values);
   };
   const shuffle = () => {
     pile.getDataRange().randomize();
@@ -123,7 +123,7 @@ const EventDeck = (function () {
     const numOfDiscards = discardPile.getLastRow();
     // update discard deck
     const values = cards.map(card => [card]);
-    discardPile.getRange(`A${numOfDiscards + 1}`).setValues(values);
+    discardPile.getRange(numOfDiscards + 1, 1, cards.length, 1).setValues(values);
   };
 
   const shuffle = () => {
