@@ -1,8 +1,5 @@
 // @ts-check
 
-var spreadsheet = SpreadsheetApp.getActive();
-const defaultDeck = spreadsheet.getSheetByName('各牌庫備考');
-
 /**
  * @typedef {string} Card
  */
@@ -17,7 +14,7 @@ const defaultDeck = spreadsheet.getSheetByName('各牌庫備考');
 
 /** @type {Deck} */
 const ProjectDeck = (function () {
-  const pile = spreadsheet.getSheetByName('ProjectDeck');
+  const pile = SpreadsheetApp.getActive().getSheetByName('ProjectDeck');
   const draw = (n = 1) => {
     // get number of remaining card
     const remainCardNum = pile.getDataRange().getNumRows();
@@ -33,7 +30,7 @@ const ProjectDeck = (function () {
     pile.deleteRows(1, n);
     return cards;
   };
-  const discardPile = spreadsheet.getSheetByName('ProjectDiscardDeck');
+  const discardPile = SpreadsheetApp.getActive().getSheetByName('ProjectDiscardDeck');
   const discard = (cards) => {
     const numOfDiscards = discardPile.getLastRow();
     // update discard deck
@@ -43,6 +40,7 @@ const ProjectDeck = (function () {
   const shuffle = () => {
     pile.getDataRange().randomize();
   };
+  const defaultDeck = SpreadsheetApp.getActive().getSheetByName('各牌庫備考');
   const reset = () => {
     // clear discard pile
     discardPile.clearContents();
@@ -62,7 +60,7 @@ const ProjectDeck = (function () {
 
 /** @type {Deck} */
 const ResourceDeck = (function () {
-  const pile = spreadsheet.getSheetByName('ResourceDeck');
+  const pile = SpreadsheetApp.getActive().getSheetByName('ResourceDeck');
   const draw = (n = 1) => {
     // get number of remaining card
     const remainCardNum = pile.getDataRange().getNumRows();
@@ -79,7 +77,7 @@ const ResourceDeck = (function () {
     return cards;
   };
 
-  const discardPile = spreadsheet.getSheetByName('ResourceDiscardDeck');
+  const discardPile = SpreadsheetApp.getActive().getSheetByName('ResourceDiscardDeck');
   const discard = (cards) => {
     const numOfDiscards = discardPile.getLastRow();
     // update discard deck
@@ -89,6 +87,7 @@ const ResourceDeck = (function () {
   const shuffle = () => {
     pile.getDataRange().randomize();
   };
+  const defaultDeck = SpreadsheetApp.getActive().getSheetByName('各牌庫備考');
   const reset = () => {
     // clear discard pile
     discardPile.clearContents();
@@ -108,7 +107,7 @@ const ResourceDeck = (function () {
 
 /** @type {Deck} */
 const EventDeck = (function () {
-  const pile = spreadsheet.getSheetByName('EventDeck');
+  const pile = SpreadsheetApp.getActive().getSheetByName('EventDeck');
   const draw = (n = 1) => {
     // get cards
     const cards = pile.getRange(`A1:A${n}`).getDisplayValues()
@@ -118,7 +117,7 @@ const EventDeck = (function () {
     return cards;
   };
 
-  const discardPile = spreadsheet.getSheetByName('EventDiscardDeck');
+  const discardPile = SpreadsheetApp.getActive().getSheetByName('EventDiscardDeck');
   const discard = (cards) => {
     const numOfDiscards = discardPile.getLastRow();
     // update discard deck
@@ -129,6 +128,7 @@ const EventDeck = (function () {
   const shuffle = () => {
     pile.getDataRange().randomize();
   };
+  const defaultDeck = SpreadsheetApp.getActive().getSheetByName('各牌庫備考');
   const reset = () => {
     // clear discard pile
     discardPile.clearContents();
