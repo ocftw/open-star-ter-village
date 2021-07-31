@@ -11,12 +11,9 @@ function onOpen() {
   var ui = SpreadsheetApp.getUi();
   ui.createMenu('🌟開源星手村🌟')
     .addItem('準備完成', 'gameWillStart')
-    .addItem('翻事件卡', 'drawEventCard')
     .addSeparator()
     .addItem('重設表單', 'resetSpreadsheet')
     .addSeparator()
-    .addItem('顯示玩家手牌', 'showUserSidebar')
-    .addItem('測試ProjectCard', 'testProjectCards')
     .addItem('Refill Action Points', 'refillActionPoints')
     .addToUi();
 }
@@ -110,26 +107,27 @@ function setPlayerAndShowSidebar(playerId, playerNickname) {
 
 
 //bound setPlayerAndShowSidebar function to button
+/** @exportedFunction */
 function setPlayer1() {
   setPlayerAndShowSidebar('A', '玩家1');
 }
-
+/** @exportedFunction */
 function setPlayer2() {
   setPlayerAndShowSidebar('B', '玩家2');
 }
-
+/** @exportedFunction */
 function setPlayer3() {
   setPlayerAndShowSidebar('C', '玩家3');
 }
-
+/** @exportedFunction */
 function setPlayer4() {
   setPlayerAndShowSidebar('D', '玩家4');
 }
-
+/** @exportedFunction */
 function setPlayer5() {
   setPlayerAndShowSidebar('E', '玩家5');
 }
-
+/** @exportedFunction */
 function setPlayer6() {
   setPlayerAndShowSidebar('F', '玩家6');
 }
@@ -150,8 +148,12 @@ function showUserSidebar() {
  * @property {Card[]} resourceCards resource cards
  */
 
-// export functions for sidebar
-/** @type {() => Hand} */
+/**
+ * @exportedFunction
+ * User can get his/her hand.
+ *
+ * @type {() => Hand}
+ */
 function getPlayerCards() {
   const projectCards = CurrentPlayerHand.listProjectCards();
   const resourceCards = CurrentPlayerHand.listResourceCards();
@@ -197,6 +199,9 @@ const CurrentPlayerHelper = (() => {
 })();
 
 /**
+ * @exportedFunction
+ * User can play one project card with one resource card on the table.
+ *
  * @type {(project: Card, resource: Card) => Hand} Return the player project cards after played
  */
 function playProjectCard(project, resource) {
@@ -263,18 +268,7 @@ function playResourceCard(resourceCard, project) {
   // TODO: label resource card owner as player
 }
 
-function testProjectCards() {
-  Player.setActionPoint(100, CurrentPlayer.getId());
-  playProjectCard('OCF Lab', '工程師');
-  playProjectCard('Firebox', '工程師');
-  removeProjectCard('OCF Lab');
-  playProjectCard('資料申請小精靈', '工程師');
-  playProjectCard('全民追公車', '工程師');
-  removeProjectCard('Firebox');
-  removeProjectCard('資料申請小精靈');
-  removeProjectCard('全民追公車');
-}
-
+// TODO: rewrite with the table methods
 //draw a new event card
 function drawEventCard() {
   // get current event card from table
@@ -300,7 +294,12 @@ function peekNextEventCard() {
   }
 }
 
-//reset whole spreadsheet
+/**
+ * @exportedFunction
+ * Host can reset whole spreadsheet from the custom menu
+ *
+ * @returns
+ */
 function resetSpreadsheet() {
   //pop up alert for confirmation
   const response = SpreadsheetApp.getUi()
