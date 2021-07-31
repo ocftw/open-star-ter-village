@@ -163,19 +163,6 @@ function getPlayerCards() {
   };
 };
 
-/** @type {(n?: number) => void} */
-function drawProjectCards(n) {
-  // draw cards from deck
-  const projectCards = ProjectDeck.draw(n);
-  // TODO: distribute cards to player hand
-  // playerBoard(player).insertProjectCard(projectCards);
-}
-
-/** @type {(projects: Card[]) => void} */
-function discardProjectCards(projects) {
-  ProjectDeck.discard(projects);
-  SpreadsheetApp.getActive().toast(`已經丟棄專案卡${JSON.stringify(projects)}`);
-}
 function refillActionPoints() {
   Player.setActionPoint(3, CurrentPlayer.getId());
 }
@@ -184,8 +171,13 @@ const Rule = (() => {
   const playProjectCard = {
     actionPoint: 2,
   };
+  const playerHand = {
+    projectCard: { max: 2 },
+    resourceCard: { max: 5 },
+  };
   return {
     playProjectCard,
+    playerHand,
   };
 })();
 
@@ -247,20 +239,6 @@ function removeProjectCard(project) {
   Table.ProjectCard.remove(project);
 }
 
-/** @type {(n?: number) => void} */
-function drawResourceCards(n) {
-  // draw cards from deck
-  const resourceCards = ResourceDeck.draw(n);
-  // TODO: distriubte cards to player hand
-  // playerBoard(player).insertResourceCard(resourceCards);
-}
-
-/** @type {(resourceCards: Card[]) => void} */
-function discardResourceCards(resourceCards) {
-  ResourceDeck.discard(resourceCards);
-  SpreadsheetApp.getActive().toast(`已經丟棄資源卡${JSON.stringify(resourceCards)}`);
-}
-
 /** @type {(resourceCard: Card, projectCard: Card) => void} */
 function playResourceCard(resourceCard, project) {
   // TODO: find project from table
@@ -291,6 +269,47 @@ function peekNextEventCard() {
   // open source tree is level 1
   if (mainBoard.getRange('E11').getValue() > 0) {
     mainBoard.getRange('H21').setValue(spreadsheet.getSheetByName('EventDeck').getRange('A1').getDisplayValue());
+  }
+}
+
+/**
+ * @exportedFunction
+ * User can discard cards and end the turn
+ *
+ * @type {(projects: Card[], resources: Card[]) => Hand}
+ *  return the hand after discarded the cards
+ */
+function discardCardsAndEndTurn(projects, resources) {
+  try {
+    // remove cards from hand to discard pile
+    const restProjects = CurrentPlayerHand.removeProjectCards(projects);
+    ProjectDeck.discard(projects);
+    SpreadsheetApp.getActive().toast(`已經丟棄專案卡${JSON.stringify(projects)}`);
+    const restResources = CurrentPlayerHand.removeResourceCards(resources);
+    ResourceDeck.discard(resources);
+    SpreadsheetApp.getActive().toast(`已經丟棄資源卡${JSON.stringify(resources)}`);
+
+    // refill cards from deck pile
+    let projectCards = restProjects;
+    if (restProjects.length < Rule.playerHand.projectCard.max) {
+      projectCards = CurrentPlayerHand.addProjectCards(
+        ProjectDeck.draw(Rule.playerHand.projectCard.max - restProjects.length));
+    }
+    let resourceCards = restResources;
+    if (restResources.length < Rule.playerHand.resourceCard.max) {
+      resourceCards = CurrentPlayerHand.addResoureCards(
+        ResourceDeck.draw(Rule.playerHand.resourceCard.max - restResources.length));
+    }
+    // TODO: move to next player
+
+    return {
+      projectCards,
+      resourceCards,
+    };
+  } catch (err) {
+    Logger.log(`discardCardsAndEndTurn failure. ${err}`);
+    // TODO: fallback
+    throw new Error('something went wrong. Please try again');
   }
 }
 
