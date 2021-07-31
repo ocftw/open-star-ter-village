@@ -107,6 +107,7 @@ const Table = (() => {
     const getDefaultCardRange = () => tableProjectCard.getRange('D1:H9');
     const getDeactiveCardRange = () => tableProjectCard.getRange('J1:N9');
     // find card template range from default deck
+    const defaultDeck = SpreadsheetApp.getActive().getSheetByName('各牌庫備考');
     const findCardTemplateRange = (card) => {
       const idx = defaultDeck.getRange('A2:A31').getDisplayValues().map(row => row[0]).findIndex(c => c === card);
       if (idx < 0) {
