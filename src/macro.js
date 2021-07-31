@@ -280,25 +280,37 @@ function peekNextEventCard() {
  *  return the hand after discarded the cards
  */
 function discardCardsAndEndTurn(projects, resources) {
+  if (!projects || !resources) {
+    throw new Error('Technical issue, please contact author.');
+  }
   try {
+    let projectCards = [];
     // remove cards from hand to discard pile
-    const restProjects = CurrentPlayerHand.removeProjectCards(projects);
-    ProjectDeck.discard(projects);
-    SpreadsheetApp.getActive().toast(`已經丟棄專案卡${JSON.stringify(projects)}`);
-    const restResources = CurrentPlayerHand.removeResourceCards(resources);
-    ResourceDeck.discard(resources);
-    SpreadsheetApp.getActive().toast(`已經丟棄資源卡${JSON.stringify(resources)}`);
+    if (projects.length > 0) {
+      projectCards = CurrentPlayerHand.removeProjectCards(projects);
+      ProjectDeck.discard(projects);
+      SpreadsheetApp.getActive().toast(`已經丟棄專案卡${JSON.stringify(projects)}`);
+    } else {
+      projectCards = CurrentPlayerHand.listProjectCards();
+    }
+
+    let resourceCards = [];
+    if (resources.length > 0) {
+      resourceCards = CurrentPlayerHand.removeResourceCards(resources);
+      ResourceDeck.discard(resources);
+      SpreadsheetApp.getActive().toast(`已經丟棄資源卡${JSON.stringify(resources)}`);
+    } else {
+      resourceCards = CurrentPlayerHand.listResourceCards();
+    }
 
     // refill cards from deck pile
-    let projectCards = restProjects;
-    if (restProjects.length < Rule.playerHand.projectCard.max) {
+    if (projectCards.length < Rule.playerHand.projectCard.max) {
       projectCards = CurrentPlayerHand.addProjectCards(
-        ProjectDeck.draw(Rule.playerHand.projectCard.max - restProjects.length));
+        ProjectDeck.draw(Rule.playerHand.projectCard.max - projectCards.length));
     }
-    let resourceCards = restResources;
-    if (restResources.length < Rule.playerHand.resourceCard.max) {
+    if (resourceCards.length < Rule.playerHand.resourceCard.max) {
       resourceCards = CurrentPlayerHand.addResoureCards(
-        ResourceDeck.draw(Rule.playerHand.resourceCard.max - restResources.length));
+        ResourceDeck.draw(Rule.playerHand.resourceCard.max - resourceCards.length));
     }
     // TODO: move to next player
 
