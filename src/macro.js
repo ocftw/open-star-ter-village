@@ -199,6 +199,7 @@ function discardProjectCards(projects) {
 /**
  * @typedef {Object} ProjectCardReference
  * @property {(card: Card) => ProjectCardSpecObject} getSpecByCard
+ * @property {(resourceCard: Card, projectCard: Card) => number} findEligibleSlotId
  * @property {(resourceCard: Card, projectCard: Card, slotIdx: number) => boolean} checkSlotEligibility
  *  check the slot is eligible for the resource card
  */
@@ -238,6 +239,20 @@ const ProjectCardRef = (() => {
       groups,
     };
   };
+  const findEligibleSlotId = (resource, project) => {
+    let slotId = 0;
+    const spec = ProjectCardRef.getSpecByCard(project);
+    const result = spec.groups.find(group => {
+      if (group.title === resource) {
+        return true;
+      }
+      slotId += group.slots;
+      return false
+    })
+    Logger.log(`find eligible slot of resource ${resource} on project ${project}`);
+    // found eligible slot return slot id o.w. return -1
+    return !!result ? slotId : -1;
+  };
   const checkSlotEligibility = (resource, project, slotId) => {
     const spec = ProjectCardRef.getSpecByCard(project);
     let s = slotId;
@@ -256,6 +271,7 @@ const ProjectCardRef = (() => {
 
   return {
     getSpecByCard: withCache(getSpecByCard),
+    findEligibleSlotId,
     checkSlotEligibility,
   };
 })();
@@ -524,10 +540,10 @@ function playProjectCard(project, resource) {
   if (!Table.ProjectCard.isPlayable()) {
     throw new Error('專案卡欄滿了！');
   }
-  // TODO: verify player has valid resource card of the project card
-  // if (Player does not have valid resource card) throw error
-  if (!ProjectCardRef.checkSlotEligibility(resource, project, 0)) {
-    throw new Error('源力卡不符合需求！');
+  // Player does not have valid resource card should throw error
+  const slotId = ProjectCardRef.findEligibleSlotId(resource, project);
+  if (slotId < 0) {
+    throw new Error('沒有適合該人力卡的人力需求！');
   }
   try {
     Table.ProjectCard.play(project);
