@@ -123,9 +123,9 @@ const Table = (() => {
       const col = Math.floor(id / 2);
       return mainBoard.getRange(2 + 9 * row, 7 + 5 * col, 9, 5);
     };
-    const setPlayerOnTableSlotById = (playerId, id, slotId, isOwner = false) => {
+    const setPlayerOnTableSlotById = (playerNickname, id, slotId, isOwner = false) => {
       const range = findTableRangeById(id);
-      range.offset(3 + slotId, 1, 1, 1).setValue(playerId);
+      range.offset(3 + slotId, 1, 1, 1).setValue(playerNickname);
       range.offset(3 + slotId, 0, 1, 1).setValue(isOwner);
     };
     const setContributionPointOnTableSlotById = (points, id, slotId) => {
@@ -204,7 +204,7 @@ const Table = (() => {
 
       // render on table
       // set player on slot
-      setPlayerOnTableSlotById(playerId, cardId, slotId, isOwner);
+      setPlayerOnTableSlotById(Player.getNickname(playerId), cardId, slotId, isOwner);
       // set initial contribution point
       setContributionPointOnTableSlotById(initialPoints, cardId, slotId);
       Logger.log(`render the player ${playerId} takes slot ${slotId} on project ${project} on table`);
