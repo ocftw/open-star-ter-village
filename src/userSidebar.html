@@ -12,7 +12,6 @@
         .withSuccessHandler(showCards)
         .withFailureHandler(showError)
         .getPlayerCards();
-      $('#play-project-card').click(playProjectCard);
 
       $('#menu__place-resource-card-on-project').click(menuPlaceResourceCardOnProject);
       $('#menu__play-project-card').click(menuPlayProjectCard);
@@ -44,6 +43,15 @@
       showProjectCards(hand.projectCards);
       showResourceCards(hand.resourceCards);
     }
+
+    function setActionBar(elements) {
+      $('#action-bar').empty();
+      $('#action-bar').append(elements);
+    };
+
+    function clearActionBar() {
+      $('#action-bar').empty();
+    };
 
     function showMessage(msg, element) {
       const span = $(`<span id="message" class="gray">${msg}</span>`);
@@ -166,6 +174,7 @@
       $('button[id^="menu__"]').each(function () {
         $(this).prop('disabled', false).removeClass('action');
       });
+      clearActionBar();
       $(element).prop('disabled', true).addClass('action');
     };
 
@@ -173,6 +182,7 @@
       $('button[id^="menu__"]').each(function () {
         $(this).prop('disabled', false).removeClass('action');
       });
+      clearActionBar();
     };
 
     function menuPlaceResourceCardOnProject() {
@@ -184,6 +194,9 @@
 
     function menuPlayProjectCard() {
       gotoSubMenu(this);
+      const dom = $('<button id="play-project-card" class="action">play project card</button>');
+      dom.click(playProjectCard);
+      setActionBar(dom);
 
       renderProjectCardRadio();
       renderResourceCardRadio();
@@ -257,9 +270,7 @@
       <ul id="project-cards" class="form-group">Loading...</ul>
       <h2>資源卡</h2>
       <ul id="resource-cards" class="form-group">Loading...</ul>
-      <div><button id="play-project-card" class="action">play project card</button></div>
-      <div><button id="play-resouce-card" class="action">play resource card</button></div>
-      <div><button id="discard-card">discard card and end turn</button></div>
+      <div id="action-bar"></div>
     </form>
   </div>
 </body>
