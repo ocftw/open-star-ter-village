@@ -46,6 +46,13 @@
       showResourceCards(hand.resourceCards);
     }
 
+    function showMessage(msg, element) {
+      const span = $(`<span id="message" class="gray">${msg}</span>`);
+      $(element).after(span);
+    }
+    function removeMessage() {
+      $('#message').remove();
+    }
     function showError(msg, element) {
       const div = $(`<div id="error" class="error">${msg}</div>`);
       $(element).after(div);
@@ -187,6 +194,7 @@
 
     function playProjectCard() {
       removeError();
+      showMessage('處理中...', this);
       // disable the button
       this.disabled = true;
       const selectedProjectCard = $('input[name="project-cards"]:checked').val();
@@ -194,6 +202,7 @@
       google.script.run
         .withSuccessHandler(
           function (hand, element) {
+            removeMessage();
             // return main menu
             menuReturn();
             showCards(hand);
@@ -201,6 +210,7 @@
           })
         .withFailureHandler(
           function (error, element) {
+            removeMessage();
             showError(error, element);
             element.disabled = false;
           })
