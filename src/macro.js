@@ -215,7 +215,7 @@ function playProjectCard(project, resource) {
     Table.ProjectCard.play(project);
     const projectCards = CurrentPlayerHand.removeProjectCards([project]);
     const resourceCards = CurrentPlayerHand.removeResourceCards([resource]);
-    Table.ProjectCard.placeSlotById(project, slotId, CurrentPlayer.getId(), 1, true);
+    Table.ProjectCard.placeResourceOnSlotById(project, slotId, CurrentPlayer.getId(), 1, true);
     CurrentPlayerHelper.reduceActionPoints(Rule.playProjectCard.actionPoint);
     return {
       projectCards,

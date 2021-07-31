@@ -6,7 +6,7 @@
  * @property {() => void} reset remove all project cards and reset max slots
  * @property {(n: number) => void} activateNSlots activate N project card slots on table
  * @property {(projectCard: Card, slotIdx: number, playerId: string, initialPoints: number,
- *  isOwner?: boolean) => void} placeSlotById place an arbitrary resource card on the project slot by slot index
+ *  isOwner?: boolean) => void} placeResourceOnSlotById place an arbitrary resource card on the project slot by slot index
  *  with initial contribution points
  */
 /**
@@ -191,7 +191,7 @@ const Table = (() => {
       // update maximum
       setMax(n);
     };
-    const placeSlotById = (project, slotId, playerId, initialPoints, isOwner = false) => {
+    const placeResourceOnSlotById = (project, slotId, playerId, initialPoints, isOwner = false) => {
       const cardId = findCardId(project);
       // set player on slot
       setPlayerOnSlotById(playerId, cardId, slotId);
@@ -217,7 +217,7 @@ const Table = (() => {
       remove,
       reset,
       activateNSlots,
-      placeSlotById,
+      placeResourceOnSlotById,
     };
   })();
 
