@@ -19,7 +19,6 @@
       $('#menu__contribute-project').click(menuContributeProject);
       $('#menu__play-resource-card').click(menuPlayResourceCard);
       $('#menu__discard-and-end-turn').click(menuDiscardAndEndTurn);
-      $('#menu__return').click(menuReturn);
     });
 
     function showProjectCards(projectCards) {
@@ -62,6 +61,7 @@
     }
 
     const renderProjectCardRadio = () => {
+      // replace from static list
       $('li[name="project-cards"]').each(function (idx) {
         const projectCard = $(this).text();
         const id = `prj-${idx}`;
@@ -71,9 +71,18 @@
           </div>`;
         $(this).replaceWith(dom);
       });
+
+      // replace from checkbox
+      $('input[name="project-cards"][type="checkbox"]').each(function (idx) {
+        const projectCard = $(this).val();
+        const id = `prj-${idx}`;
+        const dom = `<input type="radio" id="${id}" class="card card-project" name="project-cards" value="${projectCard}">`;
+        $(this).replaceWith(dom);
+      });
     };
 
     const renderResourceCardRadio = () => {
+      // replace from static list
       $('li[name="resource-cards"]').each(function (idx) {
         const resourceCard = $(this).text();
         const id = `res-${idx}`;
@@ -83,9 +92,18 @@
           </div>`;
         $(this).replaceWith(dom);
       });
+
+      // replace from checkbox
+      $('input[name="resource-cards"][type="checkbox"]').each(function (idx) {
+        const resourceCard = $(this).val();
+        const id = `res-${idx}`;
+        const dom = `<input type="radio" id="${id}" class="card card-resource" name="resource-cards" value="${resourceCard}">`;
+        $(this).replaceWith(dom);
+      });
     };
 
     const renderProjectCardCheckbox = () => {
+      // replace from static list
       $('li[name="project-cards"]').each(function (idx) {
         const projectCard = $(this).text();
         const id = `prj-${idx}`;
@@ -95,9 +113,18 @@
           </div>`;
         $(this).replaceWith(dom);
       });
+
+      // replace from radio
+      $('input[name="project-cards"][type="radio"]').each(function (idx) {
+        const projectCard = $(this).val();
+        const id = `prj-${idx}`;
+        const dom = `<input type="checkbox" id="${id}" class="card card-project" name="project-cards" value="${projectCard}">`;
+        $(this).replaceWith(dom);
+      });
     };
 
     const renderResourceCardCheckbox = () => {
+      // replace from static list
       $('li[name="resource-cards"]').each(function (idx) {
         const resourceCard = $(this).text();
         const id = `res-${idx}`;
@@ -105,6 +132,14 @@
             <input type="checkbox" id="${id}" class="card card-resource" name="resource-cards" value="${resourceCard}" />
             <label for="${id}">${resourceCard}</label>
           </div>`;
+        $(this).replaceWith(dom);
+      });
+
+      // replace from radio
+      $('input[name="resource-cards"][type="radio"]').each(function (idx) {
+        const resourceCard = $(this).val();
+        const id = `res-${idx}`;
+        const dom = `<input type="checkbox" id="${id}" class="card card-resource" name="resource-cards" value="${resourceCard}">`;
         $(this).replaceWith(dom);
       });
     };
@@ -127,69 +162,52 @@
       });
     };
 
-    const disableMenu = () => {
-      $('#menu__place-resource-card-on-project').prop('disabled', true);
-      $('#menu__play-project-card').prop('disabled', true);
-      $('#menu__contribute-project').prop('disabled', true);
-      $('#menu__play-resource-card').prop('disabled', true);
-      $('#menu__discard-and-end-turn').prop('disabled', true);
-      $('#menu__return').prop('disabled', false);
+    const gotoSubMenu = (element) => {
+      $('button[id^="menu__"]').each(function () {
+        $(this).prop('disabled', false).removeClass('action');
+      });
+      $(element).prop('disabled', true).addClass('action');
     };
 
-    const enableMenu = () => {
-      $('#menu__place-resource-card-on-project').prop('disabled', false).removeClass('action');
-      $('#menu__play-project-card').prop('disabled', false).removeClass('action');
-      $('#menu__contribute-project').prop('disabled', false).removeClass('action');
-      $('#menu__play-resource-card').prop('disabled', false).removeClass('action');
-      $('#menu__discard-and-end-turn').prop('disabled', false).removeClass('action');
-      $('#menu__return').prop('disabled', true);
+    const gotoMainMenu = () => {
+      $('button[id^="menu__"]').each(function () {
+        $(this).prop('disabled', false).removeClass('action');
+      });
     };
 
     function menuPlaceResourceCardOnProject() {
-      disableMenu();
-      $(this).addClass('action');
+      gotoSubMenu(this);
 
       renderProjectCardStatic();
       renderResourceCardRadio();
     }
 
     function menuPlayProjectCard() {
-      disableMenu();
-      $(this).addClass('action');
+      gotoSubMenu(this);
 
       renderProjectCardRadio();
       renderResourceCardRadio();
     }
 
     function menuContributeProject() {
-      disableMenu();
-      $(this).addClass('action');
+      gotoSubMenu(this);
 
       renderProjectCardStatic();
       renderResourceCardStatic();
     }
 
     function menuPlayResourceCard() {
-      disableMenu();
-      $(this).addClass('action');
+      gotoSubMenu(this);
 
       renderProjectCardStatic();
       renderResourceCardRadio();
     }
 
     function menuDiscardAndEndTurn() {
-      disableMenu();
-      $(this).addClass('action');
+      gotoSubMenu(this);
 
       renderProjectCardCheckbox();
       renderResourceCardCheckbox();
-    }
-
-    function menuReturn() {
-      enableMenu();
-
-      renderProjectCardStatic();
-      renderResourceCardStatic();
     }
 
     function playProjectCard() {
@@ -204,7 +222,7 @@
           function (hand, element) {
             removeMessage();
             // return main menu
-            menuReturn();
+            gotoMainMenu();
             showCards(hand);
             element.disabled = false;
           })
@@ -233,14 +251,12 @@
     <div>
       <button id="menu__play-resource-card">源力加持<span>(1)</span></button>
       <button id="menu__discard-and-end-turn">棄牌後結束回合</button>
-      <button id="menu__return" disabled>返回選單</button>
     </div>
     <form>
       <h2>專案卡</h2>
       <ul id="project-cards" class="form-group">Loading...</ul>
       <h2>資源卡</h2>
       <ul id="resource-cards" class="form-group">Loading...</ul>
-      <h3>Actions</h3>
       <div><button id="play-project-card" class="action">play project card</button></div>
       <div><button id="play-resouce-card" class="action">play resource card</button></div>
       <div><button id="discard-card">discard card and end turn</button></div>
