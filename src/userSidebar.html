@@ -218,6 +218,9 @@
 
     function menuDiscardAndEndTurn() {
       gotoSubMenu(this);
+      const dom = $('<button id="discard-and-end-turn" class="action">discard and end turn</button>');
+      dom.click(discardAndEndTurn);
+      setActionBar(dom);
 
       renderProjectCardCheckbox();
       renderResourceCardCheckbox();
@@ -247,6 +250,34 @@
           })
         .withUserObject(this)
         .playProjectCard(selectedProjectCard, selectedResourceCard);
+    }
+
+    function discardAndEndTurn() {
+      removeError();
+      showMessage('處理中...', this);
+      // disable the button
+      this.disabled = true;
+      const selectedProjectCards = $('input[name="project-cards"]:checked')
+        .map((_, element) => element.value).get();
+      const selectedResourceCards = $('input[name="resource-cards"]:checked')
+        .map((_, element) => element.value).get();
+      google.script.run
+        .withSuccessHandler(
+          function (hand, element) {
+            removeMessage();
+            // return main menu
+            gotoMainMenu();
+            showCards(hand);
+            element.disabled = false;
+          })
+        .withFailureHandler(
+          function (error, element) {
+            removeMessage();
+            showError(error, element);
+            element.disabled = false;
+          })
+        .withUserObject(this)
+        .discardCardsAndEndTurn(selectedProjectCards, selectedResourceCards);
     }
   </script>
 </head>
