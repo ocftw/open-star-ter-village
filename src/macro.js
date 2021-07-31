@@ -200,7 +200,6 @@ function discardProjectCards(projects) {
  * @typedef {Object} ProjectCardReference
  * @property {(card: Card) => ProjectCardSpecObject} getSpecByCard
  * @property {(resourceCard: Card, projectCard: Card) => number} findEligibleSlotId
- * @property {(resourceCard: Card, projectCard: Card, slotIdx: number) => boolean} checkSlotEligibility
  *  check the slot is eligible for the resource card
  */
 /** @type {ProjectCardReference} */
@@ -253,26 +252,10 @@ const ProjectCardRef = (() => {
     // found eligible slot return slot id o.w. return -1
     return !!result ? slotId : -1;
   };
-  const checkSlotEligibility = (resource, project, slotId) => {
-    const spec = ProjectCardRef.getSpecByCard(project);
-    let s = slotId;
-    const result = spec.groups.find((group) => {
-      if (s < 0) {
-        return false;
-      }
-      const found = s < group.slots && group.title === resource;
-      s -= group.slots;
-      return found;
-    });
-
-    Logger.log(`check project ${project} slot ${slotId} eligibility for resource ${resource}`);
-    return !!result;
-  };
 
   return {
     getSpecByCard: withCache(getSpecByCard),
     findEligibleSlotId,
-    checkSlotEligibility,
   };
 })();
 
