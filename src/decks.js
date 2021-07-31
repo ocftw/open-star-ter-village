@@ -17,11 +17,14 @@ const ProjectDeck = (function () {
   const pile = SpreadsheetApp.getActive().getSheetByName('ProjectDeck');
   const draw = (n = 1) => {
     // get number of remaining card
-    const remainCardNum = pile.getDataRange().getNumRows();
+    let remainCardNum = pile.getDataRange().getNumRows();
+    // number of rows of empty sheet is 1 but it should be 0
+    if (remainCardNum === 1 && pile.getRange(1, 1).getValue() === "") {
+      remainCardNum = 0;
+    }
     // refill pile if remaining cards are not enough
     if (remainCardNum < n) {
-      discardPile.getDataRange().randomize().copyTo(pile.getRange(`A${remainCardNum + 1}`));
-      discardPile.clearContents();
+      discardPile.getDataRange().randomize().moveTo(pile.getRange(`A${remainCardNum + 1}`));
     }
     // get cards
     const cards = pile.getRange(`A1:A${n}`).getDisplayValues()
@@ -63,11 +66,14 @@ const ResourceDeck = (function () {
   const pile = SpreadsheetApp.getActive().getSheetByName('ResourceDeck');
   const draw = (n = 1) => {
     // get number of remaining card
-    const remainCardNum = pile.getDataRange().getNumRows();
+    let remainCardNum = pile.getDataRange().getNumRows();
+    // number of rows of empty sheet is 1 but it should be 0
+    if (remainCardNum === 1 && pile.getRange(1, 1).getValue() === "") {
+      remainCardNum = 0;
+    }
     // refill pile if remaining cards are not enough
     if (remainCardNum < n) {
-      discardPile.getDataRange().randomize().copyTo(pile.getRange(`A${remainCardNum + 1}`));
-      discardPile.clearContents();
+      discardPile.getDataRange().randomize().moveTo(pile.getRange(`A${remainCardNum + 1}`));
     }
     // get cards
     const cards = pile.getRange(`A1:A${n}`).getDisplayValues()
