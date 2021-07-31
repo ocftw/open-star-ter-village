@@ -528,7 +528,7 @@ const CurrentPlayerHelper = (() => {
 })();
 
 /**
- * @type {(project: Card, resource: Card) => Card[]} Return the player project cards after played
+ * @type {(project: Card, resource: Card) => Hand} Return the player project cards after played
  */
 function playProjectCard(project, resource) {
   if (!project || !resource) {
@@ -547,10 +547,14 @@ function playProjectCard(project, resource) {
   }
   try {
     Table.ProjectCard.play(project);
-    const newHand = CurrentPlayerHand.removeProjectCards([project]);
-    Table.ProjectCard.placeSlotById(project, 0, CurrentPlayer.getId(), 1, true);
+    const projectCards = CurrentPlayerHand.removeProjectCards([project]);
+    const resourceCards = CurrentPlayerHand.removeResourceCards([resource]);
+    Table.ProjectCard.placeSlotById(project, slotId, CurrentPlayer.getId(), 1, true);
     CurrentPlayerHelper.reduceActionPoints(Rule.playProjectCard.actionPoint);
-    return newHand;
+    return {
+      projectCards,
+      resourceCards,
+    };
   } catch (err) {
     Logger.log(`playProjectCard failure. ${err}`);
     // fallback

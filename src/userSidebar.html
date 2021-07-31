@@ -193,8 +193,10 @@
       const selectedResourceCard = $('input[name="resource-cards"]:checked').val();
       google.script.run
         .withSuccessHandler(
-          function (projectCards, element) {
-            showProjectCards(projectCards);
+          function (hand, element) {
+            // return main menu
+            menuReturn();
+            showCards(hand);
             element.disabled = false;
           })
         .withFailureHandler(
