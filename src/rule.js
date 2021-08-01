@@ -109,6 +109,41 @@ const Rule = (() => {
   const recruit = {
     getIsAvailable: () => {
       return ruleSet.getRange('D11').getValue();
+    },
+    setIsAvailable: (isAvailable) => {
+      ruleSet.getRange('D11').setValue(isAvailable);
+    },
+    getJobRestriction: () => {
+      return ruleSet.getRange('D12').getValue();
+    },
+    setJobRestriction: (restriction) => {
+      ruleSet.getRange('D12').setValue(restriction);
+    }
+  }
+
+  /** @type {RuleContribute} */
+  const contribute = {
+    getIsAvailable: () => {
+      return ruleSet.getRange('D13').getValue();
+    },
+    setIsAvailable: (isAvailable) => {
+      ruleSet.getRange('D13').setValue(isAvailable);
+    },
+    getContribution: () => {
+      return ruleSet.getRange('D14').getValue();
+    },
+    setContribution: (contribution) => {
+      ruleSet.getRange('D14').setValue(contribution);
+    }
+  }
+
+  /** @type {RulePlayForce} */
+  const playForce = {
+    getIsAvailable: () => {
+      return ruleSet.getRange('D15').getValue();
+    },
+    setIsAvailable: (isAvailable) => {
+      ruleSet.getRange('D15').setValue(isAvailable);
     }
   }
 
