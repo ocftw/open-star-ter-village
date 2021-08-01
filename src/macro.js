@@ -167,20 +167,6 @@ function refillActionPoints() {
   Player.setActionPoint(3, CurrentPlayer.getId());
 }
 
-const Rule = (() => {
-  const playProjectCard = {
-    actionPoint: 2,
-  };
-  const playerHand = {
-    projectCard: { max: 2 },
-    resourceCard: { max: 5 },
-  };
-  return {
-    playProjectCard,
-    playerHand,
-  };
-})();
-
 const CurrentPlayerHelper = (() => {
   const reduceActionPoints = (n = 1) => {
     Player.setActionPoint(Player.getActionPoint(CurrentPlayer.getId()) - n, CurrentPlayer.getId());
