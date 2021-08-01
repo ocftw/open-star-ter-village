@@ -71,8 +71,12 @@ function roundWillStart() {
 function turnWillStart() { }
 
 function turnDidEnd() {
+  // TODO: calculate score
+  // TODO: move the open source tree
+  // TODO: reset and refill current player counters
   // peek next event card
   peekNextEventCard();
+  // TODO: move to next player
 }
 
 function roundDidEnd() { }
@@ -298,7 +302,8 @@ function discardCardsAndEndTurn(projects, resources) {
       resourceCards = CurrentPlayerHand.addResoureCards(
         ResourceDeck.draw(Rule.playerHand.resourceCard.getMax() - resourceCards.length));
     }
-    // TODO: move to next player
+
+    turnDidEnd();
 
     return {
       projectCards,
