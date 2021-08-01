@@ -186,7 +186,7 @@ function playProjectCard(project, resource) {
   if (!project || !resource) {
     throw new Error('請選擇一張專案卡與一張人力卡！');
   }
-  if (Player.getActionPoint(CurrentPlayer.getId()) < Rule.playProjectCard.actionPoint) {
+  if (Player.getActionPoint(CurrentPlayer.getId()) < Rule.playProjectCard.getActionPoint()) {
     throw new Error('行動點數不足！');
   }
   if (!Table.ProjectCard.isPlayable()) {
@@ -202,7 +202,7 @@ function playProjectCard(project, resource) {
     const projectCards = CurrentPlayerHand.removeProjectCards([project]);
     const resourceCards = CurrentPlayerHand.removeResourceCards([resource]);
     Table.ProjectCard.placeResourceOnSlotById(project, slotId, CurrentPlayer.getId(), 1, true);
-    CurrentPlayerHelper.reduceActionPoints(Rule.playProjectCard.actionPoint);
+    CurrentPlayerHelper.reduceActionPoints(Rule.playProjectCard.getActionPoint());
     return {
       projectCards,
       resourceCards,
