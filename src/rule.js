@@ -153,7 +153,10 @@ const Rule = (() => {
       getMax: () => 2 /* read from spread sheet */,
       setMax: (max) => { /* write to spread sheet */ },
     },
-    resourceCard: { max: 5 }, // update: store spread sheet
+    resourceCard: {
+      getMax: () => 5 /* read from spread sheet */,
+      setMax: (max) => { /* write to spread sheet */ },
+    },
   };
 
   return {

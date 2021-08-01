@@ -294,9 +294,9 @@ function discardCardsAndEndTurn(projects, resources) {
       projectCards = CurrentPlayerHand.addProjectCards(
         ProjectDeck.draw(Rule.playerHand.projectCard.getMax() - projectCards.length));
     }
-    if (resourceCards.length < Rule.playerHand.resourceCard.max) {
+    if (resourceCards.length < Rule.playerHand.resourceCard.getMax()) {
       resourceCards = CurrentPlayerHand.addResoureCards(
-        ResourceDeck.draw(Rule.playerHand.resourceCard.max - resourceCards.length));
+        ResourceDeck.draw(Rule.playerHand.resourceCard.getMax() - resourceCards.length));
     }
     // TODO: move to next player
 
