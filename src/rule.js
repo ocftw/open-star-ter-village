@@ -99,7 +99,6 @@ const Rule = (() => {
       if (index === -1) {
         Logger.log(`Unknown job type ${job}`);
         throw new Error(`Unknown job type ${job}`);
-        return;
       }
       ruleSet.getRange('D4').offset(index, 0).setValue(n);
     }
@@ -165,6 +164,9 @@ const Rule = (() => {
 
   return {
     playProjectCard,
+    recruit,
+    contribute,
+    playForce,
     playerHand,
     reset,
   };
