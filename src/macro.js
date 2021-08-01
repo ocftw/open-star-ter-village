@@ -290,9 +290,9 @@ function discardCardsAndEndTurn(projects, resources) {
     }
 
     // refill cards from deck pile
-    if (projectCards.length < Rule.playerHand.projectCard.max) {
+    if (projectCards.length < Rule.playerHand.projectCard.getMax()) {
       projectCards = CurrentPlayerHand.addProjectCards(
-        ProjectDeck.draw(Rule.playerHand.projectCard.max - projectCards.length));
+        ProjectDeck.draw(Rule.playerHand.projectCard.getMax() - projectCards.length));
     }
     if (resourceCards.length < Rule.playerHand.resourceCard.max) {
       resourceCards = CurrentPlayerHand.addResoureCards(
