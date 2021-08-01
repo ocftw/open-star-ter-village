@@ -357,6 +357,9 @@ function resetSpreadsheet() {
   //clear project slot and break merged cells
   Table.ProjectCard.reset();
 
+  // reset game rules
+  Rule.reset();
+
   // set UI back to main board
   spreadsheet.setActiveSheet(mainBoard);
   SpreadsheetApp.getActive().toast("已重設表單");

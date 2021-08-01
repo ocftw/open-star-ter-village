@@ -159,8 +159,13 @@ const Rule = (() => {
     },
   };
 
+  const reset = () => {
+    ruleSet.getRange('E1:F23').copyTo(ruleSet.getRange('C1:D23'));
+  };
+
   return {
     playProjectCard,
     playerHand,
+    reset,
   };
 })();
