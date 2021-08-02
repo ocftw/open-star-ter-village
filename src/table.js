@@ -1,4 +1,10 @@
 /**
+ * The method collection to play card, remove card, update score, ... etc. from/on the table.
+ * Each property represent a disjoint functionality includes data store and main board rendering update
+ * @typedef {object} TableController
+ * @property {TableProjectCardController} ProjectCard project card methods includes play, isPlayable, place
+ * @property {TablePlayerController} Player player methods
+ *
  * @typedef {Object} TableProjectCardController
  * @property {() => boolean} isPlayable whether table is able to placed a project card
  * @property {(card: Card) => void} play play a project card on table
@@ -8,13 +14,6 @@
  * @property {(projectCard: Card, slotIdx: number, playerId: string, initialPoints: number,
  *  isOwner?: boolean) => void} placeResourceOnSlotById place an arbitrary resource card on the project slot by slot index
  *  with initial contribution points
- */
-/**
- * The method collection to play card, remove card, update score, ... etc. from/on the table.
- * Each property represent a disjoint functionality includes data store and main board rendering update
- * @typedef {object} TableController
- * @property {TableProjectCardController} ProjectCard project card methods includes play, isPlayable, place
- * @property {TablePlayerController} Player player methods
  *
  * @typedef {Object} TablePlayerController
  */
@@ -24,7 +23,7 @@ const Table = (() => {
   /** @type {TableProjectCardController} */
   const ProjectCard = (() => {
     const tableProjectCard = SpreadsheetApp.getActive().getSheetByName('TableProjectCard');
-    // table helpers
+    // table model
     const getMax = () => tableProjectCard.getRange('B1').getValue();
     const setMax = (max) => {
       tableProjectCard.getRange('B1').setValue(max);
@@ -107,7 +106,7 @@ const Table = (() => {
     const getContributionPointOnSlotById = (id, slotId) => tableProjectCard.getRange(21 + 10 * id + slotId, 3).getValue();
     const setContributionPointOnSlotById = (points, id, slotId) => tableProjectCard.getRange(21 + 10 * id + slotId, 3).setValue(points);
 
-    // table render helpers
+    // table view
     const getDefaultCardRange = () => tableProjectCard.getRange('D1:H9');
     const getDeactiveCardRange = () => tableProjectCard.getRange('J1:N9');
     // find card template range from default deck
@@ -138,6 +137,7 @@ const Table = (() => {
       range.offset(3 + slotId, 4, 1, 1).setValue(points);
     };
 
+    // table controller
     const isPlayable = () => getMax() > getCount();
     const play = (card) => {
       const cardSpec = ProjectCardRef.getSpecByCard(card);
@@ -209,7 +209,7 @@ const Table = (() => {
 
       // render on table
       // set player on slot
-      setPlayerOnTableSlotById(Player.getNickname(playerId), cardId, slotId, isOwner);
+      setPlayerOnTableSlotById(PlayerModel.getNickname(playerId), cardId, slotId, isOwner);
       // set initial contribution point
       setContributionPointOnTableSlotById(initialPoints, cardId, slotId);
       Logger.log(`render the player ${playerId} takes slot ${slotId} on project ${project} on table`);
@@ -226,7 +226,7 @@ const Table = (() => {
   })();
 
   /**
-   * @typedef {Object} TablePlayerDataHelpers player methods
+   * @typedef {Object} TablePlayerModel player methods
    * @property {(playerId: string) => string} getNickname get player nickname
    * @property {(nickname, playerId: string) => void} setNickname set player nick name
    * @property {(playerId: string) => number} getScore get player score
@@ -240,8 +240,8 @@ const Table = (() => {
    * @property {(playerId: string, defaultNickname: string) => void} reset reset all player properties except playerId
    */
   const playerProperty = SpreadsheetApp.getActive().getSheetByName('PlayerProperty');
-  /** @type {TablePlayerDataHelpers} */
-  const Player = {
+  /** @type {TablePlayerModel} */
+  const PlayerModel = {
     getNickname: (playerId) => {
       return playerProperty.getRange(`${playerId}1`).getDisplayValue();
     },
@@ -279,6 +279,6 @@ const Table = (() => {
   };
   return {
     ProjectCard,
-    Player,
+    Player: PlayerModel,
   };
 })();
