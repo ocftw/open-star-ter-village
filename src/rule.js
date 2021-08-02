@@ -146,15 +146,71 @@ const Rule = (() => {
     }
   }
 
+  /** @type {RuleSettlePhase} */
+  const settlePhase = {
+    getOwnerBonus: () => {
+      return ruleSet.getRange('D16').getValue();      
+    },
+    setOwnerBonus: (bonus) => {
+      ruleSet.getRange('D16').setValue(bonus);
+    },
+    getParticipantBonus: (projectType) => {
+      const rows = ruleSet.getRange('C17:D19').getValues();
+      const pair = rows.find(row => row[0] === projectType);
+      if (!pair) {
+        Logger.log(`Unknown project type ${projectType}`);
+        throw new Error(`Unknown project type ${projectType}`);
+      }
+      return pair[1];
+    },
+    setParticipantBonus: (projectType, bonus) => {
+      const rows = ruleSet.getRange('C17:C19').getValues();
+      const index = rows.findIndex(row => row[0] === projectType);
+      if (index === -1) {
+        Logger.log(`Unknown job type ${projectType}`);
+        throw new Error(`Unknown job type ${projectType}`);
+      }
+      ruleSet.getRange('D17').offset(index, 0).setValue(bonus);
+    }
+  }
+
+  /** @type {RulePeekNextEvent} */
+  const peekNextEvent = {
+    getIsAvailable: () => {
+      return ruleSet.getRange('D20').getValue();
+    },
+    setIsAvailable: (isAvailable) => {
+      ruleSet.getRange('D20').setValue(isAvailable);
+    }
+  }
+
+  /** @type {RuleMaxProjectSlots} */
+  const maxProjectSlots = {
+    getNum: () => {
+      return ruleSet.getRange('D21').getValue();
+    },
+    setNum: (slot) => {
+      ruleSet.getRange('D21').setValue(slot);
+    }
+  }
+
   /** @type {RulePlayerHand} */
   const playerHand = {
     projectCard: {
-      getMax: () => 2 /* read from spread sheet */,
-      setMax: (max) => { /* write to spread sheet */ },
+      getMax: () => {
+        return ruleSet.getRange('D22').getValue();
+      },
+      setMax: (max) => {
+        ruleSet.getRange('D22').setValue(max);
+      }
     },
     resourceCard: {
-      getMax: () => 5 /* read from spread sheet */,
-      setMax: (max) => { /* write to spread sheet */ },
+      getMax: () => {
+        return ruleSet.getRange('D23').getValue();
+      },
+      setMax: (max) => {
+        ruleSet.getRange('D23').setValue(max);
+      }
     },
   };
 
@@ -167,6 +223,9 @@ const Rule = (() => {
     recruit,
     contribute,
     playForce,
+    settlePhase,
+    peekNextEvent,
+    maxProjectSlots,
     playerHand,
     reset,
   };
