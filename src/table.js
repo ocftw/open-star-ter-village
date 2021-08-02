@@ -1,3 +1,5 @@
+// @ts-check
+
 /**
  * The method collection to play card, remove card, update score, ... etc. from/on the table.
  * Each property represent a disjoint functionality includes data store and main board rendering update
@@ -239,6 +241,19 @@ const Table = (() => {
    * @property {(workerToken: number, playerId: string) => void} setWorkerToken set player remaining worker token
    * @property {(playerId: string) => number} getClosedProject get closed project number of player
    * @property {(closedProject: number, playerId: string) => void} setClosedProject set closed project number of player
+   * @property {(playerId: string) => number} getTurnCreateProjectCount
+   * @property {(count: number, playerId: string) => void} setTurnCreateProjectCount
+   * @property {(playerId: string) => number} getTurnPlayProjectCardCount
+   * @property {(count: number, playerId: string) => void} setTurnPlayProjectCardCount
+   * @property {(playerId: string) => number} getTurnRecruitCount
+   * @property {(count: number, playerId: string) => void} setTurnRecruitCount
+   * @property {(playerId: string) => number} getTurnPlayJobCardCount
+   * @property {(count: number, playerId: string) => void} setTurnPlayJobCardCount
+   * @property {(playerId: string) => number} getTurnPlayForceCardCount
+   * @property {(count: number, playerId: string) => void} setTurnPlayForceCardCount
+   * @property {(playerId: string) => number} getTurnContributeCount
+   * @property {(count: number, playerId: string) => void} setTurnContributeCount
+   * @property {(playerId: string) => void} resetCounter
    * @property {(playerId: string, defaultNickname: string) => void} reset reset all player properties except playerId
    */
   const playerProperty = SpreadsheetApp.getActive().getSheetByName('PlayerProperty');
@@ -274,9 +289,48 @@ const Table = (() => {
     setClosedProject: (closedProject, playerId) => {
       playerProperty.getRange(`${playerId}5`).setValue(closedProject);
     },
+    getTurnCreateProjectCount: (playerId) => {
+      return playerProperty.getRange(`${playerId}6`).getValue();
+    },
+    setTurnCreateProjectCount: (count, playerId) => {
+      playerProperty.getRange(`${playerId}6`).setValue(count);
+    },
+    getTurnPlayProjectCardCount: (playerId) => {
+      return playerProperty.getRange(`${playerId}7`).getValue();
+    },
+    setTurnPlayProjectCardCount: (count, playerId) => {
+      playerProperty.getRange(`${playerId}7`).setValue(count);
+    },
+    getTurnRecruitCount: (playerId) => {
+      return playerProperty.getRange(`${playerId}8`).getValue();
+    },
+    setTurnRecruitCount: (count, playerId) => {
+      playerProperty.getRange(`${playerId}8`).setValue(count);
+    },
+    getTurnPlayJobCardCount: (playerId) => {
+      return playerProperty.getRange(`${playerId}9`).getValue();
+    },
+    setTurnPlayJobCardCount: (count, playerId) => {
+      playerProperty.getRange(`${playerId}9`).setValue(count);
+    },
+    getTurnPlayForceCardCount: (playerId) => {
+      return playerProperty.getRange(`${playerId}10`).getValue();
+    },
+    setTurnPlayForceCardCount: (count, playerId) => {
+      playerProperty.getRange(`${playerId}10`).setValue(count);
+    },
+    getTurnContributeCount: (playerId) => {
+      return playerProperty.getRange(`${playerId}11`).getValue();
+    },
+    setTurnContributeCount: (count, playerId) => {
+      playerProperty.getRange(`${playerId}11`).setValue(count);
+    },
+    resetCounter: (playerId) => {
+      playerProperty.getRange(`${playerId}6:${playerId}11`).clearContent();
+    },
     reset: (playerId, defaultNickname) => {
       playerProperty.getRange(`${playerId}1`).setValue(defaultNickname);
-      playerProperty.getRange(`${playerId}2:${playerId}5`).clearContent();
+      playerProperty.getRange(`${playerId}2:${playerId}11`).clearContent();
     }
   };
   return {
