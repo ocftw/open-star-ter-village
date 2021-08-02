@@ -51,7 +51,13 @@ const CurrentPlayerHand = {
   },
   removeProjectCards: (cards) => {
     // remove cards from the current hand
-    const newCards = CurrentPlayerHand.listProjectCards().filter(hand => cards.every(card => hand !== card));
+    const newCards = CurrentPlayerHand.listProjectCards();
+    cards.forEach(card => {
+      const idx = newCards.findIndex(hand => hand === card);
+      if (idx >= 0) {
+        newCards.splice(idx, 1);
+      }
+    });
 
     const playerId = CurrentPlayer.getId();
     // transform the cards
@@ -81,7 +87,13 @@ const CurrentPlayerHand = {
   },
   removeResourceCards: (cards) => {
     // remove cards from the current hand
-    const newCards = CurrentPlayerHand.listResourceCards().filter(hand => cards.every(card => hand !== card));
+    const newCards = CurrentPlayerHand.listResourceCards();
+    cards.forEach(card => {
+      const idx = newCards.findIndex(hand => hand === card);
+      if (idx >= 0) {
+        newCards.splice(idx, 1);
+      }
+    });
 
     const playerId = CurrentPlayer.getId();
     // transform the cards
