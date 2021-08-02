@@ -179,7 +179,7 @@ function playProjectCard(project, resource) {
   if (!project || !resource) {
     throw new Error('請選擇一張專案卡與一張人力卡！');
   }
-  if (Table.Player.isActionable(Rule.playProjectCard.getActionPoint(), CurrentPlayer.getId())) {
+  if (!Table.Player.isActionable(Rule.playProjectCard.getActionPoint(), CurrentPlayer.getId())) {
     throw new Error('行動點數不足！');
   }
   if (!Table.ProjectCard.isPlayable()) {
@@ -344,10 +344,6 @@ function resetSpreadsheet() {
   mainBoard.getRange('H20').clearContent();
   // reset next event
   mainBoard.getRange('H21').setValue('不顯示');
-  //reset left column
-  mainBoard.getRangeList(['C3:C8', 'E10:E12']).setValue('0');
-  mainBoard.getRange('D3:D8').setValue('3');
-  mainBoard.getRange('E3:E8').setValue('10');
   //clear project slot and break merged cells
   Table.ProjectCard.reset();
 
