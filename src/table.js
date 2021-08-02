@@ -21,7 +21,7 @@
  * @property {(playerId: string) => string} getNickname get player nickname
  * @property {(nickname, playerId: string) => void} setNickname set player nick name
  * @property {(cost: number, playerId: string) => boolean} isActionable return whether player has action points more than cost
- * @property {(cost: number, playerId: string) => void} reduceActionPoint reduce action points on player
+ * @property {(cost: number, playerId: string) => number} reduceActionPoint reduce action points on player
  * @property {(playerId: string) => boolean} isRecruitable
  * @property {(cost: number, playerId: string) => number} reduceWorkerTokens
  * @property {(tokens: number, playerId: string) => number} increaseWorkerTokens
@@ -345,10 +345,54 @@ const Table = (() => {
     }
   };
 
+  /**
+   * @typedef {Object} TablePlayerView render player information on main board
+   * @property {(nickname, playerId: string) => void} setNickname set player nick name
+   * @property {(score: number, playerId: string) => void} setScore set player score
+   * @property {(actionPoint: number, playerId: string) => void} setActionPoint set player action point
+   * @property {(workerToken: number, playerId: string) => void} setWorkerToken set player remaining worker token
+   * @property {(playerId: string, defaultNickname: string) => void} reset reset all player properties except playerId
+   */
+
+  const playerIdMapRow = {
+    A: 3, B: 4, C: 5,
+    D: 6, E: 7, F: 8,
+  };
+  /** @type {TablePlayerView} */
+  const PlayerView = {
+    setNickname: (nickname, playerId) => {
+      const row = playerIdMapRow[playerId];
+      const col = 2;
+      mainBoard.getRange(row, col).setValue(nickname);
+    },
+    setScore: (score, playerId) => {
+      const row = playerIdMapRow[playerId];
+      const col = 3;
+      mainBoard.getRange(row, col).setValue(score);
+    },
+    setActionPoint: (point, playerId) => {
+      const row = playerIdMapRow[playerId];
+      const col = 4;
+      mainBoard.getRange(row, col).setValue(point);
+    },
+    setWorkerToken: (token, playerId) => {
+      const row = playerIdMapRow[playerId];
+      const col = 5;
+      mainBoard.getRange(row, col).setValue(token);
+    },
+    reset: (playerId, defaultNickname) => {
+      PlayerView.setNickname(defaultNickname, playerId);
+      PlayerView.setScore(0, playerId);
+      PlayerView.setActionPoint(0, playerId);
+      PlayerView.setWorkerToken(0, playerId);
+    },
+  };
+
   /** @type {TablePlayerController} */
   const Player = {
     setNickname: (nickname, playerId) => {
       PlayerModel.setNickname(nickname, playerId);
+      PlayerView.setNickname(nickname, playerId);
     },
     getNickname: (playerId) => {
       return PlayerModel.getNickname(playerId);
@@ -357,7 +401,10 @@ const Table = (() => {
       return cost <= PlayerModel.getActionPoint(playerId);
     },
     reduceActionPoint: (cost, playerId) => {
-      PlayerModel.setActionPoint(PlayerModel.getActionPoint(playerId) - cost, playerId);
+      const remain = PlayerModel.getActionPoint(playerId) - cost;
+      PlayerModel.setActionPoint(remain, playerId);
+      PlayerView.setActionPoint(remain, playerId);
+      return remain;
     },
     isRecruitable: (playerId) => {
       return PlayerModel.getWorkerToken(playerId) > 0;
@@ -365,19 +412,23 @@ const Table = (() => {
     reduceWorkerTokens: (cost, playerId) => {
       const remain = PlayerModel.getWorkerToken(playerId) - cost;
       PlayerModel.setWorkerToken(remain, playerId);
+      PlayerView.setWorkerToken(remain, playerId);
       return remain;
     },
     increaseWorkerTokens: (tokens, playerId) => {
       const result = PlayerModel.getWorkerToken(playerId) + tokens;
       PlayerModel.setWorkerToken(result, playerId);
+      PlayerView.setWorkerToken(result, playerId);
       return result;
     },
     setNextTurnActionPoints: (nextTurnPoints, playerId) => {
       PlayerModel.setActionPoint(nextTurnPoints, playerId);
+      PlayerView.setActionPoint(nextTurnPoints, playerId);
     },
     earnScore: (score, playerId) => {
       const result = PlayerModel.getScore(playerId) + score;
       PlayerModel.setScore(result, playerId);
+      PlayerView.setScore(result, playerId);
       return result;
     },
     resetTurnCounters: (playerId) => {
@@ -385,6 +436,7 @@ const Table = (() => {
     },
     reset: (playerId, defaultNickname) => {
       PlayerModel.reset(playerId, defaultNickname);
+      PlayerView.reset(playerId, defaultNickname);
     },
   };
 
