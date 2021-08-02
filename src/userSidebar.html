@@ -13,10 +13,10 @@
         .withFailureHandler(showError)
         .getPlayerCards();
 
-      $('#menu__place-resource-card-on-project').click(menuPlaceResourceCardOnProject);
-      $('#menu__play-project-card').click(menuPlayProjectCard);
+      $('#menu__recruit').click(menuRecruit);
+      $('#menu__create-project').click(menuCreateProject);
       $('#menu__contribute-project').click(menuContributeProject);
-      $('#menu__play-resource-card').click(menuPlayResourceCard);
+      $('#menu__play-force-card').click(menuPlayForceCard);
       $('#menu__discard-and-end-turn').click(menuDiscardAndEndTurn);
     });
 
@@ -185,17 +185,17 @@
       clearActionBar();
     };
 
-    function menuPlaceResourceCardOnProject() {
+    function menuRecruit() {
       gotoSubMenu(this);
 
       renderProjectCardStatic();
       renderResourceCardRadio();
     }
 
-    function menuPlayProjectCard() {
+    function menuCreateProject() {
       gotoSubMenu(this);
-      const dom = $('<button id="play-project-card" class="action">play project card</button>');
-      dom.click(playProjectCard);
+      const dom = $('<button id="create-project" class="action">create project</button>');
+      dom.click(createProject);
       setActionBar(dom);
 
       renderProjectCardRadio();
@@ -209,7 +209,7 @@
       renderResourceCardStatic();
     }
 
-    function menuPlayResourceCard() {
+    function menuPlayForceCard() {
       gotoSubMenu(this);
 
       renderProjectCardStatic();
@@ -226,7 +226,7 @@
       renderResourceCardCheckbox();
     }
 
-    function playProjectCard() {
+    function createProject() {
       removeError();
       showMessage('處理中...', this);
       // disable the button
@@ -288,12 +288,12 @@
       <?= player ?>的手牌
     </h1>
     <div>
-      <button id="menu__place-resource-card-on-project">招募人力<span>(1)</span></button>
-      <button id="menu__play-project-card">發起專案<span>(2)</span></button>
+      <button id="menu__recruit">招募人力<span>(1)</span></button>
+      <button id="menu__create-project">發起專案<span>(2)</span></button>
       <button id="menu__contribute-project">貢獻專案<span>(1)</span></button>
     </div>
     <div>
-      <button id="menu__play-resource-card">源力加持<span>(1)</span></button>
+      <button id="menu__play-force-card">源力加持<span>(1)</span></button>
       <button id="menu__discard-and-end-turn">棄牌後結束回合</button>
     </div>
     <form>
