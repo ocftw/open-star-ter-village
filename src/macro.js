@@ -51,7 +51,7 @@ function gameWillStart() {
   // refill default action points
   ['A', 'B', 'C', 'D', 'E', 'F'].forEach(id => {
     // TODO: replace 3 with rule.actionPoint.default
-    Player.setActionPoint(3, id);
+    Table.Player.setActionPoint(3, id);
   });
 
   // everything set, round start
@@ -103,7 +103,7 @@ function setPlayerAndShowSidebar(playerId, playerNickname) {
       return;
     }
     CurrentPlayer.setId(playerId);
-    Player.setNickname(playerNickname, playerId);
+    Table.Player.setNickname(playerNickname, playerId);
     SpreadsheetApp.getActive().toast(`已設定為${playerNickname}`);
   }
   showUserSidebar();
@@ -139,7 +139,7 @@ function setPlayer6() {
 
 //show sidebar according to playerId
 function showUserSidebar() {
-  const playerNickname = Player.getNickname(CurrentPlayer.getId());
+  const playerNickname = Table.Player.getNickname(CurrentPlayer.getId());
   const htmlTemplate = HtmlService.createTemplateFromFile('userSidebar');
   htmlTemplate.player = playerNickname;
   const sidebar = htmlTemplate.evaluate().setTitle(playerNickname);
@@ -168,12 +168,12 @@ function getPlayerCards() {
 };
 
 function refillActionPoints() {
-  Player.setActionPoint(3, CurrentPlayer.getId());
+  Table.Player.setActionPoint(3, CurrentPlayer.getId());
 }
 
 const CurrentPlayerHelper = (() => {
   const reduceActionPoints = (n = 1) => {
-    Player.setActionPoint(Player.getActionPoint(CurrentPlayer.getId()) - n, CurrentPlayer.getId());
+    Table.Player.setActionPoint(Table.Player.getActionPoint(CurrentPlayer.getId()) - n, CurrentPlayer.getId());
   };
   return {
     reduceActionPoints,
@@ -190,7 +190,7 @@ function playProjectCard(project, resource) {
   if (!project || !resource) {
     throw new Error('請選擇一張專案卡與一張人力卡！');
   }
-  if (Player.getActionPoint(CurrentPlayer.getId()) < Rule.playProjectCard.getActionPoint()) {
+  if (Table.Player.getActionPoint(CurrentPlayer.getId()) < Rule.playProjectCard.getActionPoint()) {
     throw new Error('行動點數不足！');
   }
   if (!Table.ProjectCard.isPlayable()) {
@@ -341,7 +341,7 @@ function resetSpreadsheet() {
     ['A', '玩家1'], ['B', '玩家2'], ['C', '玩家3'],
     ['D', '玩家4'], ['E', '玩家5'], ['F', '玩家6'],
   ].forEach(([playerId, defaultNickname]) => {
-    Player.reset(playerId, defaultNickname);
+    Table.Player.reset(playerId, defaultNickname);
   });
 
   //clear player hands
