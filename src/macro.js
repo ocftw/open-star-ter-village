@@ -1,10 +1,8 @@
 // @ts-check
 
 /** @OnlyCurrentDoc */
-var spreadsheet = SpreadsheetApp.getActive();
-const projectCardsBoard = spreadsheet.getSheetByName('專案卡列表');
-const mainBoard = spreadsheet.getSheetByName('專案圖板/記分板');
-const treeBoard = spreadsheet.getSheetByName('開源生態樹');
+const mainBoard = SpreadsheetApp.getActive().getSheetByName('專案圖板/記分板');
+const treeBoard = SpreadsheetApp.getActive().getSheetByName('開源生態樹');
 
 //build custom menu
 function onOpen() {
@@ -258,7 +256,7 @@ function drawEventCard() {
 function peekNextEventCard() {
   // open source tree is level 1
   if (mainBoard.getRange('E11').getValue() > 0) {
-    mainBoard.getRange('H21').setValue(spreadsheet.getSheetByName('EventDeck').getRange('A1').getDisplayValue());
+    mainBoard.getRange('H21').setValue(SpreadsheetApp.getActive().getSheetByName('EventDeck').getRange('A1').getDisplayValue());
   }
 }
 
@@ -366,7 +364,7 @@ function resetSpreadsheet() {
   Rule.reset();
 
   // set UI back to main board
-  spreadsheet.setActiveSheet(mainBoard);
+  SpreadsheetApp.getActive().setActiveSheet(mainBoard);
   SpreadsheetApp.getActive().toast("已重設表單");
 }
 
