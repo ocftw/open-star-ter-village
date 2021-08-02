@@ -1,5 +1,5 @@
 /**
- * @typedef {Object} TableProjectCardHelpers
+ * @typedef {Object} TableProjectCardController
  * @property {() => boolean} isPlayable whether table is able to placed a project card
  * @property {(card: Card) => void} play play a project card on table
  * @property {(card: Card) => void} remove remove a project card on table
@@ -12,16 +12,16 @@
 /**
  * The method collection to play card, remove card, update score, ... etc. from/on the table.
  * Each property represent a disjoint functionality includes data store and main board rendering update
- * @typedef {object} Table
- * @property {TableProjectCardHelpers} ProjectCard project card methods includes play, isPlayable, place
- * @property {TablePlayerHelpers} Player player methods
+ * @typedef {object} TableController
+ * @property {TableProjectCardController} ProjectCard project card methods includes play, isPlayable, place
+ * @property {TablePlayerController} Player player methods
  *
- * @typedef {Object} TablePlayerHelpers
+ * @typedef {Object} TablePlayerController
  */
-/** @type {Table} */
+/** @type {TableController} */
 const Table = (() => {
   const mainBoard = SpreadsheetApp.getActive().getSheetByName('專案圖板/記分板');
-  /** @type {TableProjectCardHelpers} */
+  /** @type {TableProjectCardController} */
   const ProjectCard = (() => {
     const tableProjectCard = SpreadsheetApp.getActive().getSheetByName('TableProjectCard');
     // table helpers
