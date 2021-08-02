@@ -226,58 +226,48 @@
       renderResourceCardCheckbox();
     }
 
-    function createProject() {
+    function actionCreator(element, successHandler, failureHandler) {
       removeError();
-      showMessage('處理中...', this);
+      showMessage('處理中...', element);
       // disable the button
-      this.disabled = true;
-      const selectedProjectCard = $('input[name="project-cards"]:checked').val();
-      const selectedResourceCard = $('input[name="resource-cards"]:checked').val();
-      google.script.run
+      element.disabled = true;
+      return google.script.run
         .withSuccessHandler(
-          function (hand, element) {
+          function (result, el) {
             removeMessage();
             // return main menu
             gotoMainMenu();
-            showCards(hand);
-            element.disabled = false;
+            if (successHandler) {
+              successHandler(result, el);
+            }
+            el.disabled = false;
           })
         .withFailureHandler(
-          function (error, element) {
+          function (error, el) {
             removeMessage();
-            showError(error, element);
-            element.disabled = false;
+            showError(error, el);
+            if (failureHandler) {
+              failureHandler(error, el);
+            }
+            el.disabled = false;
           })
-        .withUserObject(this)
-        .playProjectCard(selectedProjectCard, selectedResourceCard);
+        .withUserObject(element);
+    }
+
+    function createProject() {
+      const action = actionCreator(this, showCards);
+      const selectedProjectCard = $('input[name="project-cards"]:checked').val();
+      const selectedResourceCard = $('input[name="resource-cards"]:checked').val();
+      action.playProjectCard(selectedProjectCard, selectedResourceCard);
     }
 
     function discardAndEndTurn() {
-      removeError();
-      showMessage('處理中...', this);
-      // disable the button
-      this.disabled = true;
+      const action = actionCreator(this, showCards);
       const selectedProjectCards = $('input[name="project-cards"]:checked')
         .map((_, element) => element.value).get();
       const selectedResourceCards = $('input[name="resource-cards"]:checked')
         .map((_, element) => element.value).get();
-      google.script.run
-        .withSuccessHandler(
-          function (hand, element) {
-            removeMessage();
-            // return main menu
-            gotoMainMenu();
-            showCards(hand);
-            element.disabled = false;
-          })
-        .withFailureHandler(
-          function (error, element) {
-            removeMessage();
-            showError(error, element);
-            element.disabled = false;
-          })
-        .withUserObject(this)
-        .discardCardsAndEndTurn(selectedProjectCards, selectedResourceCards);
+      action.discardCardsAndEndTurn(selectedProjectCards, selectedResourceCards);
     }
   </script>
 </head>
