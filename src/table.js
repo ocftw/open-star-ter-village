@@ -33,6 +33,8 @@
 
 /** @type {TableController} */
 const Table = (() => {
+  const defaultDeck = SpreadsheetApp.getActive().getSheetByName('各牌庫備考');
+  const mainBoard = SpreadsheetApp.getActive().getSheetByName('專案圖板/記分板');
   /** @type {TableProjectCardController} */
   const ProjectCard = (() => {
     const tableProjectCard = SpreadsheetApp.getActive().getSheetByName('TableProjectCard');
@@ -122,9 +124,7 @@ const Table = (() => {
     const getDeactiveCardRange = () => tableProjectCard.getRange('J1:N9');
 
     // table view
-    const defaultDeck = SpreadsheetApp.getActive().getSheetByName('各牌庫備考');
     const projectCardsBoard = SpreadsheetApp.getActive().getSheetByName('專案卡列表');
-    const mainBoard = SpreadsheetApp.getActive().getSheetByName('專案圖板/記分板');
     // find card template range from default deck
     const findCardTemplateRange = (card) => {
       const idx = defaultDeck.getRange('A2:A31').getDisplayValues().map(row => row[0]).findIndex(c => c === card);
