@@ -18,6 +18,17 @@
  *  with initial contribution points
  *
  * @typedef {Object} TablePlayerController
+ * @property {(playerId: string) => string} getNickname get player nickname
+ * @property {(nickname, playerId: string) => void} setNickname set player nick name
+ * @property {(cost: number, playerId: string) => boolean} isActionable return whether player has action points more than cost
+ * @property {(cost: number, playerId: string) => void} reduceActionPoint reduce action points on player
+ * @property {(playerId: string) => boolean} isRecruitable
+ * @property {(cost: number, playerId: string) => number} reduceWorkerTokens
+ * @property {(tokens: number, playerId: string) => number} increaseWorkerTokens
+ * @property {(nextTurnPoints: number, playerId: string) => void} setNextTurnActionPoints
+ * @property {(score: number, playerId: string) => number} earnScore
+ * @property {(playerId: string) => void} resetTurnCounters
+ * @property {(playerId: string, defaultNickname: string) => void} reset
  */
 
 /** @type {TableController} */
@@ -333,8 +344,52 @@ const Table = (() => {
       playerProperty.getRange(`${playerId}2:${playerId}11`).clearContent();
     }
   };
+
+  /** @type {TablePlayerController} */
+  const Player = {
+    setNickname: (nickname, playerId) => {
+      PlayerModel.setNickname(nickname, playerId);
+    },
+    getNickname: (playerId) => {
+      return PlayerModel.getNickname(playerId);
+    },
+    isActionable: (cost, playerId) => {
+      return cost <= PlayerModel.getActionPoint(playerId);
+    },
+    reduceActionPoint: (cost, playerId) => {
+      PlayerModel.setActionPoint(PlayerModel.getActionPoint(playerId) - cost, playerId);
+    },
+    isRecruitable: (playerId) => {
+      return PlayerModel.getWorkerToken(playerId) > 0;
+    },
+    reduceWorkerTokens: (cost, playerId) => {
+      const remain = PlayerModel.getWorkerToken(playerId) - cost;
+      PlayerModel.setWorkerToken(remain, playerId);
+      return remain;
+    },
+    increaseWorkerTokens: (tokens, playerId) => {
+      const result = PlayerModel.getWorkerToken(playerId) + tokens;
+      PlayerModel.setWorkerToken(result, playerId);
+      return result;
+    },
+    setNextTurnActionPoints: (nextTurnPoints, playerId) => {
+      PlayerModel.setActionPoint(nextTurnPoints, playerId);
+    },
+    earnScore: (score, playerId) => {
+      const result = PlayerModel.getScore(playerId) + score;
+      PlayerModel.setScore(result, playerId);
+      return result;
+    },
+    resetTurnCounters: (playerId) => {
+      PlayerModel.resetCounter(playerId);
+    },
+    reset: (playerId, defaultNickname) => {
+      PlayerModel.reset(playerId, defaultNickname);
+    },
+  };
+
   return {
     ProjectCard,
-    Player: PlayerModel,
+    Player,
   };
 })();

@@ -49,7 +49,7 @@ function gameWillStart() {
   // refill default action points
   ['A', 'B', 'C', 'D', 'E', 'F'].forEach(id => {
     // TODO: replace 3 with rule.actionPoint.default
-    Table.Player.setActionPoint(3, id);
+    Table.Player.setNextTurnActionPoints(3, id);
   });
 
   // everything set, round start
@@ -166,17 +166,8 @@ function getPlayerCards() {
 };
 
 function refillActionPoints() {
-  Table.Player.setActionPoint(3, CurrentPlayer.getId());
+  Table.Player.setNextTurnActionPoints(3, CurrentPlayer.getId());
 }
-
-const CurrentPlayerHelper = (() => {
-  const reduceActionPoints = (n = 1) => {
-    Table.Player.setActionPoint(Table.Player.getActionPoint(CurrentPlayer.getId()) - n, CurrentPlayer.getId());
-  };
-  return {
-    reduceActionPoints,
-  }
-})();
 
 /**
  * @exportedFunction
@@ -188,7 +179,7 @@ function playProjectCard(project, resource) {
   if (!project || !resource) {
     throw new Error('請選擇一張專案卡與一張人力卡！');
   }
-  if (Table.Player.getActionPoint(CurrentPlayer.getId()) < Rule.playProjectCard.getActionPoint()) {
+  if (Table.Player.isActionable(Rule.playProjectCard.getActionPoint(), CurrentPlayer.getId())) {
     throw new Error('行動點數不足！');
   }
   if (!Table.ProjectCard.isPlayable()) {
@@ -204,7 +195,7 @@ function playProjectCard(project, resource) {
     const projectCards = CurrentPlayerHand.removeProjectCards([project]);
     const resourceCards = CurrentPlayerHand.removeResourceCards([resource]);
     Table.ProjectCard.placeResourceOnSlotById(project, slotId, CurrentPlayer.getId(), 1, true);
-    CurrentPlayerHelper.reduceActionPoints(Rule.playProjectCard.getActionPoint());
+    Table.Player.reduceActionPoint(Rule.playProjectCard.getActionPoint(), CurrentPlayer.getId());
     return {
       projectCards,
       resourceCards,
