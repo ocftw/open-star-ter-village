@@ -72,7 +72,9 @@ function turnWillStart() { }
 function turnDidEnd() {
   // TODO: calculate score
   // TODO: move the open source tree
-  // TODO: reset and refill current player counters
+  // reset and refill current player counters
+  Table.Player.resetTurnCounters(CurrentPlayer.getId());
+  Table.Player.setNextTurnActionPoints(3, CurrentPlayer.getId());
   // peek next event card
   peekNextEventCard();
   // TODO: move to next player
