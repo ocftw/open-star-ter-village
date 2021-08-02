@@ -187,6 +187,9 @@
 
     function menuRecruit() {
       gotoSubMenu(this);
+      const dom = $('<button id="recruit" class="action">play job card</button>');
+      dom.click(recruit);
+      setActionBar(dom);
 
       renderProjectCardStatic();
       renderResourceCardRadio();
@@ -259,6 +262,12 @@
       const selectedProjectCard = $('input[name="project-cards"]:checked').val();
       const selectedResourceCard = $('input[name="resource-cards"]:checked').val();
       action.playProjectCard(selectedProjectCard, selectedResourceCard);
+    }
+
+    function recruit() {
+      const action = actionCreator(this);
+      const selectedResourceCard = $('input[name="resource-cards"]:checked').val();
+      action.recruit(selectedResourceCard);
     }
 
     function discardAndEndTurn() {

@@ -147,6 +147,13 @@ function showUserSidebar() {
   SpreadsheetApp.getUi().showSidebar(sidebar);
 }
 
+function showProjectDialog(cardName) {
+  const htmlTemplate = HtmlService.createTemplateFromFile('projectDialog');
+  htmlTemplate.cardName = cardName;
+  const dialog = htmlTemplate.evaluate();
+  SpreadsheetApp.getUi().showModalDialog(dialog, 'project dialog');
+}
+
 /**
  * @typedef {Object} Hand player hand cards
  * @property {Card[]} projectCards project cards
@@ -224,6 +231,31 @@ function playProjectCard(project, resource) {
 function removeProjectCard(project) {
   // TODO: return the resource token to players
   Table.ProjectCard.remove(project);
+}
+
+/** @type {(jobCard: Card) => void} */
+function recruit(jobCard) {
+  // TODO: throw error if not a jobCard
+  if (!jobCard) {
+    throw new Error('請選擇一張人力卡！');
+  }
+  const playerId = CurrentPlayer.getId();
+  // TODO: replace 1 with rule.recruit.actionPoint
+  if (!Table.Player.isActionable(1, playerId)) {
+    throw new Error('行動點數不足！');
+  }
+  if (!Table.Player.isRecruitable(playerId)) {
+    throw new Error('人力標記不足！');
+  }
+  // TODO: has available vacancy slot
+  try {
+    // open dialog to choose slots
+    showProjectDialog(jobCard);
+  } catch (err) {
+    Logger.log(`recruit failure ${err}`);
+    // TODO: fallback
+    throw new Error('something went wrong. Please try again');
+  }
 }
 
 /** @type {(resourceCard: Card, projectCard: Card) => void} */
