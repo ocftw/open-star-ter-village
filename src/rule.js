@@ -94,7 +94,7 @@ const Rule = (() => {
       return pair[1];
     },
     setInitContributionPoint: (n, job) => {
-      const rows = ruleSet.getRange('C4').getValues();
+      const rows = ruleSet.getRange('C4:C10').getValues();
       const index = rows.findIndex(row => row[0] === job);
       if (index === -1) {
         Logger.log(`Unknown job type ${job}`);
