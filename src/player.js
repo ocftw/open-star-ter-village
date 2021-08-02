@@ -1,8 +1,7 @@
 // @ts-check
 
-var spreadsheet = SpreadsheetApp.getActive();
-const playerHand = spreadsheet.getSheetByName('PlayerHand');
-const playerProperty = spreadsheet.getSheetByName('PlayerProperty');
+const playerHand = SpreadsheetApp.getActive().getSheetByName('PlayerHand');
+const playerProperty = SpreadsheetApp.getActive().getSheetByName('PlayerProperty');
 
 /**
  * @typedef {Object} CurrentPlayer current player method to access user property service
