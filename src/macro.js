@@ -46,10 +46,11 @@ function gameWillStart() {
   ['A', 'B', 'C', 'D', 'E', 'F'].forEach(id => {
     PlayerHands.dealResourceCardsToPlayerById(ResourceDeck.draw(5), id);
   });
-  // refill default action points
+  // refill default action points and tokens
   ['A', 'B', 'C', 'D', 'E', 'F'].forEach(id => {
     // TODO: replace 3 with rule.actionPoint.default
     Table.Player.setNextTurnActionPoints(3, id);
+    Table.Player.setInitWorkerTokens(10, id);
   });
 
   // everything set, round start

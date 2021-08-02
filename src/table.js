@@ -26,6 +26,7 @@
  * @property {(cost: number, playerId: string) => number} reduceWorkerTokens
  * @property {(tokens: number, playerId: string) => number} increaseWorkerTokens
  * @property {(nextTurnPoints: number, playerId: string) => void} setNextTurnActionPoints
+ * @property {(initTokens: number, playerId: string) => void} setInitWorkerTokens
  * @property {(score: number, playerId: string) => number} earnScore
  * @property {(playerId: string) => void} resetTurnCounters
  * @property {(playerId: string, defaultNickname: string) => void} reset
@@ -424,6 +425,10 @@ const Table = (() => {
     setNextTurnActionPoints: (nextTurnPoints, playerId) => {
       PlayerModel.setActionPoint(nextTurnPoints, playerId);
       PlayerView.setActionPoint(nextTurnPoints, playerId);
+    },
+    setInitWorkerTokens: (initTokens, playerId) => {
+      PlayerModel.setWorkerToken(initTokens, playerId);
+      PlayerView.setWorkerToken(initTokens, playerId);
     },
     earnScore: (score, playerId) => {
       const result = PlayerModel.getScore(playerId) + score;
