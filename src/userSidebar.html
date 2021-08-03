@@ -5,14 +5,8 @@
   <base target="_top">
   <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
   <style>
-    li {
-      display: block;
-      height: 19.5px;
-    }
-
-    input[type="radio"],
-    input[type="checkbox"] {
-      margin-left: -24px;
+    .hide {
+      visibility: hidden;
     }
   </style>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
@@ -36,7 +30,10 @@
       list.empty();
       for (var i = 0; i < projectCards.length; i++) {
         const id = `prj-${i}`;
-        const dom = `<li id="${id}" name="project-cards">${projectCards[i]}</li>`;
+        const dom = `<div>
+            <input type="radio" class="hide" id="${id}" name="project-cards" value="${projectCards[i]}" />
+            <label for="${id}">${projectCards[i]}</label>
+          </div>`;
         list.append(dom);
       }
     }
@@ -45,7 +42,10 @@
       list.empty();
       for (var i = 0; i < resourceCards.length; i++) {
         const id = `res-${i}`;
-        const dom = `<li id="${id}" name="resource-cards">${resourceCards[i]}</li>`;
+        const dom = `<div>
+            <input type="radio" class="hide" id="${id}" name="resource-cards" value="${resourceCards[i]}" />
+            <label for="${id}">${resourceCards[i]}</label>
+          </div>`;
         list.append(dom);
       }
     }
@@ -80,104 +80,66 @@
     }
 
     const renderProjectCardRadio = () => {
-      // replace from static list
-      $('li[name="project-cards"]').each(function (idx) {
-        const projectCard = $(this).text();
-        const id = `prj-${idx}`;
-        const dom = `<div>
-            <input type="radio" id="${id}" class="card card-project" name="project-cards" value="${projectCard}" />
-            <label for="${id}">${projectCard}</label>
-          </div>`;
-        $(this).replaceWith(dom);
+      $('input[name="project-cards"]').each(function () {
+        $(this).removeClass('hide');
       });
-
       // replace from checkbox
       $('input[name="project-cards"][type="checkbox"]').each(function (idx) {
         const projectCard = $(this).val();
         const id = `prj-${idx}`;
-        const dom = `<input type="radio" id="${id}" class="card card-project" name="project-cards" value="${projectCard}">`;
+        const dom = `<input type="radio" id="${id}" name="project-cards" value="${projectCard}">`;
         $(this).replaceWith(dom);
       });
     };
 
     const renderResourceCardRadio = () => {
-      // replace from static list
-      $('li[name="resource-cards"]').each(function (idx) {
-        const resourceCard = $(this).text();
-        const id = `res-${idx}`;
-        const dom = `<div>
-            <input type="radio" id="${id}" class="card card-resource" name="resource-cards" value="${resourceCard}" />
-            <label for="${id}">${resourceCard}</label>
-          </div>`;
-        $(this).replaceWith(dom);
+      $('input[name="resource-cards"]').each(function () {
+        $(this).removeClass('hide');
       });
-
       // replace from checkbox
       $('input[name="resource-cards"][type="checkbox"]').each(function (idx) {
         const resourceCard = $(this).val();
         const id = `res-${idx}`;
-        const dom = `<input type="radio" id="${id}" class="card card-resource" name="resource-cards" value="${resourceCard}">`;
+        const dom = `<input type="radio" id="${id}" name="resource-cards" value="${resourceCard}">`;
         $(this).replaceWith(dom);
       });
     };
 
     const renderProjectCardCheckbox = () => {
-      // replace from static list
-      $('li[name="project-cards"]').each(function (idx) {
-        const projectCard = $(this).text();
-        const id = `prj-${idx}`;
-        const dom = `<div>
-            <input type="checkbox" id="${id}" class="card card-project" name="project-cards" value="${projectCard}" />
-            <label for="${id}">${projectCard}</label>
-          </div>`;
-        $(this).replaceWith(dom);
+      $('input[name="project-cards"]').each(function () {
+        $(this).removeClass('hide');
       });
-
       // replace from radio
       $('input[name="project-cards"][type="radio"]').each(function (idx) {
         const projectCard = $(this).val();
         const id = `prj-${idx}`;
-        const dom = `<input type="checkbox" id="${id}" class="card card-project" name="project-cards" value="${projectCard}">`;
+        const dom = `<input type="checkbox" id="${id}" name="project-cards" value="${projectCard}">`;
         $(this).replaceWith(dom);
       });
     };
 
     const renderResourceCardCheckbox = () => {
-      // replace from static list
-      $('li[name="resource-cards"]').each(function (idx) {
-        const resourceCard = $(this).text();
-        const id = `res-${idx}`;
-        const dom = `<div>
-            <input type="checkbox" id="${id}" class="card card-resource" name="resource-cards" value="${resourceCard}" />
-            <label for="${id}">${resourceCard}</label>
-          </div>`;
-        $(this).replaceWith(dom);
+      $('input[name="resource-cards"]').each(function () {
+        $(this).removeClass('hide');
       });
-
       // replace from radio
       $('input[name="resource-cards"][type="radio"]').each(function (idx) {
         const resourceCard = $(this).val();
         const id = `res-${idx}`;
-        const dom = `<input type="checkbox" id="${id}" class="card card-resource" name="resource-cards" value="${resourceCard}">`;
+        const dom = `<input type="checkbox" id="${id}" name="resource-cards" value="${resourceCard}">`;
         $(this).replaceWith(dom);
       });
     };
 
     const renderProjectCardStatic = () => {
-      $('input[name="project-cards"]').each(function (idx) {
-        const projectCard = $(this).val();
-        const id = `prj-${idx}`;
-        const dom = `<li id="${id}" name="project-cards">${projectCard}</li>`;
-        $(this).parent().replaceWith(dom);
+      $('input[name="project-cards"]').each(function () {
+        $(this).addClass('hide');
       });
     };
 
     const renderResourceCardStatic = () => {
       $('input[name="resource-cards"]').each(function (idx) {
-        const resourceCard = $(this).val();
-        const id = `res-${idx}`;
-        const dom = `<li id="${id}" name="resource-cards">${resourceCard}</li>`;
-        $(this).parent().replaceWith(dom);
+        $(this).addClass('hide');
       });
     };
 
@@ -303,9 +265,9 @@
 
         const content = `<div id="recruit-projects">
           <h2>場上專案</h2>
-          <ul id="table-projects">
+          <div class="form-group" id="table-projects">
             ${slots}
-          </ul>
+          </div>
         </div>`;
 
         const processBtn = $('<button class="blue" id="recruit">process</button>');
@@ -367,9 +329,9 @@
     </div>
     <div class="block" id="first-level-menu">
       <h2>專案卡</h2>
-      <ul id="project-cards" class="form-group">Loading...</ul>
+      <div id="project-cards" class="form-group">Loading...</div>
       <h2>資源卡</h2>
-      <ul id="resource-cards" class="form-group">Loading...</ul>
+      <div id="resource-cards" class="form-group">Loading...</div>
     </div>
     <div class="block" id="second-level-menu"></div>
     <div class="block" id="action-bar"></div>
