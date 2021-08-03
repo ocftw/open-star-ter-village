@@ -68,36 +68,35 @@ const Table = (() => {
     },
   };
 
-  /** @type {TableProjectCardController} */
-  const ProjectCard = (() => {
-    const tableProjectCard = SpreadsheetApp.getActive().getSheetByName('TableProjectCard');
-    // table model
-    const getMax = () => tableProjectCard.getRange('B1').getValue();
-    const setMax = (max) => {
+  // table project card model
+  const tableProjectCard = SpreadsheetApp.getActive().getSheetByName('TableProjectCard');
+  const ProjectCardModel = {
+    getMax: () => tableProjectCard.getRange('B1').getValue(),
+    setMax: (max) => {
       tableProjectCard.getRange('B1').setValue(max);
-    };
-    const getCount = () => tableProjectCard.getRange('B2').getValue();
-    const setCount = (count) => tableProjectCard.getRange('B2').setValue(count);
-    const findEmptyId = () => {
-      const cards = tableProjectCard.getRange(11, 1, getMax(), 1).getValues().map(row => row[0]);
+    },
+    getCount: () => tableProjectCard.getRange('B2').getValue(),
+    setCount: (count) => tableProjectCard.getRange('B2').setValue(count),
+    findEmptyId: () => {
+      const cards = tableProjectCard.getRange(11, 1, ProjectCardModel.getMax(), 1).getValues().map(row => row[0]);
       const idx = cards.findIndex(c => !c);
       if (idx < 0) {
         Logger.log('Cannot find project card slot on table');
         throw new Error('Cannot find project card slot on table');
       }
       return idx;
-    };
-    const findCardId = (card) => {
-      const cards = tableProjectCard.getRange(11, 1, getMax(), 1).getValues().map(row => row[0]);
+    },
+    findCardId: (card) => {
+      const cards = tableProjectCard.getRange(11, 1, ProjectCardModel.getMax(), 1).getValues().map(row => row[0]);
       const idx = cards.findIndex(c => c === card);
       if (idx < 0) {
         Logger.log(`Cannot find project card ${card} on table`);
         throw new Error(`Cannot find project card ${card} on table`);
       }
       return idx;
-    };
+    },
     /** @type {(spec: ProjectCardSpecObject, id: number) => void} */
-    const addCardSpecById = (spec, id) => {
+    addCardSpecById: (spec, id) => {
       Logger.log(`add card spec by id ${id}`);
       // set basis info
       const basicInfoRow = [spec.name, spec.type];
@@ -117,9 +116,9 @@ const Table = (() => {
       });
       tableProjectCard.getRange(21 + 10 * id, 5, spec.groups.length, 3).setValues(groupInfoRows);
       // increament the project card count
-      setCount(getCount() + 1);
-    };
-    const removeCardById = (id) => {
+      ProjectCardModel.setCount(ProjectCardModel.getCount() + 1);
+    },
+    removeCardById: (id) => {
       // clear name, type, owner, and exts. 4 is the ext buffers
       tableProjectCard.getRange(11 + id, 1, 1, 3 + 4).clearContent();
       // clear slots info
@@ -127,42 +126,44 @@ const Table = (() => {
       // clear groups info
       tableProjectCard.getRange(21 + 10 * id, 5, 6, 3).clearContent();
       // decreament the project card count
-      setCount(getCount() - 1);
-    };
-    const removeAllCards = () => {
+      ProjectCardModel.setCount(ProjectCardModel.getCount() - 1);
+    },
+    removeAllCards: () => {
       // clear name, type, owner, and exts. 4 is the ext buffers
-      tableProjectCard.getRange(11, 1, getMax(), 3 + 4).clearContent();
-      [...new Array(getMax() - 0)].map((_, i) => i + 0).forEach((id) => {
+      tableProjectCard.getRange(11, 1, ProjectCardModel.getMax(), 3 + 4).clearContent();
+      [...new Array(ProjectCardModel.getMax() - 0)].map((_, i) => i + 0).forEach((id) => {
         // clear slots info
         tableProjectCard.getRange(21 + 10 * id, 1, 6, 4).clearContent();
         // clear groups info
         tableProjectCard.getRange(21 + 10 * id, 5, 6, 3).clearContent();
       });
-      setCount(0);
-    };
-    const getProjectTypeById = (id) => tableProjectCard.getRange(11 + id, 2).getValue();
-    const setProjectTypeById = (type, id) => tableProjectCard.getRange(11 + id, 2).setValue(type);
-    const getProjectOnwerById = (id) => tableProjectCard.getRange(11 + id, 3).getValue();
-    const setProjectOnwerById = (ownerId, id) => tableProjectCard.getRange(11 + id, 3).setValue(ownerId);
-    const setPlayerOnSlotById = (playerId, id, slotId) => {
+      ProjectCardModel.setCount(0);
+    },
+    getProjectTypeById: (id) => tableProjectCard.getRange(11 + id, 2).getValue(),
+    setProjectTypeById: (type, id) => tableProjectCard.getRange(11 + id, 2).setValue(type),
+    getProjectOnwerById: (id) => tableProjectCard.getRange(11 + id, 3).getValue(),
+    setProjectOnwerById: (ownerId, id) => tableProjectCard.getRange(11 + id, 3).setValue(ownerId),
+    setPlayerOnSlotById: (playerId, id, slotId) => {
       if (tableProjectCard.getRange(21 + 10 * id + slotId, 2).getValue()) {
         Logger.log(`Slot ${slotId} on card ${id} is occupied`);
         throw new Error(`Slot ${slotId} on card ${id} is occupied`);
       }
       tableProjectCard.getRange(21 + 10 * id + slotId, 2).setValue(playerId);
-    };
-    const getContributionPointOnSlotById = (id, slotId) => tableProjectCard.getRange(21 + 10 * id + slotId, 3).getValue();
-    const setContributionPointOnSlotById = (points, id, slotId) => tableProjectCard.getRange(21 + 10 * id + slotId, 3).setValue(points);
-    const getDefaultCardRange = () => tableProjectCard.getRange('D1:H9');
-    const getDeactiveCardRange = () => tableProjectCard.getRange('J1:N9');
+    },
+    getContributionPointOnSlotById: (id, slotId) => tableProjectCard.getRange(21 + 10 * id + slotId, 3).getValue(),
+    setContributionPointOnSlotById: (points, id, slotId) => tableProjectCard.getRange(21 + 10 * id + slotId, 3).setValue(points),
+    getDefaultCardRange: () => tableProjectCard.getRange('D1:H9'),
+    getDeactiveCardRange: () => tableProjectCard.getRange('J1:N9'),
+  };
 
-    // table controller
-    const isPlayable = () => getMax() > getCount();
+  /** @type {TableProjectCardController} */
+  const ProjectCard = (() => {
+    const isPlayable = () => ProjectCardModel.getMax() > ProjectCardModel.getCount();
     const play = (card) => {
       const cardSpec = ProjectCardRef.getSpecByCard(card);
-      const emptyIdx = findEmptyId();
+      const emptyIdx = ProjectCardModel.findEmptyId();
       // set card data on hidden board
-      addCardSpecById(cardSpec, emptyIdx);
+      ProjectCardModel.addCardSpecById(cardSpec, emptyIdx);
 
       // render card on table
       const cardRange = ProjectCardView.findCardTemplateRange(card);
@@ -171,12 +172,12 @@ const Table = (() => {
       cardRange.copyTo(tableRange);
     };
     const remove = (card) => {
-      const cardIdx = findCardId(card);
+      const cardIdx = ProjectCardModel.findCardId(card);
       // remove card data on hidden board
-      removeCardById(cardIdx);
+      ProjectCardModel.removeCardById(cardIdx);
 
       // render card on table
-      const defaultCardRange = getDefaultCardRange();
+      const defaultCardRange = ProjectCardModel.getDefaultCardRange();
       // find table range to paste the default card
       const tableRange = ProjectCardView.findTableRangeById(cardIdx);
 
@@ -185,44 +186,44 @@ const Table = (() => {
     const reset = () => {
       // reset rendering
       [0, 1, 2, 3, 4, 5].map(ProjectCardView.findTableRangeById).forEach(range => {
-        getDefaultCardRange().copyTo(range);
+        ProjectCardModel.getDefaultCardRange().copyTo(range);
       });
       [6, 7].map(ProjectCardView.findTableRangeById).forEach(range => {
-        getDeactiveCardRange().copyTo(range);
+        ProjectCardModel.getDeactiveCardRange().copyTo(range);
       });
       // reset cards
-      removeAllCards();
+      ProjectCardModel.removeAllCards();
       // reset max
-      setMax(6);
+      ProjectCardModel.setMax(6);
     };
     const activateNSlots = (n) => {
-      const currentMax = getMax();
+      const currentMax = ProjectCardModel.getMax();
       if (n > currentMax) {
         // activate slots
         [...new Array(n - currentMax)].map((_, i) => i + currentMax)
           .map(ProjectCardView.findTableRangeById).forEach(range => {
-            getDefaultCardRange().copyTo(range);
+            ProjectCardModel.getDefaultCardRange().copyTo(range);
           });
       }
       if (n < currentMax) {
         // deactivate slots
         [...new Array(currentMax - n)].map((_, i) => i + n)
           .map(ProjectCardView.findTableRangeById).forEach(range => {
-            getDeactiveCardRange().copyTo(range);
+            ProjectCardModel.getDeactiveCardRange().copyTo(range);
           });
       }
       // update maximum
-      setMax(n);
+      ProjectCardModel.setMax(n);
     };
     const placeResourceOnSlotById = (project, slotId, playerId, initialPoints, isOwner = false) => {
-      const cardId = findCardId(project);
+      const cardId = ProjectCardModel.findCardId(project);
       // set player on slot
-      setPlayerOnSlotById(playerId, cardId, slotId);
+      ProjectCardModel.setPlayerOnSlotById(playerId, cardId, slotId);
       // set initial contribution point
-      setContributionPointOnSlotById(initialPoints, cardId, slotId);
+      ProjectCardModel.setContributionPointOnSlotById(initialPoints, cardId, slotId);
       // TODO: add contribution point to group
       if (isOwner) {
-        setProjectOnwerById(playerId, cardId);
+        ProjectCardModel.setProjectOnwerById(playerId, cardId);
       }
       Logger.log(`player ${playerId} occupy slot ${slotId} on project ${project} on data table`);
 
