@@ -82,52 +82,44 @@
     const renderProjectCardRadio = () => {
       $('input[name="project-cards"]').each(function () {
         $(this).removeClass('hide');
+        $(this).prop('checked', false);
       });
       // replace from checkbox
       $('input[name="project-cards"][type="checkbox"]').each(function (idx) {
-        const projectCard = $(this).val();
-        const id = `prj-${idx}`;
-        const dom = `<input type="radio" id="${id}" name="project-cards" value="${projectCard}">`;
-        $(this).replaceWith(dom);
+        $(this).prop('type', "radio");
       });
     };
 
     const renderResourceCardRadio = () => {
       $('input[name="resource-cards"]').each(function () {
         $(this).removeClass('hide');
+        $(this).prop('checked', false);
       });
       // replace from checkbox
-      $('input[name="resource-cards"][type="checkbox"]').each(function (idx) {
-        const resourceCard = $(this).val();
-        const id = `res-${idx}`;
-        const dom = `<input type="radio" id="${id}" name="resource-cards" value="${resourceCard}">`;
-        $(this).replaceWith(dom);
+      $('input[name="resource-cards"][type="checkbox"]').each(function () {
+        $(this).prop('type', "radio");
       });
     };
 
     const renderProjectCardCheckbox = () => {
       $('input[name="project-cards"]').each(function () {
         $(this).removeClass('hide');
+        $(this).prop('checked', false);
       });
       // replace from radio
       $('input[name="project-cards"][type="radio"]').each(function (idx) {
-        const projectCard = $(this).val();
-        const id = `prj-${idx}`;
-        const dom = `<input type="checkbox" id="${id}" name="project-cards" value="${projectCard}">`;
-        $(this).replaceWith(dom);
+        $(this).prop('type', "checkbox");
       });
     };
 
     const renderResourceCardCheckbox = () => {
       $('input[name="resource-cards"]').each(function () {
         $(this).removeClass('hide');
+        $(this).prop('checked', false);
       });
       // replace from radio
       $('input[name="resource-cards"][type="radio"]').each(function (idx) {
-        const resourceCard = $(this).val();
-        const id = `res-${idx}`;
-        const dom = `<input type="checkbox" id="${id}" name="resource-cards" value="${resourceCard}">`;
-        $(this).replaceWith(dom);
+        $(this).prop('type', "checkbox");
       });
     };
 
