@@ -157,9 +157,9 @@ const Table = (() => {
   };
 
   /** @type {TableProjectCardController} */
-  const ProjectCard = (() => {
-    const isPlayable = () => ProjectCardModel.getMax() > ProjectCardModel.getCount();
-    const play = (card) => {
+  const ProjectCard = {
+    isPlayable: () => ProjectCardModel.getMax() > ProjectCardModel.getCount(),
+    play: (card) => {
       const cardSpec = ProjectCardRef.getSpecByCard(card);
       const emptyIdx = ProjectCardModel.findEmptyId();
       // set card data on hidden board
@@ -170,8 +170,8 @@ const Table = (() => {
       // find table range to paste the card
       const tableRange = ProjectCardView.findTableRangeById(emptyIdx);
       cardRange.copyTo(tableRange);
-    };
-    const remove = (card) => {
+    },
+    remove: (card) => {
       const cardIdx = ProjectCardModel.findCardId(card);
       // remove card data on hidden board
       ProjectCardModel.removeCardById(cardIdx);
@@ -182,8 +182,8 @@ const Table = (() => {
       const tableRange = ProjectCardView.findTableRangeById(cardIdx);
 
       defaultCardRange.copyTo(tableRange);
-    };
-    const reset = () => {
+    },
+    reset: () => {
       // reset rendering
       [0, 1, 2, 3, 4, 5].map(ProjectCardView.findTableRangeById).forEach(range => {
         ProjectCardModel.getDefaultCardRange().copyTo(range);
@@ -195,8 +195,8 @@ const Table = (() => {
       ProjectCardModel.removeAllCards();
       // reset max
       ProjectCardModel.setMax(6);
-    };
-    const activateNSlots = (n) => {
+    },
+    activateNSlots: (n) => {
       const currentMax = ProjectCardModel.getMax();
       if (n > currentMax) {
         // activate slots
@@ -214,8 +214,8 @@ const Table = (() => {
       }
       // update maximum
       ProjectCardModel.setMax(n);
-    };
-    const placeResourceOnSlotById = (project, slotId, playerId, initialPoints, isOwner = false) => {
+    },
+    placeResourceOnSlotById: (project, slotId, playerId, initialPoints, isOwner = false) => {
       const cardId = ProjectCardModel.findCardId(project);
       // set player on slot
       ProjectCardModel.setPlayerOnSlotById(playerId, cardId, slotId);
@@ -233,17 +233,8 @@ const Table = (() => {
       // set initial contribution point
       ProjectCardView.setContributionPointOnTableSlotById(initialPoints, cardId, slotId);
       Logger.log(`render the player ${playerId} takes slot ${slotId} on project ${project} on table`);
-    };
-
-    return {
-      isPlayable,
-      play,
-      remove,
-      reset,
-      activateNSlots,
-      placeResourceOnSlotById,
-    };
-  })();
+    },
+  };
 
   /**
    * @typedef {Object} TablePlayerModel player methods
