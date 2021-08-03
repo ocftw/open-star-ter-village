@@ -232,6 +232,7 @@ function removeProjectCard(project) {
 }
 
 /**
+ * @exportedFunction
  * listAvailableProjectByJob
  *
  * @param {Card} jobCard
@@ -259,6 +260,7 @@ function listAvailableProjectByJob(jobCard) {
 }
 
 /**
+ * @exportedFunction
  *
  * @param {Card} project
  * @param {number} slotId
