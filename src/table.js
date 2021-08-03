@@ -13,6 +13,7 @@
  * @property {(card: Card) => void} remove remove a project card on table
  * @property {() => void} reset remove all project cards and reset max slots
  * @property {(n: number) => void} activateNSlots activate N project card slots on table
+ * @property {(jobCard: Card) => {name: Card, slotId: number}[]} listAvailableProjectByJob list all available project card names have given job vacancy
  * @property {(projectCard: Card, slotIdx: number, playerId: string, initialPoints: number,
  *  isOwner?: boolean) => void} placeResourceOnSlotById place an arbitrary resource card on the project slot by slot index
  *  with initial contribution points

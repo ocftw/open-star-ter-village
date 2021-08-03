@@ -147,10 +147,8 @@ function showUserSidebar() {
   SpreadsheetApp.getUi().showSidebar(sidebar);
 }
 
-function showProjectDialog(cardName) {
-  const htmlTemplate = HtmlService.createTemplateFromFile('projectDialog');
-  htmlTemplate.cardName = cardName;
-  const dialog = htmlTemplate.evaluate();
+function showProjectDialog() {
+  const dialog = HtmlService.createHtmlOutputFromFile('projectDialog');
   SpreadsheetApp.getUi().showModalDialog(dialog, 'project dialog');
 }
 
@@ -233,7 +231,12 @@ function removeProjectCard(project) {
   Table.ProjectCard.remove(project);
 }
 
-/** @type {(jobCard: Card) => void} */
+/**
+ * recruit
+ *
+ * @param {Card} jobCard
+ * @returns {{name: string, slotId: number}[]}
+ */
 function recruit(jobCard) {
   // TODO: throw error if not a jobCard
   if (!jobCard) {
@@ -247,15 +250,11 @@ function recruit(jobCard) {
   if (!Table.Player.isRecruitable(playerId)) {
     throw new Error('人力標記不足！');
   }
-  // TODO: has available vacancy slot
-  try {
-    // open dialog to choose slots
-    showProjectDialog(jobCard);
-  } catch (err) {
-    Logger.log(`recruit failure ${err}`);
-    // TODO: fallback
-    throw new Error('something went wrong. Please try again');
+  const vacancies = Table.ProjectCard.listAvailableProjectByJob(jobCard);
+  if (vacancies.length === 0) {
+    throw new Error('沒有適合的職缺！');
   }
+  return vacancies;
 }
 
 /** @type {(resourceCard: Card, projectCard: Card) => void} */
