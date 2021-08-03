@@ -187,11 +187,15 @@
       setActionBar(buttons);
     };
 
+    const clearExtenedSubMenu = () => {
+      $('#second-level-menu').empty();
+    };
+
     const resetMenu = () => {
       $('button[id^="menu__"]').each(function () {
         $(this).prop('disabled', false).removeClass('action');
       });
-      $('#second-level-menu').empty();
+      clearExtenedSubMenu();
       clearActionBar();
     };
 
@@ -209,8 +213,8 @@
 
     function menuRecruit() {
       gotoSubMenu(this);
-      const dom = $('<button id="recruit" class="green">play job card</button>');
-      dom.click(recruit);
+      const dom = $('<button id="list-project-card-by-job" class="green">play job card</button>');
+      dom.click(listProjectCardByJob);
       setActionBar(dom);
 
       renderProjectCardStatic();
@@ -287,7 +291,7 @@
       action.playProjectCard(selectedProjectCard, selectedResourceCard);
     }
 
-    function recruit() {
+    function listProjectCardByJob() {
       const action = actionCreator(this, function (vacancies) {
         const slots = vacancies.map((vacancy, idx) => {
           const id = `tVcc-${idx}`;
@@ -297,25 +301,38 @@
           </div>`;
         });
 
-        const dom = `<div id="recruit-projects">
+        const content = `<div id="recruit-projects">
           <h2>場上專案</h2>
           <ul id="table-projects">
             ${slots}
           </ul>
         </div>`;
 
-        const processBtn = $('<button class="blue">process</button>');
+        const processBtn = $('<button class="blue" id="recruit">process</button>');
+        processBtn.click(recruit);
 
-        const cancelBtn = $('<button>cancel</button>');
-        cancelBtn.click(function () {
+        const backBtn = $('<button>back</button>');
+        backBtn.click(function () {
           $('#recruit-projects').remove();
-          menuRecruit();
+          const dom = $('<button id="list-project-card-by-job" class="green">play job card</button>');
+          dom.click(listProjectCardByJob);
+          setActionBar(dom);
         });
 
-        extendSubMenu(dom, [processBtn, cancelBtn]);
+        extendSubMenu(content, [backBtn, processBtn]);
       });
       const selectedResourceCard = $('input[name="resource-cards"]:checked').val();
-      action.recruit(selectedResourceCard);
+      action.listAvailableProjectByJob(selectedResourceCard);
+    }
+
+    function recruit() {
+      const action = actionCreator(this, function (hand) {
+        showCards(hand);
+        gotoMainMenu();
+      });
+      const selectedProjectName = $('input[name="table-projects"]:checked').val();
+      const selectedProjectSlot = Number($('input[name="table-projects"]:checked').prop('slot'));
+      action.recruit(selectedProjectName, selectedProjectSlot);
     }
 
     function discardAndEndTurn() {

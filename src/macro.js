@@ -232,12 +232,12 @@ function removeProjectCard(project) {
 }
 
 /**
- * recruit
+ * listAvailableProjectByJob
  *
  * @param {Card} jobCard
  * @returns {{name: string, slotId: number}[]}
  */
-function recruit(jobCard) {
+function listAvailableProjectByJob(jobCard) {
   // TODO: throw error if not a jobCard
   if (!jobCard) {
     throw new Error('請選擇一張人力卡！');
@@ -254,7 +254,39 @@ function recruit(jobCard) {
   if (vacancies.length === 0) {
     throw new Error('沒有適合的職缺！');
   }
+  PropertiesService.getUserProperties().setProperty('LISTED_JOB', jobCard);
   return vacancies;
+}
+
+/**
+ *
+ * @param {Card} project
+ * @param {number} slotId
+ * @returns {Hand}
+ */
+function recruit(project, slotId) {
+  const jobCard = PropertiesService.getUserProperties().getProperty('LISTED_JOB');
+  if (!jobCard) {
+    Logger.log('recruit failure. Cannot find jobCard from properties service');
+    throw new Error('something went wrong. Please try again');
+  }
+  try {
+    const projectCards = CurrentPlayerHand.listProjectCards();
+    const resourceCards = CurrentPlayerHand.removeResourceCards([jobCard]);
+    const playerId = CurrentPlayer.getId();
+    Table.ProjectCard.placeResourceOnSlotById(project, slotId, playerId, 1);
+    Table.Player.reduceActionPoint(1, playerId);
+    Table.Player.reduceWorkerTokens(1, playerId);
+
+    return {
+      projectCards,
+      resourceCards,
+    }
+  } catch (err) {
+    Logger.log(`recruit failure. ${err}`);
+    // TODO: fallback
+    throw new Error('something went wront. Please try again');
+  }
 }
 
 /** @type {(resourceCard: Card, projectCard: Card) => void} */
