@@ -183,6 +183,8 @@
         $(this).prop('disabled', false).removeClass('action');
       });
       clearActionBar();
+      renderProjectCardStatic();
+      renderResourceCardStatic();
     };
 
     function menuRecruit() {
@@ -238,8 +240,6 @@
         .withSuccessHandler(
           function (result, el) {
             removeMessage();
-            // return main menu
-            gotoMainMenu();
             if (successHandler) {
               successHandler(result, el);
             }
@@ -258,7 +258,10 @@
     }
 
     function createProject() {
-      const action = actionCreator(this, showCards);
+      const action = actionCreator(this, function (hand) {
+        showCards(hand);
+        gotoMainMenu();
+      });
       const selectedProjectCard = $('input[name="project-cards"]:checked').val();
       const selectedResourceCard = $('input[name="resource-cards"]:checked').val();
       action.playProjectCard(selectedProjectCard, selectedResourceCard);
@@ -271,7 +274,10 @@
     }
 
     function discardAndEndTurn() {
-      const action = actionCreator(this, showCards);
+      const action = actionCreator(this, function (hand) {
+        showCards(hand);
+        gotoMainMenu();
+      });
       const selectedProjectCards = $('input[name="project-cards"]:checked')
         .map((_, element) => element.value).get();
       const selectedResourceCards = $('input[name="resource-cards"]:checked')
