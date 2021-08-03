@@ -4,6 +4,17 @@
 <head>
   <base target="_top">
   <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
+  <style>
+    li {
+      display: block;
+      height: 19.5px;
+    }
+
+    input[type="radio"],
+    input[type="checkbox"] {
+      margin-left: -24px;
+    }
+  </style>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
   <script>
     // The code in this function runs when the page is loaded.
@@ -172,30 +183,33 @@
 
     const extendSubMenu = (content, buttons) => {
       clearActionBar();
-      $('#action-bar').before(content);
+      $('#second-level-menu').append(content);
       setActionBar(buttons);
     };
 
-    const gotoSubMenu = (element) => {
+    const resetMenu = () => {
       $('button[id^="menu__"]').each(function () {
         $(this).prop('disabled', false).removeClass('action');
       });
+      $('#second-level-menu').empty();
       clearActionBar();
-      $(element).prop('disabled', true).addClass('action');
+    };
+
+    const gotoSubMenu = (element) => {
+      resetMenu();
+      $(element).prop('disabled', true);
     };
 
     const gotoMainMenu = () => {
-      $('button[id^="menu__"]').each(function () {
-        $(this).prop('disabled', false).removeClass('action');
-      });
-      clearActionBar();
+      resetMenu();
+
       renderProjectCardStatic();
       renderResourceCardStatic();
     };
 
     function menuRecruit() {
       gotoSubMenu(this);
-      const dom = $('<button id="recruit" class="action">play job card</button>');
+      const dom = $('<button id="recruit" class="green">play job card</button>');
       dom.click(recruit);
       setActionBar(dom);
 
@@ -205,7 +219,7 @@
 
     function menuCreateProject() {
       gotoSubMenu(this);
-      const dom = $('<button id="create-project" class="action">create project</button>');
+      const dom = $('<button id="create-project" class="blue">create project</button>');
       dom.click(createProject);
       setActionBar(dom);
 
@@ -229,7 +243,7 @@
 
     function menuDiscardAndEndTurn() {
       gotoSubMenu(this);
-      const dom = $('<button id="discard-and-end-turn" class="action">discard and end turn</button>');
+      const dom = $('<button id="discard-and-end-turn" class="red">discard and end turn</button>');
       dom.click(discardAndEndTurn);
       setActionBar(dom);
 
@@ -290,7 +304,7 @@
           </ul>
         </div>`;
 
-        const processBtn = $('<button class="action">process</button>');
+        const processBtn = $('<button class="blue">process</button>');
 
         const cancelBtn = $('<button>cancel</button>');
         cancelBtn.click(function () {
@@ -323,22 +337,25 @@
     <h1>
       <?= player ?>的手牌
     </h1>
-    <div>
-      <button id="menu__recruit">招募人力<span>(1)</span></button>
-      <button id="menu__create-project">發起專案<span>(2)</span></button>
-      <button id="menu__contribute-project">貢獻專案<span>(1)</span></button>
+    <div class="block" id="menu">
+      <div>
+        <button id="menu__recruit">招募人力<span>(1)</span></button>
+        <button id="menu__create-project">發起專案<span>(2)</span></button>
+        <button id="menu__contribute-project">貢獻專案<span>(1)</span></button>
+      </div>
+      <div>
+        <button id="menu__play-force-card">源力加持<span>(1)</span></button>
+        <button id="menu__discard-and-end-turn">棄牌後結束回合</button>
+      </div>
     </div>
-    <div>
-      <button id="menu__play-force-card">源力加持<span>(1)</span></button>
-      <button id="menu__discard-and-end-turn">棄牌後結束回合</button>
-    </div>
-    <form>
+    <div class="block" id="first-level-menu">
       <h2>專案卡</h2>
       <ul id="project-cards" class="form-group">Loading...</ul>
       <h2>資源卡</h2>
       <ul id="resource-cards" class="form-group">Loading...</ul>
-      <div id="action-bar"></div>
-    </form>
+    </div>
+    <div class="block" id="second-level-menu"></div>
+    <div class="block" id="action-bar"></div>
   </div>
 </body>
 
