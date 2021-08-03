@@ -119,6 +119,18 @@ const Table = (() => {
       // increament the project card count
       ProjectCardModel.setCount(ProjectCardModel.getCount() + 1);
     },
+    listCardIds: () => {
+      const cards = tableProjectCard.getRange(11, 1, ProjectCardModel.getMax(), 1).getValues().map(row => row[0]);
+      const cardWithIds = cards.map((card, id) => {
+        if (card) {
+          return { id, card };
+        } else {
+          return undefined;
+        }
+      });
+      Logger.log(`cards: ${JSON.stringify(cardWithIds)}`);
+      return cardWithIds.filter(x => x);
+    },
     removeCardById: (id) => {
       // clear name, type, owner, and exts. 4 is the ext buffers
       tableProjectCard.getRange(11 + id, 1, 1, 3 + 4).clearContent();
@@ -150,6 +162,10 @@ const Table = (() => {
         throw new Error(`Slot ${slotId} on card ${id} is occupied`);
       }
       tableProjectCard.getRange(21 + 10 * id + slotId, 2).setValue(playerId);
+    },
+    getProjectVacancySlotIdById: (jobCard, id) => {
+      const jobs = tableProjectCard.getRange(21 + 10 * id, 1, 6, 2).getValues();
+      return jobs.findIndex(([title, playerId]) => title === jobCard && playerId === "");
     },
     getContributionPointOnSlotById: (id, slotId) => tableProjectCard.getRange(21 + 10 * id + slotId, 3).getValue(),
     setContributionPointOnSlotById: (points, id, slotId) => tableProjectCard.getRange(21 + 10 * id + slotId, 3).setValue(points),
@@ -215,6 +231,21 @@ const Table = (() => {
       }
       // update maximum
       ProjectCardModel.setMax(n);
+    },
+    listAvailableProjectByJob: (jobCard) => {
+      const projects = ProjectCardModel.listCardIds();
+      Logger.log(`job name: ${jobCard}, projects: ${JSON.stringify(projects)}`);
+      const vacancies = projects.map(project => {
+        const slotId = ProjectCardModel.getProjectVacancySlotIdById(jobCard, project.id);
+        if (slotId < 0) {
+          return undefined;
+        }
+        return {
+          name: project.card,
+          slotId,
+        }
+      });
+      return vacancies.filter(x => x);
     },
     placeResourceOnSlotById: (project, slotId, playerId, initialPoints, isOwner = false) => {
       const cardId = ProjectCardModel.findCardId(project);
