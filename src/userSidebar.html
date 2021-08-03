@@ -190,6 +190,8 @@
 
       renderProjectCardStatic();
       renderResourceCardStatic();
+
+      openContributeDialog.call(this);
     }
 
     function menuPlayForceCard() {
@@ -287,6 +289,11 @@
       const selectedProjectName = $('input[name="table-projects"]:checked').val();
       const selectedProjectSlot = Number($('input[name="table-projects"]:checked').prop('slot'));
       action.recruit(selectedProjectName, selectedProjectSlot);
+    }
+
+    function openContributeDialog() {
+      const action = actionCreator(this);
+      action.openContributeDialog();
     }
 
     function discardAndEndTurn() {

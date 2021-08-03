@@ -291,6 +291,22 @@ function recruit(project, slotId) {
   }
 }
 
+/**
+ * @exportedFunction
+ */
+function openContributeDialog() {
+  if (!Table.Player.isActionable(1, CurrentPlayer.getId())) {
+    throw new Error('行動點數不足！');
+  }
+  // TODO: check available contribution slots
+  try {
+    showProjectDialog();
+  } catch (err) {
+    Logger.log(`openContributeDialog failure. ${err}`);
+    throw new Error('something went wrong. Please try again');
+  }
+}
+
 /** @type {(resourceCard: Card, projectCard: Card) => void} */
 function playResourceCard(resourceCard, project) {
   // TODO: find project from table
