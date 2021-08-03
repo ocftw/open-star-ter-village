@@ -36,6 +36,38 @@
 const Table = (() => {
   const defaultDeck = SpreadsheetApp.getActive().getSheetByName('各牌庫備考');
   const mainBoard = SpreadsheetApp.getActive().getSheetByName('專案圖板/記分板');
+
+  // table project card view
+  const projectCardsBoard = SpreadsheetApp.getActive().getSheetByName('專案卡列表');
+  const ProjectCardView = {
+    // find card template range from default deck
+    findCardTemplateRange: (card) => {
+      const idx = defaultDeck.getRange('A2:A31').getDisplayValues().map(row => row[0]).findIndex(c => c === card);
+      if (idx < 0) {
+        Logger.log('failed to find project card range' + card);
+        throw new Error('failed to find render project card range');
+      }
+      const row = idx % 10;
+      const column = Math.floor(idx / 10);
+      return projectCardsBoard.getRange(9 * row + 1, 5 * column + 1, 9, 5);
+    },
+    // find card range on table
+    findTableRangeById: (id) => {
+      const row = id % 2;
+      const col = Math.floor(id / 2);
+      return mainBoard.getRange(2 + 9 * row, 7 + 5 * col, 9, 5);
+    },
+    setPlayerOnTableSlotById: (playerNickname, id, slotId, isOwner = false) => {
+      const range = ProjectCardView.findTableRangeById(id);
+      range.offset(3 + slotId, 1, 1, 1).setValue(playerNickname);
+      range.offset(3 + slotId, 0, 1, 1).setValue(isOwner);
+    },
+    setContributionPointOnTableSlotById: (points, id, slotId) => {
+      const range = ProjectCardView.findTableRangeById(id);
+      range.offset(3 + slotId, 4, 1, 1).setValue(points);
+    },
+  };
+
   /** @type {TableProjectCardController} */
   const ProjectCard = (() => {
     const tableProjectCard = SpreadsheetApp.getActive().getSheetByName('TableProjectCard');
@@ -124,35 +156,6 @@ const Table = (() => {
     const getDefaultCardRange = () => tableProjectCard.getRange('D1:H9');
     const getDeactiveCardRange = () => tableProjectCard.getRange('J1:N9');
 
-    // table view
-    const projectCardsBoard = SpreadsheetApp.getActive().getSheetByName('專案卡列表');
-    // find card template range from default deck
-    const findCardTemplateRange = (card) => {
-      const idx = defaultDeck.getRange('A2:A31').getDisplayValues().map(row => row[0]).findIndex(c => c === card);
-      if (idx < 0) {
-        Logger.log('failed to find project card range' + card);
-        throw new Error('failed to find render project card range');
-      }
-      const row = idx % 10;
-      const column = Math.floor(idx / 10);
-      return projectCardsBoard.getRange(9 * row + 1, 5 * column + 1, 9, 5);
-    };
-    // find card range on table
-    const findTableRangeById = (id) => {
-      const row = id % 2;
-      const col = Math.floor(id / 2);
-      return mainBoard.getRange(2 + 9 * row, 7 + 5 * col, 9, 5);
-    };
-    const setPlayerOnTableSlotById = (playerNickname, id, slotId, isOwner = false) => {
-      const range = findTableRangeById(id);
-      range.offset(3 + slotId, 1, 1, 1).setValue(playerNickname);
-      range.offset(3 + slotId, 0, 1, 1).setValue(isOwner);
-    };
-    const setContributionPointOnTableSlotById = (points, id, slotId) => {
-      const range = findTableRangeById(id);
-      range.offset(3 + slotId, 4, 1, 1).setValue(points);
-    };
-
     // table controller
     const isPlayable = () => getMax() > getCount();
     const play = (card) => {
@@ -162,9 +165,9 @@ const Table = (() => {
       addCardSpecById(cardSpec, emptyIdx);
 
       // render card on table
-      const cardRange = findCardTemplateRange(card);
+      const cardRange = ProjectCardView.findCardTemplateRange(card);
       // find table range to paste the card
-      const tableRange = findTableRangeById(emptyIdx);
+      const tableRange = ProjectCardView.findTableRangeById(emptyIdx);
       cardRange.copyTo(tableRange);
     };
     const remove = (card) => {
@@ -175,16 +178,16 @@ const Table = (() => {
       // render card on table
       const defaultCardRange = getDefaultCardRange();
       // find table range to paste the default card
-      const tableRange = findTableRangeById(cardIdx);
+      const tableRange = ProjectCardView.findTableRangeById(cardIdx);
 
       defaultCardRange.copyTo(tableRange);
     };
     const reset = () => {
       // reset rendering
-      [0, 1, 2, 3, 4, 5].map(findTableRangeById).forEach(range => {
+      [0, 1, 2, 3, 4, 5].map(ProjectCardView.findTableRangeById).forEach(range => {
         getDefaultCardRange().copyTo(range);
       });
-      [6, 7].map(findTableRangeById).forEach(range => {
+      [6, 7].map(ProjectCardView.findTableRangeById).forEach(range => {
         getDeactiveCardRange().copyTo(range);
       });
       // reset cards
@@ -197,14 +200,14 @@ const Table = (() => {
       if (n > currentMax) {
         // activate slots
         [...new Array(n - currentMax)].map((_, i) => i + currentMax)
-          .map(findTableRangeById).forEach(range => {
+          .map(ProjectCardView.findTableRangeById).forEach(range => {
             getDefaultCardRange().copyTo(range);
           });
       }
       if (n < currentMax) {
         // deactivate slots
         [...new Array(currentMax - n)].map((_, i) => i + n)
-          .map(findTableRangeById).forEach(range => {
+          .map(ProjectCardView.findTableRangeById).forEach(range => {
             getDeactiveCardRange().copyTo(range);
           });
       }
@@ -225,9 +228,9 @@ const Table = (() => {
 
       // render on table
       // set player on slot
-      setPlayerOnTableSlotById(PlayerModel.getNickname(playerId), cardId, slotId, isOwner);
+      ProjectCardView.setPlayerOnTableSlotById(PlayerModel.getNickname(playerId), cardId, slotId, isOwner);
       // set initial contribution point
-      setContributionPointOnTableSlotById(initialPoints, cardId, slotId);
+      ProjectCardView.setContributionPointOnTableSlotById(initialPoints, cardId, slotId);
       Logger.log(`render the player ${playerId} takes slot ${slotId} on project ${project} on table`);
     };
 
