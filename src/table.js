@@ -13,7 +13,10 @@
  * @property {(card: Card) => void} remove remove a project card on table
  * @property {() => void} reset remove all project cards and reset max slots
  * @property {(n: number) => void} activateNSlots activate N project card slots on table
- * @property {(jobCard: Card) => {name: Card, slotId: number}[]} listAvailableProjectByJob list all available project card names have given job vacancy
+ * @property {(jobCard: Card, points: number) => {name: Card, slotId: number}[]} listAvailableProjectByJob
+ *  list all available project card names have given job vacancy
+ * @property {(points: number, projectCard: Card, slotIdx: number) => boolean} isSlotAvailableToContribute
+ *  verify the slot and the belongs group is available to contribute points.
  * @property {(projectCard: Card, slotIdx: number, playerId: string, initialPoints: number,
  *  isOwner?: boolean) => void} placeResourceOnSlotById place an arbitrary resource card on the project slot by slot index
  *  with initial contribution points
@@ -169,6 +172,20 @@ const Table = (() => {
     },
     getContributionPointOnSlotById: (id, slotId) => tableProjectCard.getRange(21 + 10 * id + slotId, 3).getValue(),
     setContributionPointOnSlotById: (points, id, slotId) => tableProjectCard.getRange(21 + 10 * id + slotId, 3).setValue(points),
+    addContributionPointOnSlotById: (points, id, slotId) => {
+      const currentPoint = ProjectCardModel.getContributionPointOnSlotById(id, slotId);
+      ProjectCardModel.setContributionPointOnSlotById(currentPoint + points, id, slotId);
+      const groupId = ProjectCardModel.getGroupIdBySlotId(id, slotId);
+      ProjectCardModel.addGroupCurrentContributionPointByGroupId(points, id, groupId);
+    },
+    getGroupIdBySlotId: (id, slotId) => tableProjectCard.getRange(21 + 10 * id + slotId, 4).getValue(),
+    getGroupCurrentContributionPointByGroupId: (id, groupId) => tableProjectCard.getRange(21 + 10 * id + groupId, 6).getValue(),
+    setGroupCurrentContributionPointByGroupId: (points, id, groupId) => tableProjectCard.getRange(21 + 10 * id + groupId, 6).setValue(points),
+    addGroupCurrentContributionPointByGroupId: (points, id, groupId) => {
+      const currentPoint = ProjectCardModel.getGroupCurrentContributionPointByGroupId(id, groupId);
+      ProjectCardModel.setGroupCurrentContributionPointByGroupId(currentPoint + points, id, groupId);
+    },
+    getGroupGoalContributionPointByGroupId: (id, groupId) => tableProjectCard.getRange(21 + 10 * id + groupId, 7).getValue(),
     getDefaultCardRange: () => tableProjectCard.getRange('D1:H9'),
     getDeactiveCardRange: () => tableProjectCard.getRange('J1:N9'),
   };
@@ -232,12 +249,15 @@ const Table = (() => {
       // update maximum
       ProjectCardModel.setMax(n);
     },
-    listAvailableProjectByJob: (jobCard) => {
+    listAvailableProjectByJob: (jobCard, points) => {
       const projects = ProjectCardModel.listCardIds();
       Logger.log(`job name: ${jobCard}, projects: ${JSON.stringify(projects)}`);
       const vacancies = projects.map(project => {
         const slotId = ProjectCardModel.getProjectVacancySlotIdById(jobCard, project.id);
         if (slotId < 0) {
+          return undefined;
+        }
+        if (!ProjectCard.isSlotAvailableToContribute(points, project.card, slotId)) {
           return undefined;
         }
         return {
@@ -247,12 +267,25 @@ const Table = (() => {
       });
       return vacancies.filter(x => x);
     },
+    isSlotAvailableToContribute: (points, project, slotId) => {
+      const cardId = ProjectCardModel.findCardId(project);
+      // 6 is the hard maximum of each slot contribution
+      if (ProjectCardModel.getContributionPointOnSlotById(cardId, slotId) + points > 6) {
+        return false;
+      }
+      const groupId = ProjectCardModel.getGroupIdBySlotId(cardId, slotId);
+      if (ProjectCardModel.getGroupCurrentContributionPointByGroupId(cardId, groupId) + points >
+        ProjectCardModel.getGroupGoalContributionPointByGroupId(cardId, groupId)) {
+        return false;
+      }
+      return true;
+    },
     placeResourceOnSlotById: (project, slotId, playerId, initialPoints, isOwner = false) => {
       const cardId = ProjectCardModel.findCardId(project);
       // set player on slot
       ProjectCardModel.setPlayerOnSlotById(playerId, cardId, slotId);
       // set initial contribution point
-      ProjectCardModel.setContributionPointOnSlotById(initialPoints, cardId, slotId);
+      ProjectCardModel.addContributionPointOnSlotById(initialPoints, cardId, slotId);
       // TODO: add contribution point to group
       if (isOwner) {
         ProjectCardModel.setProjectOnwerById(playerId, cardId);

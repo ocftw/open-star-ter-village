@@ -251,7 +251,7 @@ function listAvailableProjectByJob(jobCard) {
   if (!Table.Player.isRecruitable(playerId)) {
     throw new Error('人力標記不足！');
   }
-  const vacancies = Table.ProjectCard.listAvailableProjectByJob(jobCard);
+  const vacancies = Table.ProjectCard.listAvailableProjectByJob(jobCard, 1);
   if (vacancies.length === 0) {
     throw new Error('沒有適合的職缺！');
   }
