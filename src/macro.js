@@ -186,6 +186,9 @@ function refillActionPoints() {
  * @type {(project: Card, resource: Card) => Hand} Return the player project cards after played
  */
 function playProjectCard(project, resource) {
+  if (!Rule.playProjectCard.getIsAvailable()){
+    throw new Error('海底電纜還沒修好，不能發起專案！');
+  }
   if (!project || !resource) {
     throw new Error('請選擇一張專案卡與一張人力卡！');
   }
@@ -241,8 +244,10 @@ function removeProjectCard(project) {
  * @returns {{name: string, slotId: number}[]}
  */
 function listAvailableProjectByJob(jobCard) {
-  // TODO: throw error if not a jobCard
-  if (!jobCard) {
+  if (!Rule.recruit.getIsAvailable()) {
+    throw new Error('減薪休假中，不能招募人力！');
+  }
+  if (!jobCard || resourceCardRef.isForceCard(jobCard)) {
     throw new Error('請選擇一張人力卡！');
   }
   const playerId = CurrentPlayer.getId();
@@ -297,6 +302,9 @@ function recruit(project, slotId) {
  * @exportedFunction
  */
 function openContributeDialog() {
+  if (!Rule.contribute.getIsAvailable()) {
+    throw new Error('GitHub當機中，不能貢獻專案！');
+  }
   if (!Table.Player.isActionable(1, CurrentPlayer.getId())) {
     throw new Error('行動點數不足！');
   }
