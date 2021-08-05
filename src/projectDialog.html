@@ -58,7 +58,35 @@
           </div>`);
       });
       $('#projects').append(doms);
-      $('#projects').append('<div><button class="blue">submit</button></div>');
+      $('#projects').append('<div class="block">\
+        <div class="block" id="count"></div>\
+        <button id="reset">reset</button>\
+        <button class="blue" id="contribute">submit</button>\
+      </div>');
+
+      const ruleMax = 3;
+      $('#count').text(`還剩下${ruleMax}點`);
+
+      $('#reset').click(function () {
+        $('input[type="number"]:not(:disabled)').each(function () {
+          $(this).val($(this).prop('min'));
+          $('#count').text(`還剩下${ruleMax}點`);
+        });
+      });
+
+      $('input[type="number"]:not(:disabled)').change(function () {
+        let cnt = 0;
+        $('input[type="number"]:not(:disabled)').each(function () {
+          cnt += ($(this).val() - $(this).prop('min'));
+        });
+        if (ruleMax - cnt >= 0) {
+          $('#count').text(`還剩下${ruleMax - cnt}點`).removeClass('current');
+          $('#contribute').prop('disabled', false);
+        } else {
+          $('#count').text(`用超過${-(ruleMax - cnt)}點`).addClass('current');
+          $('#contribute').prop('disabled', true);
+        }
+      });
     }
 
     function showError(msg, element) {
