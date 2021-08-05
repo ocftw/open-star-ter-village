@@ -13,6 +13,7 @@
  * @property {(card: Card) => void} remove remove a project card on table
  * @property {() => void} reset remove all project cards and reset max slots
  * @property {(n: number) => void} activateNSlots activate N project card slots on table
+ * @property {(playerId?: string) => Project[]} listProjects list all projects on the table
  * @property {(jobCard: Card, points: number) => {name: Card, slotId: number}[]} listAvailableProjectByJob
  *  list all available project card names have given job vacancy
  * @property {(points: number, projectCard: Card, slotIdx: number) => boolean} isSlotAvailableToContribute
@@ -34,6 +35,22 @@
  * @property {(score: number, playerId: string) => number} earnScore
  * @property {(playerId: string) => void} resetTurnCounters
  * @property {(playerId: string, defaultNickname: string) => void} reset
+ *
+ * @typedef {Object} Project
+ * @property {string} name project name
+ * @property {string} type project type
+ * @property {string} owner project owner nickname
+ * @property {Slot[]} slots project job slots
+ * @property {string[]} extensions project extensions effects
+ *
+ * @typedef {Object} Slot full information of the job
+ * @property {number} slotId slot id
+ * @property {string} title slot job title
+ * @property {string} player slot player nickname
+ * @property {number} points current contribution points
+ * @property {number} groupCurrentPoints current contribution points of the slot group
+ * @property {number} groupGoalPoints goal contribution points of the slot group
+ * @property {boolean} activeForCurrentPlayer whether it's active for current player
  */
 
 /** @type {TableController} */
@@ -133,6 +150,42 @@ const Table = (() => {
       });
       Logger.log(`cards: ${JSON.stringify(cardWithIds)}`);
       return cardWithIds.filter(x => x);
+    },
+    listCardSpecs: () => {
+      // name, type, ownerId, and exts. 4 is the ext buffers
+      const cards = tableProjectCard.getRange(11, 1, ProjectCardModel.getMax(), 3 + 4).getValues();
+      return cards.map(([name, type, ownerId, ...extensions], id) => {
+        if (name === "") {
+          return undefined;
+        }
+        // get groups info
+        // name, current, goal
+        const groups = tableProjectCard.getRange(21 + 10 * id, 5, 6, 3).getValues();
+
+        // get slots info
+        // title, playerId, points, groupId
+        const slotInfo = tableProjectCard.getRange(21 + 10 * id, 1, 6, 4).getValues();
+        const slots = slotInfo.map(([title, playerId, points, groupId], slotId) => {
+          const [, groupCurrentPoints, groupGoalPoints] = groups[groupId];
+          return {
+            slotId,
+            title,
+            playerId,
+            points,
+            groupId,
+            groupCurrentPoints,
+            groupGoalPoints,
+          };
+        });
+
+        return {
+          name,
+          type,
+          ownerId,
+          slots,
+          extensions,
+        };
+      });
     },
     removeCardById: (id) => {
       // clear name, type, owner, and exts. 4 is the ext buffers
@@ -248,6 +301,29 @@ const Table = (() => {
       }
       // update maximum
       ProjectCardModel.setMax(n);
+    },
+    listProjects: (pId = "") => {
+      const cardSpecs = ProjectCardModel.listCardSpecs();
+      return cardSpecs.map((cardSpec) => {
+        if (cardSpec === undefined) {
+          return {
+            name: "",
+            owner: "",
+            slots: [...new Array(6)],
+            type: "",
+            extensions: [],
+          };
+        }
+        const { ownerId, slots: slotsWithoutPlayerNickname, ...spec } = cardSpec;
+        const owner = Table.Player.getNickname(ownerId);
+        const slots = slotsWithoutPlayerNickname.map(({ playerId, ...slotSpec }) => {
+          const player = playerId ? Table.Player.getNickname(playerId) : "";
+          const activeForCurrentPlayer = playerId ? playerId === pId || ownerId === pId : false;
+          return { ...slotSpec, player, activeForCurrentPlayer };
+        });
+
+        return { ...spec, owner, slots };
+      });
     },
     listAvailableProjectByJob: (jobCard, points) => {
       const projects = ProjectCardModel.listCardIds();
