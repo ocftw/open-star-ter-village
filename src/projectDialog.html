@@ -4,20 +4,74 @@
 <head>
   <base target="_top">
   <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
+  <style>
+    .col-flex {
+      height: 360px;
+      display: flex;
+      flex-direction: column;
+      flex-wrap: wrap;
+    }
+
+    .col-flex>* {
+      flex: 1 1 150px;
+    }
+
+    input[type="number"] {
+      width: 40px;
+    }
+  </style>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
   <script>
     // The code in this function runs when the page is loaded.
-    $(document).ready(function () { });
+    $(document).ready(function () {
+      google.script.run
+        .withSuccessHandler(showProjects)
+        .withFailureHandler(showError)
+        .listProjects();
+    });
+
+    function showProjects(projects) {
+      $('#projects').empty();
+      if (projects.length === 0) {
+        $('#projects').text('no project found');
+      }
+      const doms = projects.map((project, id) => {
+        const slots = project.slots.map((slot) => {
+          if (!slot) {
+            return `<div>
+                <label> - </label>
+                <input type="number" min="1" max="6" disabled />
+              </div>`;
+          }
+
+          return `<div>
+              <label for="prj-${id}-${slot.slotId}">${slot.title}</label>
+              <input id="prj-${id}-${slot.slotId}" type="number" name="project-slots" min="${slot.points}" max="6" value="${slot.points}"
+                project-id="${id}" slot-id="${slot.slotId}" ${!slot.activeForCurrentPlayer && "disabled"} />
+              <span>/${slot.groupGoalPoints}</span>
+              <span>From: ${slot.player}</span>
+            </div>`;
+        });
+        return $(`<div>
+            <b id="project-${id}">${project.name ? `${project.name}/${project.type}/${project.owner}` : 'Empty project'}</b>
+            ${slots.reduce((d, s) => d + s, '')}
+          </div>`);
+      });
+      $('#projects').append(doms);
+      $('#projects').append('<div><button class="blue">submit</button></div>');
+    }
+
+    function showError(msg, element) {
+      const div = $(`<div id="error" class="error">${msg}</div>`);
+      $(element).after(div);
+    }
 
   </script>
 </head>
 
 <body>
   <div class="block">
-    <h1>
-      貢獻專案
-    </h1>
-    <div id="projects"></div>
+    <div class="col-flex" id="projects">Loading...</div>
   </div>
 </body>
 

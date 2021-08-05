@@ -147,9 +147,11 @@ function showUserSidebar() {
   SpreadsheetApp.getUi().showSidebar(sidebar);
 }
 
-function showProjectDialog() {
+function showProjectDialog(playerNickname) {
   const dialog = HtmlService.createHtmlOutputFromFile('projectDialog');
-  SpreadsheetApp.getUi().showModalDialog(dialog, 'project dialog');
+  dialog.setHeight(360);
+  dialog.setWidth(1280);
+  SpreadsheetApp.getUi().showModalDialog(dialog, `${playerNickname}正在貢獻專案`);
 }
 
 /**
@@ -305,6 +307,15 @@ function openContributeDialog() {
     Logger.log(`openContributeDialog failure. ${err}`);
     throw new Error('something went wrong. Please try again');
   }
+}
+
+/**
+ * @exportedFunction
+ *
+ * @returns {Project[]}
+ */
+function listProjects() {
+  return Table.ProjectCard.listProjects(CurrentPlayer.getId());
 }
 
 /** @type {(resourceCard: Card, projectCard: Card) => void} */
