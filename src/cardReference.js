@@ -12,6 +12,10 @@
  * @property {(resourceCard: Card, projectCard: Card) => number} findEligibleSlotId
  *  check the slot is eligible for the resource card
  */
+/**
+ * @typedef {Object} ResourceCardReference
+ * @property {(card: Card) => boolean} isForceCard check whether the resource card is force card
+ */
 /** @type {ProjectCardReference} */
 const ProjectCardRef = (() => {
   // project spec helper
@@ -68,3 +72,15 @@ const ProjectCardRef = (() => {
     findEligibleSlotId,
   };
 })();
+
+/** @type {ResourceCardReference} */
+const resourceCardRef = () => {
+  const forceCardList = SpreadsheetApp.getActive().getSheetByName('源力卡介紹').getDataRange().getValues();
+  const isForceCard = (card) => {
+    const index = forceCardList.findIndex(row => row[0] === card);
+    return index >= 0;
+  }
+  return {
+    isForceCard
+  };
+};
