@@ -333,6 +333,21 @@ function playResourceCard(resourceCard, project) {
   // TODO: label resource card owner as player
 }
 
+/** @type {(forceCard: Card, projectCard: Card) => void} */
+function playForceCard (forceCard, projectCard = null) {
+  if (!Rule.playForce.getIsAvailable()){
+    throw new Error('本輪不能使用源力卡，可憐哪！');
+  }
+  if (!forceCard || !resourceCardRef.isForceCard(forceCard)) {
+    throw new Error('請選擇一張源力卡！');
+  }
+  const playerId = CurrentPlayer.getId();
+  // TODO: replace 1 with rule.playForce.actionPoint
+  if (!Table.Player.isActionable(1, playerId)) {
+    throw new Error('行動點數不足！');
+  }
+}
+
 // TODO: rewrite with the table methods
 //draw a new event card
 function drawEventCard() {
