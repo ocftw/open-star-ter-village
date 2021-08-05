@@ -186,7 +186,7 @@ function refillActionPoints() {
  * @type {(project: Card, resource: Card) => Hand} Return the player project cards after played
  */
 function playProjectCard(project, resource) {
-  if (!Rule.playProjectCard.getIsAvailable()){
+  if (!Rule.playProjectCard.getIsAvailable()) {
     throw new Error('海底電纜還沒修好，不能發起專案！');
   }
   if (!project || !resource) {
@@ -310,7 +310,7 @@ function openContributeDialog() {
   }
   // TODO: check available contribution slots
   try {
-    showProjectDialog();
+    showProjectDialog(Table.Player.getNickname(CurrentPlayer.getId()));
   } catch (err) {
     Logger.log(`openContributeDialog failure. ${err}`);
     throw new Error('something went wrong. Please try again');
@@ -334,8 +334,8 @@ function playResourceCard(resourceCard, project) {
 }
 
 /** @type {(forceCard: Card, projectCard: Card) => void} */
-function playForceCard (forceCard, projectCard = null) {
-  if (!Rule.playForce.getIsAvailable()){
+function playForceCard(forceCard, projectCard = null) {
+  if (!Rule.playForce.getIsAvailable()) {
     throw new Error('本輪不能使用源力卡，可憐哪！');
   }
   if (!forceCard || !resourceCardRef.isForceCard(forceCard)) {
