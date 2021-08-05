@@ -70,7 +70,7 @@
       $('#reset').click(function () {
         $('input[type="number"]:not(:disabled)').each(function () {
           $(this).val($(this).prop('min'));
-          $('#count').text(`還剩下${ruleMax}點`);
+          $('#count').text(`還剩下${ruleMax}點`).removeClass('current');
         });
       });
 
