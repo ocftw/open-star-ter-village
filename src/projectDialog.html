@@ -19,6 +19,18 @@
     input[type="number"] {
       width: 40px;
     }
+
+    /* always show the arrows on active number inputs and hide the arrows on disabled inputs */
+    /* Chrome, Safari, Edge, Opera */
+    input[type=number]:not(:disabled)::-webkit-outer-spin-button,
+    input[type=number]:not(:disabled)::-webkit-inner-spin-button {
+      opacity: 1;
+    }
+
+    /* Firefox */
+    input[type=number]:disabled {
+      -moz-appearance: textfield;
+    }
   </style>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
   <script>
