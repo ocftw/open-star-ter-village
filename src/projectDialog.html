@@ -34,6 +34,7 @@
   </style>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
   <script>
+    let max;
     // The code in this function runs when the page is loaded.
     $(document).ready(function () {
       google.script.run
@@ -43,6 +44,7 @@
     });
 
     function showProjects({ projects, maxContribution }) {
+      max = maxContribution;
       $('#projects').empty();
       if (projects.length === 0) {
         $('#projects').text('no project found');
@@ -59,7 +61,8 @@
           return `<div>
               <label for="prj-${id}-${slot.slotId}">${slot.title}</label>
               <input id="prj-${id}-${slot.slotId}" type="number" name="project-slots" min="${slot.points}" max="6" value="${slot.points}"
-                project-id="${id}" slot-id="${slot.slotId}" ${!slot.activeForCurrentPlayer && "disabled"} />
+                data-project-id="${id}" data-project-name="${project.name}" data-slot-id="${slot.slotId}"
+                ${!slot.activeForCurrentPlayer && "disabled"} />
               <span>/${slot.groupGoalPoints}</span>
               <span>From: ${slot.player}</span>
             </div>`;
@@ -86,6 +89,8 @@
         $('#contribute').prop('disabled', false);
       });
 
+      $('#contribute').click(contribute);
+
       $('input[type="number"]:not(:disabled)').change(function () {
         let cnt = 0;
         $('input[type="number"]:not(:disabled)').each(function () {
@@ -99,6 +104,25 @@
           $('#contribute').prop('disabled', true);
         }
       });
+    }
+
+    function contribute() {
+      const contributionList = [];
+      let count = 0;
+      $('input[type="number"]:not(:disabled)').each(function () {
+        const $this = $(this);
+        const points = $this.val() - $this.prop('min');
+        if (points > 0) {
+          const project = $this.data('project-name');
+          const slotId = $this.data('slot-id');
+          contributionList.push({ project, slotId, points });
+          count += points;
+        }
+      });
+      if (count > max) {
+        throw new Error('超過分配點數上限！');
+      }
+      google.script.run.withFailureHandler(showError).contribute(contributionList);
     }
 
     function showError(msg, element) {
