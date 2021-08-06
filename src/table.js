@@ -20,6 +20,7 @@
  *  verify the availability of the slot is available to the player
  * @property {(points: number, projectCard: Card, slotIdx: number) => boolean} isSlotAvailableToContribute
  *  verify the slot and the belongs group is available to contribute points.
+ * @property {(points: number, projectCard: Card, slotId: number) => void} contributeSlot contribute points to project slot
  * @property {(projectCard: Card, slotIdx: number, playerId: string, initialPoints: number,
  *  isOwner?: boolean) => void} placeResourceOnSlotById place an arbitrary resource card on the project slot by slot index
  *  with initial contribution points
@@ -367,6 +368,15 @@ const Table = (() => {
       const ownerId = ProjectCardModel.getProjectOnwerById(cardId);
       const slotPlayerId = ProjectCardModel.getPlayerOnSlotById(cardId, slotId);
       return ownerId === playerId || slotPlayerId === playerId;
+    },
+    contributeSlot: (points, project, slotId) => {
+      const cardId = ProjectCardModel.findCardId(project);
+      ProjectCardModel.addContributionPointOnSlotById(points, cardId, slotId);
+      Logger.log(`project ${project} slot ${slotId} increase ${points} contribution points`);
+
+      const displayPoints = ProjectCardModel.getContributionPointOnSlotById(cardId, slotId);
+      ProjectCardView.setContributionPointOnTableSlotById(displayPoints, cardId, slotId);
+      Logger.log(`update project ${project} slot ${slotId} contribution points ${displayPoints}`);
     },
     placeResourceOnSlotById: (project, slotId, playerId, initialPoints, isOwner = false) => {
       const cardId = ProjectCardModel.findCardId(project);

@@ -330,11 +330,50 @@ function listProjects() {
   };
 }
 
-/** @type {(resourceCard: Card, projectCard: Card) => void} */
-function playResourceCard(resourceCard, project) {
-  // TODO: find project from table
-  // TODO: play resource card on project on the table
-  // TODO: label resource card owner as player
+/**
+ * @typedef {Object} Contribution
+ * @property {string} project project name
+ * @property {number} slotId slot index of project
+ * @property {number} points contribution points to the slot
+ */
+
+/**
+ *
+ * @exports contribute
+ * @param {Contribution[]} contributionList
+ */
+function contribute(contributionList) {
+  const sum = contributionList.reduce((s, contribution) => s + contribution.points, 0);
+  if (sum > Rule.contribute.getContribution()) {
+    throw new Error('超過分配點數上限！');
+  }
+  const playerId = CurrentPlayer.getId();
+  if (!Table.Player.isActionable(1, playerId)) {
+    throw new Error('行動點數不足！');
+  }
+  const isBelongingToPlayer = contributionList
+    .map(contribution => Table.ProjectCard.isPlayerEligibleToContributeSlot(playerId, contribution.project, contribution.slotId))
+    .every(x => x);
+  if (!isBelongingToPlayer) {
+    throw new Error('無法分配給不屬於自己的專案/人力！');
+  }
+  const isAvailableToContribute = contributionList.map(contribution =>
+    Table.ProjectCard.isSlotAvailableToContribute(
+      contribution.points, contribution.project, contribution.slotId)
+  ).every(x => x);
+  if (!isAvailableToContribute) {
+    throw new Error('無法分配超過目標上限！');
+  }
+  try {
+    contributionList.forEach(contribution => {
+      Table.ProjectCard.contributeSlot(contribution.points, contribution.project, contribution.slotId);
+    });
+    Table.Player.reduceActionPoint(1, playerId);
+  } catch (err) {
+    Logger.log(`contribute failure. ${err}`);
+    // TODO: fallback
+    throw new Error('something went wrong. Please try again');
+  }
 }
 
 /** @type {(forceCard: Card, projectCard: Card) => void} */
