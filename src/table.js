@@ -16,6 +16,8 @@
  * @property {(playerId?: string) => Project[]} listProjects list all projects on the table
  * @property {(jobCard: Card, points: number) => {name: Card, slotId: number}[]} listAvailableProjectByJob
  *  list all available project card names have given job vacancy
+ * @property {(playerId: string, projectCard: Card, slotId: number) => boolean} isPlayerEligibleToContributeSlot
+ *  verify the availability of the slot is available to the player
  * @property {(points: number, projectCard: Card, slotIdx: number) => boolean} isSlotAvailableToContribute
  *  verify the slot and the belongs group is available to contribute points.
  * @property {(projectCard: Card, slotIdx: number, playerId: string, initialPoints: number,
@@ -212,6 +214,9 @@ const Table = (() => {
     setProjectTypeById: (type, id) => tableProjectCard.getRange(11 + id, 2).setValue(type),
     getProjectOnwerById: (id) => tableProjectCard.getRange(11 + id, 3).getValue(),
     setProjectOnwerById: (ownerId, id) => tableProjectCard.getRange(11 + id, 3).setValue(ownerId),
+    getPlayerOnSlotById: (id, slotId) => {
+      return tableProjectCard.getRange(21 + 10 * id + slotId, 2).getValue();
+    },
     setPlayerOnSlotById: (playerId, id, slotId) => {
       if (tableProjectCard.getRange(21 + 10 * id + slotId, 2).getValue()) {
         Logger.log(`Slot ${slotId} on card ${id} is occupied`);
@@ -355,6 +360,13 @@ const Table = (() => {
         return false;
       }
       return true;
+    },
+    isPlayerEligibleToContributeSlot: (playerId, project, slotId) => {
+      const cardId = ProjectCardModel.findCardId(project);
+
+      const ownerId = ProjectCardModel.getProjectOnwerById(cardId);
+      const slotPlayerId = ProjectCardModel.getPlayerOnSlotById(cardId, slotId);
+      return ownerId === playerId || slotPlayerId === playerId;
     },
     placeResourceOnSlotById: (project, slotId, playerId, initialPoints, isOwner = false) => {
       const cardId = ProjectCardModel.findCardId(project);
