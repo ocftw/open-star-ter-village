@@ -43,6 +43,21 @@
         .listProjects();
     });
 
+    function showMessage(msg, element) {
+      const span = $(`<span id="message" class="gray">${msg}</span>`);
+      $(element).after(span);
+    }
+    function removeMessage() {
+      $('#message').remove();
+    }
+    function showError(msg, element) {
+      const div = $(`<div id="error" class="error">${msg}</div>`);
+      $(element).after(div);
+    }
+    function removeError() {
+      $('#error').remove();
+    }
+
     function showProjects({ projects, maxContribution }) {
       max = maxContribution;
       $('#projects').empty();
@@ -107,6 +122,11 @@
     }
 
     function contribute() {
+      removeError();
+      showMessage('處理中...', this);
+      // disable the button
+      this.disabled = true;
+
       const contributionList = [];
       let count = 0;
       $('input[type="number"]:not(:disabled)').each(function () {
@@ -122,14 +142,22 @@
       if (count > max) {
         throw new Error('超過分配點數上限！');
       }
-      google.script.run.withFailureHandler(showError).contribute(contributionList);
+      google.script.run
+        .withSuccessHandler(
+          function (result, el) {
+            removeMessage();
+            google.script.host.close();
+            el.disabled = false;
+          })
+        .withFailureHandler(
+          function (error, el) {
+            removeMessage();
+            showError(error, el);
+            el.disabled = false;
+          })
+        .withUserObject(this)
+        .contribute(contributionList);
     }
-
-    function showError(msg, element) {
-      const div = $(`<div id="error" class="error">${msg}</div>`);
-      $(element).after(div);
-    }
-
   </script>
 </head>
 
