@@ -112,27 +112,27 @@ function setPlayerAndShowSidebar(playerId, playerNickname) {
 
 
 //bound setPlayerAndShowSidebar function to button
-/** @exportedFunction */
+/** @exports */
 function setPlayer1() {
   setPlayerAndShowSidebar('A', '玩家1');
 }
-/** @exportedFunction */
+/** @exports */
 function setPlayer2() {
   setPlayerAndShowSidebar('B', '玩家2');
 }
-/** @exportedFunction */
+/** @exports */
 function setPlayer3() {
   setPlayerAndShowSidebar('C', '玩家3');
 }
-/** @exportedFunction */
+/** @exports */
 function setPlayer4() {
   setPlayerAndShowSidebar('D', '玩家4');
 }
-/** @exportedFunction */
+/** @exports */
 function setPlayer5() {
   setPlayerAndShowSidebar('E', '玩家5');
 }
-/** @exportedFunction */
+/** @exports */
 function setPlayer6() {
   setPlayerAndShowSidebar('F', '玩家6');
 }
@@ -161,9 +161,9 @@ function showProjectDialog(playerNickname) {
  */
 
 /**
- * @exportedFunction
  * User can get his/her hand.
  *
+ * @exports getPlayerCards
  * @type {() => Hand}
  */
 function getPlayerCards() {
@@ -180,9 +180,9 @@ function refillActionPoints() {
 }
 
 /**
- * @exportedFunction
  * User can play one project card with one resource card on the table.
  *
+ * @exports playProjectCard
  * @type {(project: Card, resource: Card) => Hand} Return the player project cards after played
  */
 function playProjectCard(project, resource) {
@@ -237,9 +237,8 @@ function removeProjectCard(project) {
 }
 
 /**
- * @exportedFunction
- * listAvailableProjectByJob
  *
+ * @exports listAvailableProjectByJob
  * @param {Card} jobCard
  * @returns {{name: string, slotId: number}[]}
  */
@@ -267,8 +266,8 @@ function listAvailableProjectByJob(jobCard) {
 }
 
 /**
- * @exportedFunction
  *
+ * @exports recruit
  * @param {Card} project
  * @param {number} slotId
  * @returns {Hand}
@@ -299,7 +298,8 @@ function recruit(project, slotId) {
 }
 
 /**
- * @exportedFunction
+ *
+ * @exports openContributeDialog
  */
 function openContributeDialog() {
   if (!Rule.contribute.getIsAvailable()) {
@@ -318,10 +318,10 @@ function openContributeDialog() {
 }
 
 /**
- * @exportedFunction
+ * list all projects on the table and max is the max contribution point player can add
  *
+ * @exports listProjects
  * @returns {{ projects: Project[], maxContribution: number }}
- *  list all projects on the table and max is the max contribution point player can add
  */
 function listProjects() {
   return {
@@ -379,9 +379,9 @@ function peekNextEventCard() {
 }
 
 /**
- * @exportedFunction
  * User can discard cards and end the turn
  *
+ * @exports discardCardsAndEndTurn
  * @type {(projects: Card[], resources: Card[]) => Hand}
  *  return the hand after discarded the cards
  */
@@ -433,9 +433,9 @@ function discardCardsAndEndTurn(projects, resources) {
 }
 
 /**
- * @exportedFunction
  * Host can reset whole spreadsheet from the custom menu
  *
+ * @exports resetSpreadsheet
  * @returns
  */
 function resetSpreadsheet() {
