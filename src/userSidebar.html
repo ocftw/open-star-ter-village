@@ -252,7 +252,7 @@
         const slots = vacancies.map((vacancy, idx) => {
           const id = `tVcc-${idx}`;
           return `<div>
-            <input type="radio" id="${id}" name="table-projects" value="${vacancy.name}" slot="${vacancy.slotId}" />
+            <input type="radio" id="${id}" name="table-projects" value="${vacancy.name}" data-slot-id="${vacancy.slotId}" />
             <label for="${id}">${vacancy.name}</label>
           </div>`;
         });
@@ -287,7 +287,7 @@
         gotoMainMenu();
       });
       const selectedProjectName = $('input[name="table-projects"]:checked').val();
-      const selectedProjectSlot = Number($('input[name="table-projects"]:checked').prop('slot'));
+      const selectedProjectSlot = $('input[name="table-projects"]:checked').data('slot-id');
       action.recruit(selectedProjectName, selectedProjectSlot);
     }
 
