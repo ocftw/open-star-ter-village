@@ -83,6 +83,7 @@
           $(this).val($(this).prop('min'));
           $('#count').text(`還剩下${maxContribution}點`).removeClass('current');
         });
+        $('#contribute').prop('disabled', false);
       });
 
       $('input[type="number"]:not(:disabled)').change(function () {
