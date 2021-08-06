@@ -376,7 +376,14 @@ function contribute(contributionList) {
   }
 }
 
-/** @type {(forceCard: Card, projectCard: Card) => void} */
+/**
+ * Player can play force card and resolve the effect
+ *
+ * @exports playForceCard
+ * @param {Card} forceCard
+ * @param {Card?} projectCard
+ * @returns {Hand}
+ */
 function playForceCard(forceCard, projectCard = null) {
   if (!Rule.playForce.getIsAvailable()) {
     throw new Error('本輪不能使用源力卡，可憐哪！');
@@ -388,6 +395,21 @@ function playForceCard(forceCard, projectCard = null) {
   // TODO: replace 1 with rule.playForce.actionPoint
   if (!Table.Player.isActionable(1, playerId)) {
     throw new Error('行動點數不足！');
+  }
+  try {
+    const resourceCards = CurrentPlayerHand.removeResourceCards([forceCard]);
+    // TODO: resolve force card
+    Table.Player.reduceActionPoint(1, CurrentPlayer.getId());
+    ResourceDeck.discard([forceCard]);
+    const projectCards = CurrentPlayerHand.listProjectCards();
+    return {
+      projectCards,
+      resourceCards,
+    }
+  } catch (err) {
+    Logger.log(`playForceCard failure. ${err}`);
+    // TODO: fallback
+    throw new Error('something went wrong. Please try again');
   }
 }
 

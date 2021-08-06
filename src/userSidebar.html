@@ -196,6 +196,9 @@
 
     function menuPlayForceCard() {
       gotoSubMenu(this);
+      const dom = $('<button id="play-force-card" class="blue">play force card</button>');
+      dom.click(playForceCard);
+      setActionBar(dom);
 
       renderProjectCardStatic();
       renderResourceCardRadio();
@@ -294,6 +297,15 @@
     function openContributeDialog() {
       const action = actionCreator(this);
       action.openContributeDialog();
+    }
+
+    function playForceCard() {
+      const action = actionCreator(this, function (hand) {
+        showCards(hand);
+        gotoMainMenu();
+      });
+      const selectedResourceCard = $('input[name="resource-cards"]:checked').val();
+      action.playForceCard(selectedResourceCard);
     }
 
     function discardAndEndTurn() {
