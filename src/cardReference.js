@@ -74,7 +74,7 @@ const ProjectCardRef = (() => {
 })();
 
 /** @type {ResourceCardReference} */
-const resourceCardRef = () => {
+const resourceCardRef = (() => {
   const forceCardList = SpreadsheetApp.getActive().getSheetByName('源力卡介紹').getDataRange().getValues();
   const isForceCard = (card) => {
     const index = forceCardList.findIndex(row => row[0] === card);
@@ -83,4 +83,4 @@ const resourceCardRef = () => {
   return {
     isForceCard
   };
-};
+})();
