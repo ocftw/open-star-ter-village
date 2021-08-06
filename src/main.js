@@ -320,10 +320,14 @@ function openContributeDialog() {
 /**
  * @exportedFunction
  *
- * @returns {Project[]}
+ * @returns {{ projects: Project[], maxContribution: number }}
+ *  list all projects on the table and max is the max contribution point player can add
  */
 function listProjects() {
-  return Table.ProjectCard.listProjects(CurrentPlayer.getId());
+  return {
+    maxContribution: Rule.contribute.getContribution(),
+    projects: Table.ProjectCard.listProjects(CurrentPlayer.getId()),
+  };
 }
 
 /** @type {(resourceCard: Card, projectCard: Card) => void} */

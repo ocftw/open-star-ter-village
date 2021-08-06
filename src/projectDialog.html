@@ -30,7 +30,7 @@
         .listProjects();
     });
 
-    function showProjects(projects) {
+    function showProjects({ projects, maxContribution }) {
       $('#projects').empty();
       if (projects.length === 0) {
         $('#projects').text('no project found');
@@ -64,13 +64,12 @@
         <button class="blue" id="contribute">submit</button>\
       </div>');
 
-      const ruleMax = 3;
-      $('#count').text(`還剩下${ruleMax}點`);
+      $('#count').text(`還剩下${maxContribution}點`);
 
       $('#reset').click(function () {
         $('input[type="number"]:not(:disabled)').each(function () {
           $(this).val($(this).prop('min'));
-          $('#count').text(`還剩下${ruleMax}點`).removeClass('current');
+          $('#count').text(`還剩下${maxContribution}點`).removeClass('current');
         });
       });
 
@@ -79,11 +78,11 @@
         $('input[type="number"]:not(:disabled)').each(function () {
           cnt += ($(this).val() - $(this).prop('min'));
         });
-        if (ruleMax - cnt >= 0) {
-          $('#count').text(`還剩下${ruleMax - cnt}點`).removeClass('current');
+        if (maxContribution - cnt >= 0) {
+          $('#count').text(`還剩下${maxContribution - cnt}點`).removeClass('current');
           $('#contribute').prop('disabled', false);
         } else {
-          $('#count').text(`用超過${-(ruleMax - cnt)}點`).addClass('current');
+          $('#count').text(`用超過${-(maxContribution - cnt)}點`).addClass('current');
           $('#contribute').prop('disabled', true);
         }
       });
