@@ -1,20 +1,46 @@
 // @ts-check
 
-//shuffle array
-function shuffleArray(array){
-  let currentIndex = array.length,  randomIndex;
-  while (0 !== currentIndex) {
-    // Pick a remaining element
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex--;
-    // And swap it with the current element
-    [array[currentIndex], array[randomIndex]]
-    = [array[randomIndex], array[currentIndex]];
+/*
+Event card: Digital minister without portfolio(數位政委)
+            each player draw card(s) from player sits to their left side(next player)
+*/
+/** @type {(projectType: string) => void} */
+function allContributionUp(projectType) {
+  //TODO: find every project card on table which fits the project type
+  //TODO: add every worker's contribution by one and avoid exceeding max contribution/project requirements
+}
+
+
+/*
+Event card: Human resource management(人力釋出)
+            each player draw card(s) from player sits to their left side(next player)
+*/
+/** @type {(playerNum: number) => void} */
+function drawResourceFromNextPlayer(playerNum) {
+  let resourceCards = [];
+  let drawCards = [];
+  for (let i = 0; i < playerNum; i++){
+    //get every active player's hand
+    resourceCards[i] = playerHand.getRange(7, i + 1, 8, 1).getValues().filter(x => x[0]);
+    //draw a random card from player
+    let randomIndex = Math.floor(Math.random() * resourceCards[i].length);
+    drawCards[i] = resourceCards[i].splice(randomIndex, 1);
+    //sort player's hand
+    resourceCards[i] = resourceCards[i].filter(x => x[0]);
+  }
+  //put card back to player
+  for (let i = 0; i < playerNum; i++){
+    resourceCards[i].push(drawCards[(i + 1) % playerNum]);
+    playerHand.getRange(7, i + 1, resourceCards[i].length, 1).setValues(resourceCards[i]);
   }
 }
 
+
+/*
+Event card: Global conference(國際交流)
+            shuffle and deal all resource card in players' hand
+*/
 /** @type {(playerNum: number) => void} */
-//shuffle and deal all resource card in players' hand
 function shuffleAllResource(playerNum) {
   //draw all resource cards from all active players
   let resourceCards = playerHand.getRange(7, 1, 8, playerNum).getValues();
@@ -37,8 +63,12 @@ function shuffleAllResource(playerNum) {
   playerHand.getRange(7, 1, Math.ceil(cardNum / playerNum), playerNum).setValues(newCardList);
 }
 
+
+/*
+Event card: Side project(不務正業)
+            shuffle and deal all project card in players' hand
+*/
 /** @type {(playerNum: number) => void} */
-//shuffle and deal all project card in players' hand
 function shuffleAllProject(playerNum) {
   //draw all project cards from all active players
   let projectCards = playerHand.getRange(3, 1, 3, playerNum).getValues();
@@ -61,23 +91,24 @@ function shuffleAllProject(playerNum) {
   playerHand.getRange(3, 1, Math.ceil(cardNum / playerNum), playerNum).setValues(newCardList);
 }
 
-/** @type {(playerNum: number) => void} */
-//each player draw card(s) from player sits to their left side(next player)
-function drawResourceFromNextPlayer(playerNum = 6) {
-  let resourceCards = [];
-  let drawCards = [];
-  for (let i = 0; i < playerNum; i++){
-    //get every active player's hand
-    resourceCards[i] = playerHand.getRange(7, i + 1, 8, 1).getValues().filter(x => x[0]);
-    //draw a random card from player
-    let randomIndex = Math.floor(Math.random() * resourceCards[i].length);
-    drawCards[i] = resourceCards[i].splice(randomIndex, 1);
-    //sort player's hand
-    resourceCards[i] = resourceCards[i].filter(x => x[0]);
-  }
-  //put card back to player
-  for (let i = 0; i < playerNum; i++){
-    resourceCards[i].push(drawCards[(i + 1) % playerNum]);
-    playerHand.getRange(7, i + 1, resourceCards[i].length, 1).setValues(resourceCards[i]);
+/*
+Event card: CO8=D-19 pandemic(猛漢肺炎來襲)
+            each player draw card(s) from player sits to their left side(next player)
+*/
+function allContributionDown() {
+  //TODO: find every project card on table 
+  //TODO: deduct every worker's contribution by one and avoid minimum contribution
+}
+
+//shuffle array
+function shuffleArray(array){
+  let currentIndex = array.length,  randomIndex;
+  while (0 !== currentIndex) {
+    // Pick a remaining element
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+    // And swap it with the current element
+    [array[currentIndex], array[randomIndex]]
+    = [array[randomIndex], array[currentIndex]];
   }
 }
