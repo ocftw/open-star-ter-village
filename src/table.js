@@ -128,7 +128,7 @@ const Table = (() => {
 
       // set slots info
       const slotInfoRows = spec.groups.map((group, idx) => {
-        const row = [group.title, /* palyerId */, /* points */, idx];
+        const row = [group.title, /* playerId */, /* points */, idx];
         return [...new Array(group.slots)].map(_ => row);
       }).reduce((rows, slotRows) => [...rows, ...slotRows], []);
       tableProjectCard.getRange(21 + 10 * id, 1, 6, 4).setValues(slotInfoRows);
@@ -142,17 +142,17 @@ const Table = (() => {
       // increament the project card count
       ProjectCardModel.setCount(ProjectCardModel.getCount() + 1);
     },
-    listCardIds: () => {
-      const cards = tableProjectCard.getRange(11, 1, ProjectCardModel.getMax(), 1).getValues().map(row => row[0]);
-      const cardWithIds = cards.map((card, id) => {
-        if (card) {
-          return { id, card };
-        } else {
+    listCards: () => {
+      // name, type, ownerId, and exts. 4 is the ext buffers
+      const values = tableProjectCard.getRange(11, 1, ProjectCardModel.getMax(), 3 + 4).getValues();
+      const cards = values.map(([name, type, ownerId, ...extensions], id) => {
+        if (name === '') {
           return undefined;
         }
-      });
-      Logger.log(`cards: ${JSON.stringify(cardWithIds)}`);
-      return cardWithIds.filter(x => x);
+        return { id, name, type, ownerId, extensions };
+      }).filter(x => x);
+      Logger.log(`cards: ${JSON.stringify(cards)}`);
+      return cards;
     },
     listCardSpecs: () => {
       // name, type, ownerId, and exts. 4 is the ext buffers
@@ -332,18 +332,18 @@ const Table = (() => {
       });
     },
     listAvailableProjectByJob: (jobCard, points) => {
-      const projects = ProjectCardModel.listCardIds();
+      const projects = ProjectCardModel.listCards();
       Logger.log(`job name: ${jobCard}, projects: ${JSON.stringify(projects)}`);
       const vacancies = projects.map(project => {
         const slotId = ProjectCardModel.getProjectVacancySlotIdById(jobCard, project.id);
         if (slotId < 0) {
           return undefined;
         }
-        if (!ProjectCard.isSlotEligibleToContribute(points, project.card, slotId)) {
+        if (!ProjectCard.isSlotEligibleToContribute(points, project.name, slotId)) {
           return undefined;
         }
         return {
-          name: project.card,
+          name: project.name,
           slotId,
         }
       });
