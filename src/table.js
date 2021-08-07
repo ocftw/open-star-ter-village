@@ -18,7 +18,7 @@
  *  list all available project card names have given job vacancy
  * @property {(playerId: string, projectCard: Card, slotId: number) => boolean} isPlayerEligibleToContributeSlot
  *  verify the availability of the slot is available to the player
- * @property {(points: number, projectCard: Card, slotIdx: number) => boolean} isSlotAvailableToContribute
+ * @property {(points: number, projectCard: Card, slotIdx: number) => boolean} isSlotEligibleToContribute
  *  verify the slot and the belongs group is available to contribute points.
  * @property {(points: number, projectCard: Card, slotId: number) => void} contributeSlot contribute points to project slot
  * @property {(projectCard: Card, slotIdx: number, playerId: string, initialPoints: number,
@@ -339,7 +339,7 @@ const Table = (() => {
         if (slotId < 0) {
           return undefined;
         }
-        if (!ProjectCard.isSlotAvailableToContribute(points, project.card, slotId)) {
+        if (!ProjectCard.isSlotEligibleToContribute(points, project.card, slotId)) {
           return undefined;
         }
         return {
@@ -349,7 +349,7 @@ const Table = (() => {
       });
       return vacancies.filter(x => x);
     },
-    isSlotAvailableToContribute: (points, project, slotId) => {
+    isSlotEligibleToContribute: (points, project, slotId) => {
       const cardId = ProjectCardModel.findCardId(project);
       // 6 is the hard maximum of each slot contribution
       if (ProjectCardModel.getContributionPointOnSlotById(cardId, slotId) + points > 6) {

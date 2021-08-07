@@ -358,7 +358,7 @@ function contribute(contributionList) {
     throw new Error('無法分配給不屬於自己的專案/人力！');
   }
   const isAvailableToContribute = contributionList.map(contribution =>
-    Table.ProjectCard.isSlotAvailableToContribute(
+    Table.ProjectCard.isSlotEligibleToContribute(
       contribution.points, contribution.project, contribution.slotId)
   ).every(x => x);
   if (!isAvailableToContribute) {
