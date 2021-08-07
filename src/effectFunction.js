@@ -63,6 +63,21 @@ function shuffleAllProject(playerNum) {
 
 /** @type {(playerNum: number) => void} */
 //each player draw card(s) from player sits to their left side(next player)
-function drawResourceEach(playerNum) {
-  
+function drawResourceFromNextPlayer(playerNum = 6) {
+  let resourceCards = [];
+  let drawCards = [];
+  for (let i = 0; i < playerNum; i++){
+    //get every active player's hand
+    resourceCards[i] = playerHand.getRange(7, i + 1, 8, 1).getValues().filter(x => x[0]);
+    //draw a random card from player
+    let randomIndex = Math.floor(Math.random() * resourceCards[i].length);
+    drawCards[i] = resourceCards[i].splice(randomIndex, 1);
+    //sort player's hand
+    resourceCards[i] = resourceCards[i].filter(x => x[0]);
+  }
+  //put card back to player
+  for (let i = 0; i < playerNum; i++){
+    resourceCards[i].push(drawCards[(i + 1) % playerNum]);
+    playerHand.getRange(7, i + 1, resourceCards[i].length, 1).setValues(resourceCards[i]);
+  }
 }
