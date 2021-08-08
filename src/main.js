@@ -71,6 +71,14 @@ function turnWillStart() { }
 
 function turnDidEnd() {
   const closedProjects = Table.ProjectCard.listClosedProjects();
+  const projectStatus = closedProjects.map((project) => {
+    // player contributions status sorted by contribution points
+    const contributions = Table.ProjectCard.listProjectContributions(project.name);
+    return {
+      ...project,
+      contributions,
+    }
+  });
   // TODO: calculate score
   // TODO: move the open source tree
   // reset and refill current player counters

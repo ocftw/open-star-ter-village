@@ -26,6 +26,8 @@
  *  with initial contribution points
  * @property {() => {name: Card, type: string, ownerId: string, extensions: string[]}[]} listClosedProjects
  *  return true when there is any project is closed
+ * @property {(card: Card) => {points: number, tokens: number, playerId: string}[]} listProjectContributions
+ *  list all players contributions of the project card. sorted descending by contribution points
  *
  * @typedef {Object} TablePlayerController
  * @property {(playerId: string) => string} getNickname get player nickname
@@ -217,6 +219,20 @@ const Table = (() => {
     setProjectTypeById: (type, id) => tableProjectCard.getRange(11 + id, 2).setValue(type),
     getProjectOnwerById: (id) => tableProjectCard.getRange(11 + id, 3).getValue(),
     setProjectOnwerById: (ownerId, id) => tableProjectCard.getRange(11 + id, 3).setValue(ownerId),
+    listSlots: (id) => {
+      const values = tableProjectCard.getRange(21 + 10 * id, 1, 6, 4).getValues();
+      const slots = values.map(([title, playerId, points, groupId], slotId) => {
+        return {
+          title,
+          slotId,
+          playerId,
+          points,
+          groupId,
+        }
+      });
+      Logger.log(`list slots: ${JSON.stringify(slots)}`);
+      return slots;
+    },
     getPlayerOnSlotById: (id, slotId) => {
       return tableProjectCard.getRange(21 + 10 * id + slotId, 2).getValue();
     },
@@ -420,6 +436,40 @@ const Table = (() => {
       Logger.log(`project closed: ${JSON.stringify(closedProjects)}`);
 
       return closedProjects;
+    },
+    listProjectContributions: (card) => {
+      const cardId = ProjectCardModel.findCardId(card);
+      const slots = ProjectCardModel.listSlots(cardId);
+      const playerPointsMap = slots.reduce((map, slot) => {
+        if (slot.playerId) {
+          if (!map[slot.playerId]) {
+            map[slot.playerId] = 0;
+          }
+          map[slot.playerId] += slot.points;
+        }
+        return map;
+      }, {});
+
+      const playerTokensMap = slots.reduce((map, slot) => {
+        if (slot.playerId) {
+          if (!map[slot.playerId]) {
+            map[slot.playerId] = 0;
+          }
+          map[slot.playerId]++;
+        }
+        return map;
+      }, {});
+
+      const contributions = Object.keys(playerPointsMap).map(playerId => {
+        const points = playerPointsMap[playerId];
+        const tokens = playerTokensMap[playerId];
+        return { playerId, points, tokens };
+      });
+
+      contributions.sort((a, b) => b.points - a.points);
+      Logger.log(`list player contributions: ${JSON.stringify(contributions)}`);
+
+      return contributions;
     },
   };
 
