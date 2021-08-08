@@ -28,6 +28,8 @@
  *  return true when there is any project is closed
  * @property {(card: Card) => {points: number, tokens: number, playerId: string}[]} listProjectContributions
  *  list all players contributions of the project card. sorted descending by contribution points
+ * @property {(card: Card) => {title: string, occupied: number, available: number}[]} listProjectOccupancySummary
+ *  list all job occupancy status on the project card.
  *
  * @typedef {Object} TablePlayerController
  * @property {(playerId: string) => string} getNickname get player nickname
@@ -470,6 +472,27 @@ const Table = (() => {
       Logger.log(`list player contributions: ${JSON.stringify(contributions)}`);
 
       return contributions;
+    },
+    listProjectOccupancySummary: (card) => {
+      const cardId = ProjectCardModel.findCardId(card);
+      const slots = ProjectCardModel.listSlots(cardId);
+      const summaryMap = slots.reduce((map, slot) => {
+        if (!map[slot.title]) {
+          map[slot.title] = { occupied: 0, available: 0 };
+        }
+        if (slot.playerId) {
+          map[slot.title].occupied++;
+        } else {
+          map[slot.title].available++;
+        }
+        return map;
+      }, {});
+      const summary = Object.keys(summaryMap).map(title => {
+        const { occupied, available } = summaryMap[title];
+        return { title, occupied, available };
+      });
+      Logger.log(`list project ${card} summary ${JSON.stringify(summary)}`);
+      return summary;
     },
   };
 
