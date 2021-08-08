@@ -2,7 +2,7 @@
 
 /*
 Event card: Digital minister without portfolio(數位政委)
-            each player draw card(s) from player sits to their left side(next player)
+            every active worker of respective project type gain 1 contribution
 */
 /** @type {(projectType: string) => void} */
 function allContributionUp(projectType) {
@@ -93,11 +93,20 @@ function shuffleAllProject(playerNum) {
 
 /*
 Event card: CO8=D-19 pandemic(猛漢肺炎來襲)
-            each player draw card(s) from player sits to their left side(next player)
+            every active worker lose 1 contribution
 */
 function allContributionDown() {
   //TODO: find every project card on table 
   //TODO: deduct every worker's contribution by one and avoid minimum contribution
+}
+
+/*
+Event card: Youth subsidy(青年補助)
+            the player with least closed projects immediately draw 2 resource cards 
+            and gain 1 additional action point in this round
+*/
+function leastClosedProjectBonus(){
+  
 }
 
 //shuffle array
