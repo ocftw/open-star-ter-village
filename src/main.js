@@ -70,6 +70,7 @@ function roundWillStart() {
 function turnWillStart() { }
 
 function turnDidEnd() {
+  const closedProjects = Table.ProjectCard.listClosedProjects();
   // TODO: calculate score
   // TODO: move the open source tree
   // reset and refill current player counters

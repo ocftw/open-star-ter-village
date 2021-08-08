@@ -24,6 +24,8 @@
  * @property {(projectCard: Card, slotIdx: number, playerId: string, initialPoints: number,
  *  isOwner?: boolean) => void} placeResourceOnSlotById place an arbitrary resource card on the project slot by slot index
  *  with initial contribution points
+ * @property {() => {name: Card, type: string, ownerId: string, extensions: string[]}[]} listClosedProjects
+ *  return true when there is any project is closed
  *
  * @typedef {Object} TablePlayerController
  * @property {(playerId: string) => string} getNickname get player nickname
@@ -237,6 +239,12 @@ const Table = (() => {
       const groupId = ProjectCardModel.getGroupIdBySlotId(id, slotId);
       ProjectCardModel.addGroupCurrentContributionPointByGroupId(points, id, groupId);
     },
+    listGroups: (id) => {
+      const values = tableProjectCard.getRange(21 + 10 * id, 5, 6, 1).getValues();
+      const groupNames = values.map(row => row[0]).filter(x => x);
+      const groups = groupNames.map((name, groupId) => ({ name, groupId }));
+      return groups;
+    },
     getGroupIdBySlotId: (id, slotId) => tableProjectCard.getRange(21 + 10 * id + slotId, 4).getValue(),
     getGroupCurrentContributionPointByGroupId: (id, groupId) => tableProjectCard.getRange(21 + 10 * id + groupId, 6).getValue(),
     setGroupCurrentContributionPointByGroupId: (points, id, groupId) => tableProjectCard.getRange(21 + 10 * id + groupId, 6).setValue(points),
@@ -396,6 +404,22 @@ const Table = (() => {
       // set initial contribution point
       ProjectCardView.setContributionPointOnTableSlotById(initialPoints, cardId, slotId);
       Logger.log(`render the player ${playerId} takes slot ${slotId} on project ${project} on table`);
+    },
+    listClosedProjects: () => {
+      const projects = ProjectCardModel.listCards();
+      const closedProjects = projects.map(({ id, name, type, ownerId, extensions }) => {
+        const groups = ProjectCardModel.listGroups(id);
+        const reachTheGoal = groups.map(({ groupId }) => {
+          const current = ProjectCardModel.getGroupCurrentContributionPointByGroupId(id, groupId);
+          const goal = ProjectCardModel.getGroupGoalContributionPointByGroupId(id, groupId);
+          return current === goal;
+        }).every(x => x);
+
+        return reachTheGoal ? { name, type, ownerId, extensions } : undefined;
+      }).filter(x => x);
+      Logger.log(`project closed: ${JSON.stringify(closedProjects)}`);
+
+      return closedProjects;
     },
   };
 
