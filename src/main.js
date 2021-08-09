@@ -619,7 +619,6 @@ function resetSpreadsheet() {
   PlayerHands.reset();
 
   //reset treeBoard display
-  treeBoard.getRange('C3:E7').setBackground(null).setFontWeight('normal');
   Table.Tree.reset();
 
   // reset table
@@ -634,41 +633,4 @@ function resetSpreadsheet() {
   // set UI back to main board
   SpreadsheetApp.getActive().setActiveSheet(mainBoard);
   SpreadsheetApp.getActive().toast("已重設表單");
-}
-
-function treeChange(e) {
-  //TODO:maybe revise code mechanics to prevent use of onEdit?
-  //update treeBoard
-  switch (e.range.getA1Notation()) {
-    case 'D10':
-      treeBoard.getRange('C2').offset(1, 0, e.value, 1)
-        .setBackground('#d9ead3').setFontWeight('bold');
-      break;
-    case 'D11':
-      treeBoard.getRange('D2').offset(1, 0, e.value, 1)
-        .setBackground('#d9ead3').setFontWeight('bold');
-      if (e.value > 2) {
-        //open up project slot at open government level 3
-        mainBoard.getRange('U2:Y19').setFontColor("black");
-        mainBoard.getRangeList(['U2:Y3', 'U11:Y12'])
-          .setBorder(null, null, true, null, null, null, 'black', SpreadsheetApp.BorderStyle.SOLID);
-        mainBoard.getRangeList(['U2:Y10', 'U11:Y19'])
-          .setBorder(true, null, true, true, null, null, 'black', SpreadsheetApp.BorderStyle.SOLID_MEDIUM);
-      };
-      if (e.value > 3) {
-        //change background color of level 4 and 5
-        treeBoard.getRange('C6').offset(0, 0, e.value - 3, 1)
-          .setBackground('#d9ead3').setFontWeight('bold');
-      };
-      break;
-    case 'D12':
-      treeBoard.getRange('E2').offset(1, 0, e.value, 1)
-        .setBackground('#d9ead3').setFontWeight('bold');
-      if (e.value > 3) {
-        //change background color of level 4 and 5
-        treeBoard.getRange('C6').offset(0, 0, e.value - 3, 1)
-          .setBackground('#d9ead3').setFontWeight('bold');
-      };
-      break;
-  }
 }

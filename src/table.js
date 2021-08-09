@@ -744,9 +744,14 @@ const Table = (() => {
         throw new Error(`Undefineded type ${type}`);
       }
       mainBoard.getRange(10 + row, 5).setValue(level);
+      treeBoard.getRange(3, 3 + row, level, 1).setBackground('#d9ead3').setFontWeight('bold');
+      if (level > 3){
+        treeBoard.getRange(6, 3, level - 3, 1).setBackground('#d9ead3').setFontWeight('bold');
+      }
     },
     reset: () => {
       mainBoard.getRange(10, 5, 3, 1).setValue(0);
+      treeBoard.getRange(3, 3, 5, 3).setBackground(null).setFontWeight('normal');
     },
   };
 
