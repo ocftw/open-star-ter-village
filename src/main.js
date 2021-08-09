@@ -58,22 +58,22 @@ function gameWillStart() {
 function roundWillStart() {
   // draw new event card
   drawEventCard();
-  // peek next event card
-  peekNextEventCard();
-
   // everything set, turn start
   turnWillStart();
 }
 
-function turnWillStart() { }
+function turnWillStart() {
+  // peek next event card
+  peekNextEventCard();
+}
 
 function turnDidEnd() {
   // reset and refill current player counters
   Table.Player.resetTurnCounters(CurrentPlayer.getId());
   Table.Player.setNextTurnActionPoints(3, CurrentPlayer.getId());
-  // peek next event card
-  peekNextEventCard();
   // TODO: move to next player
+  // TODO: should start the turn when next plaer is not starter player
+  // TODO: should end the round when next player is starter player
 }
 
 function settlePhase() {
@@ -178,7 +178,9 @@ function settlePhase() {
   });
 }
 
-function roundDidEnd() { }
+function roundDidEnd() {
+  removeEventCard();
+}
 
 function gameDidEnd() { }
 
@@ -501,29 +503,29 @@ function playForceCard(forceCard, projectCard = null) {
   }
 }
 
-// TODO: rewrite with the table methods
 //draw a new event card
 function drawEventCard() {
-  // get current event card from table
-  const currentEventCard = mainBoard.getRange('H20').getDisplayValue();
-  if (currentEventCard) {
-    // remove current event card from table
-    mainBoard.getRange('H20').clearContent();
-    // discard current event card to deck
-    EventDeck.discard([currentEventCard]);
-  }
   // draw event card from deck
-  const [newEventCard] = EventDeck.draw();
+  const [card] = EventDeck.draw();
   // play event card on table
-  mainBoard.getRange('H20').setValue(newEventCard);
+  Table.EventCard.place(card);
+  // TODO: apply event card effect
   SpreadsheetApp.getActive().toast("已翻開新的事件卡");
+}
+
+function removeEventCard() {
+  // remove event card from table
+  const card = Table.EventCard.remove();
+  // TODO: reverse event card effect when needed
+  // discard it to the pile
+  EventDeck.discard([card]);
 }
 
 // peek next event card
 function peekNextEventCard() {
-  // open source tree is level 1
-  if (mainBoard.getRange('E11').getValue() > 0) {
-    mainBoard.getRange('H21').setValue(SpreadsheetApp.getActive().getSheetByName('EventDeck').getRange('A1').getDisplayValue());
+  if (Rule.peekNextEvent.getIsAvailable()) {
+    const peekNext = SpreadsheetApp.getActive().getSheetByName('EventDeck').getRange('A1').getDisplayValue();
+    Table.EventCard.showNext(peekNext);
   }
 }
 
@@ -620,10 +622,8 @@ function resetSpreadsheet() {
   treeBoard.getRange('C3:E7').setBackground(null).setFontWeight('normal');
 
   // reset table
-  // reset current event
-  mainBoard.getRange('H20').clearContent();
-  // reset next event
-  mainBoard.getRange('H21').setValue('不顯示');
+  // reset event cards
+  Table.EventCard.reset();
   //clear project slot and break merged cells
   Table.ProjectCard.reset();
 
