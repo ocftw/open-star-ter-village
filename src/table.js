@@ -6,6 +6,7 @@
  * @typedef {object} TableController
  * @property {TableProjectCardController} ProjectCard project card methods includes play, isPlayable, place
  * @property {TablePlayerController} Player player methods
+ * @property {TableTreeController} Tree open source tree methods
  *
  * @typedef {Object} TableProjectCardController
  * @property {() => boolean} isPlayable whether table is able to placed a project card
@@ -60,6 +61,11 @@
  * @property {number} groupCurrentPoints current contribution points of the slot group
  * @property {number} groupGoalPoints goal contribution points of the slot group
  * @property {boolean} activeForCurrentPlayer whether it's active for current player
+ *
+ * @typedef {Object} TableTreeController open source tree state controller
+ * @property {() => {type: string, level: number}[]} listTreeLevels list levels of all tree types
+ * @property {(map: {[type: string]: number}) => void} upgradeTreeLevels upgrade tree levels by given type key to upgrade value map
+ * @property {() => void} reset reset all tree levels to zeros
  */
 
 /** @type {TableController} */
@@ -700,8 +706,73 @@ const Table = (() => {
     },
   };
 
+  // Table Tree Model
+  const TreeModel = {
+    getTreeLevel: (type) => {
+      const key = `TREE_PROP[${type}]`;
+      const prop = PropertiesService.getScriptProperties().getProperty(key);
+      if (!prop) {
+        // return default tree level when property not found
+        return 0;
+      }
+      return JSON.parse(prop);
+    },
+    setTreeLevel: (level, type) => {
+      const key = `TREE_PROP[${type}]`;
+      const value = JSON.stringify(level);
+      PropertiesService.getScriptProperties().setProperty(key, value);
+    },
+  };
+
+  const TreeTypeRowMap = {
+    '開放資料': 0,
+    '開放政府': 1,
+    '開放原始碼': 2,
+  };
+  // Table Tree View
+  const TreeView = {
+    setTreeLevel: (level, type) => {
+      const row = TreeTypeRowMap[type];
+      if (row === undefined) {
+        throw new Error(`Undefineded type ${type}`);
+      }
+      mainBoard.getRange(10 + row, 5).setValue(level);
+    },
+    reset: () => {
+      mainBoard.getRange(10, 5, 3, 1).setValue(0);
+    },
+  };
+
+  // Table Tree Controller
+  const TreeTypes = ['開放資料', '開放政府', '開放原始碼'];
+  const Tree = {
+    listTreeLevels: () => {
+      const treeLevels = TreeTypes.map(type => {
+        const level = TreeModel.getTreeLevel(type);
+        return { type, level };
+      });
+      Logger.log(`list tree levels: ${treeLevels}`);
+      return treeLevels;
+    },
+    upgradeTreeLevels: (typeUpgradeMap) => {
+      Object.keys(typeUpgradeMap).forEach(type => {
+        const lv = TreeModel.getTreeLevel(type);
+        const upgardes = typeUpgradeMap[type];
+        TreeModel.setTreeLevel(lv + upgardes, type);
+        TreeView.setTreeLevel(lv + upgardes, type);
+      });
+      Logger.log(`upgarde tree levels: ${typeUpgradeMap}`);
+    },
+    reset: () => {
+      Logger.log('reset all tree levels');
+      TreeTypes.forEach(type => TreeModel.setTreeLevel(0, type));
+      TreeView.reset();
+    },
+  };
+
   return {
     ProjectCard,
     Player,
+    Tree,
   };
 })();

@@ -101,7 +101,16 @@ function turnDidEnd() {
     const tokens = playerTokensMap[playerId];
     Table.Player.increaseWorkerTokens(tokens, playerId);
   });
-  // TODO: move the open source tree
+  // move the open source tree
+  const projectTypeCountMap = projectStatus.map(project => project.type).reduce((map, type) => {
+    if (!map[type]) {
+      map[type] = 0;
+    }
+    map[type]++;
+    return map;
+  }, {});
+  Table.Tree.upgradeTreeLevels(projectTypeCountMap);
+  // TODO: trigger tree effects
   // reset and refill current player counters
   Table.Player.resetTurnCounters(CurrentPlayer.getId());
   Table.Player.setNextTurnActionPoints(3, CurrentPlayer.getId());
