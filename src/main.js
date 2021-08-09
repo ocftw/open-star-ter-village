@@ -71,99 +71,101 @@ function turnWillStart() { }
 
 function turnDidEnd() {
   const closedProjects = Table.ProjectCard.listClosedProjects();
-  const projectStatus = closedProjects.map((project) => {
-    // player contributions status sorted by contribution points
-    const contributions = Table.ProjectCard.listProjectContributions(project.name);
-    const occupancySummary = Table.ProjectCard.listProjectOccupancySummary(project.name);
-    return {
-      ...project,
-      contributions,
-      occupancySummary,
-    };
-  });
-  // TODO: calculate score
-  // TODO: contribute goal cards
-  // Remove projects
-  const projectCards = projectStatus.map(project => project.name);
-  projectCards.forEach(card => {
-    Table.ProjectCard.remove(card);
-  });
-  // Discard the project cards
-  ProjectDeck.discard(projectCards);
-  // Return tokens to players
-  const playerTokensMap = projectStatus.map(project => project.contributions)
-    .reduce((list, row) => ([...list, ...row]), [])
-    .reduce((map, contribution) => {
-      if (!map[contribution.playerId]) {
-        map[contribution.playerId] = 0;
+  if (closedProjects.length > 0) {
+    const projectStatus = closedProjects.map((project) => {
+      // player contributions status sorted by contribution points
+      const contributions = Table.ProjectCard.listProjectContributions(project.name);
+      const occupancySummary = Table.ProjectCard.listProjectOccupancySummary(project.name);
+      return {
+        ...project,
+        contributions,
+        occupancySummary,
+      };
+    });
+    // TODO: calculate score
+    // TODO: contribute goal cards
+    // Remove projects
+    const projectCards = projectStatus.map(project => project.name);
+    projectCards.forEach(card => {
+      Table.ProjectCard.remove(card);
+    });
+    // Discard the project cards
+    ProjectDeck.discard(projectCards);
+    // Return tokens to players
+    const playerTokensMap = projectStatus.map(project => project.contributions)
+      .reduce((list, row) => ([...list, ...row]), [])
+      .reduce((map, contribution) => {
+        if (!map[contribution.playerId]) {
+          map[contribution.playerId] = 0;
+        }
+        map[contribution.playerId] += contribution.tokens;
+        return map;
+      }, {});
+    Object.keys(playerTokensMap).forEach(playerId => {
+      const tokens = playerTokensMap[playerId];
+      Table.Player.increaseWorkerTokens(tokens, playerId);
+    });
+    // move the open source tree
+    const projectTypeCountMap = projectStatus.map(project => project.type).reduce((map, type) => {
+      if (!map[type]) {
+        map[type] = 0;
       }
-      map[contribution.playerId] += contribution.tokens;
+      map[type]++;
       return map;
     }, {});
-  Object.keys(playerTokensMap).forEach(playerId => {
-    const tokens = playerTokensMap[playerId];
-    Table.Player.increaseWorkerTokens(tokens, playerId);
-  });
-  // move the open source tree
-  const projectTypeCountMap = projectStatus.map(project => project.type).reduce((map, type) => {
-    if (!map[type]) {
-      map[type] = 0;
-    }
-    map[type]++;
-    return map;
-  }, {});
-  Table.Tree.upgradeTreeLevels(projectTypeCountMap);
-  // trigger tree effects
-  const treeLevels = Table.Tree.listTreeLevels();
-  treeLevels.forEach(({ type, level }) => {
-    switch (type) {
-      case '開放資料': {
-        switch (level) {
-          case 5:
-            Rule.playProjectCard.setActionPoint(1);
-          case 4:
-            Rule.contribute.setContribution(4);
-          case 3:
-            Rule.recruit.setJobRestriction(false);
-          case 2:
-          case 1:
-            Rule.playerHand.projectCard.setMax(3);
+    Table.Tree.upgradeTreeLevels(projectTypeCountMap);
+    // trigger tree effects
+    const treeLevels = Table.Tree.listTreeLevels();
+    treeLevels.forEach(({ type, level }) => {
+      switch (type) {
+        case '開放資料': {
+          switch (level) {
+            case 5:
+              Rule.playProjectCard.setActionPoint(1);
+            case 4:
+              Rule.contribute.setContribution(4);
+            case 3:
+              Rule.recruit.setJobRestriction(false);
+            case 2:
+            case 1:
+              Rule.playerHand.projectCard.setMax(3);
+          }
+          break;
         }
-        break;
-      }
-      case '開放政府': {
-        switch (level) {
-          case 5:
-            Rule.playProjectCard.setActionPoint(1);
-          case 4:
-            Rule.contribute.setContribution(4);
-          case 3:
-            Rule.maxProjectSlots.setNum(8);
-          case 2:
-          case 1:
-            Rule.peekNextEvent.setIsAvailable(true);
+        case '開放政府': {
+          switch (level) {
+            case 5:
+              Rule.playProjectCard.setActionPoint(1);
+            case 4:
+              Rule.contribute.setContribution(4);
+            case 3:
+              Rule.maxProjectSlots.setNum(8);
+            case 2:
+            case 1:
+              Rule.peekNextEvent.setIsAvailable(true);
+          }
+          break;
         }
-        break;
-      }
-      case '開放原始碼': {
-        switch (level) {
-          case 5:
-            Rule.playProjectCard.setActionPoint(1);
-          case 4:
-            Rule.contribute.setContribution(4);
-          case 3:
-            Rule.playProjectCard.setInitContributionPoint(3, '工程師');
-          case 2:
-          case 1:
-            Rule.playerHand.resourceCard.setMax(6);
+        case '開放原始碼': {
+          switch (level) {
+            case 5:
+              Rule.playProjectCard.setActionPoint(1);
+            case 4:
+              Rule.contribute.setContribution(4);
+            case 3:
+              Rule.playProjectCard.setInitContributionPoint(3, '工程師');
+            case 2:
+            case 1:
+              Rule.playerHand.resourceCard.setMax(6);
+          }
+          break;
         }
-        break;
+        default: {
+          Logger.log(`unkown tree type ${type}`);
+        }
       }
-      default: {
-        Logger.log(`unkown tree type ${type}`);
-      }
-    }
-  });
+    });
+  }
   // reset and refill current player counters
   Table.Player.resetTurnCounters(CurrentPlayer.getId());
   Table.Player.setNextTurnActionPoints(3, CurrentPlayer.getId());
