@@ -758,8 +758,9 @@ const Table = (() => {
       Object.keys(typeUpgradeMap).forEach(type => {
         const lv = TreeModel.getTreeLevel(type);
         const upgardes = typeUpgradeMap[type];
-        TreeModel.setTreeLevel(lv + upgardes, type);
-        TreeView.setTreeLevel(lv + upgardes, type);
+        const cappedLevel = Math.min(lv + upgardes, 5);
+        TreeModel.setTreeLevel(cappedLevel, type);
+        TreeView.setTreeLevel(cappedLevel, type);
       });
       Logger.log(`upgarde tree levels: ${typeUpgradeMap}`);
     },
