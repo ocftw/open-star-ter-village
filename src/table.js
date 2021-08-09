@@ -751,7 +751,7 @@ const Table = (() => {
         const level = TreeModel.getTreeLevel(type);
         return { type, level };
       });
-      Logger.log(`list tree levels: ${treeLevels}`);
+      Logger.log(`list tree levels: ${JSON.stringify(treeLevels)}`);
       return treeLevels;
     },
     upgradeTreeLevels: (typeUpgradeMap) => {
@@ -762,7 +762,7 @@ const Table = (() => {
         TreeModel.setTreeLevel(cappedLevel, type);
         TreeView.setTreeLevel(cappedLevel, type);
       });
-      Logger.log(`upgarde tree levels: ${typeUpgradeMap}`);
+      Logger.log(`upgrade tree levels: ${JSON.stringify(typeUpgradeMap)}`);
     },
     reset: () => {
       Logger.log('reset all tree levels');
