@@ -7,6 +7,7 @@
  * @property {TableProjectCardController} ProjectCard project card methods includes play, isPlayable, place
  * @property {TablePlayerController} Player player methods
  * @property {TableTreeController} Tree open source tree methods
+ * @property {TableEventCardController} EventCard event card on the table
  *
  * @typedef {Object} TableProjectCardController
  * @property {() => boolean} isPlayable whether table is able to placed a project card
@@ -66,6 +67,12 @@
  * @property {() => {type: string, level: number}[]} listTreeLevels list levels of all tree types
  * @property {(map: {[type: string]: number}) => void} upgradeTreeLevels upgrade tree levels by given type key to upgrade value map
  * @property {() => void} reset reset all tree levels to zeros
+ *
+ * @typedef {Object} TableEventCardController current and next event card controller
+ * @property {(card: Card) => void} place place a new event card
+ * @property {() => Card} remove remove current event card
+ * @property {(card: Card) => void} showNext show next event card
+ * @property {() => void} reset clean current and next event card
  */
 
 /** @type {TableController} */
@@ -771,9 +778,69 @@ const Table = (() => {
     },
   };
 
+  // event card model
+  const EventCardModel = {
+    getCurrent: () => {
+      const prop = PropertiesService.getScriptProperties().getProperty('EVENT_CARD_PROP__CURR');
+      if (!prop) {
+        return '';
+      }
+      return JSON.parse(prop);
+    },
+    setCurrent: (card) => {
+      const value = JSON.stringify(card);
+      PropertiesService.getScriptProperties().setProperty('EVENT_CARD_PROP__CURR', value);
+    },
+    getNext: () => {
+      const prop = PropertiesService.getScriptProperties().getProperty('EVENT_CARD_PROP__NEXT');
+      if (!prop) {
+        return '';
+      }
+      return JSON.parse(prop);
+    },
+    setNext: (card) => {
+      const value = JSON.stringify(card);
+      PropertiesService.getScriptProperties().setProperty('EVENT_CARD_PROP__NEXT', value);
+    },
+  };
+  // event card view
+  const EventCardView = {
+    setCurrent: (card) => {
+      mainBoard.getRange('H20').setValue(card);
+    },
+    setNext: (card) => {
+      mainBoard.getRange('H21').setValue(card);
+    },
+  };
+  // event card controller
+  const EventCard = {
+    place: (card) => {
+      EventCardModel.setCurrent(card);
+      EventCardView.setCurrent(card);
+    },
+    remove: () => {
+      const card = EventCardModel.getCurrent();
+      EventCardModel.setCurrent("");
+      EventCardView.setCurrent("");
+      return card;
+    },
+    showNext: (card) => {
+      EventCardModel.setNext(card);
+      EventCardView.setNext(card);
+    },
+    reset: () => {
+      EventCardModel.setCurrent("");
+      EventCardView.setCurrent("");
+      EventCardModel.setNext('不顯示');
+      EventCardView.setNext('不顯示');
+    },
+  };
+
+
   return {
     ProjectCard,
     Player,
     Tree,
+    EventCard,
   };
 })();
