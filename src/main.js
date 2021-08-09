@@ -84,9 +84,12 @@ function turnDidEnd() {
   // TODO: calculate score
   // TODO: contribute goal cards
   // Remove projects
-  projectStatus.forEach(project => {
-    Table.ProjectCard.remove(project.name);
+  const projectCards = projectStatus.map(project => project.name);
+  projectCards.forEach(card => {
+    Table.ProjectCard.remove(card);
   });
+  // Discard the project cards
+  ProjectDeck.discard(projectCards);
   // Return tokens to players
   const playerTokensMap = projectStatus.map(project => project.contributions)
     .reduce((list, row) => ([...list, ...row]), [])
