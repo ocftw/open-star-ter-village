@@ -113,7 +113,57 @@ function turnDidEnd() {
     return map;
   }, {});
   Table.Tree.upgradeTreeLevels(projectTypeCountMap);
-  // TODO: trigger tree effects
+  // trigger tree effects
+  const treeLevels = Table.Tree.listTreeLevels();
+  treeLevels.forEach(({ type, level }) => {
+    switch (type) {
+      case '開放資料': {
+        switch (level) {
+          case 5:
+            Rule.playProjectCard.setActionPoint(1);
+          case 4:
+            Rule.contribute.setContribution(4);
+          case 3:
+            Rule.recruit.setJobRestriction(false);
+          case 2:
+          case 1:
+            Rule.playerHand.projectCard.setMax(3);
+        }
+        break;
+      }
+      case '開放政府': {
+        switch (level) {
+          case 5:
+            Rule.playProjectCard.setActionPoint(1);
+          case 4:
+            Rule.contribute.setContribution(4);
+          case 3:
+            Rule.maxProjectSlots.setNum(8);
+          case 2:
+          case 1:
+            Rule.peekNextEvent.setIsAvailable(true);
+        }
+        break;
+      }
+      case '開放原始碼': {
+        switch (level) {
+          case 5:
+            Rule.playProjectCard.setActionPoint(1);
+          case 4:
+            Rule.contribute.setContribution(4);
+          case 3:
+            Rule.playProjectCard.setInitContributionPoint(3, '工程師');
+          case 2:
+          case 1:
+            Rule.playerHand.resourceCard.setMax(6);
+        }
+        break;
+      }
+      default: {
+        Logger.log(`unkown tree type ${type}`);
+      }
+    }
+  });
   // reset and refill current player counters
   Table.Player.resetTurnCounters(CurrentPlayer.getId());
   Table.Player.setNextTurnActionPoints(3, CurrentPlayer.getId());
