@@ -68,6 +68,16 @@ function roundWillStart() {
 function turnWillStart() { }
 
 function turnDidEnd() {
+  settlePhase();
+  // reset and refill current player counters
+  Table.Player.resetTurnCounters(CurrentPlayer.getId());
+  Table.Player.setNextTurnActionPoints(3, CurrentPlayer.getId());
+  // peek next event card
+  peekNextEventCard();
+  // TODO: move to next player
+}
+
+function settlePhase() {
   const closedProjects = Table.ProjectCard.listClosedProjects();
   if (closedProjects.length > 0) {
     const projectStatus = closedProjects.map((project) => {
@@ -164,12 +174,6 @@ function turnDidEnd() {
       }
     });
   }
-  // reset and refill current player counters
-  Table.Player.resetTurnCounters(CurrentPlayer.getId());
-  Table.Player.setNextTurnActionPoints(3, CurrentPlayer.getId());
-  // peek next event card
-  peekNextEventCard();
-  // TODO: move to next player
 }
 
 function roundDidEnd() { }
