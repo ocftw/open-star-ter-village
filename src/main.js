@@ -82,6 +82,25 @@ function turnDidEnd() {
     };
   });
   // TODO: calculate score
+  // TODO: contribute goal cards
+  // Remove projects
+  projectStatus.forEach(project => {
+    Table.ProjectCard.remove(project.name);
+  });
+  // Return tokens to players
+  const playerTokensMap = projectStatus.map(project => project.contributions)
+    .reduce((list, row) => ([...list, ...row]), [])
+    .reduce((map, contribution) => {
+      if (!map[contribution.playerId]) {
+        map[contribution.playerId] = 0;
+      }
+      map[contribution.playerId] += contribution.tokens;
+      return map;
+    }, {});
+  Object.keys(playerTokensMap).forEach(playerId => {
+    const tokens = playerTokensMap[playerId];
+    Table.Player.increaseWorkerTokens(tokens, playerId);
+  });
   // TODO: move the open source tree
   // reset and refill current player counters
   Table.Player.resetTurnCounters(CurrentPlayer.getId());
