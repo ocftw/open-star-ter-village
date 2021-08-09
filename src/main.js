@@ -11,8 +11,6 @@ function onOpen() {
     .addItem('準備完成', 'gameWillStart')
     .addSeparator()
     .addItem('重設表單', 'resetSpreadsheet')
-    .addSeparator()
-    .addItem('Refill Action Points', 'refillActionPoints')
     .addToUi();
 }
 
@@ -269,10 +267,6 @@ function getPlayerCards() {
   };
 };
 
-function refillActionPoints() {
-  Table.Player.setNextTurnActionPoints(3, CurrentPlayer.getId());
-}
-
 /**
  * User can play one project card with one resource card on the table.
  *
@@ -322,12 +316,6 @@ function playProjectCard(project, resource) {
     }
     throw new Error('something went wrong. Please try again');
   }
-}
-
-/** @type {(project: Card) => void} */
-function removeProjectCard(project) {
-  // TODO: return the resource token to players
-  Table.ProjectCard.remove(project);
 }
 
 /**
