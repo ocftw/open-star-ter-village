@@ -620,6 +620,7 @@ function resetSpreadsheet() {
 
   //reset treeBoard display
   treeBoard.getRange('C3:E7').setBackground(null).setFontWeight('normal');
+  Table.Tree.reset();
 
   // reset table
   // reset event cards
