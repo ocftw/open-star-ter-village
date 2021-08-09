@@ -68,7 +68,6 @@ function roundWillStart() {
 function turnWillStart() { }
 
 function turnDidEnd() {
-  settlePhase();
   // reset and refill current player counters
   Table.Player.resetTurnCounters(CurrentPlayer.getId());
   Table.Player.setNextTurnActionPoints(3, CurrentPlayer.getId());
@@ -539,6 +538,10 @@ function discardCardsAndEndTurn(projects, resources) {
   if (!projects || !resources) {
     throw new Error('Technical issue, please contact author.');
   }
+
+  // close projects, return tokens to players, earn scores, and grow the open source tree
+  settlePhase();
+
   try {
     let projectCards = [];
     // remove cards from hand to discard pile
