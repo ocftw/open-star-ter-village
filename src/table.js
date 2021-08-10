@@ -37,6 +37,8 @@
  * @property {() => string[]} listPlayerIds list inplayed player ids
  * @property {() => number} getPlayerCount return how many inplayed players
  * @property {(players:{id: string, nickname: string}[]) => void} initPlayers return how many inplayed players
+ * @property {(id: string) => boolean} isInTurn whether player id is in playing
+ * @property {() => {id: string, isStarter: boolean}} nextPlayer move to next player's turn and return next player id and starter flag
  * @property {(playerId: string) => string} getNickname get player nickname
  * @property {(nickname, playerId: string) => void} setNickname set player nick name
  * @property {(cost: number, playerId: string) => boolean} isActionable return whether player has action points more than cost
@@ -714,6 +716,26 @@ const Table = (() => {
     getPlayerCount: () => {
       const playerIds = PlayerModel.getPlayerIdList();
       return playerIds.length;
+    },
+    isInTurn: (id) => {
+      const currentPlayerId = PlayerModel.getCurrentPlayerId();
+      return id === currentPlayerId;
+    },
+    nextPlayer: () => {
+      const currentPlayerId = PlayerModel.getCurrentPlayerId();
+      const playerIds = PlayerModel.getPlayerIdList();
+      const index = playerIds.findIndex(playerId => playerId === currentPlayerId);
+      if (index < 0) {
+        throw new Error(`Unkown current player id ${currentPlayerId}. Cannot get next player id`);
+      }
+      const nextIndex = (index + 1) % playerIds.length;
+      const nextPlayerId = playerIds[nextIndex];
+      PlayerModel.setCurrentPlayerId(nextPlayerId);
+      PlayerView.setCurrentPlayer(PlayerModel.getNickname(nextPlayerId));
+
+      const firstPlayerId = playerIds[0];
+      const isStarter = nextPlayerId === firstPlayerId;
+      return { id: nextPlayerId, isStarter };
     },
     setNickname: (nickname, playerId) => {
       PlayerModel.setNickname(nickname, playerId);

@@ -77,10 +77,25 @@ function turnDidEnd() {
   // reset and refill current player counters
   Table.Player.resetTurnCounters(CurrentPlayer.getId());
   Table.Player.setNextTurnActionPoints(3, CurrentPlayer.getId());
-  // TODO: move to next player
-  // TODO: should start the turn when next plaer is not starter player
-  // TODO: should end the round when next player is starter player
+  // move to next player
+  const { isStarter } = Table.Player.nextPlayer();
+  if (isStarter) {
+    // end this round when next player is starter player
+    roundDidEnd();
+  } else {
+    // start the new turn when next plaer is not starter player
+    turnWillStart();
+  }
 }
+
+function roundDidEnd() {
+  removeEventCard();
+  // TODO: call game did end when the game end
+  // start a new round
+  roundWillStart();
+}
+
+function gameDidEnd() { }
 
 function settlePhase() {
   const closedProjects = Table.ProjectCard.listClosedProjects();
@@ -183,12 +198,6 @@ function settlePhase() {
     }
   });
 }
-
-function roundDidEnd() {
-  removeEventCard();
-}
-
-function gameDidEnd() { }
 
 //shuffle before game start
 function initialShuffle() {
