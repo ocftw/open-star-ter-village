@@ -836,6 +836,7 @@ const Table = (() => {
 
   // Table Tree Controller
   const TreeTypes = ['開放資料', '開放政府', '開放原始碼'];
+  /** @type {TableTreeController} */
   const Tree = {
     listTreeLevels: () => {
       const treeLevels = TreeTypes.map(type => {
