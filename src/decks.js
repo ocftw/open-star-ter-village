@@ -43,7 +43,7 @@ const ProjectDeck = (function () {
   const shuffle = () => {
     pile.getDataRange().randomize();
   };
-  const defaultDeck = SpreadsheetApp.getActive().getSheetByName('各牌庫備考');
+  const defaultDeck = SpreadsheetApp.getActive().getSheetByName('教學場各牌庫備考');
   const reset = () => {
     // clear discard pile
     discardPile.clearContents();
@@ -93,7 +93,7 @@ const ResourceDeck = (function () {
   const shuffle = () => {
     pile.getDataRange().randomize();
   };
-  const defaultDeck = SpreadsheetApp.getActive().getSheetByName('各牌庫備考');
+  const defaultDeck = SpreadsheetApp.getActive().getSheetByName('教學場各牌庫備考');
   const reset = () => {
     // clear discard pile
     discardPile.clearContents();
@@ -134,7 +134,7 @@ const EventDeck = (function () {
   const shuffle = () => {
     pile.getDataRange().randomize();
   };
-  const defaultDeck = SpreadsheetApp.getActive().getSheetByName('各牌庫備考');
+  const defaultDeck = SpreadsheetApp.getActive().getSheetByName('教學場各牌庫備考');
   const reset = () => {
     // clear discard pile
     discardPile.clearContents();
