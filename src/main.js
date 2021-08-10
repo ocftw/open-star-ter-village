@@ -330,6 +330,7 @@ function showProjectDialog(playerNickname) {
 
 /**
  * @typedef {Object} Hand player hand cards
+ * @property {ProjectCardSpecObject[]} projects project card with specs
  * @property {Card[]} projectCards project cards
  * @property {Card[]} resourceCards resource cards
  */
@@ -341,10 +342,14 @@ function showProjectDialog(playerNickname) {
  * @type {() => Hand}
  */
 function getPlayerCards() {
+  Logger.log('list project and resource cards in player hand...');
   const projectCards = CurrentPlayerHand.listProjectCards();
   const resourceCards = CurrentPlayerHand.listResourceCards();
+  const projects = projectCards.map(ProjectCardRef.getSpecByCard);
+
   return {
     projectCards,
+    projects,
     resourceCards,
   };
 };
@@ -381,13 +386,18 @@ function playProjectCard(project, resource) {
     throw new Error('沒有適合該人力卡的人力需求！');
   }
   try {
-    Table.ProjectCard.play(project);
+    Logger.log('remove project card and resource card from player hand...');
     const projectCards = CurrentPlayerHand.removeProjectCards([project]);
     const resourceCards = CurrentPlayerHand.removeResourceCards([resource]);
+    const projects = projectCards.map(ProjectCardRef.getSpecByCard);
+    Logger.log('play project card and job card on the table...');
+    Table.ProjectCard.play(project);
     Table.ProjectCard.placeResourceOnSlotById(project, slotId, playerId, 1, true);
+    Logger.log('reduce worker token and action points');
     Table.Player.reduceActionPoint(Rule.playProjectCard.getActionPoint(), playerId);
     Table.Player.reduceWorkerTokens(1, playerId);
     return {
+      projects,
       projectCards,
       resourceCards,
     };
@@ -452,14 +462,18 @@ function recruit(project, slotId) {
     throw new Error('something went wrong. Please try again');
   }
   try {
+    Logger.log('remove job card...');
     const projectCards = CurrentPlayerHand.listProjectCards();
     const resourceCards = CurrentPlayerHand.removeResourceCards([jobCard]);
+    const projects = projectCards.map(ProjectCardRef.getSpecByCard);
+    Logger.log('place a worker on the project...');
     const playerId = CurrentPlayer.getId();
     Table.ProjectCard.placeResourceOnSlotById(project, slotId, playerId, 1);
     Table.Player.reduceActionPoint(1, playerId);
     Table.Player.reduceWorkerTokens(1, playerId);
 
     return {
+      projects,
       projectCards,
       resourceCards,
     }
@@ -486,6 +500,7 @@ function openContributeDialog() {
   }
   // TODO: check available contribution slots
   try {
+    Logger.log('show project dialog...');
     showProjectDialog(Table.Player.getNickname(CurrentPlayer.getId()));
   } catch (err) {
     Logger.log(`openContributeDialog failure. ${err}`);
@@ -547,9 +562,11 @@ function contribute(contributionList) {
     throw new Error('無法分配超過目標上限！');
   }
   try {
+    Logger.log('contribute to slots...');
     contributionList.forEach(contribution => {
       Table.ProjectCard.contributeSlot(contribution.points, contribution.project, contribution.slotId);
     });
+    Logger.log('reduce action points...');
     Table.Player.reduceActionPoint(1, playerId);
   } catch (err) {
     Logger.log(`contribute failure. ${err}`);
@@ -582,12 +599,17 @@ function playForceCard(forceCard, projectCard = null) {
     throw new Error('行動點數不足！');
   }
   try {
-    const resourceCards = CurrentPlayerHand.removeResourceCards([forceCard]);
-    // TODO: resolve force card
-    Table.Player.reduceActionPoint(1, CurrentPlayer.getId());
-    ResourceDeck.discard([forceCard]);
+    Logger.log('remove force card from player hand...');
     const projectCards = CurrentPlayerHand.listProjectCards();
+    const resourceCards = CurrentPlayerHand.removeResourceCards([forceCard]);
+    const projects = projectCards.map(ProjectCardRef.getSpecByCard);
+    // TODO: resolve force card
+    Logger.log('reduce action points...');
+    Table.Player.reduceActionPoint(1, CurrentPlayer.getId());
+    Logger.log('discard the force card');
+    ResourceDeck.discard([forceCard]);
     return {
+      projects,
       projectCards,
       resourceCards,
     }
@@ -643,6 +665,7 @@ function discardCardsAndEndTurn(projects, resources) {
   settlePhase();
 
   try {
+    Logger.log('discard project cards...');
     let projectCards = [];
     // remove cards from hand to discard pile
     if (projects.length > 0) {
@@ -653,6 +676,7 @@ function discardCardsAndEndTurn(projects, resources) {
       projectCards = CurrentPlayerHand.listProjectCards();
     }
 
+    Logger.log('discard resource cards...');
     let resourceCards = [];
     if (resources.length > 0) {
       resourceCards = CurrentPlayerHand.removeResourceCards(resources);
@@ -662,19 +686,24 @@ function discardCardsAndEndTurn(projects, resources) {
       resourceCards = CurrentPlayerHand.listResourceCards();
     }
 
+    Logger.log('refill project cards...');
     // refill cards from deck pile
     if (projectCards.length < Rule.playerHand.projectCard.getMax()) {
       projectCards = CurrentPlayerHand.addProjectCards(
         ProjectDeck.draw(Rule.playerHand.projectCard.getMax() - projectCards.length));
     }
+
+    Logger.log('refill resource cards...');
     if (resourceCards.length < Rule.playerHand.resourceCard.getMax()) {
       resourceCards = CurrentPlayerHand.addResoureCards(
         ResourceDeck.draw(Rule.playerHand.resourceCard.getMax() - resourceCards.length));
     }
+    const projectSpecs = projectCards.map(ProjectCardRef.getSpecByCard);
 
     turnDidEnd();
 
     return {
+      projects: projectSpecs,
       projectCards,
       resourceCards,
     };

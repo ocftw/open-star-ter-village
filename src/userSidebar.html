@@ -25,14 +25,20 @@
       $('#menu__discard-and-end-turn').click(menuDiscardAndEndTurn);
     });
 
-    function showProjectCards(projectCards) {
+    function showProjectCards(projects) {
       const list = $('#project-cards');
       list.empty();
-      for (var i = 0; i < projectCards.length; i++) {
+      for (var i = 0; i < projects.length; i++) {
         const id = `prj-${i}`;
+        const groups = projects[i].groups.map(group => {
+          return `<li>${group.title} - ${group.slots} 位 - 共 ${group.goalContributionPoints} 點</li>`;
+        });
         const dom = `<div>
-            <input type="radio" class="hide" id="${id}" name="project-cards" value="${projectCards[i]}" />
-            <label for="${id}">${projectCards[i]}</label>
+            <input type="radio" class="hide" id="${id}" name="project-cards" value="${projects[i].name}" />
+            <label for="${id}">[${projects[i].type}] ${projects[i].name}</label>
+            <ul>
+              ${groups.reduce((d, e) => d + e, '')}
+            </ul>
           </div>`;
         list.append(dom);
       }
@@ -51,7 +57,7 @@
     }
 
     function showCards(hand) {
-      showProjectCards(hand.projectCards);
+      showProjectCards(hand.projects);
       showResourceCards(hand.resourceCards);
     }
 
