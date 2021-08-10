@@ -792,6 +792,7 @@ const Table = (() => {
     '開放政府': 1,
     '開放原始碼': 2,
   };
+  const treeBoard = SpreadsheetApp.getActive().getSheetByName('開源生態樹');
   // Table Tree View
   const TreeView = {
     setTreeLevel: (level, type) => {

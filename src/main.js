@@ -1,8 +1,6 @@
 // @ts-check
 
 /** @OnlyCurrentDoc */
-const mainBoard = SpreadsheetApp.getActive().getSheetByName('專案圖板/記分板');
-const treeBoard = SpreadsheetApp.getActive().getSheetByName('開源生態樹');
 
 //build custom menu
 function onOpen() {
@@ -621,19 +619,18 @@ function resetSpreadsheet() {
   //clear player hands
   PlayerHands.reset();
 
-  //reset treeBoard display
-  Table.Tree.reset();
-
   // reset table
   // reset event cards
   Table.EventCard.reset();
   //clear project slot and break merged cells
   Table.ProjectCard.reset();
+  //reset tree
+  Table.Tree.reset();
 
   // reset game rules
   Rule.reset();
 
   // set UI back to main board
-  SpreadsheetApp.getActive().setActiveSheet(mainBoard);
+  SpreadsheetApp.getActive().setActiveSheet(SpreadsheetApp.getActive().getSheetByName('專案圖板/記分板'));
   SpreadsheetApp.getActive().toast("已重設表單");
 }
