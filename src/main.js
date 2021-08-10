@@ -6,10 +6,27 @@
 function onOpen() {
   var ui = SpreadsheetApp.getUi();
   ui.createMenu('🌟開源星手村🌟')
-    .addItem('準備完成', 'gameWillStart')
+    .addItem('設定玩家人數', 'showPlayerNumberPrompt')
+    .addItem('遊戲開始', 'gameWillStart')
     .addSeparator()
     .addItem('重設表單', 'resetSpreadsheet')
     .addToUi();
+}
+
+function showPlayerNumberPrompt() {
+  const ui = SpreadsheetApp.getUi();
+  const result = ui.prompt('🌟開源星手村🌟', '請輸入玩家數量', ui.ButtonSet.OK_CANCEL);
+  const button = result.getSelectedButton();
+  const text = result.getResponseText();
+  if (button === ui.Button.OK) {
+    const num = Number.parseInt(text, 10);
+    if (Number.isInteger(num) && 0 < num && num <= 6) {
+      PropertiesService.getScriptProperties().setProperty('PLAYER_NUM', JSON.stringify(num));
+      SpreadsheetApp.getActive().toast(`已經設定玩家人數為${num}人，準備完成時可以從選單按下遊戲開始！`);
+      return;
+    }
+  }
+  SpreadsheetApp.getActive().toast('設定失敗，請再試一次。');
 }
 
 /**
@@ -36,8 +53,9 @@ function gameWillStart() {
     { id: 'A', nickname: '玩家1' }, { id: 'B', nickname: '玩家2' }, { id: 'C', nickname: '玩家3' },
     { id: 'D', nickname: '玩家4' }, { id: 'E', nickname: '玩家5' }, { id: 'F', nickname: '玩家6' },
   ];
-  // TODO: set count by dialog
-  players.length = 6;
+  const value = PropertiesService.getScriptProperties().getProperty('PLAYER_NUM');
+  const playerNum = value ? JSON.parse(value) : 6;
+  players.length = playerNum;
   Table.Player.initPlayers(players);
   //shuffle before game started
   initialShuffle();
