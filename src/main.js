@@ -20,7 +20,7 @@ function showPlayerNumberPrompt() {
   const text = result.getResponseText();
   if (button === ui.Button.OK) {
     const num = Number.parseInt(text, 10);
-    if (Number.isInteger(num) && 0 < num && num <= 6) {
+    if (Number.isInteger(num) && 3 < num && num <= 6) {
       PropertiesService.getScriptProperties().setProperty('PLAYER_NUM', JSON.stringify(num));
       SpreadsheetApp.getActive().toast(`已經設定玩家人數為${num}人，準備完成時可以從選單按下遊戲開始！`);
       return;
