@@ -5,6 +5,7 @@
  * @property {RulePlayProjectCard} playProjectCard includes action point costs, recruit restrictions
  * @property {RuleRecruit} recruit rule modification of recruit action
  * @property {RuleContribute} contribute rule modification of contribute action
+ * @property {RulePlayJobCard} playJobCard rule modification of playing job card(include playing project card and recruit)
  * @property {RulePlayForce} playForce rule modification of force card
  * @property {RuleSettlePhase} settlePhase rule modification of settle phase
  * @property {RulePeekNextEvent} peekNextEvent whether next event card can be peeked
@@ -26,13 +27,19 @@
  * @property {() => boolean} getIsAvailable get current availability of recruit action
  * @property {(isAvailable: boolean) => void} setIsAvailable set availability of recruit action
  * @property {() => boolean} getJobRestriction get current job restriction of recruit action
- * @property {(restriction:boolean) => void} setJobRestriction set job restriction of recruit action
+ * @property {(restriction: boolean) => void} setJobRestriction set job restriction of recruit action
+ * @property {() => boolean} getRecruitTwiceForOneAP get availability that player can recruit twice with 1 action point
+ * @property {(avaliable: boolean) => void} setRecruitTwiceForOneAP set availability that player can recruit twice with 1 action point
+ * 
+ * @typedef {Object} RulePlayJobCard
+ * @property {() => boolean} getFirstJobRestriction get restriction of first played job card
+ * @property {(restriction: boolean) => void} setFirstJobRestriction set restriction of first played job card
  *
  * @typedef {Object} RuleContribute
  * @property {() => boolean} getIsAvailable get current availability of contribute action
  * @property {(isAvailable: boolean) => void} setIsAvailable set availability of contribute action
  * @property {() => number} getContribution get spendable contribution points for each action
- * @property {(contribution:number) => void} setContribution set spendable contribution points for each action
+ * @property {(contribution: number) => void} setContribution set spendable contribution points for each action
  *
  * @typedef {Object} RulePlayForce
  * @property {() => boolean} getIsAvailable get current availability of play force action
@@ -117,45 +124,60 @@ const Rule = (() => {
     },
     setJobRestriction: (restriction) => {
       ruleSet.getRange('D12').setValue(restriction);
+    },
+    getRecruitTwiceForOneAP: () => {
+      return ruleSet.getRange('D13').getValue();
+    },
+    setRecruitTwiceForOneAP: (available) => {
+      ruleSet.getRange('D13').setValue(available);
+    }
+  }
+  /** @type {RulePlayJobCard} */
+  const playJobCard = {
+    getFirstJobRestriction: () => {
+      return ruleSet.getRange('D14').getValue();
+    },
+    setFirstJobRestriction: (restriction) => {
+      ruleSet.getRange('D14').setValue(restriction);
     }
   }
 
   /** @type {RuleContribute} */
   const contribute = {
     getIsAvailable: () => {
-      return ruleSet.getRange('D13').getValue();
+      return ruleSet.getRange('D15').getValue();
     },
     setIsAvailable: (isAvailable) => {
-      ruleSet.getRange('D13').setValue(isAvailable);
+      ruleSet.getRange('D15').setValue(isAvailable);
     },
     getContribution: () => {
-      return ruleSet.getRange('D14').getValue();
+      return ruleSet.getRange('D16').getValue();
     },
     setContribution: (contribution) => {
-      ruleSet.getRange('D14').setValue(contribution);
+      ruleSet.getRange('D16').setValue(contribution);
     }
   }
 
   /** @type {RulePlayForce} */
   const playForce = {
     getIsAvailable: () => {
-      return ruleSet.getRange('D15').getValue();
+      return ruleSet.getRange('D17').getValue();
     },
     setIsAvailable: (isAvailable) => {
-      ruleSet.getRange('D15').setValue(isAvailable);
+      ruleSet.getRange('D17').setValue(isAvailable);
     }
   }
 
   /** @type {RuleSettlePhase} */
   const settlePhase = {
     getOwnerBonus: () => {
-      return ruleSet.getRange('D16').getValue();      
+      return ruleSet.getRange('D18').getValue();      
     },
     setOwnerBonus: (bonus) => {
-      ruleSet.getRange('D16').setValue(bonus);
+      ruleSet.getRange('D18').setValue(bonus);
     },
     getParticipantBonus: (projectType) => {
-      const rows = ruleSet.getRange('C17:D19').getValues();
+      const rows = ruleSet.getRange('C19:D21').getValues();
       const pair = rows.find(row => row[0] === projectType);
       if (!pair) {
         Logger.log(`Unknown project type ${projectType}`);
@@ -164,33 +186,33 @@ const Rule = (() => {
       return pair[1];
     },
     setParticipantBonus: (projectType, bonus) => {
-      const rows = ruleSet.getRange('C17:C19').getValues();
+      const rows = ruleSet.getRange('C19:C21').getValues();
       const index = rows.findIndex(row => row[0] === projectType);
       if (index === -1) {
         Logger.log(`Unknown job type ${projectType}`);
         throw new Error(`Unknown job type ${projectType}`);
       }
-      ruleSet.getRange('D17').offset(index, 0).setValue(bonus);
+      ruleSet.getRange('D19').offset(index, 0).setValue(bonus);
     }
   }
 
   /** @type {RulePeekNextEvent} */
   const peekNextEvent = {
     getIsAvailable: () => {
-      return ruleSet.getRange('D20').getValue();
+      return ruleSet.getRange('D22').getValue();
     },
     setIsAvailable: (isAvailable) => {
-      ruleSet.getRange('D20').setValue(isAvailable);
+      ruleSet.getRange('D22').setValue(isAvailable);
     }
   }
 
   /** @type {RuleMaxProjectSlots} */
   const maxProjectSlots = {
     getNum: () => {
-      return ruleSet.getRange('D21').getValue();
+      return ruleSet.getRange('D23').getValue();
     },
     setNum: (slot) => {
-      ruleSet.getRange('D21').setValue(slot);
+      ruleSet.getRange('D23').setValue(slot);
     }
   }
 
@@ -198,30 +220,31 @@ const Rule = (() => {
   const playerHand = {
     projectCard: {
       getMax: () => {
-        return ruleSet.getRange('D22').getValue();
+        return ruleSet.getRange('D24').getValue();
       },
       setMax: (max) => {
-        ruleSet.getRange('D22').setValue(max);
+        ruleSet.getRange('D24').setValue(max);
       }
     },
     resourceCard: {
       getMax: () => {
-        return ruleSet.getRange('D23').getValue();
+        return ruleSet.getRange('D25').getValue();
       },
       setMax: (max) => {
-        ruleSet.getRange('D23').setValue(max);
+        ruleSet.getRange('D25').setValue(max);
       }
     },
   };
 
   const reset = () => {
-    ruleSet.getRange('E1:F23').copyTo(ruleSet.getRange('C1:D23'));
+    ruleSet.getRange('E1:F25').copyTo(ruleSet.getRange('C1:D25'));
   };
 
   return {
     playProjectCard,
     recruit,
     contribute,
+    playJobCard,
     playForce,
     settlePhase,
     peekNextEvent,
