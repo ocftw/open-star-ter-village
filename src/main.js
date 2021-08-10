@@ -476,7 +476,7 @@ function recruit(project, slotId) {
   } catch (err) {
     Logger.log(`recruit failure. ${err}`);
     // TODO: fallback
-    throw new Error('something went wront. Please try again');
+    throw new Error('something went wrong. Please try again');
   }
 }
 

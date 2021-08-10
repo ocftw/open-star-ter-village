@@ -169,10 +169,30 @@ Event card: Slashie(斜槓青年)
 /** @type {ignoreJobTitleOnFirstWorker} */
 const ignoreJobTitleOnFirstWorker = {
   active: () => {
-    //TODO: complete event effect
+    Rule.playJobCard.setFirstJobRestriction(false);
   },
   deactive: () => {
-    //TODO: complete event effect
+    Rule.playJobCard.setFirstJobRestriction(true);
+  }
+}
+
+/*
+Event card: Sorry my liver(抱歉了我的肝)
+            the first recruit of every player can recruit 2 worker instead of 1
+            (player still need to play respective job card)
+*/
+/** 
+ * @typedef {Object} doubleTheRecruit
+ * @property {() => void} active activate the event effect
+ * @property {() => void} deactive deactivate the event effect
+*/
+/** @type {doubleTheRecruit} */
+const doubleTheRecruit = {
+  active: () => {
+    Rule.recruit.setRecruitTwiceForOneAP(true);
+  },
+  deactive: () => {
+    Rule.recruit.setRecruitTwiceForOneAP(false);
   }
 }
 
