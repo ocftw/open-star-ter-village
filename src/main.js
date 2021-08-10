@@ -136,7 +136,7 @@ function settlePhase() {
           case 4:
             Rule.contribute.setContribution(4);
           case 3:
-            Rule.recruit.setJobRestriction(false);
+            Rule.playProjectCard.setJobRestriction(false);
           case 2:
           case 1:
             Rule.playerHand.projectCard.setMax(3);
