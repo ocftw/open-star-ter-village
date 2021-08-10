@@ -599,7 +599,10 @@ function playForceCard(forceCard, projectCard = null) {
     const projectCards = CurrentPlayerHand.listProjectCards();
     const resourceCards = CurrentPlayerHand.removeResourceCards([forceCard]);
     const projects = projectCards.map(ProjectCardRef.getSpecByCard);
-    // TODO: resolve force card
+    Logger.log('resolve force card...');
+    // TODO: resolve force card with parameters
+    const forceCardFn = getForceCardFunction(forceCard);
+    forceCardFn();
     Logger.log('reduce action points...');
     Table.Player.reduceActionPoint(1, CurrentPlayer.getId());
     Logger.log('discard the force card');
