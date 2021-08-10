@@ -30,7 +30,7 @@
  * @property {(restriction: boolean) => void} setJobRestriction set job restriction of recruit action
  * @property {() => boolean} getRecruitTwiceForOneAP get availability that player can recruit twice with 1 action point
  * @property {(avaliable: boolean) => void} setRecruitTwiceForOneAP set availability that player can recruit twice with 1 action point
- * 
+ *
  * @typedef {Object} RulePlayJobCard
  * @property {() => boolean} getFirstJobRestriction get restriction of first played job card
  * @property {(restriction: boolean) => void} setFirstJobRestriction set restriction of first played job card
@@ -171,7 +171,7 @@ const Rule = (() => {
   /** @type {RuleSettlePhase} */
   const settlePhase = {
     getOwnerBonus: () => {
-      return ruleSet.getRange('D18').getValue();      
+      return ruleSet.getRange('D18').getValue();
     },
     setOwnerBonus: (bonus) => {
       ruleSet.getRange('D18').setValue(bonus);

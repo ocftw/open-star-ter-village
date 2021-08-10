@@ -68,11 +68,11 @@ function gameWillStart() {
   Logger.log('deal cards to players...');
   // deal project cards
   playerIds.forEach(id => {
-    PlayerHands.dealProjectCardsToPlayerById(ProjectDeck.draw(2), id);
+    PlayerHands.dealProjectCardsToPlayerById(ProjectDeck.draw(Rule.playerHand.projectCard.getMax()), id);
   });
   // deal resource cards
   playerIds.forEach(id => {
-    PlayerHands.dealResourceCardsToPlayerById(ResourceDeck.draw(5), id);
+    PlayerHands.dealResourceCardsToPlayerById(ResourceDeck.draw(Rule.playerHand.resourceCard.getMax()), id);
   });
   Logger.log('set up players...');
   // refill default action points and tokens
