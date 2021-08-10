@@ -299,6 +299,9 @@ function getPlayerCards() {
  * @type {(project: Card, resource: Card) => Hand} Return the player project cards after played
  */
 function playProjectCard(project, resource) {
+  if (!Table.Player.isInTurn(CurrentPlayer.getId())) {
+    throw new Error('這不是你的回合！');
+  }
   if (!Rule.playProjectCard.getIsAvailable()) {
     throw new Error('海底電纜還沒修好，不能發起專案！');
   }
@@ -350,6 +353,9 @@ function playProjectCard(project, resource) {
  * @returns {{name: string, slotId: number}[]}
  */
 function listAvailableProjectByJob(jobCard) {
+  if (!Table.Player.isInTurn(CurrentPlayer.getId())) {
+    throw new Error('這不是你的回合！');
+  }
   if (!Rule.recruit.getIsAvailable()) {
     throw new Error('減薪休假中，不能招募人力！');
   }
@@ -380,6 +386,9 @@ function listAvailableProjectByJob(jobCard) {
  * @returns {Hand}
  */
 function recruit(project, slotId) {
+  if (!Table.Player.isInTurn(CurrentPlayer.getId())) {
+    throw new Error('這不是你的回合！');
+  }
   const jobCard = PropertiesService.getUserProperties().getProperty('LISTED_JOB');
   if (!jobCard) {
     Logger.log('recruit failure. Cannot find jobCard from properties service');
@@ -409,6 +418,9 @@ function recruit(project, slotId) {
  * @exports openContributeDialog
  */
 function openContributeDialog() {
+  if (!Table.Player.isInTurn(CurrentPlayer.getId())) {
+    throw new Error('這不是你的回合！');
+  }
   if (!Rule.contribute.getIsAvailable()) {
     throw new Error('GitHub當機中，不能貢獻專案！');
   }
@@ -431,6 +443,9 @@ function openContributeDialog() {
  * @returns {{ projects: Project[], maxContribution: number }}
  */
 function listProjects() {
+  if (!Table.Player.isInTurn(CurrentPlayer.getId())) {
+    throw new Error('這不是你的回合！');
+  }
   return {
     maxContribution: Rule.contribute.getContribution(),
     projects: Table.ProjectCard.listProjects(CurrentPlayer.getId()),
@@ -450,6 +465,9 @@ function listProjects() {
  * @param {Contribution[]} contributionList
  */
 function contribute(contributionList) {
+  if (!Table.Player.isInTurn(CurrentPlayer.getId())) {
+    throw new Error('這不是你的回合！');
+  }
   const sum = contributionList.reduce((s, contribution) => s + contribution.points, 0);
   if (sum > Rule.contribute.getContribution()) {
     throw new Error('超過分配點數上限！');
@@ -492,6 +510,9 @@ function contribute(contributionList) {
  * @returns {Hand}
  */
 function playForceCard(forceCard, projectCard = null) {
+  if (!Table.Player.isInTurn(CurrentPlayer.getId())) {
+    throw new Error('這不是你的回合！');
+  }
   if (!Rule.playForce.getIsAvailable()) {
     throw new Error('本輪不能使用源力卡，可憐哪！');
   }
@@ -554,6 +575,9 @@ function peekNextEventCard() {
  *  return the hand after discarded the cards
  */
 function discardCardsAndEndTurn(projects, resources) {
+  if (!Table.Player.isInTurn(CurrentPlayer.getId())) {
+    throw new Error('這不是你的回合！');
+  }
   if (!projects || !resources) {
     throw new Error('Technical issue, please contact author.');
   }
