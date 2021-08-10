@@ -214,13 +214,15 @@ function setPlayerAndShowSidebar(playerId, playerNickname) {
     //pop up alert for confirmation
     const response = SpreadsheetApp.getUi()
       .alert('更換玩家', `確定換成${playerNickname}？`, SpreadsheetApp.getUi().ButtonSet.OK_CANCEL);
-    if (response === SpreadsheetApp.getUi().Button.CANCEL) {
+    if (response === SpreadsheetApp.getUi().Button.OK) {
+      CurrentPlayer.setId(playerId);
+      Table.Player.setNickname(playerNickname, playerId);
+      SpreadsheetApp.getActive().toast(`已設定為${playerNickname}`);
+    } else {
+      // cancel and close popup
       SpreadsheetApp.getActive().toast('取消更換玩家');
       return;
     }
-    CurrentPlayer.setId(playerId);
-    Table.Player.setNickname(playerNickname, playerId);
-    SpreadsheetApp.getActive().toast(`已設定為${playerNickname}`);
   }
   showUserSidebar();
 }
