@@ -331,7 +331,6 @@ function showProjectDialog(playerNickname) {
 /**
  * @typedef {Object} Hand player hand cards
  * @property {ProjectCardSpecObject[]} projects project card with specs
- * @property {Card[]} projectCards project cards
  * @property {Card[]} resourceCards resource cards
  */
 
@@ -348,7 +347,6 @@ function getPlayerCards() {
   const projects = projectCards.map(ProjectCardRef.getSpecByCard);
 
   return {
-    projectCards,
     projects,
     resourceCards,
   };
@@ -398,7 +396,6 @@ function playProjectCard(project, resource) {
     Table.Player.reduceWorkerTokens(1, playerId);
     return {
       projects,
-      projectCards,
       resourceCards,
     };
   } catch (err) {
@@ -474,7 +471,6 @@ function recruit(project, slotId) {
 
     return {
       projects,
-      projectCards,
       resourceCards,
     }
   } catch (err) {
@@ -610,7 +606,6 @@ function playForceCard(forceCard, projectCard = null) {
     ResourceDeck.discard([forceCard]);
     return {
       projects,
-      projectCards,
       resourceCards,
     }
   } catch (err) {
@@ -704,7 +699,6 @@ function discardCardsAndEndTurn(projects, resources) {
 
     return {
       projects: projectSpecs,
-      projectCards,
       resourceCards,
     };
   } catch (err) {
