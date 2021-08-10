@@ -78,20 +78,20 @@
               <input id="prj-${id}-${slot.slotId}" type="number" name="project-slots" min="${slot.points}" max="6" value="${slot.points}"
                 data-project-id="${id}" data-project-name="${project.name}" data-slot-id="${slot.slotId}"
                 ${!slot.activeForCurrentPlayer && "disabled"} />
-              <span>/${slot.groupGoalPoints}</span>
-              <span>From: ${slot.player}</span>
+              <span>/${slot.groupGoalPoints} 點</span>
+              <span>${slot.player ? `(${slot.player})` : '' }</span>
             </div>`;
         });
         return $(`<div>
-            <b id="project-${id}">${project.name ? `${project.name}/${project.type}/${project.owner}` : 'Empty project'}</b>
+            <b id="project-${id}">${project.name ? `[${project.type}] ${project.name} (${project.owner})` : '沒有專案卡'}</b>
             ${slots.reduce((d, s) => d + s, '')}
           </div>`);
       });
       $('#projects').append(doms);
       $('#projects').append('<div class="block">\
         <div class="block" id="count"></div>\
-        <button id="reset">reset</button>\
-        <button class="blue" id="contribute">submit</button>\
+        <button id="reset">重置貢獻</button>\
+        <button class="blue" id="contribute">貢獻專案</button>\
       </div>');
 
       $('#count').text(`還剩下${maxContribution}點`);
