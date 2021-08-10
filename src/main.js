@@ -58,6 +58,7 @@ function gameWillStart() {
     { id: 'D', nickname: '玩家4' }, { id: 'E', nickname: '玩家5' }, { id: 'F', nickname: '玩家6' },
   ];
   const value = PropertiesService.getScriptProperties().getProperty('PLAYER_NUM');
+  PropertiesService.getScriptProperties().deleteProperty('PLAYER_NUM');
   const playerNum = value ? JSON.parse(value) : 6;
   players.length = playerNum;
   Table.Player.initPlayers(players);
