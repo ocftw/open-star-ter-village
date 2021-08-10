@@ -34,6 +34,9 @@
  *  list all job occupancy status on the project card.
  *
  * @typedef {Object} TablePlayerController
+ * @property {() => string[]} listPlayerIds list inplayed player ids
+ * @property {() => number} getPlayerCount return how many inplayed players
+ * @property {(players:{id: string, nickname: string}[]) => void} initPlayers return how many inplayed players
  * @property {(playerId: string) => string} getNickname get player nickname
  * @property {(nickname, playerId: string) => void} setNickname set player nick name
  * @property {(cost: number, playerId: string) => boolean} isActionable return whether player has action points more than cost
@@ -511,6 +514,10 @@ const Table = (() => {
 
   /**
    * @typedef {Object} TablePlayerModel player methods
+   * @property {() => string[]} getPlayerIdList list inplayed player ids, starts with the starter player
+   * @property {(ids: string[]) => void} setPlayerIdList set inplayed player ids, starts with the starter player
+   * @property {() => string} getCurrentPlayerId get current player id
+   * @property {(id: string) => void} setCurrentPlayerId set current player id
    * @property {(playerId: string) => string} getNickname get player nickname
    * @property {(nickname, playerId: string) => void} setNickname set player nick name
    * @property {(playerId: string) => number} getScore get player score
@@ -539,6 +546,28 @@ const Table = (() => {
   const playerProperty = SpreadsheetApp.getActive().getSheetByName('PlayerProperty');
   /** @type {TablePlayerModel} */
   const PlayerModel = {
+    getPlayerIdList: () => {
+      const prop = PropertiesService.getScriptProperties().getProperty('PLAYER_ID_LIST');
+      if (!prop) {
+        return [];
+      }
+      return JSON.parse(prop);
+    },
+    setPlayerIdList: (playerIds) => {
+      const value = JSON.stringify(playerIds);
+      PropertiesService.getScriptProperties().setProperty('PLAYER_ID_LIST', value);
+    },
+    getCurrentPlayerId: () => {
+      const prop = PropertiesService.getScriptProperties().getProperty('CURRENT_PLAYER_ID');
+      if (!prop) {
+        return '';
+      }
+      return JSON.parse(prop);
+    },
+    setCurrentPlayerId: (playerId) => {
+      const value = JSON.stringify(playerId);
+      PropertiesService.getScriptProperties().setProperty('CURRENT_PLAYER_ID', value);
+    },
     getNickname: (playerId) => {
       return playerProperty.getRange(`${playerId}1`).getDisplayValue();
     },
@@ -617,6 +646,7 @@ const Table = (() => {
 
   /**
    * @typedef {Object} TablePlayerView render player information on main board
+   * @property {(nickname: string) => void} setCurrentPlayer show the current player nickname
    * @property {(nickname, playerId: string) => void} setNickname set player nick name
    * @property {(score: number, playerId: string) => void} setScore set player score
    * @property {(actionPoint: number, playerId: string) => void} setActionPoint set player action point
@@ -630,6 +660,9 @@ const Table = (() => {
   };
   /** @type {TablePlayerView} */
   const PlayerView = {
+    setCurrentPlayer: (nickname) => {
+      mainBoard.getRange(1, 4).setValue(nickname);
+    },
     setNickname: (nickname, playerId) => {
       const row = playerIdMapRow[playerId];
       const col = 2;
@@ -665,6 +698,23 @@ const Table = (() => {
 
   /** @type {TablePlayerController} */
   const Player = {
+    listPlayerIds: () => {
+      return PlayerModel.getPlayerIdList();
+    },
+    initPlayers: (players) => {
+      const playerIds = players.map(player => player.id);
+      PlayerModel.setPlayerIdList(playerIds);
+      players.forEach(({ id, nickname }) => {
+        PlayerModel.setNickname(nickname, id);
+        PlayerView.setNickname(nickname, id);
+      });
+      PlayerModel.setCurrentPlayerId(playerIds[0]);
+      PlayerView.setCurrentPlayer(Player.getNickname(playerIds[0]));
+    },
+    getPlayerCount: () => {
+      const playerIds = PlayerModel.getPlayerIdList();
+      return playerIds.length;
+    },
     setNickname: (nickname, playerId) => {
       PlayerModel.setNickname(nickname, playerId);
       PlayerView.setNickname(nickname, playerId);

@@ -34,18 +34,26 @@ function onOpen() {
  * game did end
  */
 function gameWillStart() {
+  const players = [
+    { id: 'A', nickname: '玩家1' }, { id: 'B', nickname: '玩家2' }, { id: 'C', nickname: '玩家3' },
+    { id: 'D', nickname: '玩家4' }, { id: 'E', nickname: '玩家5' }, { id: 'F', nickname: '玩家6' },
+  ];
+  // TODO: set count by dialog
+  players.length = 6;
+  Table.Player.initPlayers(players);
   //shuffle before game started
   initialShuffle();
+  const playerIds = players.map(player => player.id);
   // deal project cards
-  ['A', 'B', 'C', 'D', 'E', 'F'].forEach(id => {
+  playerIds.forEach(id => {
     PlayerHands.dealProjectCardsToPlayerById(ProjectDeck.draw(2), id);
   });
   // deal resource cards
-  ['A', 'B', 'C', 'D', 'E', 'F'].forEach(id => {
+  playerIds.forEach(id => {
     PlayerHands.dealResourceCardsToPlayerById(ResourceDeck.draw(5), id);
   });
   // refill default action points and tokens
-  ['A', 'B', 'C', 'D', 'E', 'F'].forEach(id => {
+  playerIds.forEach(id => {
     // TODO: replace 3 with rule.actionPoint.default
     Table.Player.setNextTurnActionPoints(3, id);
     Table.Player.setInitWorkerTokens(10, id);
