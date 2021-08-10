@@ -45,7 +45,7 @@
  * @property {(initTokens: number, playerId: string) => void} setInitWorkerTokens
  * @property {(score: number, playerId: string) => number} earnScore
  * @property {(playerId: string) => void} resetTurnCounters
- * @property {(playerId: string, defaultNickname: string) => void} reset
+ * @property {() => void} reset
  *
  * @typedef {Object} Project
  * @property {string} name project name
@@ -534,7 +534,7 @@ const Table = (() => {
    * @property {(playerId: string) => number} getTurnContributeCount
    * @property {(count: number, playerId: string) => void} setTurnContributeCount
    * @property {(playerId: string) => void} resetCounter
-   * @property {(playerId: string, defaultNickname: string) => void} reset reset all player properties except playerId
+   * @property {() => void} reset reset all player properties
    */
   const playerProperty = SpreadsheetApp.getActive().getSheetByName('PlayerProperty');
   /** @type {TablePlayerModel} */
@@ -608,9 +608,10 @@ const Table = (() => {
     resetCounter: (playerId) => {
       playerProperty.getRange(`${playerId}6:${playerId}11`).clearContent();
     },
-    reset: (playerId, defaultNickname) => {
-      playerProperty.getRange(`${playerId}1`).setValue(defaultNickname);
-      playerProperty.getRange(`${playerId}2:${playerId}11`).clearContent();
+    reset: () => {
+      playerProperty.getRange(1, 1, 11, 6).clearContent();
+      PlayerModel.setPlayerIdList([]);
+      PlayerModel.setCurrentPlayerId('');
     }
   };
 
@@ -620,7 +621,7 @@ const Table = (() => {
    * @property {(score: number, playerId: string) => void} setScore set player score
    * @property {(actionPoint: number, playerId: string) => void} setActionPoint set player action point
    * @property {(workerToken: number, playerId: string) => void} setWorkerToken set player remaining worker token
-   * @property {(playerId: string, defaultNickname: string) => void} reset reset all player properties except playerId
+   * @property {() => void} reset reset all player properties
    */
 
   const playerIdMapRow = {
@@ -649,11 +650,16 @@ const Table = (() => {
       const col = 5;
       mainBoard.getRange(row, col).setValue(token);
     },
-    reset: (playerId, defaultNickname) => {
-      PlayerView.setNickname(defaultNickname, playerId);
-      PlayerView.setScore(0, playerId);
-      PlayerView.setActionPoint(0, playerId);
-      PlayerView.setWorkerToken(0, playerId);
+    reset: () => {
+      PlayerView.setCurrentPlayer('');
+      // reset nicknames
+      mainBoard.getRange(3, 2, 6, 1).setValue('');
+      // reset scores
+      mainBoard.getRange(3, 3, 6, 1).setValue(0);
+      // reset action points
+      mainBoard.getRange(3, 4, 6, 1).setValue(0);
+      // reset worker tokens
+      mainBoard.getRange(3, 5, 6, 1).setValue(0);
     },
   };
 
@@ -707,9 +713,9 @@ const Table = (() => {
     resetTurnCounters: (playerId) => {
       PlayerModel.resetCounter(playerId);
     },
-    reset: (playerId, defaultNickname) => {
-      PlayerModel.reset(playerId, defaultNickname);
-      PlayerView.reset(playerId, defaultNickname);
+    reset: () => {
+      PlayerModel.reset();
+      PlayerView.reset();
     },
   };
 
@@ -745,7 +751,7 @@ const Table = (() => {
       }
       mainBoard.getRange(10 + row, 5).setValue(level);
       treeBoard.getRange(3, 3 + row, level, 1).setBackground('#d9ead3').setFontWeight('bold');
-      if (level > 3){
+      if (level > 3) {
         treeBoard.getRange(6, 3, level - 3, 1).setBackground('#d9ead3').setFontWeight('bold');
       }
     },
