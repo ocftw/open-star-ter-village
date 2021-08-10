@@ -42,8 +42,6 @@ const ProjectCardRef = (() => {
       return arr;
     }, []);
 
-    Logger.log(`get project card ${card} spec ${JSON.stringify(result)}`);
-
     return {
       name: result[name],
       type: result[type],
@@ -62,7 +60,6 @@ const ProjectCardRef = (() => {
       slotId += group.slots;
       return false;
     });
-    Logger.log(`find eligible slot of resource ${resource} on project ${project}`);
     // found eligible slot return slot id o.w. return -1
     return !!result ? slotId : -1;
   };

@@ -49,6 +49,10 @@ function showPlayerNumberPrompt() {
  * game did end
  */
 function gameWillStart() {
+  Logger.log('game will start');
+  SpreadsheetApp.getActive().toast('遊戲準備中......');
+
+  Logger.log('init players...');
   const players = [
     { id: 'A', nickname: '玩家1' }, { id: 'B', nickname: '玩家2' }, { id: 'C', nickname: '玩家3' },
     { id: 'D', nickname: '玩家4' }, { id: 'E', nickname: '玩家5' }, { id: 'F', nickname: '玩家6' },
@@ -57,9 +61,11 @@ function gameWillStart() {
   const playerNum = value ? JSON.parse(value) : 6;
   players.length = playerNum;
   Table.Player.initPlayers(players);
+  Logger.log('shuffle decks...');
   //shuffle before game started
   initialShuffle();
   const playerIds = players.map(player => player.id);
+  Logger.log('deal cards to players...');
   // deal project cards
   playerIds.forEach(id => {
     PlayerHands.dealProjectCardsToPlayerById(ProjectDeck.draw(2), id);
@@ -68,18 +74,22 @@ function gameWillStart() {
   playerIds.forEach(id => {
     PlayerHands.dealResourceCardsToPlayerById(ResourceDeck.draw(5), id);
   });
+  Logger.log('set up players...');
   // refill default action points and tokens
   playerIds.forEach(id => {
     // TODO: replace 3 with rule.actionPoint.default
     Table.Player.setNextTurnActionPoints(3, id);
     Table.Player.setInitWorkerTokens(10, id);
   });
+  SpreadsheetApp.getActive().toast('遊戲準備完成！');
 
   // everything set, round start
   roundWillStart();
 }
 
 function roundWillStart() {
+  Logger.log('round will start');
+  Logger.log('draw a new event card...');
   // draw new event card
   drawEventCard();
   // everything set, turn start
@@ -87,14 +97,19 @@ function roundWillStart() {
 }
 
 function turnWillStart() {
+  Logger.log('turn will start');
+  Logger.log('peek next event card...');
   // peek next event card
   peekNextEventCard();
 }
 
 function turnDidEnd() {
+  Logger.log('turn did end');
+  Logger.log('reset and refill current player counter...');
   // reset and refill current player counters
   Table.Player.resetTurnCounters(CurrentPlayer.getId());
   Table.Player.setNextTurnActionPoints(3, CurrentPlayer.getId());
+  Logger.log('move to next player...');
   // move to next player
   const { isStarter } = Table.Player.nextPlayer();
   if (isStarter) {
@@ -107,6 +122,8 @@ function turnDidEnd() {
 }
 
 function roundDidEnd() {
+  Logger.log('round did end');
+  Logger.log('remove event card from the table...');
   removeEventCard();
   // TODO: call game did end when the game end
   // start a new round
@@ -116,9 +133,12 @@ function roundDidEnd() {
 function gameDidEnd() { }
 
 function settlePhase() {
+  Logger.log('settle phase');
+  Logger.log('list closed projects...');
   const closedProjects = Table.ProjectCard.listClosedProjects();
   // Don't settle anything when there is no closed project
   if (closedProjects.length === 0) {
+    Logger.log('no closed project, settle phase ends');
     return;
   }
 
@@ -134,13 +154,16 @@ function settlePhase() {
   });
   // TODO: calculate score
   // TODO: contribute goal cards
+  Logger.log('remove closed projects from the table...');
   // Remove projects
   const projectCards = projectStatus.map(project => project.name);
   projectCards.forEach(card => {
     Table.ProjectCard.remove(card);
   });
+  Logger.log('discard closed projects...');
   // Discard the project cards
   ProjectDeck.discard(projectCards);
+  Logger.log('return tokens back to players...');
   // Return tokens to players
   const playerTokensMap = projectStatus.map(project => project.contributions)
     .reduce((list, row) => ([...list, ...row]), [])
@@ -155,6 +178,7 @@ function settlePhase() {
     const tokens = playerTokensMap[playerId];
     Table.Player.increaseWorkerTokens(tokens, playerId);
   });
+  Logger.log('grow the open source tree...');
   // move the open source tree
   const projectTypeCountMap = projectStatus.map(project => project.type).reduce((map, type) => {
     if (!map[type]) {
@@ -164,6 +188,7 @@ function settlePhase() {
     return map;
   }, {});
   Table.Tree.upgradeTreeLevels(projectTypeCountMap);
+  Logger.log('trigger the open source tree effects...');
   // trigger tree effects
   const treeLevels = Table.Tree.listTreeLevels();
   treeLevels.forEach(({ type, level }) => {
@@ -171,13 +196,17 @@ function settlePhase() {
       case '開放資料': {
         switch (level) {
           case 5:
+            Logger.log('action points of play a project card reduce to 1');
             Rule.playProjectCard.setActionPoint(1);
           case 4:
+            Logger.log('4 contribution points per contribution action');
             Rule.contribute.setContribution(4);
           case 3:
+            Logger.log('remove job restriction on play a project card');
             Rule.playProjectCard.setJobRestriction(false);
           case 2:
           case 1:
+            Logger.log('players refill up to 3 project cards');
             Rule.playerHand.projectCard.setMax(3);
         }
         break;
@@ -185,14 +214,18 @@ function settlePhase() {
       case '開放政府': {
         switch (level) {
           case 5:
+            Logger.log('action points of play a project card reduce to 1');
             Rule.playProjectCard.setActionPoint(1);
           case 4:
+            Logger.log('4 contribution points per contribution action');
             Rule.contribute.setContribution(4);
           case 3:
+            Logger.log('active 8 project slots on the table');
             Rule.maxProjectSlots.setNum(8);
             Table.ProjectCard.activateNSlots(Rule.maxProjectSlots.getNum());
           case 2:
           case 1:
+            Logger.log('available to peek the next event card');
             Rule.peekNextEvent.setIsAvailable(true);
         }
         break;
@@ -200,13 +233,17 @@ function settlePhase() {
       case '開放原始碼': {
         switch (level) {
           case 5:
+            Logger.log('action points of play a project card reduce to 1');
             Rule.playProjectCard.setActionPoint(1);
           case 4:
+            Logger.log('4 contribution points per contribution action');
             Rule.contribute.setContribution(4);
           case 3:
+            Logger.log('contribiton points starts from 3 when engineer kickoff a project');
             Rule.playProjectCard.setInitContributionPoint(3, '工程師');
           case 2:
           case 1:
+            Logger.log('players refill resource cards up to 6');
             Rule.playerHand.resourceCard.setMax(6);
         }
         break;

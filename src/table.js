@@ -145,7 +145,6 @@ const Table = (() => {
     },
     /** @type {(spec: ProjectCardSpecObject, id: number) => void} */
     addCardSpecById: (spec, id) => {
-      Logger.log(`add card spec by id ${id}`);
       // set basis info
       const basicInfoRow = [spec.name, spec.type];
       tableProjectCard.getRange(11 + id, 1, 1, 2).setValues([basicInfoRow]);
@@ -175,7 +174,6 @@ const Table = (() => {
         }
         return { id, name, type, ownerId, extensions };
       }).filter(x => x);
-      Logger.log(`cards: ${JSON.stringify(cards)}`);
       return cards;
     },
     listCardSpecs: () => {
@@ -250,7 +248,6 @@ const Table = (() => {
           groupId,
         }
       });
-      Logger.log(`list slots: ${JSON.stringify(slots)}`);
       return slots;
     },
     getPlayerOnSlotById: (id, slotId) => {
@@ -377,7 +374,6 @@ const Table = (() => {
     },
     listAvailableProjectByJob: (jobCard, points) => {
       const projects = ProjectCardModel.listCards();
-      Logger.log(`job name: ${jobCard}, projects: ${JSON.stringify(projects)}`);
       const vacancies = projects.map(project => {
         const slotId = ProjectCardModel.getProjectVacancySlotIdById(jobCard, project.id);
         if (slotId < 0) {
@@ -416,11 +412,9 @@ const Table = (() => {
     contributeSlot: (points, project, slotId) => {
       const cardId = ProjectCardModel.findCardId(project);
       ProjectCardModel.addContributionPointOnSlotById(points, cardId, slotId);
-      Logger.log(`project ${project} slot ${slotId} increase ${points} contribution points`);
 
       const displayPoints = ProjectCardModel.getContributionPointOnSlotById(cardId, slotId);
       ProjectCardView.setContributionPointOnTableSlotById(displayPoints, cardId, slotId);
-      Logger.log(`update project ${project} slot ${slotId} contribution points ${displayPoints}`);
     },
     placeResourceOnSlotById: (project, slotId, playerId, initialPoints, isOwner = false) => {
       const cardId = ProjectCardModel.findCardId(project);
@@ -432,14 +426,12 @@ const Table = (() => {
       if (isOwner) {
         ProjectCardModel.setProjectOnwerById(playerId, cardId);
       }
-      Logger.log(`player ${playerId} occupy slot ${slotId} on project ${project} on data table`);
 
       // render on table
       // set player on slot
       ProjectCardView.setPlayerOnTableSlotById(PlayerModel.getNickname(playerId), cardId, slotId, isOwner);
       // set initial contribution point
       ProjectCardView.setContributionPointOnTableSlotById(initialPoints, cardId, slotId);
-      Logger.log(`render the player ${playerId} takes slot ${slotId} on project ${project} on table`);
     },
     listClosedProjects: () => {
       const projects = ProjectCardModel.listCards();
@@ -453,7 +445,6 @@ const Table = (() => {
 
         return reachTheGoal ? { name, type, ownerId, extensions } : undefined;
       }).filter(x => x);
-      Logger.log(`project closed: ${JSON.stringify(closedProjects)}`);
 
       return closedProjects;
     },
@@ -487,7 +478,6 @@ const Table = (() => {
       });
 
       contributions.sort((a, b) => b.points - a.points);
-      Logger.log(`list player contributions: ${JSON.stringify(contributions)}`);
 
       return contributions;
     },
@@ -509,7 +499,6 @@ const Table = (() => {
         const { occupied, available } = summaryMap[title];
         return { title, occupied, available };
       });
-      Logger.log(`list project ${card} summary ${JSON.stringify(summary)}`);
       return summary;
     },
   };
@@ -843,7 +832,6 @@ const Table = (() => {
         const level = TreeModel.getTreeLevel(type);
         return { type, level };
       });
-      Logger.log(`list tree levels: ${JSON.stringify(treeLevels)}`);
       return treeLevels;
     },
     upgradeTreeLevels: (typeUpgradeMap) => {
@@ -854,10 +842,8 @@ const Table = (() => {
         TreeModel.setTreeLevel(cappedLevel, type);
         TreeView.setTreeLevel(cappedLevel, type);
       });
-      Logger.log(`upgrade tree levels: ${JSON.stringify(typeUpgradeMap)}`);
     },
     reset: () => {
-      Logger.log('reset all tree levels');
       TreeTypes.forEach(type => TreeModel.setTreeLevel(0, type));
       TreeView.reset();
     },
