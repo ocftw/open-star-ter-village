@@ -43,9 +43,9 @@
  * @property {(nickname, playerId: string) => void} setNickname set player nick name
  * @property {(cost: number, playerId: string) => boolean} isActionable return whether player has action points more than cost
  * @property {(cost: number, playerId: string) => number} reduceActionPoint reduce action points on player
- * @property {(playerId: string) => boolean} isRecruitable
- * @property {(cost: number, playerId: string) => number} reduceWorkerTokens
- * @property {(tokens: number, playerId: string) => number} increaseWorkerTokens
+ * @property {(playerId: string) => boolean} isRecruitable return true when player has worker token to recruit
+ * @property {(cost: number, playerId: string) => number} reduceWorkerTokens remove worker tokens from player
+ * @property {(tokens: number, playerId: string) => number} increaseWorkerTokens return worker tokens to player
  * @property {(nextTurnPoints: number, playerId: string) => void} setNextTurnActionPoints
  * @property {(initTokens: number, playerId: string) => void} setInitWorkerTokens
  * @property {(score: number, playerId: string) => number} earnScore
