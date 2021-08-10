@@ -172,6 +172,7 @@ function settlePhase() {
             Rule.contribute.setContribution(4);
           case 3:
             Rule.maxProjectSlots.setNum(8);
+            Table.ProjectCard.activateNSlots(Rule.maxProjectSlots.getNum());
           case 2:
           case 1:
             Rule.peekNextEvent.setIsAvailable(true);
