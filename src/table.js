@@ -89,15 +89,15 @@
 
 /** @type {TableController} */
 const Table = (() => {
-  const defaultDeck = SpreadsheetApp.getActive().getSheetByName('各牌庫備考');
+  const ProjectCardSpecs = SpreadsheetApp.getActive().getSheetByName('ProjectCardSpecs');
   const mainBoard = SpreadsheetApp.getActive().getSheetByName('專案圖板/記分板');
 
   // table project card view
   const projectCardsBoard = SpreadsheetApp.getActive().getSheetByName('專案卡列表');
   const ProjectCardView = {
-    // find card template range from default deck
+    // get card template range by spec
     findCardTemplateRange: (card) => {
-      const idx = defaultDeck.getRange('A2:A31').getDisplayValues().map(row => row[0]).findIndex(c => c === card);
+      const idx = ProjectCardSpecs.getRange('A2:A31').getDisplayValues().map(row => row[0]).findIndex(c => c === card);
       if (idx < 0) {
         Logger.log('failed to find project card range' + card);
         throw new Error('failed to find render project card range');
