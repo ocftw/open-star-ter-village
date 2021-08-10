@@ -46,7 +46,14 @@
  * @property {(playerId: string) => boolean} isRecruitable return true when player has worker token to recruit
  * @property {(cost: number, playerId: string) => number} reduceWorkerTokens remove worker tokens from player
  * @property {(tokens: number, playerId: string) => number} increaseWorkerTokens return worker tokens to player
- * @property {(nextTurnPoints: number, playerId: string) => void} setNextTurnActionPoints
+ * @property {(refillPoints: number, playerId: string) => void} initActionPointsRefill
+ *  inital player action points would refill in each turn
+ * @property {(incPoints: number, playerId: string) => void} increaseActionPointsRefill
+ *  increase player action points would refill in each turn
+ * @property {(decPoints: number, playerId: string) => void} decreaseActionPointsRefill
+ *  decrease player action points would refill in each turn
+ * @property {(playerId: string) => void} refillActionPoints refill player action points with each-turn action points
+ * @property {(points: number, playerId: string) => void} increaseActionPoints increase player action points in this turn
  * @property {(initTokens: number, playerId: string) => void} setInitWorkerTokens
  * @property {(score: number, playerId: string) => number} earnScore
  * @property {(playerId: string) => void} resetTurnCounters
@@ -515,6 +522,8 @@ const Table = (() => {
    * @property {(score: number, playerId: string) => void} setScore set player score
    * @property {(playerId: string) => number} getActionPoint get player action point
    * @property {(actionPoint: number, playerId: string) => void} setActionPoint set player action point
+   * @property {(playerId: string) => number} getActionPointsRefill get player action points should refill in each turn
+   * @property {(actionPoint: number, playerId: string) => void} setActionPointsRefill set player action points should refill in each turn
    * @property {(playerId: string) => number} getWorkerToken get player remaining worker token
    * @property {(workerToken: number, playerId: string) => void} setWorkerToken set player remaining worker token
    * @property {(playerId: string) => number} getClosedProject get closed project number of player
@@ -576,6 +585,19 @@ const Table = (() => {
     },
     setActionPoint: (actionPoint, playerId) => {
       playerProperty.getRange(`${playerId}3`).setValue(actionPoint);
+    },
+    getActionPointsRefill: (playerId) => {
+      const key = `TABLE_PLAYER_ACTION_POINTS_REFILL__${playerId}`;
+      const prop = PropertiesService.getScriptProperties().getProperty(key);
+      if (!prop) {
+        return 0;
+      }
+      return JSON.parse(prop);
+    },
+    setActionPointsRefill: (points, playerId) => {
+      const key = `TABLE_PLAYER_ACTION_POINTS_REFILL__${playerId}`;
+      const value = JSON.stringify(points);
+      PropertiesService.getScriptProperties().setProperty(key, value);
     },
     getWorkerToken: (playerId) => {
       return playerProperty.getRange(`${playerId}4`).getValue();
@@ -757,9 +779,26 @@ const Table = (() => {
       PlayerView.setWorkerToken(result, playerId);
       return result;
     },
-    setNextTurnActionPoints: (nextTurnPoints, playerId) => {
-      PlayerModel.setActionPoint(nextTurnPoints, playerId);
-      PlayerView.setActionPoint(nextTurnPoints, playerId);
+    initActionPointsRefill: (refillPoints, playerId) => {
+      PlayerModel.setActionPointsRefill(refillPoints, playerId);
+      Player.refillActionPoints(playerId);
+    },
+    increaseActionPointsRefill: (points, playerId) => {
+      PlayerModel.setActionPointsRefill(PlayerModel.getActionPointsRefill(playerId) + points, playerId);
+    },
+    decreaseActionPointsRefill: (points, playerId) => {
+      PlayerModel.setActionPointsRefill(PlayerModel.getActionPointsRefill(playerId) - points, playerId);
+    },
+    refillActionPoints: (playerId) => {
+      const pointsRefill = PlayerModel.getActionPointsRefill(playerId);
+      PlayerModel.setActionPoint(pointsRefill, playerId);
+      PlayerView.setActionPoint(pointsRefill, playerId);
+    },
+    increaseActionPoints: (points, playerId) => {
+      const current = PlayerModel.getActionPoint(playerId);
+      const increased = current + points;
+      PlayerModel.setActionPoint(increased, playerId);
+      PlayerView.setActionPoint(increased, playerId);
     },
     setInitWorkerTokens: (initTokens, playerId) => {
       PlayerModel.setWorkerToken(initTokens, playerId);

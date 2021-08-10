@@ -78,7 +78,7 @@ function gameWillStart() {
   // refill default action points and tokens
   playerIds.forEach(id => {
     // TODO: replace 3 with rule.actionPoint.default
-    Table.Player.setNextTurnActionPoints(3, id);
+    Table.Player.initActionPointsRefill(3, id);
     Table.Player.setInitWorkerTokens(10, id);
   });
   SpreadsheetApp.getActive().toast('遊戲準備完成！');
@@ -108,7 +108,7 @@ function turnDidEnd() {
   Logger.log('reset and refill current player counter...');
   // reset and refill current player counters
   Table.Player.resetTurnCounters(CurrentPlayer.getId());
-  Table.Player.setNextTurnActionPoints(3, CurrentPlayer.getId());
+  Table.Player.refillActionPoints(CurrentPlayer.getId());
   Logger.log('move to next player...');
   // move to next player
   const { isStarter } = Table.Player.nextPlayer();
