@@ -263,7 +263,7 @@
         const content = `<div id="recruit-projects">
           <h2>場上專案</h2>
           <div class="form-group" id="table-projects">
-            ${slots}
+            ${slots.reduce((d, s) => d + s, '')}
           </div>
         </div>`;
 
