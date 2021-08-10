@@ -699,7 +699,7 @@ const Table = (() => {
     reset: () => {
       PlayerView.setCurrentPlayer('');
       // reset nicknames
-      mainBoard.getRange(3, 2, 6, 1).setValue('');
+      mainBoard.getRange(3, 2, 6, 1).setValue('--');
       // reset scores
       mainBoard.getRange(3, 3, 6, 1).setValue(0);
       // reset action points
