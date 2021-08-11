@@ -13,8 +13,9 @@
  *  check the slot is eligible for the resource card
  */
 /**
- * @typedef {Object} ResourceCardReference
+ * @typedef {Object} ResourceCardReference 
  * @property {(card: Card) => boolean} isForceCard check whether the resource card is force card
+ * @property {(card: Card) => string} getForceSpecByCard get force card description by card name 
  */
 /** @type {ProjectCardReference} */
 const ProjectCardRef = (() => {
@@ -72,12 +73,18 @@ const ProjectCardRef = (() => {
 
 /** @type {ResourceCardReference} */
 const resourceCardRef = (() => {
-  const forceCardList = SpreadsheetApp.getActive().getSheetByName('源力卡介紹').getDataRange().getValues();
+  const forceCardList = SpreadsheetApp.getActive().getSheetByName('ForceCardSpec')
+    .getDataRange().getValues();
   const isForceCard = (card) => {
     const index = forceCardList.findIndex(row => row[0] === card);
     return index >= 0;
+  },
+  const getForceSpecByCard = (card) => {
+    const index = forceCardList.findIndex(row => row[0] === card);
+    return forceCardList[index][1];
   }
   return {
-    isForceCard
+    isForceCard,
+    getForceSpecByCard
   };
 })();
