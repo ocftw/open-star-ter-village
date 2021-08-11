@@ -54,6 +54,13 @@
  *  decrease player action points would refill in each turn
  * @property {(playerId: string) => void} refillActionPoints refill player action points with each-turn action points
  * @property {(points: number, playerId: string) => void} increaseActionPoints increase player action points in this turn
+ * @property {(playerId: string) => number} getClosedProject get closed project number of player
+ * @property {(playerId: string) => number} getTurnCreateProjectCount
+ * @property {(playerId: string) => number} getTurnPlayProjectCardCount
+ * @property {(playerId: string) => number} getTurnRecruitCount
+ * @property {(playerId: string) => number} getTurnPlayJobCardCount
+ * @property {(playerId: string) => number} getTurnPlayForceCardCount
+ * @property {(playerId: string) => number} getTurnContributeCount
  * @property {(initTokens: number, playerId: string) => void} setInitWorkerTokens
  * @property {(score: number, playerId: string) => number} earnScore
  * @property {(playerId: string) => void} resetTurnCounters
@@ -799,6 +806,27 @@ const Table = (() => {
       const increased = current + points;
       PlayerModel.setActionPoint(increased, playerId);
       PlayerView.setActionPoint(increased, playerId);
+    },
+    getClosedProject: (playerId) => {
+      return PlayerModel.getClosedProject(playerId);
+    },
+    getTurnCreateProjectCount: (playerId) => {
+      return PlayerModel.getTurnCreateProjectCount(playerId);
+    },
+    getTurnPlayProjectCardCount: (playerId) => {
+      return PlayerModel.getTurnPlayProjectCardCount(playerId);
+    },
+    getTurnRecruitCount: (playerId) => {
+      return PlayerModel.getTurnRecruitCount(playerId);
+    },
+    getTurnPlayJobCardCount: (playerId) => {
+      return PlayerModel.getTurnPlayJobCardCount(playerId);
+    },
+    getTurnPlayForceCardCount: (playerId) => {
+      return PlayerModel.getTurnPlayForceCardCount(playerId);
+    },
+    getTurnContributeCount: (playerId) => {
+      return PlayerModel.getTurnContributeCount(playerId);
     },
     setInitWorkerTokens: (initTokens, playerId) => {
       PlayerModel.setWorkerToken(initTokens, playerId);
