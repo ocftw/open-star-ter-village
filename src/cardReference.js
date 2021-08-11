@@ -13,9 +13,9 @@
  *  check the slot is eligible for the resource card
  */
 /**
- * @typedef {Object} ResourceCardReference 
+ * @typedef {Object} ResourceCardReference
  * @property {(card: Card) => boolean} isForceCard check whether the resource card is force card
- * @property {(card: Card) => string} getForceSpecByCard get force card description by card name 
+ * @property {(card: Card) => string} getForceSpecByCard get force card description by card name
  */
 /** @type {ProjectCardReference} */
 const ProjectCardRef = (() => {
@@ -78,7 +78,7 @@ const resourceCardRef = (() => {
   const isForceCard = (card) => {
     const index = forceCardList.findIndex(row => row[0] === card);
     return index >= 0;
-  },
+  };
   const getForceSpecByCard = (card) => {
     const index = forceCardList.findIndex(row => row[0] === card);
     return forceCardList[index][1];
