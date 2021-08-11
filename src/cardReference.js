@@ -4,7 +4,12 @@
  * @property {string} type
  * @property {string} ownerScore
  * @property {string} contributorScore
- * @property {{ title: string, slots: number, goalContributionPoints: number }[]} groups
+ * @property { { title: string, slots: number, goalContributionPoints: number }[] } groups
+ *
+ * @typedef {Object} ResourceCardSpecObject
+ * @property {string} name name of the card
+ * @property {string} type the resource card type
+ * @property {string} description card effect detail
  */
 /**
  * @typedef {Object} ProjectCardReference
@@ -15,7 +20,7 @@
 /**
  * @typedef {Object} ResourceCardReference
  * @property {(card: Card) => boolean} isForceCard check whether the resource card is force card
- * @property {(card: Card) => string} getForceSpecByCard get force card description by card name
+ * @property {(card: Card) => ResourceCardSpecObject} getSpecByCard get resource card name, type, description by card name
  */
 /** @type {ProjectCardReference} */
 const ProjectCardRef = (() => {
@@ -79,12 +84,24 @@ const resourceCardRef = (() => {
     const index = forceCardList.findIndex(row => row[0] === card);
     return index >= 0;
   };
-  const getForceSpecByCard = (card) => {
-    const index = forceCardList.findIndex(row => row[0] === card);
-    return forceCardList[index][1];
-  }
+  const getSpecByCard = (card) => {
+    // TODO: remove hard code card type
+    if (isForceCard(card)) {
+      const [name, description] = forceCardList.find(row => row[0] === card);
+      return {
+        name,
+        type: '源力卡',
+        description,
+      };
+    }
+    return {
+      name: card,
+      type: '人力卡',
+      description: '',
+    };
+  };
   return {
     isForceCard,
-    getForceSpecByCard
+    getSpecByCard: withCache(getSpecByCard),
   };
 })();

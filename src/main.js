@@ -332,6 +332,7 @@ function showProjectDialog(playerNickname) {
  * @typedef {Object} Hand player hand cards
  * @property {ProjectCardSpecObject[]} projects project card with specs
  * @property {Card[]} resourceCards resource cards
+ * @property {ResourceCardSpecObject[]} resources resource card with specs
  */
 
 /**
@@ -345,10 +346,12 @@ function getPlayerCards() {
   const projectCards = CurrentPlayerHand.listProjectCards();
   const resourceCards = CurrentPlayerHand.listResourceCards();
   const projects = projectCards.map(ProjectCardRef.getSpecByCard);
+  const resources = resourceCards.map(resourceCardRef.getSpecByCard);
 
   return {
     projects,
     resourceCards,
+    resources,
   };
 };
 
@@ -388,6 +391,7 @@ function playProjectCard(project, resource) {
     const projectCards = CurrentPlayerHand.removeProjectCards([project]);
     const resourceCards = CurrentPlayerHand.removeResourceCards([resource]);
     const projects = projectCards.map(ProjectCardRef.getSpecByCard);
+    const resources = resourceCards.map(resourceCardRef.getSpecByCard);
     Logger.log('play project card and job card on the table...');
     Table.ProjectCard.play(project);
     Table.ProjectCard.placeResourceOnSlotById(project, slotId, playerId, 1, true);
@@ -397,6 +401,7 @@ function playProjectCard(project, resource) {
     return {
       projects,
       resourceCards,
+      resources,
     };
   } catch (err) {
     Logger.log(`playProjectCard failure. ${err}`);
@@ -463,6 +468,7 @@ function recruit(project, slotId) {
     const projectCards = CurrentPlayerHand.listProjectCards();
     const resourceCards = CurrentPlayerHand.removeResourceCards([jobCard]);
     const projects = projectCards.map(ProjectCardRef.getSpecByCard);
+    const resources = resourceCards.map(resourceCardRef.getSpecByCard);
     Logger.log('place a worker on the project...');
     const playerId = CurrentPlayer.getId();
     Table.ProjectCard.placeResourceOnSlotById(project, slotId, playerId, 1);
@@ -472,6 +478,7 @@ function recruit(project, slotId) {
     return {
       projects,
       resourceCards,
+      resources,
     }
   } catch (err) {
     Logger.log(`recruit failure. ${err}`);
@@ -599,6 +606,7 @@ function playForceCard(forceCard, projectCard = null) {
     const projectCards = CurrentPlayerHand.listProjectCards();
     const resourceCards = CurrentPlayerHand.removeResourceCards([forceCard]);
     const projects = projectCards.map(ProjectCardRef.getSpecByCard);
+    const resources = resourceCards.map(resourceCardRef.getSpecByCard);
     Logger.log('resolve force card...');
     // TODO: resolve force card with parameters
     const forceCardFn = getForceCardFunction(forceCard);
@@ -610,6 +618,7 @@ function playForceCard(forceCard, projectCard = null) {
     return {
       projects,
       resourceCards,
+      resources,
     }
   } catch (err) {
     Logger.log(`playForceCard failure. ${err}`);
@@ -715,12 +724,14 @@ function discardCardsAndEndTurn(projects, resources) {
         ResourceDeck.draw(Rule.playerHand.resourceCard.getMax() - resourceCards.length));
     }
     const projectSpecs = projectCards.map(ProjectCardRef.getSpecByCard);
+    const resourceSpecs = resourceCards.map(resourceCardRef.getSpecByCard);
 
     turnDidEnd();
 
     return {
       projects: projectSpecs,
       resourceCards,
+      resources: resourceSpecs,
     };
   } catch (err) {
     Logger.log(`discardCardsAndEndTurn failure. ${err}`);
