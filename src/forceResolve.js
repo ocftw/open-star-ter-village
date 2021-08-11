@@ -139,8 +139,8 @@ function tradeResourceCards(currentPlayerId) {
     var text = result.getResponseText();
     if (button === ui.Button.OK) {
       const num = Number.parseInt(text, 10);
-      if (Number.isInteger(num) && 0 < num && num <= Table.Player.getPlayerCount()) {
-        const id = ['A','B','C','D','E','F'];
+      const id = ['A','B','C','D','E','F'];
+      if (Number.isInteger(num) && 0 < num && num <= Table.Player.getPlayerCount() && id[num-1] != currentPlayerId) {
         targetPlayerId = id[num - 1];
         break;
       }
