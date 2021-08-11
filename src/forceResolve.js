@@ -128,9 +128,38 @@ function contributionTransferBetweenProject(donorProject, recipientProject) {
 Force card: Personnel change(人事異動)
             trade all resource cards with another player
 */
-/** @type {(playerId: string) => void} */
-function tradeResourceCards(playerId) {
-  //TODO: trade all cards with respective player according to playerId
+/** @type {(currentPlayerId: string, targetPlayerId) => void} */
+function tradeResourceCards(currentPlayerId) {
+  //get target player ID by prompt
+  var targetPlayerId;
+  while(1) {
+    const ui = SpreadsheetApp.getUi();
+    var result = ui.prompt('人事異動','請輸入要交換手牌的玩家編號(1~6)',SpreadsheetApp.getUi().ButtonSet.OK);
+    var button = result.getSelectedButton();
+    var text = result.getResponseText();
+    if (button === ui.Button.OK) {
+      const num = Number.parseInt(text, 10);
+      if (Number.isInteger(num) && 0 < num && num <= Table.Player.getPlayerCount()) {
+        const id = ['A','B','C','D','E','F'];
+        targetPlayerId = id[num - 1];
+        break;
+      }
+      ui.alert('請輸入正確的玩家編號！');
+    }
+  }
+  //get current player and target player hands
+  const currentPlayerRange = playerHand.getRange(`${currentPlayerId}7:${currentPlayerId}14`);
+  const targetPlayerRange = playerHand.getRange(`${targetPlayerId}7:${targetPlayerId}14`);
+  const currentResource = currentPlayerRange.getDisplayValues();
+  const targetResource = targetPlayerRange.getDisplayValues();
+  //clear range
+  currentPlayerRange.clearContent();
+  targetPlayerRange.clearContent();
+  //set values to spreadsheet
+  currentPlayerRange.setValues(targetResource);
+  targetPlayerRange.setValues(currentResource);
+  const targetPlayerName = Table.Player.getNickname(targetPlayerId);
+  SpreadsheetApp.getActive().toast(`已成功和${targetPlayerName}交換手牌`,'人事異動');
 }
 
 /*
@@ -138,6 +167,23 @@ Force card: Pincer movement(鉗形攻勢)
             inspect the next two event cards and put them back in any order
 */
 function peekNextTwoEventCardAndChange() {
-  //TODO: peek next two event card
-  //TODO: ask player whether they want to change the event order
+  const eventDeck = SpreadsheetApp.getActive().getSheetByName('EventDeck');
+  //get next two event card values
+  const nextTwoEvent = eventDeck.getRange('A1:A2').getDisplayValues().map(x => x[0]);
+  const ui = SpreadsheetApp.getUi();
+  if (nextTwoEvent[0] = ''){
+    ui.alert('鉗形攻勢','目前場上是最後一張事件卡了',ui.ButtonSet.OK);
+  } else if (nextTwoEvent[1] = ''){
+    ui.alert('鉗形攻勢',`下一張事件卡是：\n${nextTwoEvent[0]}\n沒有其他事件卡了`,ui.ButtonSet.OK);
+  } else {
+    //ask player whether they want to change the event order
+    const result = ui.alert('鉗形攻勢',
+    `接下來兩張事件卡是：\n${nextTwoEvent[0]}\n${nextTwoEvent[1]}\n要交換事件順序嗎？`
+    ,ui.ButtonSet.YES_NO);
+    if (result === ui.Button.YES) {
+      eventDeck.getRange('A1').setValue(nextTwoEvent[1]);
+      eventDeck.getRange('A2').setValue(nextTwoEvent[0]);
+      SpreadsheetApp.getActive().toast(`已成功交換事件順序`,'鉗形攻勢');
+    }
+  }
 }
