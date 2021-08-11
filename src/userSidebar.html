@@ -13,10 +13,7 @@
   <script>
     // The code in this function runs when the page is loaded.
     $(document).ready(function () {
-      google.script.run
-        .withSuccessHandler(showCards)
-        .withFailureHandler(showError)
-        .getPlayerCards();
+      intervalCall(fetchCards, 60 * 1000);
 
       $('#menu__recruit').click(menuRecruit);
       $('#menu__create-project').click(menuCreateProject);
@@ -24,6 +21,29 @@
       $('#menu__play-force-card').click(menuPlayForceCard);
       $('#menu__discard-and-end-turn').click(menuDiscardAndEndTurn);
     });
+
+    function fetchCards() {
+      google.script.run
+        .withSuccessHandler(showCards)
+        .withFailureHandler(showError)
+        .getPlayerCards();
+    }
+
+    let skip = false;
+    function intervalCall(func, timeout, ...params) {
+      if (!skip) {
+        func(...params);
+      }
+      setTimeout(() => {
+        intervalCall(func, timeout, ...params);
+      }, timeout);
+    }
+    function skipIntervalCall() {
+      skip = true;
+    }
+    function resumeIntervalCall() {
+      skip = false;
+    }
 
     function showProjectCards(projects) {
       const list = $('#project-cards');
@@ -221,6 +241,7 @@
     }
 
     function actionCreator(element, successHandler, failureHandler) {
+      skipIntervalCall();
       removeError();
       showMessage('處理中...', element);
       // disable the button
@@ -233,6 +254,7 @@
               successHandler(result, el);
             }
             el.disabled = false;
+            resumeIntervalCall();
           })
         .withFailureHandler(
           function (error, el) {
@@ -242,6 +264,7 @@
               failureHandler(error, el);
             }
             el.disabled = false;
+            resumeIntervalCall();
           })
         .withUserObject(element);
     }
