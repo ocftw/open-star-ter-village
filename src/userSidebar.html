@@ -94,7 +94,7 @@
       list.empty();
       for (var i = 0; i < resourceCards.length; i++) {
         const id = `res-${i}`;
-        const dom = `<div>
+        const dom = `<div class="box">
             <input type="radio" class="hide" id="${id}" name="resource-cards" value="${resourceCards[i]}" />
             <label for="${id}">${resourceCards[i]}</label>
           </div>`;
@@ -219,7 +219,7 @@
 
     function menuRecruit() {
       gotoSubMenu(this);
-      const dom = $('<button id="list-project-card-by-job" class="green">play job card</button>');
+      const dom = $('<button id="list-project-card-by-job" class="green">下一步</button>');
       dom.click(listProjectCardByJob);
       setActionBar(dom);
 
@@ -229,7 +229,7 @@
 
     function menuCreateProject() {
       gotoSubMenu(this);
-      const dom = $('<button id="create-project" class="blue">create project</button>');
+      const dom = $('<button id="create-project" class="blue">打出專案卡</button>');
       dom.click(createProject);
       setActionBar(dom);
 
@@ -248,7 +248,7 @@
 
     function menuPlayForceCard() {
       gotoSubMenu(this);
-      const dom = $('<button id="play-force-card" class="blue">play force card</button>');
+      const dom = $('<button id="play-force-card" class="blue">確認打出源力卡</button>');
       dom.click(playForceCard);
       setActionBar(dom);
 
@@ -258,7 +258,7 @@
 
     function menuDiscardAndEndTurn() {
       gotoSubMenu(this);
-      const dom = $('<button id="discard-and-end-turn" class="red">discard and end turn</button>');
+      const dom = $('<button id="discard-and-end-turn" class="red">結束我的回合並棄掉選擇的卡片</button>');
       dom.click(discardAndEndTurn);
       setActionBar(dom);
 
@@ -322,10 +322,10 @@
           </div>
         </div>`;
 
-        const processBtn = $('<button class="blue" id="recruit">process</button>');
+        const processBtn = $('<button class="blue" id="recruit">確認招募人力</button>');
         processBtn.click(recruit);
 
-        const backBtn = $('<button>back</button>');
+        const backBtn = $('<button>重選人力卡</button>');
         backBtn.click(function () {
           $('#recruit-projects').remove();
           const dom = $('<button id="list-project-card-by-job" class="green">play job card</button>');
@@ -379,9 +379,7 @@
 
 <body>
   <div class="sidebar">
-    <h1>
-      <?= player ?>的手牌
-    </h1>
+    <h1>請選擇要執行的行動</h1>
     <div class="block" id="menu">
       <div>
         <button id="menu__recruit">招募人力<span>(1)</span></button>
@@ -390,9 +388,10 @@
       </div>
       <div>
         <button id="menu__play-force-card">源力加持<span>(1)</span></button>
-        <button id="menu__discard-and-end-turn">棄牌後結束回合</button>
+        <button id="menu__discard-and-end-turn">結束行動階段</button>
       </div>
     </div>
+    <h1>我的手牌</h1>
     <div class="block" id="first-level-menu">
       <h2>專案卡</h2>
       <div id="project-cards" class="form-group">Loading...</div>
