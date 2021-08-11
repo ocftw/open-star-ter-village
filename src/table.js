@@ -55,7 +55,7 @@
  *  decrease player action points would refill in each turn
  * @property {(playerId: string) => void} refillActionPoints refill player action points with each-turn action points
  * @property {(points: number, playerId: string) => void} increaseActionPoints increase player action points in this turn
- * @property {(playerId: string) => number} getClosedProject get closed project number of player
+ * @property {() => any[][]} listPlayerClosedProjects
  * @property {(playerId: string) => number} getTurnCreateProjectCount
  * @property {(playerId: string) => number} getTurnPlayProjectCardCount
  * @property {(playerId: string) => number} getTurnRecruitCount
@@ -812,8 +812,16 @@ const Table = (() => {
       PlayerModel.setActionPoint(increased, playerId);
       PlayerView.setActionPoint(increased, playerId);
     },
-    getClosedProject: (playerId) => {
-      return PlayerModel.getClosedProject(playerId);
+    listPlayerClosedProjects: () => {
+      var list = [['A',0],
+                  ['B',0],
+                  ['C',0], 
+                  ['D',0], 
+                  ['E',0], 
+                  ['F',0]]
+                  .splice(0, Table.Player.getPlayerCount());
+      list.forEach((id,index) => list[index][1] = PlayerModel.getClosedProject(id[0].toString()));
+      return list;
     },
     getTurnCreateProjectCount: (playerId) => {
       return PlayerModel.getTurnCreateProjectCount(playerId);
