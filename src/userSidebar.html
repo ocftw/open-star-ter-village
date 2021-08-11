@@ -8,6 +8,31 @@
     .hide {
       visibility: hidden;
     }
+    .box {
+      border: 1px solid;
+    }
+    .box + .box {
+      margin-top: 4px;
+    }
+    .details {
+      display: flex;
+      margin-left: 24px;
+    }
+    .req-title {
+      -webkit-writing-mode: vertical-lr;
+      writing-mode: vertical-lr;
+
+      text-align: justify;
+      -moz-text-align-last: center;
+      text-align-last: center;
+
+      border-right: 1px double #c0c0c0;
+    }
+    .req-content {
+      margin-left: 12px;
+      display: flex;
+      flex-direction: column;
+    }
   </style>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
   <script>
@@ -51,14 +76,15 @@
       for (var i = 0; i < projects.length; i++) {
         const id = `prj-${i}`;
         const groups = projects[i].groups.map(group => {
-          return `<li>${group.title} - ${group.slots} 位 - 共 ${group.goalContributionPoints} 點</li>`;
+          return `<div class="req-item">${group.title} - ${group.slots} 位 - 共 ${group.goalContributionPoints} 點</div>`;
         });
-        const dom = `<div>
+        const dom = `<div class="box">
             <input type="radio" class="hide" id="${id}" name="project-cards" value="${projects[i].name}" />
             <label for="${id}">[${projects[i].type}] ${projects[i].name}</label>
-            <ul>
-              ${groups.reduce((d, e) => d + e, '')}
-            </ul>
+            <div class="details small">
+              <div class="req-title">需求</div>
+              <div class="req-content">${groups.reduce((d, e) => d + e, '')}</div>
+            </div>
           </div>`;
         list.append(dom);
       }
