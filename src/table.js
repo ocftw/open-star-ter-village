@@ -43,6 +43,7 @@
  * @property {(nickname, playerId: string) => void} setNickname set player nick name
  * @property {(cost: number, playerId: string) => boolean} isActionable return whether player has action points more than cost
  * @property {(cost: number, playerId: string) => number} reduceActionPoint reduce action points on player
+ * @property {(playerId: string) => void} endActionPhase reduce player action point to zero to end the action phase
  * @property {(playerId: string) => boolean} isRecruitable return true when player has worker token to recruit
  * @property {(cost: number, playerId: string) => number} reduceWorkerTokens remove worker tokens from player
  * @property {(tokens: number, playerId: string) => number} increaseWorkerTokens return worker tokens to player
@@ -770,6 +771,10 @@ const Table = (() => {
       PlayerModel.setActionPoint(remain, playerId);
       PlayerView.setActionPoint(remain, playerId);
       return remain;
+    },
+    endActionPhase: (playerId) => {
+      PlayerModel.setActionPoint(0, playerId);
+      PlayerView.setActionPoint(0, playerId);
     },
     isRecruitable: (playerId) => {
       return PlayerModel.getWorkerToken(playerId) > 0;

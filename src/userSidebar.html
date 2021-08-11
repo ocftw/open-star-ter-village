@@ -124,6 +124,14 @@
       $('#hint').empty();
     }
 
+    function setNote(noteText) {
+      $('#note').empty();
+      $('#note').text(noteText);
+    }
+    function clearNote() {
+      $('#note').empty();
+    }
+
     function showMessage(msg, element) {
       const span = $(`<span id="message" class="gray">${msg}</span>`);
       $(element).after(span);
@@ -211,6 +219,8 @@
       });
       clearExtenedSubMenu();
       clearActionBar();
+      clearHint();
+      clearNote();
     };
 
     const gotoSubMenu = (element) => {
@@ -220,7 +230,6 @@
 
     const gotoMainMenu = () => {
       resetMenu();
-      clearHint();
 
       renderProjectCardStatic();
       renderResourceCardStatic();
@@ -267,12 +276,15 @@
 
     function menuEndActionPhase() {
       gotoSubMenu(this);
-      const dom = $('<button id="end-action-phase" class="red">確認結束行動階段</button>');
-      dom.click(endActionPhase);
-      setActionBar(dom);
+      setHint('行動階段後會結案與生長開源樹。');
 
       renderProjectCardStatic();
       renderResourceCardStatic();
+
+      const dom = $('<button id="end-action-phase" class="red">確認結束行動階段</button>');
+      dom.click(endActionPhase);
+      setActionBar(dom);
+      setNote('注意：結束行動階段後，剩餘行動點數將會歸零！');
     }
 
     function actionCreator(element, successHandler, failureHandler) {
@@ -374,13 +386,15 @@
 
     function endActionPhase() {
       const action = actionCreator(this, function () {
-        const dom = $('<button id="end-action-phase" class="red">結束回合</button>');
-        dom.click(discardAndEndTurn);
-        setActionBar(dom);
         setHint('現在是棄牌補牌階段，請選擇要丟棄的手牌（也可以不選），並按下結束回合。');
 
         renderProjectCardCheckbox();
         renderResourceCardCheckbox();
+
+        const dom = $('<button id="end-action-phase" class="blue">結束回合</button>');
+        dom.click(discardAndEndTurn);
+        setActionBar(dom);
+        clearNote();
       });
       action.endActionPhase();
     }
@@ -423,6 +437,7 @@
     </div>
     <div class="block" id="second-level-menu"></div>
     <div class="block" id="action-bar"></div>
+    <div class="current" id="note"></div>
   </div>
 </body>
 

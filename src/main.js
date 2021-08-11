@@ -654,6 +654,8 @@ function endActionPhase() {
     throw new Error('這不是你的回合！');
   }
   try {
+    // reduce all action points to prevent player do the other action
+    Table.Player.endActionPhase(CurrentPlayer.getId());
     // close projects, return tokens to players, earn scores, and grow the open source tree
     settlePhase();
   } catch (err) {
