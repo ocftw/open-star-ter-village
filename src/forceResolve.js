@@ -171,9 +171,9 @@ function peekNextTwoEventCardAndChange() {
   //get next two event card values
   const nextTwoEvent = eventDeck.getRange('A1:A2').getDisplayValues().map(x => x[0]);
   const ui = SpreadsheetApp.getUi();
-  if (nextTwoEvent[0] = ''){
+  if (nextTwoEvent[0] == ''){
     ui.alert('鉗形攻勢','目前場上是最後一張事件卡了',ui.ButtonSet.OK);
-  } else if (nextTwoEvent[1] = ''){
+  } else if (nextTwoEvent[1] == ''){
     ui.alert('鉗形攻勢',`下一張事件卡是：\n${nextTwoEvent[0]}\n沒有其他事件卡了`,ui.ButtonSet.OK);
   } else {
     //ask player whether they want to change the event order
