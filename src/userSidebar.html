@@ -89,14 +89,18 @@
         list.append(dom);
       }
     }
-    function showResourceCards(resourceCards) {
+    function showResourceCards(resources) {
+      resources.sort((a, b) => a.type.localeCompare(b.type));
       const list = $('#resource-cards');
       list.empty();
-      for (var i = 0; i < resourceCards.length; i++) {
+      for (var i = 0; i < resources.length; i++) {
         const id = `res-${i}`;
         const dom = `<div class="box">
-            <input type="radio" class="hide" id="${id}" name="resource-cards" value="${resourceCards[i]}" />
-            <label for="${id}">${resourceCards[i]}</label>
+            <input type="radio" class="hide" id="${id}" name="resource-cards" value="${resources[i].name}" />
+            <label for="${id}">[${resources[i].type}] ${resources[i].name}</label>
+            <div class="details small">
+              ${resources[i].description}
+            </div>
           </div>`;
         list.append(dom);
       }
@@ -104,7 +108,7 @@
 
     function showCards(hand) {
       showProjectCards(hand.projects);
-      showResourceCards(hand.resourceCards);
+      showResourceCards(hand.resources);
     }
 
     function setActionBar(elements) {
