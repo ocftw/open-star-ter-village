@@ -287,10 +287,22 @@ Event card: Youth subsidy(青年補助)
             and gain 1 additional action point in this round
 */
 function leastClosedProjectBonus(){
-  var playerList = ['A', 'B', 'C', 'D', 'E', 'F'];
-  //TODO: find the player with least closed projects
-  //TODO: the player draw 2 resource cards
-  //TODO: the player gain 1 action point for their next turn
+  const closedProjectList = Table.Player.listPlayerClosedProjects();
+  //find the number of least closed projects
+  let leastClosedProject = Infinity;
+  for (let i = 0; i < Table.Player.getPlayerCount(); i++) {
+    if (closedProjectList[i][1] < leastClosedProject) {
+      leastClosedProject = closedProjectList[i][1];
+    }
+  }
+  //list the player(s) with least closed projects
+  closedProjectList.filter((value, index) => value[index][1] == leastClosedProject);
+  closedProjectList.forEach((value, index) => {
+    //the player gain 1 action point for their next turn
+    Table.Player.increaseActionPoints(1, value[index][0]);
+    //the player draw 2 resource cards
+    PlayerHands.dealResourceCardsToPlayerById(ResourceDeck.draw(2), value[index][0]);
+  });
 }
 
 //shuffle array
