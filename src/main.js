@@ -645,6 +645,25 @@ function peekNextEventCard() {
 }
 
 /**
+ * User can end action phase
+ *
+ * @exports endActionPhase
+ */
+function endActionPhase() {
+  if (!Table.Player.isInTurn(CurrentPlayer.getId())) {
+    throw new Error('這不是你的回合！');
+  }
+  try {
+    // close projects, return tokens to players, earn scores, and grow the open source tree
+    settlePhase();
+  } catch (err) {
+    Logger.log(`endActionPhase failure. ${err}`);
+    // TODO: fallback
+    throw new Error('something went wrong. Please try again');
+  }
+}
+
+/**
  * User can discard cards and end the turn
  *
  * @exports discardCardsAndEndTurn
@@ -658,9 +677,6 @@ function discardCardsAndEndTurn(projects, resources) {
   if (!projects || !resources) {
     throw new Error('Technical issue, please contact author.');
   }
-
-  // close projects, return tokens to players, earn scores, and grow the open source tree
-  settlePhase();
 
   try {
     Logger.log('discard project cards...');

@@ -44,7 +44,7 @@
       $('#menu__create-project').click(menuCreateProject);
       $('#menu__contribute-project').click(menuContributeProject);
       $('#menu__play-force-card').click(menuPlayForceCard);
-      $('#menu__discard-and-end-turn').click(menuDiscardAndEndTurn);
+      $('#menu__end-action-phase').click(menuEndActionPhase);
     });
 
     function fetchCards() {
@@ -115,6 +115,14 @@
     function clearActionBar() {
       $('#action-bar').empty();
     };
+
+    function setHint(hintText) {
+      $('#hint').empty();
+      $('#hint').text(hintText);
+    }
+    function clearHint() {
+      $('#hint').empty();
+    }
 
     function showMessage(msg, element) {
       const span = $(`<span id="message" class="gray">${msg}</span>`);
@@ -212,6 +220,7 @@
 
     const gotoMainMenu = () => {
       resetMenu();
+      clearHint();
 
       renderProjectCardStatic();
       renderResourceCardStatic();
@@ -256,14 +265,14 @@
       renderResourceCardRadio();
     }
 
-    function menuDiscardAndEndTurn() {
+    function menuEndActionPhase() {
       gotoSubMenu(this);
-      const dom = $('<button id="discard-and-end-turn" class="red">結束我的回合並棄掉選擇的卡片</button>');
-      dom.click(discardAndEndTurn);
+      const dom = $('<button id="end-action-phase" class="red">確認結束行動階段</button>');
+      dom.click(endActionPhase);
       setActionBar(dom);
 
-      renderProjectCardCheckbox();
-      renderResourceCardCheckbox();
+      renderProjectCardStatic();
+      renderResourceCardStatic();
     }
 
     function actionCreator(element, successHandler, failureHandler) {
@@ -363,6 +372,19 @@
       action.playForceCard(selectedResourceCard);
     }
 
+    function endActionPhase() {
+      const action = actionCreator(this, function () {
+        const dom = $('<button id="end-action-phase" class="red">結束回合</button>');
+        dom.click(discardAndEndTurn);
+        setActionBar(dom);
+        setHint('現在是棄牌補牌階段，請選擇要丟棄的手牌（也可以不選），並按下結束回合。');
+
+        renderProjectCardCheckbox();
+        renderResourceCardCheckbox();
+      });
+      action.endActionPhase();
+    }
+
     function discardAndEndTurn() {
       const action = actionCreator(this, function (hand) {
         showCards(hand);
@@ -388,9 +410,10 @@
       </div>
       <div>
         <button id="menu__play-force-card">源力加持<span>(1)</span></button>
-        <button id="menu__discard-and-end-turn">結束行動階段</button>
+        <button id="menu__end-action-phase">結束行動階段</button>
       </div>
     </div>
+    <div class="gray" id="hint"></div>
     <h1>我的手牌</h1>
     <div class="block" id="first-level-menu">
       <h2>專案卡</h2>
