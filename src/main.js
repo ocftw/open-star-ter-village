@@ -321,11 +321,11 @@ function showUserSidebar() {
   SpreadsheetApp.getUi().showSidebar(sidebar);
 }
 
-function showProjectDialog(playerNickname) {
+function showProjectDialog() {
   const dialog = HtmlService.createHtmlOutputFromFile('projectDialog');
   dialog.setHeight(360);
   dialog.setWidth(1280);
-  SpreadsheetApp.getUi().showModalDialog(dialog, `${playerNickname}正在貢獻專案`);
+  SpreadsheetApp.getUi().showModalDialog(dialog, `請分配 ${Rule.contribute.getContribution()} 點貢獻點數`);
 }
 
 /**
@@ -504,7 +504,7 @@ function openContributeDialog() {
   // TODO: check available contribution slots
   try {
     Logger.log('show project dialog...');
-    showProjectDialog(Table.Player.getNickname(CurrentPlayer.getId()));
+    showProjectDialog();
   } catch (err) {
     Logger.log(`openContributeDialog failure. ${err}`);
     throw new Error('something went wrong. Please try again');
