@@ -1,50 +1,5 @@
 //@ts-check
 
-const functionMap = {
-  // 專案補助：放置在專案牌下，該專案結算時，專案發起者積分額外 +5
-  0: projectOwnerScoreBonus,
-  // 雲端硬碟：放置在專案牌下，該專案不會被扣除貢獻值
-  1: projectContributionProtection,
-  // 開放定義：立刻打出兩張開放原始碼專案（仍需打出人力卡）
-  2: playTwoSameTypeProject,
-  // 開源授權：立刻打出兩張開放資料專案（仍需打出人力卡）
-  3: playTwoSameTypeProject,
-  // 開放元年：立刻打出兩張開放政府專案（仍需打出人力卡）
-  4: playTwoSameTypeProject,
-  // 開源教教我：立刻打出兩張符合場上人力需求的人力卡
-  5: playTwoJobCards,
-  // 累積深蹲之力：打出後放置在自己面前，下回合行動點+1，下回合結束後再將此卡放進棄牌堆
-  6: gainOneAPNextRound,
-  // 開坑救救我：立即增加等同於場上自己發起專案數量的貢獻值，可自行分配
-  7: gainContributionByOwnedProject,
-  // 入坑揪揪我：立即增加等同於場上有自己人力指示物的專案數量的貢獻值，可自行分配
-  8: gainContributionByJoinedProject,
-  // 零的轉移：選擇任一專案兩欄貢獻值，將其下降到 1 點，選擇另一個專案增加下降的總貢獻值
-  9: contributionTransferBetweenProject,
-  // 人事異動：和另一位玩家交換所有資源卡（人力和源力卡）
-  10: tradeResourceCards,
-  // 鉗形攻勢：偷看事件牌庫頂兩張卡片，並以任意順序放回牌庫頂
-  11: peekNextTwoEventCardAndChange,
-};
-
-/**
- *
- * @param {Card} forceCard
- * @returns {Function}
- */
-function getForceCardFunction(forceCard) {
-  const spec = SpreadsheetApp.getActive().getSheetByName('ForceCardSpec');
-  const cards = spec.getRange(1, 1, 12, 1).getValues().map(row => row[0]);
-  const index = cards.findIndex(card => card === forceCard);
-
-  const fn = functionMap[index];
-  if (fn === undefined) {
-    Logger.log(`Force card ${forceCard} fucntion not found`);
-    throw new Error(`Force card ${forceCard} fucntion not found`);
-  }
-  return fn;
-}
-
 /*
 Force card: Project subsidy(專案補助)
             put this card under a project card, that project gain +5 owner score
@@ -186,4 +141,49 @@ function peekNextTwoEventCardAndChange() {
       SpreadsheetApp.getActive().toast(`已成功交換事件順序`,'鉗形攻勢');
     }
   }
+}
+
+const functionMap = {
+  // 專案補助：放置在專案牌下，該專案結算時，專案發起者積分額外 +5
+  0: projectOwnerScoreBonus,
+  // 雲端硬碟：放置在專案牌下，該專案不會被扣除貢獻值
+  1: projectContributionProtection,
+  // 開放定義：立刻打出兩張開放原始碼專案（仍需打出人力卡）
+  2: playTwoSameTypeProject,
+  // 開源授權：立刻打出兩張開放資料專案（仍需打出人力卡）
+  3: playTwoSameTypeProject,
+  // 開放元年：立刻打出兩張開放政府專案（仍需打出人力卡）
+  4: playTwoSameTypeProject,
+  // 開源教教我：立刻打出兩張符合場上人力需求的人力卡
+  5: playTwoJobCards,
+  // 累積深蹲之力：打出後放置在自己面前，下回合行動點+1，下回合結束後再將此卡放進棄牌堆
+  6: gainOneAPNextRound,
+  // 開坑救救我：立即增加等同於場上自己發起專案數量的貢獻值，可自行分配
+  7: gainContributionByOwnedProject,
+  // 入坑揪揪我：立即增加等同於場上有自己人力指示物的專案數量的貢獻值，可自行分配
+  8: gainContributionByJoinedProject,
+  // 零的轉移：選擇任一專案兩欄貢獻值，將其下降到 1 點，選擇另一個專案增加下降的總貢獻值
+  9: contributionTransferBetweenProject,
+  // 人事異動：和另一位玩家交換所有資源卡（人力和源力卡）
+  10: tradeResourceCards,
+  // 鉗形攻勢：偷看事件牌庫頂兩張卡片，並以任意順序放回牌庫頂
+  11: peekNextTwoEventCardAndChange,
+};
+
+/**
+ *
+ * @param {Card} forceCard
+ * @returns {Function}
+ */
+function getForceCardFunction(forceCard) {
+  const spec = SpreadsheetApp.getActive().getSheetByName('ForceCardSpec');
+  const cards = spec.getRange(1, 1, 12, 1).getValues().map(row => row[0]);
+  const index = cards.findIndex(card => card === forceCard);
+
+  const fn = functionMap[index];
+  if (fn === undefined) {
+    Logger.log(`Force card ${forceCard} fucntion not found`);
+    throw new Error(`Force card ${forceCard} fucntion not found`);
+  }
+  return fn;
 }
