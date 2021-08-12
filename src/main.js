@@ -344,7 +344,7 @@ function showUserSidebar() {
 
 function showProjectDialog() {
   const dialog = HtmlService.createHtmlOutputFromFile('projectDialog');
-  dialog.setHeight(360);
+  dialog.setHeight(400);
   dialog.setWidth(1280);
   SpreadsheetApp.getUi().showModalDialog(dialog, `請分配 ${Rule.contribute.getContribution()} 點貢獻點數`);
 }
