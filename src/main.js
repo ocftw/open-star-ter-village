@@ -15,18 +15,18 @@ function onOpen() {
 
 function showPlayerNumberPrompt() {
   const ui = SpreadsheetApp.getUi();
-  const result = ui.prompt('🌟開源星手村🌟', '請輸入玩家數量', ui.ButtonSet.OK_CANCEL);
+  const result = ui.prompt('🌟開源星手村🌟', '請輸入玩家數量，建議玩家為4到6人', ui.ButtonSet.OK_CANCEL);
   const button = result.getSelectedButton();
   const text = result.getResponseText();
   if (button === ui.Button.OK) {
     const num = Number.parseInt(text, 10);
-    if (Number.isInteger(num) && 3 < num && num <= 6) {
+    if (Number.isInteger(num) && 0 < num && num <= 6) {
       PropertiesService.getScriptProperties().setProperty('PLAYER_NUM', JSON.stringify(num));
       SpreadsheetApp.getActive().toast(`已經設定玩家人數為${num}人，準備完成時可以從選單按下遊戲開始！`);
       return;
     }
   }
-  SpreadsheetApp.getActive().toast('設定失敗，請再試一次。');
+  SpreadsheetApp.getActive().toast(`無法設定玩家人數${text}，請再試一次。`);
 }
 
 /**
