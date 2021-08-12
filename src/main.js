@@ -381,9 +381,12 @@ function getPlayerCards() {
  * User can play one project card with one resource card on the table.
  *
  * @exports playProjectCard
- * @type {(project: Card, resource: Card) => Hand} Return the player project cards after played
+ * @param {Card} project
+ * @param {Card} resource
+ * @param {Card?} slashieJob
+ * @returns {Hand} Return the player project cards after played
  */
-function playProjectCard(project, resource) {
+function playProjectCard(project, resource, slashieJob) {
   if (!Table.Player.isInTurn(CurrentPlayer.getId())) {
     throw new Error('這不是你的回合！');
   }
@@ -404,13 +407,14 @@ function playProjectCard(project, resource) {
     throw new Error('專案卡欄滿了！');
   }
   // Skip job card validation if player fits Slashie event condition
-  if (Rule.playJobCard.getFirstJobRestriction() ||
-    Table.Player.getTurnPlayJobCardCount(playerId) > 0){
-    // Player does not have valid resource card should throw error
-    const slotId = ProjectCardRef.findEligibleSlotId(resource, project);
-    if (slotId < 0) {
-      throw new Error('沒有適合該人力卡的人力需求！');
-    }
+  let jobName = resource;
+  if (slashieJob && !Rule.playJobCard.getFirstJobRestriction() && Table.Player.getTurnPlayJobCardCount(playerId) === 0) {
+    jobName = slashieJob;
+  }
+  // Player does not have valid job name card should throw error
+  const slotId = ProjectCardRef.findEligibleSlotId(jobName, project);
+  if (slotId < 0) {
+    throw new Error('沒有適合該人力卡的人力需求！');
   }
   try {
     Logger.log('remove project card and resource card from player hand...');
