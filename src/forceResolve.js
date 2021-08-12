@@ -35,9 +35,14 @@ function playTwoSameTypeProject(project) {
 Force card: Teach me opensource senpai(開源教教我)
             play two job cards immediately(need to match job requirement of project on board)
 */
-/** @type {(job1: string, job2?: string) => void} */
-function playTwoJobCards(job1, job2) {
-  //TODO: finish the card effect
+function playTwoJobCards(card, playerId) {
+  const count = 2;
+  PropertiesService.getScriptProperties().setProperty('PLAY_JON_CARD_TOKEN', `${playerId}__${count}`);
+  // TODO: improve user experience
+  SpreadsheetApp.getActive().toast(`請到「招募人力」選單打出人力卡，還剩下${count}次。`);
+  return {
+    next: 'recruit',
+  }
 }
 
 /*

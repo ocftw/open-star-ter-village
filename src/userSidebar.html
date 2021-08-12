@@ -375,9 +375,11 @@
     }
 
     function createProject() {
-      const action = actionCreator(this, function (hand) {
-        showCards(hand);
-        gotoMainMenu();
+      const action = actionCreator(this, function (response) {
+        if (response.next === 'done') {
+          showCards(response.hand);
+          gotoMainMenu();
+        }
       });
       const selectedProjectCard = $('input[name="project-cards"]:checked').val();
       const selectedResourceCard = $('input[name="resource-cards"]:checked').val();
@@ -419,9 +421,11 @@
     }
 
     function recruit() {
-      const action = actionCreator(this, function (hand) {
-        showCards(hand);
-        gotoMainMenu();
+      const action = actionCreator(this, function (response) {
+        if (response.next === 'done') {
+          showCards(response.hand);
+          gotoMainMenu();
+        }
       });
       const selectedProjectName = $('input[name="table-projects"]:checked').val();
       const selectedProjectSlot = $('input[name="table-projects"]:checked').data('slot-id');
@@ -434,9 +438,11 @@
     }
 
     function playForceCard() {
-      const action = actionCreator(this, function (hand) {
-        showCards(hand);
-        gotoMainMenu();
+      const action = actionCreator(this, function (response) {
+        if (response.next === 'done') {
+          showCards(response.hand);
+          gotoMainMenu();
+        }
       });
       const selectedResourceCard = $('input[name="resource-cards"]:checked').val();
       action.playForceCard(selectedResourceCard);
@@ -458,9 +464,11 @@
     }
 
     function discardAndEndTurn() {
-      const action = actionCreator(this, function (hand) {
-        showCards(hand);
-        gotoMainMenu();
+      const action = actionCreator(this, function (response) {
+        if (response.next === 'done') {
+          showCards(response.hand);
+          gotoMainMenu();
+        }
       });
       const selectedProjectCards = $('input[name="project-cards"]:checked')
         .map((_, element) => element.value).get();

@@ -351,6 +351,10 @@ function showProjectDialog(contributionPoints) {
 }
 
 /**
+ * @typedef {Object} ReturnStatus status sidebar should follow
+ * @property {Hand} hand player hand cards
+ * @property {string} next next pre-defined function sidebar should trigger
+ *
  * @typedef {Object} Hand player hand cards
  * @property {ProjectCardSpecObject[]} projects project card with specs
  * @property {Card[]} resourceCards resource cards
@@ -384,7 +388,7 @@ function getPlayerCards() {
  * @param {Card} project
  * @param {Card} resource
  * @param {Card?} slashieJob
- * @returns {Hand} Return the player project cards after played
+ * @returns {ReturnStatus} Return the next step and player status
  */
 function playProjectCard(project, resource, slashieJob) {
   if (!Table.Player.isInTurn(CurrentPlayer.getId())) {
@@ -428,10 +432,15 @@ function playProjectCard(project, resource, slashieJob) {
     Logger.log('reduce worker token and action points');
     Table.Player.reduceActionPoint(Rule.playProjectCard.getActionPoint(), playerId);
     Table.Player.reduceWorkerTokens(1, playerId);
-    return {
+
+    const hand = {
       projects,
       resourceCards,
       resources,
+    };
+    return {
+      next: 'done',
+      hand,
     };
   } catch (err) {
     Logger.log(`playProjectCard failure. ${err}`);
@@ -482,7 +491,7 @@ function listAvailableProjectByJob(jobCard) {
  * @exports recruit
  * @param {Card} project
  * @param {number} slotId
- * @returns {Hand}
+ * @returns {ReturnStatus}
  */
 function recruit(project, slotId) {
   if (!Table.Player.isInTurn(CurrentPlayer.getId())) {
@@ -505,11 +514,16 @@ function recruit(project, slotId) {
     Table.Player.reduceActionPoint(1, playerId);
     Table.Player.reduceWorkerTokens(1, playerId);
 
-    return {
+    const hand = {
       projects,
       resourceCards,
       resources,
-    }
+    };
+
+    return {
+      next: 'done',
+      hand,
+    };
   } catch (err) {
     Logger.log(`recruit failure. ${err}`);
     // TODO: fallback
@@ -655,7 +669,7 @@ function contribute(contributionList) {
  * @exports playForceCard
  * @param {Card} forceCard
  * @param {Card?} projectCard
- * @returns {Hand}
+ * @returns {ReturnStatus}
  */
 function playForceCard(forceCard, projectCard = null) {
   if (!Table.Player.isInTurn(CurrentPlayer.getId())) {
@@ -681,20 +695,31 @@ function playForceCard(forceCard, projectCard = null) {
     Logger.log('resolve force card...');
     // TODO: resolve force card with parameters
     const forceCardFn = getForceCardFunction(forceCard);
+    let response;
     if (typeof forceCardFn === 'object') {
-      forceCardFn.active(forceCard, playerId);
+      response = forceCardFn.active(forceCard, playerId);
     } else if (typeof forceCardFn === 'function') {
-      forceCardFn(forceCard, playerId);
+      response = forceCardFn(forceCard, playerId);
       Logger.log('discard the force card');
       ResourceDeck.discard([forceCard]);
     }
     Logger.log('reduce action points...');
     Table.Player.reduceActionPoint(1, CurrentPlayer.getId());
-    return {
+
+    let next = 'done';
+    if (response && response.next) {
+      next = response.next;
+    }
+    const hand = {
       projects,
       resourceCards,
       resources,
-    }
+    };
+
+    return {
+      next,
+      hand,
+    };
   } catch (err) {
     Logger.log(`playForceCard failure. ${err}`);
     // TODO: fallback
@@ -753,7 +778,7 @@ function endActionPhase() {
  * User can discard cards and end the turn
  *
  * @exports discardCardsAndEndTurn
- * @type {(projects: Card[], resources: Card[]) => Hand}
+ * @type {(projects: Card[], resources: Card[]) => ReturnStatus}
  *  return the hand after discarded the cards
  */
 function discardCardsAndEndTurn(projects, resources) {
@@ -803,10 +828,14 @@ function discardCardsAndEndTurn(projects, resources) {
 
     turnDidEnd();
 
-    return {
+    const hand = {
       projects: projectSpecs,
       resourceCards,
       resources: resourceSpecs,
+    };
+    return {
+      next: 'done',
+      hand,
     };
   } catch (err) {
     Logger.log(`discardCardsAndEndTurn failure. ${err}`);
