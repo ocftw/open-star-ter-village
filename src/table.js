@@ -64,6 +64,9 @@
  * @property {(playerId: string) => number} getTurnPlayForceCardCount
  * @property {(playerId: string) => number} getTurnContributeCount
  * @property {(initTokens: number, playerId: string) => void} setInitWorkerTokens
+ * @property {(card: Card, playerId: string) => Card[]} addCardInfront add card infront of player
+ * @property {(card: Card, playerId: string) => Card[]} removeCardInfront remove card infront of player
+ * @property {(playerId: string) => Card[]} listCardsInfront list cards infront of player
  * @property {(score: number, playerId: string) => number} earnScore
  * @property {(playerId: string) => void} resetTurnCounters
  * @property {() => void} reset
@@ -549,6 +552,8 @@ const Table = (() => {
    * @property {(count: number, playerId: string) => void} setTurnPlayForceCardCount
    * @property {(playerId: string) => number} getTurnContributeCount
    * @property {(count: number, playerId: string) => void} setTurnContributeCount
+   * @property {(playerId: string) => Card[]} getExtensions
+   * @property {(cards: Card[], playerId: string) => void} setExtensions
    * @property {(playerId: string) => void} resetCounter
    * @property {() => void} reset reset all player properties
    */
@@ -656,11 +661,22 @@ const Table = (() => {
     setTurnContributeCount: (count, playerId) => {
       playerProperty.getRange(`${playerId}11`).setValue(count);
     },
+    getExtensions: (playerId) => {
+      return playerProperty.getRange(`${playerId}12:${playerId}14`).getValues().map(row => row[0]).filter(x => x);
+    },
+    setExtensions: (exts, playerId) => {
+      if (exts.length === 0) {
+        playerProperty.getRange(`${playerId}12:${playerId}14`).clearContent();
+        return;
+      }
+      const values = exts.map(ext => [ext]);
+      playerProperty.getRange(`${playerId}12:${playerId}${12 + values.length - 1}`).setValues(values);
+    },
     resetCounter: (playerId) => {
       playerProperty.getRange(`${playerId}6:${playerId}11`).clearContent();
     },
     reset: () => {
-      playerProperty.getRange(1, 1, 11, 6).clearContent();
+      playerProperty.getRange(1, 1, 14, 6).clearContent();
       PlayerModel.setPlayerIdList([]);
       PlayerModel.setCurrentPlayerId('');
     }
@@ -857,6 +873,25 @@ const Table = (() => {
       PlayerModel.setScore(result, playerId);
       PlayerView.setScore(result, playerId);
       return result;
+    },
+    addCardInfront: (card, playerId) => {
+      const exts = PlayerModel.getExtensions(playerId);
+      const newExts = [...exts, card];
+      PlayerModel.setExtensions(newExts, playerId);
+      // TODO: add car on player view
+      return newExts;
+    },
+    removeCardInfront: (card, playerId) => {
+      const exts = PlayerModel.getExtensions(playerId);
+      // remove card
+      const cardIdx = exts.findIndex(ext => ext === card);
+      exts.splice(cardIdx, 1);
+      PlayerModel.setExtensions(exts, playerId);
+      // TODO: remove card from player view
+      return exts;
+    },
+    listCardsInfront: (playerId) => {
+      return PlayerModel.getExtensions(playerId);
     },
     resetTurnCounters: (playerId) => {
       PlayerModel.resetCounter(playerId);
