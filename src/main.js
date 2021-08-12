@@ -342,11 +342,12 @@ function showUserSidebar() {
   SpreadsheetApp.getUi().showSidebar(sidebar);
 }
 
-function showProjectDialog() {
+function showProjectDialog(contributionPoints) {
   const dialog = HtmlService.createHtmlOutputFromFile('projectDialog');
   dialog.setHeight(400);
   dialog.setWidth(1280);
-  SpreadsheetApp.getUi().showModalDialog(dialog, `請分配 ${Rule.contribute.getContribution()} 點貢獻點數`);
+  SpreadsheetApp.getUi().showModalDialog(dialog,
+    `請分配 ${contributionPoints ? contributionPoints : Rule.contribute.getContribution()} 點貢獻點數`);
 }
 
 /**
@@ -537,18 +538,45 @@ function openContributeDialog() {
 }
 
 /**
+ *
+ * @param {string} token contribute token should verify
+ * @param {string} playerId verify token eligible for player
+ * @returns {number} -1: not token not eligible, >= 0: available contribute points
+ */
+function verifyContributeToken(token, playerId) {
+  const [tokenPlayerId, countStr] = token.split('__');
+  if (tokenPlayerId === playerId) {
+    return Number(countStr);
+  }
+  return -1;
+}
+
+/**
  * list all projects on the table and max is the max contribution point player can add
  *
  * @exports listProjects
  * @returns {{ projects: Project[], maxContribution: number }}
  */
 function listProjects() {
-  if (!Table.Player.isInTurn(CurrentPlayer.getId())) {
+  const playerId = CurrentPlayer.getId();
+  if (!Table.Player.isInTurn(playerId)) {
     throw new Error('這不是你的回合！');
+  }
+
+  const token = PropertiesService.getScriptProperties().getProperty('CONTRIBUTE_TOKEN');
+  if (token) {
+    // verify token belongs to player
+    const count = verifyContributeToken(token, playerId);
+    if (count >= 0) {
+      return {
+        maxContribution: count,
+        projects: Table.ProjectCard.listProjects(),
+      }
+    }
   }
   return {
     maxContribution: Rule.contribute.getContribution(),
-    projects: Table.ProjectCard.listProjects(CurrentPlayer.getId()),
+    projects: Table.ProjectCard.listProjects(playerId),
   };
 }
 
@@ -568,18 +596,28 @@ function contribute(contributionList) {
   if (!Table.Player.isInTurn(CurrentPlayer.getId())) {
     throw new Error('這不是你的回合！');
   }
-  const sum = contributionList.reduce((s, contribution) => s + contribution.points, 0);
-  if (sum > Rule.contribute.getContribution()) {
-    throw new Error('超過分配點數上限！');
-  }
+  const token = PropertiesService.getScriptProperties().getProperty('CONTRIBUTE_TOKEN');
   const playerId = CurrentPlayer.getId();
-  if (!Table.Player.isActionable(1, playerId)) {
+  let tokenPass = false;
+  let limit = Rule.contribute.getContribution();
+
+  if (token) {
+    limit = verifyContributeToken(token, playerId);
+    tokenPass = (limit >= 0);
+  }
+
+  if (!tokenPass && !Table.Player.isActionable(1, playerId)) {
     throw new Error('行動點數不足！');
+  }
+
+  const sum = contributionList.reduce((s, contribution) => s + contribution.points, 0);
+  if (sum > limit) {
+    throw new Error('超過分配點數上限！');
   }
   const isBelongingToPlayer = contributionList
     .map(contribution => Table.ProjectCard.isPlayerEligibleToContributeSlot(playerId, contribution.project, contribution.slotId))
     .every(x => x);
-  if (!isBelongingToPlayer) {
+  if (!tokenPass && !isBelongingToPlayer) {
     throw new Error('無法分配給不屬於自己的專案/人力！');
   }
   const isAvailableToContribute = contributionList.map(contribution =>
@@ -595,7 +633,11 @@ function contribute(contributionList) {
       Table.ProjectCard.contributeSlot(contribution.points, contribution.project, contribution.slotId);
     });
     Logger.log('reduce action points...');
-    Table.Player.reduceActionPoint(1, playerId);
+    if (tokenPass) {
+      PropertiesService.getScriptProperties().deleteProperty('CONTRIBUTE_TOKEN');
+    } else {
+      Table.Player.reduceActionPoint(1, playerId);
+    }
   } catch (err) {
     Logger.log(`contribute failure. ${err}`);
     // TODO: fallback
@@ -638,7 +680,7 @@ function playForceCard(forceCard, projectCard = null) {
     if (typeof forceCardFn === 'object') {
       forceCardFn.active(forceCard, playerId);
     } else if (typeof forceCardFn === 'function') {
-      forceCardFn();
+      forceCardFn(forceCard, playerId);
       Logger.log('discard the force card');
       ResourceDeck.discard([forceCard]);
     }
@@ -805,6 +847,9 @@ function resetSpreadsheet() {
 
   // reset game rules
   Rule.reset();
+
+  // reset token
+  PropertiesService.getScriptProperties().deleteProperty('CONTRIBUTE_TOKEN');
 
   // set UI back to main board
   SpreadsheetApp.getActive().setActiveSheet(SpreadsheetApp.getActive().getSheetByName('專案圖板/記分板'));

@@ -62,9 +62,13 @@ Force card: Help my project senpai(開坑救救我)
             gain contribution according to number of project you owned on board
             (you can distribute freely)
 */
-function gainContributionByOwnedProject() {
+function gainContributionByOwnedProject(card, playerId) {
   //TODO: check how many project on table was owned by current player
+  const ownedProjects = Table.ProjectCard.listOwnedProjectsByOwnerId(playerId);
+  const count = ownedProjects.length;
   //TODO: switch to contribution dialog and finish contribute
+  PropertiesService.getScriptProperties().setProperty('CONTRIBUTE_TOKEN', `${playerId}__${count}`);
+  showProjectDialog(count);
 }
 
 /*

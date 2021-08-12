@@ -26,6 +26,8 @@
  * @property {(projectCard: Card, slotIdx: number, playerId: string, initialPoints: number,
  *  isOwner?: boolean) => void} placeResourceOnSlotById place an arbitrary resource card on the project slot by slot index
  *  with initial contribution points
+ * @property {(ownerId) => {name: Card, type: string, ownerId: string, extensions: string[]}[]} listOwnedProjectsByOwnerId
+ *  list all projects created by owner
  * @property {() => {name: Card, type: string, ownerId: string, extensions: string[]}[]} listClosedProjects
  *  return true when there is any project is closed
  * @property {(card: Card) => {points: number, tokens: number, playerId: string}[]} listProjectContributions
@@ -384,7 +386,15 @@ const Table = (() => {
         const owner = Table.Player.getNickname(ownerId);
         const slots = slotsWithoutPlayerNickname.map(({ playerId, ...slotSpec }) => {
           const player = playerId ? Table.Player.getNickname(playerId) : "";
-          const activeForCurrentPlayer = playerId ? playerId === pId || ownerId === pId : false;
+          let activeForCurrentPlayer = false;
+          if (playerId) {
+            if (pId) {
+              activeForCurrentPlayer = playerId === pId || ownerId === pId;
+            } else {
+              // available all slots
+              activeForCurrentPlayer = true;
+            }
+          }
           return { ...slotSpec, player, activeForCurrentPlayer };
         });
 
@@ -451,6 +461,10 @@ const Table = (() => {
       ProjectCardView.setPlayerOnTableSlotById(PlayerModel.getNickname(playerId), cardId, slotId, isOwner);
       // set initial contribution point
       ProjectCardView.setContributionPointOnTableSlotById(initialPoints, cardId, slotId);
+    },
+    listOwnedProjectsByOwnerId: (ownerId) => {
+      const projects = ProjectCardModel.listCards();
+      return projects.filter(project => project.ownerId === ownerId).map(({id, ...project}) => ({ ...project }));
     },
     listClosedProjects: () => {
       const projects = ProjectCardModel.listCards();
