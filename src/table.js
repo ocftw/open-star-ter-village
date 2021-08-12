@@ -27,6 +27,7 @@
  *  isOwner?: boolean) => void} placeResourceOnSlotById place an arbitrary resource card on the project slot by slot index
  *  with initial contribution points
  * @property {(ownerId) => {name: Card, type: string, ownerId: string, extensions: string[]}[]} listOwnedProjectsByOwnerId
+ * @property {(playerId) => {name: Card, type: string, ownerId: string, extensions: string[]}[]} listJoinedProjectsByPlayerId
  *  list all projects created by owner
  * @property {() => {name: Card, type: string, ownerId: string, extensions: string[]}[]} listClosedProjects
  *  return true when there is any project is closed
@@ -465,6 +466,15 @@ const Table = (() => {
     listOwnedProjectsByOwnerId: (ownerId) => {
       const projects = ProjectCardModel.listCards();
       return projects.filter(project => project.ownerId === ownerId).map(({id, ...project}) => ({ ...project }));
+    },
+    listJoinedProjectsByPlayerId: (playerId) => {
+      const projects = ProjectCardModel.listCards();
+      const joinedProjects = projects.filter(project => {
+        const slots = ProjectCardModel.listSlots(project.id);
+        const joined = slots.map(slot => slot.playerId).some(slotPlayerId => slotPlayerId === playerId);
+        return joined;
+      });
+      return joinedProjects.map(({ id, ...project }) => ({ ...project }));
     },
     listClosedProjects: () => {
       const projects = ProjectCardModel.listCards();

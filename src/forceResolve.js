@@ -76,9 +76,13 @@ Force card: Work with me senpai(入坑揪揪我)
             gain contribution according to number of project you joined on board
             (you can distribute freely)
 */
-function gainContributionByJoinedProject() {
-  //TODO: check how many project on table was joined by current player
-  //TODO: switch to contribution dialog and finish contribute
+function gainContributionByJoinedProject(card, playerId) {
+  // get how many project on table was joined by current player
+  const joinedProjects = Table.ProjectCard.listJoinedProjectsByPlayerId(playerId);
+  const count = joinedProjects.length;
+  // switch to contribution dialog and finish contribute
+  PropertiesService.getScriptProperties().setProperty('CONTRIBUTE_TOKEN', `${playerId}__${count}`);
+  showProjectDialog(count);
 }
 
 /*
