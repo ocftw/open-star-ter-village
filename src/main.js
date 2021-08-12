@@ -389,7 +389,7 @@ function playProjectCard(project, resource) {
   if (!Rule.playProjectCard.getIsAvailable()) {
     throw new Error('海底電纜還沒修好，不能發起專案！');
   }
-  if (!project || !resource) {
+  if (!project || !resource || resourceCardRef.isForceCard(resource)) {
     throw new Error('請選擇一張專案卡與一張人力卡！');
   }
   const playerId = CurrentPlayer.getId();
