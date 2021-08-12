@@ -45,9 +45,17 @@ Force card: Power squat(累積深蹲之力)
             put this card in front of you(current player), gain +1 action point on your next turn
             discard this card after your next turn ends
 */
-function gainOneAPNextRound() {
-  //TODO: finish the card effect
-}
+const gainOneAPNextRound = {
+  active: (card, playerId) => {
+    Table.Player.increaseActionPointsRefill(1, playerId);
+    Table.Player.addCardInfront(card, playerId);
+  },
+  deactive: (card, playerId) => {
+    Table.Player.decreaseActionPointsRefill(1, playerId);
+    Table.Player.removeCardInfront(card, playerId);
+    ResourceDeck.discard([card]);
+  },
+};
 
 /*
 Force card: Help my project senpai(開坑救救我)
@@ -173,7 +181,7 @@ const functionMap = {
 /**
  *
  * @param {Card} forceCard
- * @returns {Function}
+ * @returns {Function | { active: Function, deactive: Function }}
  */
 function getForceCardFunction(forceCard) {
   const spec = SpreadsheetApp.getActive().getSheetByName('ForceCardSpec');

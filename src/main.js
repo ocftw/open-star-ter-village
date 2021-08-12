@@ -85,23 +85,31 @@ function gameWillStart() {
   SpreadsheetApp.getActive().toast('遊戲準備完成！');
 
   // everything set, round start
-  roundWillStart();
+  roundWillStart(playerIds[0]);
 }
 
-function roundWillStart() {
+function roundWillStart(playerId) {
   Logger.log('round will start');
   Logger.log('draw a new event card...');
   // draw new event card
   drawEventCard();
   // everything set, turn start
-  turnWillStart();
+  turnWillStart(playerId);
 }
 
-function turnWillStart() {
+function turnWillStart(playerId) {
   Logger.log('turn will start');
   Logger.log('peek next event card...');
   // peek next event card
   peekNextEventCard();
+  Logger.log('deactive card infront of player');
+  const cardsInfront = Table.Player.listCardsInfront(playerId);
+  cardsInfront.forEach(card => {
+    const fn = getForceCardFunction(card);
+    if (typeof fn === 'object') {
+      fn.deactive(card, playerId);
+    }
+  });
 }
 
 function turnDidEnd() {
@@ -112,23 +120,23 @@ function turnDidEnd() {
   Table.Player.refillActionPoints(CurrentPlayer.getId());
   Logger.log('move to next player...');
   // move to next player
-  const { isStarter } = Table.Player.nextPlayer();
+  const { isStarter, id } = Table.Player.nextPlayer();
   if (isStarter) {
     // end this round when next player is starter player
-    roundDidEnd();
+    roundDidEnd(id);
   } else {
     // start the new turn when next plaer is not starter player
-    turnWillStart();
+    turnWillStart(id);
   }
 }
 
-function roundDidEnd() {
+function roundDidEnd(nextPlayerId) {
   Logger.log('round did end');
   Logger.log('remove event card from the table...');
   removeEventCard();
   // TODO: call game did end when the game end
   // start a new round
-  roundWillStart();
+  roundWillStart(nextPlayerId);
 }
 
 function gameDidEnd() { }
@@ -623,11 +631,15 @@ function playForceCard(forceCard, projectCard = null) {
     Logger.log('resolve force card...');
     // TODO: resolve force card with parameters
     const forceCardFn = getForceCardFunction(forceCard);
-    forceCardFn();
+    if (typeof forceCardFn === 'object') {
+      forceCardFn.active(forceCard, playerId);
+    } else if (typeof forceCardFn === 'function') {
+      forceCardFn();
+      Logger.log('discard the force card');
+      ResourceDeck.discard([forceCard]);
+    }
     Logger.log('reduce action points...');
     Table.Player.reduceActionPoint(1, CurrentPlayer.getId());
-    Logger.log('discard the force card');
-    ResourceDeck.discard([forceCard]);
     return {
       projects,
       resourceCards,
