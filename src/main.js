@@ -402,10 +402,14 @@ function playProjectCard(project, resource) {
   if (!Table.ProjectCard.isPlayable()) {
     throw new Error('專案卡欄滿了！');
   }
-  // Player does not have valid resource card should throw error
-  const slotId = ProjectCardRef.findEligibleSlotId(resource, project);
-  if (slotId < 0) {
-    throw new Error('沒有適合該人力卡的人力需求！');
+  // Skip job card validation if player fits Slashie event condition
+  if (Rule.playJobCard.getFirstJobRestriction() ||
+    Table.Player.getTurnPlayJobCardCount(playerId) > 0){
+    // Player does not have valid resource card should throw error
+    const slotId = ProjectCardRef.findEligibleSlotId(resource, project);
+    if (slotId < 0) {
+      throw new Error('沒有適合該人力卡的人力需求！');
+    }
   }
   try {
     Logger.log('remove project card and resource card from player hand...');
