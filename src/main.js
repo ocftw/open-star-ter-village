@@ -154,6 +154,19 @@ function settlePhase() {
     };
   });
   // TODO: calculate score
+  // calculate closed projects
+  const owners = projectStatus.map(project => project.ownerId);
+  const ownerClosedProjectsMap = owners.reduce((map, owner) => {
+    if (!map[owner]) {
+      map[owner] = 0;
+    }
+    map[owner]++;
+    return map;
+  }, {});
+  Object.keys(ownerClosedProjectsMap).forEach(ownerId => {
+    const closedProjects = ownerClosedProjectsMap[ownerId];
+    Table.Player.increasePlayerClosedProjects(closedProjects, ownerId);
+  });
   // TODO: contribute goal cards
   Logger.log('remove closed projects from the table...');
   // Remove projects

@@ -56,6 +56,7 @@
  * @property {(playerId: string) => void} refillActionPoints refill player action points with each-turn action points
  * @property {(points: number, playerId: string) => void} increaseActionPoints increase player action points in this turn
  * @property {() => {playerId: string, closedProjects: number}[]} listPlayerClosedProjects
+ * @property {(n: number, playerId: string) => void} increasePlayerClosedProjects increase player closed Project number
  * @property {(playerId: string) => number} getTurnCreateProjectCount
  * @property {(playerId: string) => number} getTurnPlayProjectCardCount
  * @property {(playerId: string) => number} getTurnRecruitCount
@@ -822,6 +823,12 @@ const Table = (() => {
         };
       });
       return playerClosedProjects;
+    },
+    increasePlayerClosedProjects: (n, playerId) => {
+      const closedProjects = PlayerModel.getClosedProject(playerId) + n;
+      PlayerModel.setClosedProject(closedProjects, playerId);
+      // TODO: replace score with closed project
+      PlayerView.setScore(closedProjects, playerId);
     },
     getTurnCreateProjectCount: (playerId) => {
       return PlayerModel.getTurnCreateProjectCount(playerId);
