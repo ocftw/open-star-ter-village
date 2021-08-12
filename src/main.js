@@ -357,7 +357,6 @@ function showProjectDialog(contributionPoints) {
  *
  * @typedef {Object} Hand player hand cards
  * @property {ProjectCardSpecObject[]} projects project card with specs
- * @property {Card[]} resourceCards resource cards
  * @property {ResourceCardSpecObject[]} resources resource card with specs
  */
 
@@ -376,7 +375,6 @@ function getPlayerCards() {
 
   return {
     projects,
-    resourceCards,
     resources,
   };
 };
@@ -435,7 +433,6 @@ function playProjectCard(project, resource, slashieJob) {
 
     const hand = {
       projects,
-      resourceCards,
       resources,
     };
     return {
@@ -516,7 +513,6 @@ function recruit(project, slotId) {
 
     const hand = {
       projects,
-      resourceCards,
       resources,
     };
 
@@ -712,7 +708,6 @@ function playForceCard(forceCard, projectCard = null) {
     }
     const hand = {
       projects,
-      resourceCards,
       resources,
     };
 
@@ -830,7 +825,6 @@ function discardCardsAndEndTurn(projects, resources) {
 
     const hand = {
       projects: projectSpecs,
-      resourceCards,
       resources: resourceSpecs,
     };
     return {
