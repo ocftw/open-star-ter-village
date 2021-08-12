@@ -16,6 +16,37 @@
       flex: 1 1 150px;
     }
 
+    .group {
+      display: flex;
+      align-items: stretch;
+    }
+
+    .group + .group {
+      margin-top: 2px;
+    }
+
+    .group-points {
+      margin-left: 5px;
+      border-left: 1px double #c0c0c0;
+
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .group-slots {
+      flex-basis: 190px;
+    }
+
+    .slot {
+      text-align: right;
+    }
+
+    .slot__player {
+      display: inline-block;
+      width: 50px;
+    }
+
     input[type="number"] {
       width: 40px;
     }
@@ -67,24 +98,51 @@
       const doms = projects.map((project, id) => {
         const slots = project.slots.map((slot) => {
           if (!slot) {
-            return `<div>
-                <label> - </label>
-                <input type="number" min="1" max="6" disabled />
-              </div>`;
+            return '';
           }
 
-          return `<div>
+          return `<div class="slot">
               <label for="prj-${id}-${slot.slotId}">${slot.title}</label>
               <input id="prj-${id}-${slot.slotId}" type="number" name="project-slots" min="${slot.points}" max="6" value="${slot.points}"
-                data-project-id="${id}" data-project-name="${project.name}" data-slot-id="${slot.slotId}"
+                data-project-id="${id}" data-project-name="${project.name}" data-slot-id="${slot.slotId}" data-group-id="${slot.groupId}"
                 ${!slot.activeForCurrentPlayer && "disabled"} />
-              <span>/${slot.groupGoalPoints} 點</span>
-              <span>${slot.player ? `(${slot.player})` : '' }</span>
+              <span>/6點</span>
+              <span class="slot__player">${slot.player ? `(${slot.player})` : '' }</span>
             </div>`;
         });
+
+        const groupIdsMap = project.slots.reduce((map, slot) => {
+          if (slot && !map[slot.groupId]) {
+            map[slot.groupId] = {
+              current: slot.groupCurrentPoints,
+              goal: slot.groupGoalPoints,
+            };
+          }
+          return map;
+        }, {});
+        const groups = Object.keys(groupIdsMap).map(groupId => {
+          const { current, goal } = groupIdsMap[groupId];
+          const slotsBelongToGroup = slots.filter((slot, index) => String(project.slots[index].groupId) === String(groupId));
+
+          return `<div class="group" data-group-id="${groupId}">
+            <div class="group-slots">
+              ${slotsBelongToGroup.reduce((d, s) => d + s, '')}
+            </div>
+            <div class="group-points small">
+              <div>
+                合計
+                <span class="group-points__current">${current || 0}</span> / <span class="group-points__goal">${goal}</span> 點
+              </div>
+            </div>
+          </div>`;
+        });
+
+        const displaySlots = groups.length === 0 ? slots : groups;
+
+        const title = project.name ? `[${project.type}] ${project.name} (${project.owner})` : '沒有專案卡';
         return $(`<div>
-            <b id="project-${id}">${project.name ? `[${project.type}] ${project.name} (${project.owner})` : '沒有專案卡'}</b>
-            ${slots.reduce((d, s) => d + s, '')}
+            <b id="project-${id}">${title}</b>
+            ${displaySlots.reduce((d, s) => d + s, '')}
           </div>`);
       });
       $('#projects').append(doms);
