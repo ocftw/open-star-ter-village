@@ -406,7 +406,7 @@ function playProjectCard(project, resource, slashieJob) {
   if (!Table.ProjectCard.isPlayable()) {
     throw new Error('專案卡欄滿了！');
   }
-  // Skip job card validation if player fits Slashie event condition
+  // job card validate with slashie when fulfill Slashie event condition
   let jobName = resource;
   if (slashieJob && !Rule.playJobCard.getFirstJobRestriction() && Table.Player.getTurnPlayJobCardCount(playerId) === 0) {
     jobName = slashieJob;
