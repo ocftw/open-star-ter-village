@@ -342,7 +342,7 @@
       const dom = $('<button id="end-action-phase" class="red">確認結束行動階段</button>');
       dom.click(endActionPhase);
       setActionBar(dom);
-      setNote('注意：結束行動階段後，剩餘行動點數將會歸零！');
+      setNote('注意：結束行動階段後，剩餘行動點數不會留存到下一回合使用！');
     }
 
     function actionCreator(element, successHandler, failureHandler) {
