@@ -37,11 +37,10 @@ Force card: Teach me opensource senpai(開源教教我)
 */
 function playTwoJobCards(card, playerId) {
   const count = 2;
-  PropertiesService.getScriptProperties().setProperty('PLAY_JON_CARD_TOKEN', `${playerId}__${count}`);
-  // TODO: improve user experience
+  PropertiesService.getScriptProperties().setProperty('PLAY_JOB_CARD_TOKEN', `${playerId}__${count}`);
   SpreadsheetApp.getActive().toast(`請到「招募人力」選單打出人力卡，還剩下${count}次。`);
   return {
-    next: 'recruit',
+    next: 'play-job-card',
   }
 }
 

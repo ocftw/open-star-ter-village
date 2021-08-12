@@ -352,6 +352,11 @@
           gotoMainMenu();
           break;
         }
+        case 'play-job-card': {
+          showCards(response.hand);
+          menuRecruit.call($('#menu__recruit'));
+          break;
+        }
         default: {
           // do nothing as default
         }

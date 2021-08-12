@@ -118,6 +118,9 @@ function turnDidEnd() {
   // reset and refill current player counters
   Table.Player.resetTurnCounters(CurrentPlayer.getId());
   Table.Player.refillActionPoints(CurrentPlayer.getId());
+  // delete all tokens
+  PropertiesService.getScriptProperties().deleteProperty('CONTRIBUTE_TOKEN');
+  PropertiesService.getScriptProperties().deleteProperty('PLAY_JOB_CARD_TOKEN');
   Logger.log('move to next player...');
   // move to next player
   const { isStarter, id } = Table.Player.nextPlayer();
@@ -461,15 +464,21 @@ function listAvailableProjectByJob(jobCard) {
   if (!Table.Player.isInTurn(CurrentPlayer.getId())) {
     throw new Error('這不是你的回合！');
   }
-  if (!Rule.recruit.getIsAvailable()) {
-    throw new Error('減薪休假中，不能招募人力！');
-  }
   if (!jobCard || resourceCardRef.isForceCard(jobCard)) {
     throw new Error('請選擇一張人力卡！');
   }
   const playerId = CurrentPlayer.getId();
+  const token = PropertiesService.getScriptProperties().getProperty('PLAY_JOB_CARD_TOKEN');
+  let tokenPass = false;
+  if (token) {
+    const limit = verifyToken(token, playerId);
+    tokenPass = (limit >= 0);
+  }
+  if (!tokenPass && !Rule.recruit.getIsAvailable()) {
+    throw new Error('減薪休假中，不能招募人力！');
+  }
   // TODO: replace 1 with rule.recruit.actionPoint
-  if (!Table.Player.isActionable(1, playerId)) {
+  if (!tokenPass && !Table.Player.isActionable(1, playerId)) {
     throw new Error('行動點數不足！');
   }
   if (!Table.Player.isRecruitable(playerId)) {
@@ -494,7 +503,27 @@ function recruit(project, slotId) {
   if (!Table.Player.isInTurn(CurrentPlayer.getId())) {
     throw new Error('這不是你的回合！');
   }
+  const playerId = CurrentPlayer.getId();
+  const token = PropertiesService.getScriptProperties().getProperty('PLAY_JOB_CARD_TOKEN');
+  let tokenPass = false;
+  let tokenCount = 0;
+  if (token) {
+    tokenCount = verifyToken(token, playerId);
+    tokenPass = (tokenCount > 0);
+  }
+  if (!tokenPass && !Rule.recruit.getIsAvailable()) {
+    throw new Error('減薪休假中，不能招募人力！');
+  }
+  // TODO: replace 1 with rule.recruit.actionPoint
+  if (!tokenPass && !Table.Player.isActionable(1, playerId)) {
+    throw new Error('行動點數不足！');
+  }
+  if (!Table.Player.isRecruitable(playerId)) {
+    throw new Error('人力標記不足！');
+  }
+
   const jobCard = PropertiesService.getUserProperties().getProperty('LISTED_JOB');
+  PropertiesService.getUserProperties().deleteProperty('LISTED_JOB');
   if (!jobCard) {
     Logger.log('recruit failure. Cannot find jobCard from properties service');
     throw new Error('something went wrong. Please try again');
@@ -506,9 +535,21 @@ function recruit(project, slotId) {
     const projects = projectCards.map(ProjectCardRef.getSpecByCard);
     const resources = resourceCards.map(resourceCardRef.getSpecByCard);
     Logger.log('place a worker on the project...');
-    const playerId = CurrentPlayer.getId();
     Table.ProjectCard.placeResourceOnSlotById(project, slotId, playerId, 1);
-    Table.Player.reduceActionPoint(1, playerId);
+    let next = 'done';
+    if (tokenPass) {
+      tokenCount--;
+      // remove token
+      PropertiesService.getScriptProperties().deleteProperty('PLAY_JOB_CARD_TOKEN');
+      // renew token
+      if (tokenCount > 0) {
+        PropertiesService.getScriptProperties().setProperty('PLAY_JOB_CARD_TOKEN', `${playerId}__${tokenCount}`);
+        next = 'play-job-card';
+        SpreadsheetApp.getActive().toast(`請到「招募人力」選單打出人力卡，還剩下${tokenCount}次。`);
+      }
+    } else {
+      Table.Player.reduceActionPoint(1, playerId);
+    }
     Table.Player.reduceWorkerTokens(1, playerId);
 
     const hand = {
@@ -517,7 +558,7 @@ function recruit(project, slotId) {
     };
 
     return {
-      next: 'done',
+      next,
       hand,
     };
   } catch (err) {
@@ -557,7 +598,7 @@ function openContributeDialog() {
  * @param {string} playerId verify token eligible for player
  * @returns {number} -1: not token not eligible, >= 0: available contribute points
  */
-function verifyContributeToken(token, playerId) {
+function verifyToken(token, playerId) {
   const [tokenPlayerId, countStr] = token.split('__');
   if (tokenPlayerId === playerId) {
     return Number(countStr);
@@ -580,7 +621,7 @@ function listProjects() {
   const token = PropertiesService.getScriptProperties().getProperty('CONTRIBUTE_TOKEN');
   if (token) {
     // verify token belongs to player
-    const count = verifyContributeToken(token, playerId);
+    const count = verifyToken(token, playerId);
     if (count >= 0) {
       return {
         maxContribution: count,
@@ -616,7 +657,7 @@ function contribute(contributionList) {
   let limit = Rule.contribute.getContribution();
 
   if (token) {
-    limit = verifyContributeToken(token, playerId);
+    limit = verifyToken(token, playerId);
     tokenPass = (limit >= 0);
   }
 
@@ -877,6 +918,7 @@ function resetSpreadsheet() {
 
   // reset token
   PropertiesService.getScriptProperties().deleteProperty('CONTRIBUTE_TOKEN');
+  PropertiesService.getScriptProperties().deleteProperty('PLAY_JOB_CARD_TOKEN');
 
   // set UI back to main board
   SpreadsheetApp.getActive().setActiveSheet(SpreadsheetApp.getActive().getSheetByName('專案圖板/記分板'));
