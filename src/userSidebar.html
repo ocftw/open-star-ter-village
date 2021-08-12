@@ -345,6 +345,19 @@
       setNote('注意：結束行動階段後，剩餘行動點數不會留存到下一回合使用！');
     }
 
+    function nextHelper(response, element) {
+      switch (response.next) {
+        case 'done': {
+          showCards(response.hand);
+          gotoMainMenu();
+          break;
+        }
+        default: {
+          // do nothing as default
+        }
+      }
+    }
+
     function actionCreator(element, successHandler, failureHandler) {
       skipIntervalCall();
       removeError();
@@ -375,12 +388,7 @@
     }
 
     function createProject() {
-      const action = actionCreator(this, function (response) {
-        if (response.next === 'done') {
-          showCards(response.hand);
-          gotoMainMenu();
-        }
-      });
+      const action = actionCreator(this, nextHelper);
       const selectedProjectCard = $('input[name="project-cards"]:checked').val();
       const selectedResourceCard = $('input[name="resource-cards"]:checked').val();
       action.playProjectCard(selectedProjectCard, selectedResourceCard);
@@ -421,12 +429,7 @@
     }
 
     function recruit() {
-      const action = actionCreator(this, function (response) {
-        if (response.next === 'done') {
-          showCards(response.hand);
-          gotoMainMenu();
-        }
-      });
+      const action = actionCreator(this, nextHelper);
       const selectedProjectName = $('input[name="table-projects"]:checked').val();
       const selectedProjectSlot = $('input[name="table-projects"]:checked').data('slot-id');
       action.recruit(selectedProjectName, selectedProjectSlot);
@@ -438,12 +441,7 @@
     }
 
     function playForceCard() {
-      const action = actionCreator(this, function (response) {
-        if (response.next === 'done') {
-          showCards(response.hand);
-          gotoMainMenu();
-        }
-      });
+      const action = actionCreator(this, nextHelper);
       const selectedResourceCard = $('input[name="resource-cards"]:checked').val();
       action.playForceCard(selectedResourceCard);
     }
@@ -464,12 +462,7 @@
     }
 
     function discardAndEndTurn() {
-      const action = actionCreator(this, function (response) {
-        if (response.next === 'done') {
-          showCards(response.hand);
-          gotoMainMenu();
-        }
-      });
+      const action = actionCreator(this, nextHelper);
       const selectedProjectCards = $('input[name="project-cards"]:checked')
         .map((_, element) => element.value).get();
       const selectedResourceCards = $('input[name="resource-cards"]:checked')
