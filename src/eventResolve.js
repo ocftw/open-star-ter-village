@@ -48,7 +48,7 @@ function passResourceToNextPlayer(playerNum){
 Event card: Ketchup technique(番茄醬工作法)
             gain 1 additional contribution to use when player contribute
 */
-/** 
+/**
  * @typedef {Object} bonusContributionToUse
  * @property {() => void} active activate the event effect
  * @property {() => void} deactive deactivate the event effect
@@ -67,7 +67,7 @@ const bonusContributionToUse = {
 Event card: The four essential freedoms(四大自由)
             draw 1 additional resource card when player refill their hands
 */
-/** 
+/**
  * @typedef {Object} refillOneMoreResource
  * @property {() => void} active activate the event effect
  * @property {() => void} deactive deactivate the event effect
@@ -86,7 +86,7 @@ const refillOneMoreResource = {
 Event card: Accounting period(會計年度結算)
             project(s) closed in this round gain 2 additional owner score
 */
-/** 
+/**
  * @typedef {Object} bonusOwnerScore
  * @property {() => void} active activate the event effect
  * @property {() => void} deactive deactivate the event effect
@@ -161,7 +161,7 @@ Event card: Slashie(斜槓青年)
             the first worker recruited can ignore job title restriction in every player's turn
             (which means the first human resource card can be played as a wild card)
 */
-/** 
+/**
  * @typedef {Object} ignoreJobTitleOnFirstWorker
  * @property {() => void} active activate the event effect
  * @property {() => void} deactive deactivate the event effect
@@ -181,7 +181,7 @@ Event card: Sorry my liver(抱歉了我的肝)
             the first recruit of every player can recruit 2 worker instead of 1
             (player still need to play respective job card)
 */
-/** 
+/**
  * @typedef {Object} doubleTheRecruit
  * @property {() => void} active activate the event effect
  * @property {() => void} deactive deactivate the event effect
@@ -201,7 +201,7 @@ Event card: CO8=D-19 pandemic(猛漢肺炎來襲)
             every active worker lose 1 contribution
 */
 function allContributionDown() {
-  //TODO: find every project card on table 
+  //TODO: find every project card on table
   //TODO: deduct every worker's contribution by one and avoid minimum contribution
 }
 
@@ -209,7 +209,7 @@ function allContributionDown() {
 Event card: Submarine communications cable get sharkbite!(鯊魚咬斷海底電纜啦！)
             cannot play project card
 */
-/** 
+/**
  * @typedef {Object} cannotPlayProject
  * @property {() => void} active activate the event effect
  * @property {() => void} deactive deactivate the event effect
@@ -228,7 +228,7 @@ const cannotPlayProject = {
 Event card: GitHub under maintenance(GitHub當機啦！)
             cannot contribute
 */
-/** 
+/**
  * @typedef {Object} cannotContribute
  * @property {() => void} active activate the event effect
  * @property {() => void} deactive deactivate the event effect
@@ -247,7 +247,7 @@ const cannotContribute = {
 Event card: Old and poor(又老又窮啊！)
             cannot play force card
 */
-/** 
+/**
  * @typedef {Object} cannotPlayForce
  * @property {() => void} active activate the event effect
  * @property {() => void} deactive deactivate the event effect
@@ -266,7 +266,7 @@ const cannotPlayForce = {
 Event card: Unpaid leave(減薪休假啊！)
             cannot recruit
 */
-/** 
+/**
  * @typedef {Object} cannotRecruit
  * @property {() => void} active activate the event effect
  * @property {() => void} deactive deactivate the event effect
@@ -283,25 +283,25 @@ const cannotRecruit = {
 
 /*
 Event card: Youth subsidy(青年補助)
-            the player with least closed projects immediately draw 2 resource cards 
+            the player with least closed projects immediately draw 2 resource cards
             and gain 1 additional action point in this round
 */
 function leastClosedProjectBonus(){
   const closedProjectList = Table.Player.listPlayerClosedProjects();
   //find the number of least closed projects
   let leastClosedProject = Infinity;
-  for (let i = 0; i < Table.Player.getPlayerCount(); i++) {
-    if (closedProjectList[i][1] < leastClosedProject) {
-      leastClosedProject = closedProjectList[i][1];
+  closedProjectList.forEach(({ closedProjects }) => {
+    if (leastClosedProject > closedProjects) {
+      leastClosedProject = closedProjects;
     }
-  }
+  });
   //list the player(s) with least closed projects
-  closedProjectList.filter((value, index) => value[index][1] == leastClosedProject);
-  closedProjectList.forEach((value, index) => {
+  const leastPlayers = closedProjectList.filter(({ closedProjects }) => closedProjects === leastClosedProject);
+  leastPlayers.forEach(({ playerId }) => {
     //the player gain 1 action point for their next turn
-    Table.Player.increaseActionPoints(1, value[index][0]);
+    Table.Player.increaseActionPoints(1, playerId);
     //the player draw 2 resource cards
-    PlayerHands.dealResourceCardsToPlayerById(ResourceDeck.draw(2), value[index][0]);
+    PlayerHands.dealResourceCardsToPlayerById(ResourceDeck.draw(2), playerId);
   });
 }
 
