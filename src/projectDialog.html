@@ -154,17 +154,46 @@
 
       $('#count').text(`還剩下${maxContribution}點`);
 
+      function calculateGroupContributionPoints() {
+        const $group = $(this);
+        const $slots = $group.children('.group-slots').children('.slot')
+        .children('input[type="number"]');
+
+        const points = $slots.map((_, element) => element.value).get().map(Number);
+        const current = points.reduce((a, b) => a + b, 0);
+
+        const $groupPoints = $group.children('.group-points').children('div');
+        const $current = $groupPoints.children('span.group-points__current');
+        $current.text(current);
+
+        const $goal = $groupPoints.children('span.group-points__goal');
+        const goal = Number($goal.text());
+        if (current > goal) {
+          $groupPoints.addClass('error');
+        } else {
+          $groupPoints.removeClass('error');
+        }
+      }
+
       $('#reset').click(function () {
         $('input[type="number"]:not(:disabled)').each(function () {
           $(this).val($(this).prop('min'));
-          $('#count').text(`還剩下${maxContribution}點`).removeClass('current');
         });
+
+        // reset group contribution points
+        const $groups = $('div.group');
+        $groups.each(calculateGroupContributionPoints);
+
+        $('#count').text(`還剩下${maxContribution}點`).removeClass('current');
         $('#contribute').prop('disabled', false);
       });
 
       $('#contribute').click(contribute);
 
       $('input[type="number"]:not(:disabled)').change(function () {
+        const $group = $(this).parents('.group');
+        calculateGroupContributionPoints.call($group);
+
         let cnt = 0;
         $('input[type="number"]:not(:disabled)').each(function () {
           cnt += ($(this).val() - $(this).prop('min'));
