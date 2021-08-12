@@ -70,7 +70,30 @@
       skip = false;
     }
 
+    /** @type {'static' | 'radio' | 'checkbox'} */
+    let projectCardDisplayType = 'static';
     function showProjectCards(projects) {
+      const cards = $('input[name="project-cards"]').each((_, element) => element.value).get();
+      if (cards.length === projects.length) {
+        if (cards.every((card, index) => card === projects[index].name)) {
+          // skip re-rendering when cards are displayed
+          return;
+        }
+      }
+
+      // Static display type
+      let type = 'radio';
+      let className = 'hide';
+
+      if (projectCardDisplayType === 'checkbox') {
+        type = 'checkbox';
+        className = '';
+      }
+      if (projectCardDisplayType === 'radio') {
+        type = 'radio';
+        className = '';
+      }
+
       const list = $('#project-cards');
       list.empty();
       for (var i = 0; i < projects.length; i++) {
@@ -79,7 +102,7 @@
           return `<div class="req-item">${group.title} - ${group.slots} 位 - 共 ${group.goalContributionPoints} 點</div>`;
         });
         const dom = `<div class="box">
-            <input type="radio" class="hide" id="${id}" name="project-cards" value="${projects[i].name}" />
+            <input type="${type}" class="${className}" id="${id}" name="project-cards" value="${projects[i].name}" />
             <label for="${id}">[${projects[i].type}] ${projects[i].name}</label>
             <div class="details small">
               <div class="req-title">需求</div>
@@ -89,14 +112,39 @@
         list.append(dom);
       }
     }
+
+    /** @type {'static' | 'radio' | 'checkbox'} */
+    let resourceCardDisplayType = 'static';
     function showResourceCards(resources) {
       resources.sort((a, b) => a.type.localeCompare(b.type));
+
+      const cards = $('input[name="resource-cards"]').each((_, element) => element.value).get();
+      if (cards.length === resources.length) {
+        if (cards.every((card, index) => card === resources[index].name)) {
+          // skip re-rendering when cards are displayed
+          return;
+        }
+      }
+
+      // Static display type
+      let type = 'radio';
+      let className = 'hide';
+
+      if (resourceCardDisplayType === 'checkbox') {
+        type = 'checkbox';
+        className = '';
+      }
+      if (resourceCardDisplayType === 'radio') {
+        type = 'radio';
+        className = '';
+      }
+
       const list = $('#resource-cards');
       list.empty();
       for (var i = 0; i < resources.length; i++) {
         const id = `res-${i}`;
         const dom = `<div class="box">
-            <input type="radio" class="hide" id="${id}" name="resource-cards" value="${resources[i].name}" />
+            <input type="${type}" class="${className}" id="${id}" name="resource-cards" value="${resources[i].name}" />
             <label for="${id}">[${resources[i].type}] ${resources[i].name}</label>
             <div class="details small">
               ${resources[i].description}
@@ -152,6 +200,7 @@
     }
 
     const renderProjectCardRadio = () => {
+      projectCardDisplayType = 'radio';
       $('input[name="project-cards"]').each(function () {
         $(this).removeClass('hide');
         $(this).prop('checked', false);
@@ -163,6 +212,7 @@
     };
 
     const renderResourceCardRadio = () => {
+      resourceCardDisplayType = 'radio';
       $('input[name="resource-cards"]').each(function () {
         $(this).removeClass('hide');
         $(this).prop('checked', false);
@@ -174,6 +224,7 @@
     };
 
     const renderProjectCardCheckbox = () => {
+      projectCardDisplayType = 'checkbox';
       $('input[name="project-cards"]').each(function () {
         $(this).removeClass('hide');
         $(this).prop('checked', false);
@@ -185,6 +236,7 @@
     };
 
     const renderResourceCardCheckbox = () => {
+      resourceCardDisplayType = 'checkbox';
       $('input[name="resource-cards"]').each(function () {
         $(this).removeClass('hide');
         $(this).prop('checked', false);
@@ -196,12 +248,14 @@
     };
 
     const renderProjectCardStatic = () => {
+      projectCardDisplayType = 'static';
       $('input[name="project-cards"]').each(function () {
         $(this).addClass('hide');
       });
     };
 
     const renderResourceCardStatic = () => {
+      resourceCardDisplayType = 'static';
       $('input[name="resource-cards"]').each(function (idx) {
         $(this).addClass('hide');
       });
