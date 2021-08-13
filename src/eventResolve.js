@@ -317,3 +317,60 @@ function shuffleArray(array){
     = [array[randomIndex], array[currentIndex]];
   }
 }
+
+const eventCardFunctionMap = {
+  // 數位政委：巧遇數位政委，場內所有開放政府專案人力貢獻值+1
+  0: allContributionUp,
+  // 數位政委：巧遇數位政委，場內所有開放原始碼專案人力貢獻值+1
+  1: allContributionUp,
+  // 數位政委：巧遇數位政委，場內所有開放資料專案人力貢獻值+1
+  2: allContributionUp,
+  // 挖角：每個玩家抽一張左手邊玩家手牌的資源卡
+  3: drawResourceFromNextPlayer,
+  // 人力釋出：每個玩家傳一張手牌資源卡給左手邊的玩家
+  4: passResourceToNextPlayer,
+  // 番茄醬工作法：貢獻專案時，可分配的貢獻值+1
+  5: bonusContributionToUse,
+  // 四大自由：每位玩家補充手牌時可多補一張資源卡
+  6: refillOneMoreResource,
+  // 會計年度結算：本輪結案的專案，發起者額外獲得 2 點積分
+  7: bonusOwnerScore,
+  // 國際交流：所有人交出資源牌，洗勻後發回
+  8: shuffleAllResource,
+  // 不務正業：所有人交出專案牌，洗勻後發回
+  9: shuffleAllProject,
+  // 斜槓青年：每人第一張打出的人力卡，可以無視人力需求放入專案
+  10: ignoreJobTitleOnFirstWorker,
+  // 抱歉了我的肝：但我真的想做那個酷專案。每人第一次招募人力時，可用一個行動點招募兩個人力
+  11: doubleTheRecruit,
+  // 猛漢肺炎來襲：場內所有專案卡的所有人力貢獻值-1
+  12: allContributionDown,
+  // 鯊魚咬斷海底電纜啦！：本輪不能發起專案
+  13: cannotPlayProject,
+  // GitHub 當機啦！：本輪不能貢獻專案
+  14: cannotContribute,
+  // 又老又窮啊！：本輪不能使用源力卡
+  15: cannotPlayForce,
+  // 減薪休假啊！：本輪不能招募人力
+  16: cannotRecruit,
+  // 青年補助：目前專案完成數最少的人，立即抽 2 張資源卡，且本回合行動點+1
+  17: leastClosedProjectBonus,
+};
+
+/**
+ *
+ * @param {Card} eventCard
+ * @returns {Function | { active: Function, deactive: Function }}
+ */
+function getEventCardFunction(eventCard) {
+  const spec = SpreadsheetApp.getActive().getSheetByName('EventCardSpec');
+  const cards = spec.getRange(1, 1, 18, 1).getValues().map(row => row[0]);
+  const index = cards.findIndex(card => card === eventCard);
+
+  const fn = forceCardFunctionMap[index];
+  if (fn === undefined) {
+    Logger.log(`Event card ${eventCard} fucntion not found`);
+    throw new Error(`Event card ${eventCard} fucntion not found`);
+  }
+  return fn;
+}
