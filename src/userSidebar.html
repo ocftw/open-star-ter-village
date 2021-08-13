@@ -357,6 +357,11 @@
           menuRecruit.call($('#menu__recruit'));
           break;
         }
+        case 'play-project-card': {
+          showCards(response.hand);
+          menuCreateProject.call($('#menu__create-project'));
+          break;
+        }
         default: {
           // do nothing as default
         }

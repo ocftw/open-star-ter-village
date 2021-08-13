@@ -26,9 +26,37 @@ function projectContributionProtection(project) {
 Force card: Open definition/Open-source license/Opening of open era(開放定義/開源授權/開放元年)
             play two project of corresponding type (job card is still required to play)
 */
-/** @type {(project: string) => void} */
-function playTwoSameTypeProject(project) {
-  //TODO: finish the card effect
+/**
+ *
+ * @param {Card} card force card
+ * @param {string} playerId player plays this force card
+ * @returns { {next: string} }
+ */
+function playTwoSameTypeProject(card, playerId) {
+  const counter = 2;
+  let type = '';
+  switch (card) {
+    case '開放定義': {
+      type = '開放原始碼';
+      break;
+    }
+    case '開源授權': {
+      type = '開放資料';
+      break;
+    }
+    case '開放元年': {
+      type = '開放政府';
+      break;
+    }
+    default: {
+      // do nothing as default
+    }
+  }
+  PropertiesService.getScriptProperties().setProperty('PLAY_PROJECT_CARD_TOKEN', `${playerId}__${counter}__${type}`);
+  SpreadsheetApp.getActive().toast(`請到「發起專案」選單打出人力卡，還剩下${counter}次。`);
+  return {
+    next: 'play-project-card',
+  };
 }
 
 /*

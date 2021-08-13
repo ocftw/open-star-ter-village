@@ -121,6 +121,7 @@ function turnDidEnd() {
   // delete all tokens
   PropertiesService.getScriptProperties().deleteProperty('CONTRIBUTE_TOKEN');
   PropertiesService.getScriptProperties().deleteProperty('PLAY_JOB_CARD_TOKEN');
+  PropertiesService.getScriptProperties().deleteProperty('PLAY_PROJECT_CARD_TOKEN');
   Logger.log('move to next player...');
   // move to next player
   const { isStarter, id } = Table.Player.nextPlayer();
@@ -395,14 +396,22 @@ function playProjectCard(project, resource, slashieJob) {
   if (!Table.Player.isInTurn(CurrentPlayer.getId())) {
     throw new Error('這不是你的回合！');
   }
-  if (!Rule.playProjectCard.getIsAvailable()) {
-    throw new Error('海底電纜還沒修好，不能發起專案！');
-  }
   if (!project || !resource || resourceCardRef.isForceCard(resource)) {
     throw new Error('請選擇一張專案卡與一張人力卡！');
   }
   const playerId = CurrentPlayer.getId();
-  if (!Table.Player.isActionable(Rule.playProjectCard.getActionPoint(), playerId)) {
+  const token = PropertiesService.getScriptProperties().getProperty('PLAY_PROJECT_CARD_TOKEN');
+  const projectSpec = ProjectCardRef.getSpecByCard(project);
+  let tokenPass = false;
+  let counter = 0;
+  if (token) {
+    counter = verifyToken(token, playerId, { type: projectSpec.type });
+    tokenPass = (counter > 0);
+  }
+  if (!tokenPass && !Rule.playProjectCard.getIsAvailable()) {
+    throw new Error('海底電纜還沒修好，不能發起專案！');
+  }
+  if (!tokenPass && !Table.Player.isActionable(Rule.playProjectCard.getActionPoint(), playerId)) {
     throw new Error('行動點數不足！');
   }
   if (!Table.Player.isRecruitable(playerId)) {
@@ -430,8 +439,23 @@ function playProjectCard(project, resource, slashieJob) {
     Logger.log('play project card and job card on the table...');
     Table.ProjectCard.play(project);
     Table.ProjectCard.placeResourceOnSlotById(project, slotId, playerId, 1, true);
+
+    let next = 'done';
     Logger.log('reduce worker token and action points');
-    Table.Player.reduceActionPoint(Rule.playProjectCard.getActionPoint(), playerId);
+    if (tokenPass) {
+      counter--;
+      // remove token
+      PropertiesService.getScriptProperties().deleteProperty('PLAY_PROJECT_CARD_TOKEN');
+      // issue new token
+      if (counter > 0) {
+        PropertiesService.getScriptProperties()
+          .setProperty('PLAY_PROJECT_CARD_TOKEN', `${playerId}__${counter}__${projectSpec.type}`);
+        SpreadsheetApp.getActive().toast(`請到「發起專案」選單打出人力卡，還剩下${counter}次。`);
+        next = 'play-project-card';
+      }
+    } else {
+      Table.Player.reduceActionPoint(Rule.playProjectCard.getActionPoint(), playerId);
+    }
     Table.Player.reduceWorkerTokens(1, playerId);
 
     const hand = {
@@ -439,7 +463,7 @@ function playProjectCard(project, resource, slashieJob) {
       resources,
     };
     return {
-      next: 'done',
+      next,
       hand,
     };
   } catch (err) {
@@ -596,14 +620,18 @@ function openContributeDialog() {
  *
  * @param {string} token contribute token should verify
  * @param {string} playerId verify token eligible for player
+ * @param {Object?} options the optional fields to be verified
  * @returns {number} -1: not token not eligible, >= 0: available contribute points
  */
-function verifyToken(token, playerId) {
-  const [tokenPlayerId, countStr] = token.split('__');
-  if (tokenPlayerId === playerId) {
-    return Number(countStr);
+function verifyToken(token, playerId, options) {
+  const [tokenPlayerId, countStr, type] = token.split('__');
+  if (tokenPlayerId !== playerId) {
+    return -1;
   }
-  return -1;
+  if (options && options.type && options.type !== type) {
+    return -1;
+  }
+  return Number(countStr);
 }
 
 /**
@@ -919,6 +947,7 @@ function resetSpreadsheet() {
   // reset token
   PropertiesService.getScriptProperties().deleteProperty('CONTRIBUTE_TOKEN');
   PropertiesService.getScriptProperties().deleteProperty('PLAY_JOB_CARD_TOKEN');
+  PropertiesService.getScriptProperties().deleteProperty('PLAY_PROJECT_CARD_TOKEN');
 
   // set UI back to main board
   SpreadsheetApp.getActive().setActiveSheet(SpreadsheetApp.getActive().getSheetByName('專案圖板/記分板'));
