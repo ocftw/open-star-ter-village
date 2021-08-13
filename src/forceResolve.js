@@ -191,7 +191,7 @@ function peekNextTwoEventCardAndChange() {
   }
 }
 
-const functionMap = {
+const forceCardFunctionMap = {
   // 專案補助：放置在專案牌下，該專案結算時，專案發起者積分額外 +5
   0: projectOwnerScoreBonus,
   // 雲端硬碟：放置在專案牌下，該專案不會被扣除貢獻值
@@ -228,7 +228,7 @@ function getForceCardFunction(forceCard) {
   const cards = spec.getRange(1, 1, 12, 1).getValues().map(row => row[0]);
   const index = cards.findIndex(card => card === forceCard);
 
-  const fn = functionMap[index];
+  const fn = forceCardFunctionMap[index];
   if (fn === undefined) {
     Logger.log(`Force card ${forceCard} fucntion not found`);
     throw new Error(`Force card ${forceCard} fucntion not found`);
