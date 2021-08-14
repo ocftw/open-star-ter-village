@@ -32,6 +32,9 @@ function allContributionUp(card) {
   // add every worker's contribution by one and avoid exceeding max contribution/project requirements
   const projectShouldUpContributions = projects.filter(project => project.type === type);
   projectShouldUpContributions.forEach(project => {
+    if (project.name === '') {
+      return;
+    }
     project.slots.forEach(slot => {
       if (slot.activeForCurrentPlayer && Table.ProjectCard.isSlotEligibleToContribute(1, project.name, slot.slotId)) {
         Table.ProjectCard.contributeSlot(1, project.name, slot.slotId);
@@ -395,7 +398,7 @@ const eventCardFunctionMap = {
 function getEventCardFunction(eventCard) {
   const spec = SpreadsheetApp.getActive().getSheetByName('EventCardSpec');
   const cards = spec.getRange(1, 1, 18, 1).getValues().map(row => row[0]);
-  const index = cards.findIndex(card => card === eventCard);
+  const index = cards.findIndex(card => card === eventCard.trim());
 
   const fn = forceCardFunctionMap[index];
   if (fn === undefined) {
