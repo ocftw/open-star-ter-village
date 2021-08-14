@@ -234,8 +234,19 @@ Event card: CO8=D-19 pandemic(猛漢肺炎來襲)
             every active worker lose 1 contribution
 */
 function allContributionDown() {
-  //TODO: find every project card on table
-  //TODO: deduct every worker's contribution by one and avoid minimum contribution
+  // list every project card on table
+  const projects = Table.ProjectCard.listProjects();
+  // deduct every worker's contribution by one and avoid minimum contribution
+  projects.forEach(project => {
+    if (project.name === '') {
+      return;
+    }
+    project.slots.forEach(slot => {
+      if (slot.activeForCurrentPlayer && Table.ProjectCard.isSlotEligibleToDeduct(1, project.name, slot.slotId)) {
+        Table.ProjectCard.deductSlot(1, project.name, slot.slotId);
+      }
+    });
+  });
 }
 
 /*

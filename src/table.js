@@ -22,7 +22,10 @@
  *  verify the availability of the slot is available to the player
  * @property {(points: number, projectCard: Card, slotIdx: number) => boolean} isSlotEligibleToContribute
  *  verify the slot and the belongs group is available to contribute points.
+ * @property {(points: number, projectCard: Card, slotIdx: number) => boolean} isSlotEligibleToDeduct
+ *  verify the slot and the belongs group is available to deduct points.
  * @property {(points: number, projectCard: Card, slotId: number) => void} contributeSlot contribute points to project slot
+ * @property {(points: number, projectCard: Card, slotId: number) => void} deductSlot deduct points to project slot
  * @property {(projectCard: Card, slotIdx: number, playerId: string, initialPoints: number,
  *  isOwner?: boolean) => void} placeResourceOnSlotById place an arbitrary resource card on the project slot by slot index
  *  with initial contribution points
@@ -421,7 +424,7 @@ const Table = (() => {
     },
     isSlotEligibleToContribute: (points, project, slotId) => {
       const cardId = ProjectCardModel.findCardId(project);
-      // 6 is the hard maximum of each slot contribution
+      // 6 is the hard coded maximum of each slot contribution
       if (ProjectCardModel.getContributionPointOnSlotById(cardId, slotId) + points > 6) {
         return false;
       }
@@ -431,6 +434,11 @@ const Table = (() => {
         return false;
       }
       return true;
+    },
+    isSlotEligibleToDeduct: (points, project, slotId) => {
+      const cardId = ProjectCardModel.findCardId(project);
+      // 1 is the hard coded minimum of each slot contribution
+      return (ProjectCardModel.getContributionPointOnSlotById(cardId, slotId) - points > 0);
     },
     isPlayerEligibleToContributeSlot: (playerId, project, slotId) => {
       const cardId = ProjectCardModel.findCardId(project);
@@ -442,6 +450,13 @@ const Table = (() => {
     contributeSlot: (points, project, slotId) => {
       const cardId = ProjectCardModel.findCardId(project);
       ProjectCardModel.addContributionPointOnSlotById(points, cardId, slotId);
+
+      const displayPoints = ProjectCardModel.getContributionPointOnSlotById(cardId, slotId);
+      ProjectCardView.setContributionPointOnTableSlotById(displayPoints, cardId, slotId);
+    },
+    deductSlot: (points, project, slotId) => {
+      const cardId = ProjectCardModel.findCardId(project);
+      ProjectCardModel.addContributionPointOnSlotById(-points, cardId, slotId);
 
       const displayPoints = ProjectCardModel.getContributionPointOnSlotById(cardId, slotId);
       ProjectCardView.setContributionPointOnTableSlotById(displayPoints, cardId, slotId);
