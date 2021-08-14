@@ -540,8 +540,9 @@ function recruit(project, slotId) {
   if (!tokenPass && !Rule.recruit.getIsAvailable()) {
     throw new Error('減薪休假中，不能招募人力！');
   }
+  const secondRecruit = (Rule.recruit.getRecruitTwiceForOneAP() && Table.Player.getTurnRecruitCount(playerId) === 1);
   // TODO: replace 1 with rule.recruit.actionPoint
-  if (!tokenPass && !Table.Player.isActionable(1, playerId)) {
+  if (!tokenPass && !Table.Player.isActionable(1, playerId) && !secondRecruit) {
     throw new Error('行動點數不足！');
   }
   if (!Table.Player.isRecruitable(playerId)) {
@@ -573,7 +574,7 @@ function recruit(project, slotId) {
         next = 'play-job-card';
         SpreadsheetApp.getActive().toast(`請到「招募人力」選單打出人力卡，還剩下${tokenCount}次。`);
       }
-    } else if (Rule.recruit.getRecruitTwiceForOneAP() && Table.Player.getTurnRecruitCount(playerId) === 1) {
+    } else if (secondRecruit) {
       Table.Player.increaseRecruitCount(playerId);
       // second recruit is free
     } else {
