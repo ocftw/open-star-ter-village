@@ -455,7 +455,9 @@ function playProjectCard(project, resource, slashieJob) {
       }
     } else {
       Table.Player.reduceActionPoint(Rule.playProjectCard.getActionPoint(), playerId);
+      Table.Player.increaseCreateProjectCount(playerId);
     }
+    Table.Player.increasePlayProjectCardCount(playerId);
     Table.Player.reduceWorkerTokens(1, playerId);
 
     const hand = {
@@ -572,8 +574,10 @@ function recruit(project, slotId) {
         SpreadsheetApp.getActive().toast(`請到「招募人力」選單打出人力卡，還剩下${tokenCount}次。`);
       }
     } else {
+      Table.Player.increaseRecruitCount(playerId);
       Table.Player.reduceActionPoint(1, playerId);
     }
+    Table.Player.increasePlayJobCardCount(playerId);
     Table.Player.reduceWorkerTokens(1, playerId);
 
     const hand = {
@@ -721,6 +725,7 @@ function contribute(contributionList) {
     } else {
       Table.Player.reduceActionPoint(1, playerId);
     }
+    Table.Player.increaseContributeCount(playerId);
   } catch (err) {
     Logger.log(`contribute failure. ${err}`);
     // TODO: fallback
@@ -770,6 +775,7 @@ function playForceCard(forceCard, projectCard = null) {
     }
     Logger.log('reduce action points...');
     Table.Player.reduceActionPoint(1, CurrentPlayer.getId());
+    Table.Player.increasePlayForceCardCount(playerId);
 
     let next = 'done';
     if (response && response.next) {

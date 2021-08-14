@@ -63,11 +63,17 @@
  * @property {(points: number, playerId: string) => void} increaseActionPoints increase player action points in this turn
  * @property {() => {playerId: string, closedProjects: number}[]} listPlayerClosedProjects
  * @property {(n: number, playerId: string) => void} increasePlayerClosedProjects increase player closed Project number
+ * @property {(playerId: string) => void} increaseCreateProjectCount
  * @property {(playerId: string) => number} getTurnCreateProjectCount
+ * @property {(playerId: string) => void} increasePlayProjectCardCount
  * @property {(playerId: string) => number} getTurnPlayProjectCardCount
+ * @property {(playerId: string) => void} increaseRecruitCount
  * @property {(playerId: string) => number} getTurnRecruitCount
+ * @property {(playerId: string) => void} increasePlayJobCardCount
  * @property {(playerId: string) => number} getTurnPlayJobCardCount
+ * @property {(playerId: string) => void} increasePlayForceCardCount
  * @property {(playerId: string) => number} getTurnPlayForceCardCount
+ * @property {(playerId: string) => void} increaseContributeCount
  * @property {(playerId: string) => number} getTurnContributeCount
  * @property {(initTokens: number, playerId: string) => void} setInitWorkerTokens
  * @property {(card: Card, playerId: string) => Card[]} addCardInfront add card infront of player
@@ -712,10 +718,11 @@ const Table = (() => {
       playerProperty.getRange(`${playerId}12:${playerId}${12 + values.length - 1}`).setValues(values);
     },
     resetCounter: (playerId) => {
-      playerProperty.getRange(`${playerId}6:${playerId}11`).clearContent();
+      playerProperty.getRange(`${playerId}6:${playerId}11`).setValue(0);
     },
     reset: () => {
       playerProperty.getRange(1, 1, 14, 6).clearContent();
+      playerProperty.getRange(6, 1, 6, 6).setValue(0);
       PlayerModel.setPlayerIdList([]);
       PlayerModel.setCurrentPlayerId('');
     }
@@ -885,20 +892,38 @@ const Table = (() => {
       // TODO: replace score with closed project
       PlayerView.setScore(closedProjects, playerId);
     },
+    increaseCreateProjectCount: (playerId) => {
+      PlayerModel.setTurnCreateProjectCount(PlayerModel.getTurnCreateProjectCount(playerId) + 1, playerId);
+    },
     getTurnCreateProjectCount: (playerId) => {
       return PlayerModel.getTurnCreateProjectCount(playerId);
+    },
+    increasePlayProjectCardCount: (playerId) => {
+      PlayerModel.setTurnPlayProjectCardCount(PlayerModel.getTurnPlayProjectCardCount(playerId) + 1, playerId);
     },
     getTurnPlayProjectCardCount: (playerId) => {
       return PlayerModel.getTurnPlayProjectCardCount(playerId);
     },
+    increaseRecruitCount: (playerId) => {
+      PlayerModel.setTurnRecruitCount(PlayerModel.getTurnRecruitCount(playerId) + 1, playerId);
+    },
     getTurnRecruitCount: (playerId) => {
       return PlayerModel.getTurnRecruitCount(playerId);
+    },
+    increasePlayJobCardCount: (playerId) => {
+      PlayerModel.setTurnPlayJobCardCount(PlayerModel.getTurnPlayJobCardCount(playerId) + 1, playerId);
     },
     getTurnPlayJobCardCount: (playerId) => {
       return PlayerModel.getTurnPlayJobCardCount(playerId);
     },
+    increasePlayForceCardCount: (playerId) => {
+      PlayerModel.setTurnPlayForceCardCount(PlayerModel.getTurnPlayForceCardCount(playerId) + 1, playerId);
+    },
     getTurnPlayForceCardCount: (playerId) => {
       return PlayerModel.getTurnPlayForceCardCount(playerId);
+    },
+    increaseContributeCount: (playerId) => {
+      PlayerModel.setTurnContributeCount(PlayerModel.getTurnContributeCount(playerId) + 1, playerId);
     },
     getTurnContributeCount: (playerId) => {
       return PlayerModel.getTurnContributeCount(playerId);
