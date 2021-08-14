@@ -573,6 +573,9 @@ function recruit(project, slotId) {
         next = 'play-job-card';
         SpreadsheetApp.getActive().toast(`請到「招募人力」選單打出人力卡，還剩下${tokenCount}次。`);
       }
+    } else if (Rule.recruit.getRecruitTwiceForOneAP() && Table.Player.getTurnRecruitCount(playerId) === 1) {
+      Table.Player.increaseRecruitCount(playerId);
+      // second recruit is free
     } else {
       Table.Player.increaseRecruitCount(playerId);
       Table.Player.reduceActionPoint(1, playerId);
