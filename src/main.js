@@ -798,6 +798,12 @@ function drawEventCard() {
   // play event card on table
   Table.EventCard.place(card);
   // TODO: apply event card effect
+  const fn = getEventCardFunction(card);
+  if (typeof fn === 'object') {
+    fn.active(card);
+  } else if (typeof fn === 'function') {
+    fn(card);
+  }
   SpreadsheetApp.getActive().toast("已翻開新的事件卡");
 }
 
@@ -805,6 +811,10 @@ function removeEventCard() {
   // remove event card from table
   const card = Table.EventCard.remove();
   // TODO: reverse event card effect when needed
+  const fn = getEventCardFunction(card);
+  if (typeof fn === 'object') {
+    fn.deactive(card);
+  }
   // discard it to the pile
   EventDeck.discard([card]);
 }

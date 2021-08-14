@@ -4,10 +4,40 @@
 Event card: Digital minister without portfolio(數位政委)
             every active worker of respective project type gain 1 contribution
 */
-/** @type {(projectType: string) => void} */
-function allContributionUp(projectType) {
-  //TODO: find every project card on table which fits the project type
-  //TODO: add every worker's contribution by one and avoid exceeding max contribution/project requirements
+/**
+ *
+ * @param {Card} card
+ */
+function allContributionUp(card) {
+  let type = '';
+  switch (card) {
+    case '數位政委：巧遇數位政委，場內所有開放政府專案人力貢獻值+1': {
+      type = '開放政府';
+      break;
+    }
+    case '數位政委：巧遇數位政委，場內所有開放原始碼專案人力貢獻值+1': {
+      type = '開放原始碼';
+      break;
+    }
+    case '數位政委：巧遇數位政委，場內所有開放資料專案人力貢獻值+1': {
+      type = '開放資料';
+      break;
+    }
+    default: {
+      // do nothing as default
+    }
+  }
+  // list every project card on table which fits the project type
+  const projects = Table.ProjectCard.listProjects();
+  // add every worker's contribution by one and avoid exceeding max contribution/project requirements
+  const projectShouldUpContributions = projects.filter(project => project.type === type);
+  projectShouldUpContributions.forEach(project => {
+    project.slots.forEach(slot => {
+      if (slot.activeForCurrentPlayer && Table.ProjectCard.isSlotEligibleToContribute(1, project.name, slot.slotId)) {
+        Table.ProjectCard.contributeSlot(1, project.name, slot.slotId);
+      }
+    });
+  });
 }
 
 /*
