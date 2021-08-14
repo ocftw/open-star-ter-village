@@ -400,7 +400,7 @@ function getEventCardFunction(eventCard) {
   const cards = spec.getRange(1, 1, 18, 1).getValues().map(row => row[0]);
   const index = cards.findIndex(card => card === eventCard.trim());
 
-  const fn = forceCardFunctionMap[index];
+  const fn = eventCardFunctionMap[index];
   if (fn === undefined) {
     Logger.log(`Event card ${eventCard} fucntion not found`);
     throw new Error(`Event card ${eventCard} fucntion not found`);
