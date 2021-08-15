@@ -564,6 +564,10 @@ function recruit(project, slotId) {
     Logger.log('place a worker on the project...');
     Table.ProjectCard.placeResourceOnSlotById(project, slotId, playerId, 1);
     let next = 'done';
+    if (Rule.recruit.getRecruitTwiceForOneAP() && Table.Player.getTurnRecruitCount(playerId) === 0) {
+      // should redirect to second recruit
+      next = 'play-job-card';
+    }
     if (tokenPass) {
       tokenCount--;
       // remove token
