@@ -436,6 +436,7 @@ function playProjectCard(project, resource, slashieJob) {
     const resourceCards = CurrentPlayerHand.removeResourceCards([resource]);
     const projects = projectCards.map(ProjectCardRef.getSpecByCard);
     const resources = resourceCards.map(resourceCardRef.getSpecByCard);
+    ResourceDeck.discard([resource]);
     Logger.log('play project card and job card on the table...');
     Table.ProjectCard.play(project);
     Table.ProjectCard.placeResourceOnSlotById(project, slotId, playerId, 1, true);
@@ -561,6 +562,7 @@ function recruit(project, slotId) {
     const resourceCards = CurrentPlayerHand.removeResourceCards([jobCard]);
     const projects = projectCards.map(ProjectCardRef.getSpecByCard);
     const resources = resourceCards.map(resourceCardRef.getSpecByCard);
+    ResourceDeck.discard([jobCard]);
     Logger.log('place a worker on the project...');
     Table.ProjectCard.placeResourceOnSlotById(project, slotId, playerId, 1);
     let next = 'done';
