@@ -7,11 +7,11 @@
     "pull": "clasp pull",
     "push": "clasp push"
   },
-  "name": "open-star-ter-village",
+  "name": "@open-star-ter-village/google-spreadsheet",
   "version": "0.2.0",
   "description": "open source board game to encourage people join open culture community",
-  "main": "macro.js",
+  "main": "main.js",
   "author": "Ben Liu <ben196888@gmail.com>, renovirtony <renovirtony@gmail.com>",
-  "license": "CC-BY-4.0",
+  "license": "MIT",
   "private": false
 }
