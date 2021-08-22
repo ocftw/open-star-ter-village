@@ -157,8 +157,8 @@ function settlePhase() {
 
   const projectStatus = closedProjects.map((project) => {
     // player contributions status sorted by contribution points
-    const contributions = Table.ProjectCard.listProjectContributions(project.name);
-    const occupancySummary = Table.ProjectCard.listProjectOccupancySummary(project.name);
+    const contributions = Table.ProjectCard.getProjectContributions(project.name);
+    const occupancySummary = Table.ProjectCard.getProjectOccupancySummary(project.name);
     return {
       ...project,
       contributions,

@@ -34,9 +34,9 @@
  *  list all projects created by owner
  * @property {() => {name: Card, type: string, ownerId: string, extensions: string[]}[]} listClosedProjects
  *  return true when there is any project is closed
- * @property {(card: Card) => {points: number, tokens: number, playerId: string}[]} listProjectContributions
+ * @property {(card: Card) => {points: number, tokens: number, playerId: string}[]} getProjectContributions
  *  list all players contributions of the project card. sorted descending by contribution points
- * @property {(card: Card) => {title: string, occupied: number, available: number}[]} listProjectOccupancySummary
+ * @property {(card: Card) => {title: string, occupied: number, available: number}[]} getProjectOccupancySummary
  *  list all job occupancy status on the project card.
  *
  * @typedef {Object} TablePlayerController
@@ -268,7 +268,7 @@ const Table = (() => {
     setProjectTypeById: (type, id) => tableProjectCard.getRange(11 + id, 2).setValue(type),
     getProjectOnwerById: (id) => tableProjectCard.getRange(11 + id, 3).getValue(),
     setProjectOnwerById: (ownerId, id) => tableProjectCard.getRange(11 + id, 3).setValue(ownerId),
-    listSlots: (id) => {
+    getSlots: (id) => {
       const values = tableProjectCard.getRange(21 + 10 * id, 1, 6, 4).getValues();
       const slots = values.map(([title, playerId, points, groupId], slotId) => {
         return {
@@ -303,7 +303,7 @@ const Table = (() => {
       const groupId = ProjectCardModel.getGroupIdBySlotId(id, slotId);
       ProjectCardModel.addGroupCurrentContributionPointByGroupId(points, id, groupId);
     },
-    listGroups: (id) => {
+    getGroups: (id) => {
       const values = tableProjectCard.getRange(21 + 10 * id, 5, 6, 1).getValues();
       const groupNames = values.map(row => row[0]).filter(x => x);
       const groups = groupNames.map((name, groupId) => ({ name, groupId }));
@@ -500,7 +500,7 @@ const Table = (() => {
     listClosedProjects: () => {
       const projects = ProjectCardModel.listCards();
       const closedProjects = projects.map(({ id, name, type, ownerId, extensions }) => {
-        const groups = ProjectCardModel.listGroups(id);
+        const groups = ProjectCardModel.getGroups(id);
         const reachTheGoal = groups.map(({ groupId }) => {
           const current = ProjectCardModel.getGroupCurrentContributionPointByGroupId(id, groupId);
           const goal = ProjectCardModel.getGroupGoalContributionPointByGroupId(id, groupId);
@@ -512,9 +512,9 @@ const Table = (() => {
 
       return closedProjects;
     },
-    listProjectContributions: (card) => {
+    getProjectContributions: (card) => {
       const cardId = ProjectCardModel.findCardId(card);
-      const slots = ProjectCardModel.listSlots(cardId);
+      const slots = ProjectCardModel.getSlots(cardId);
       const playerPointsMap = slots.reduce((map, slot) => {
         if (slot.playerId) {
           if (!map[slot.playerId]) {
@@ -545,9 +545,9 @@ const Table = (() => {
 
       return contributions;
     },
-    listProjectOccupancySummary: (card) => {
+    getProjectOccupancySummary: (card) => {
       const cardId = ProjectCardModel.findCardId(card);
-      const slots = ProjectCardModel.listSlots(cardId);
+      const slots = ProjectCardModel.getSlots(cardId);
       const summaryMap = slots.reduce((map, slot) => {
         if (!map[slot.title]) {
           map[slot.title] = { occupied: 0, available: 0 };
