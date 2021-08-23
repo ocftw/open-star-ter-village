@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "author": "Ben Liu <ben196888@gmail.com>, renovirtony <renovirtony@gmail.com>",
   "workspaces": [
+    "packages/*",
     "server",
     "client"
   ],
