@@ -1,0 +1,10 @@
+{
+  "name": "@open-star-ter-village/webapp",
+  "version": "0.0.1",
+  "author": "Ben Liu <ben196888@gmail.com>, renovirtony <renovirtony@gmail.com>",
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "private": true
+}
