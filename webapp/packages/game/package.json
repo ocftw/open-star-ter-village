@@ -1,10 +1,13 @@
 {
   "name": "@open-star-ter-village/webapp-game",
   "version": "0.0.1",
-  "main": "lib/index.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "license": "MIT",
   "private": true,
   "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w",
     "test": "jest src/"
   },
   "dependencies": {
