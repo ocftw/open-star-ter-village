@@ -1,5 +1,6 @@
 import logo from './logo.svg';
 import './App.css';
+import Boardgame from './BoardGame';
 
 function App() {
   return (
@@ -18,6 +19,9 @@ function App() {
           Learn React
         </a>
       </header>
+      <Boardgame playerID="0" />
+      <Boardgame playerID="1" />
+      <Boardgame />
     </div>
   );
 }
