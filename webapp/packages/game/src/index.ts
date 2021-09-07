@@ -1,28 +1,38 @@
 import { Game, PlayerID } from 'boardgame.io';
-import { TurnOrder } from 'boardgame.io/core';
-import { Deck } from './deck';
 import { OpenStarTerVillageType as type } from './types';
 
-export const OpenStarTerVillage: Game<type.RootState> = {
+type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
+export const OpenStarTerVillage: Game<type.State.Root> = {
   setup: (ctx) => {
-    const rules: type.RuleState = {};
+    const rules: type.State.Root['rules'] = {};
 
-    const players: Record<PlayerID, type.PlayerState> = ctx.playOrder.reduce((s, playerId) => {
-      s[playerId] = {
-        hand: { projects: [], resources: [] },
-        workerTokens: 0,
-        closedProjects: 0,
-      };
-      return s;
-    }, {} as Record<PlayerID, type.PlayerState>);
+    const players: type.State.Root['players'] = ctx.playOrder
+      .reduce((s: Record<PlayerID, type.State.Player>, playerId) => {
+        s[playerId] = {
+          hand: { projects: [], resources: [] },
+          workerTokens: 0,
+          closedProjects: 0,
+        };
+        return s;
+      }, {});
 
-    const decks = {
-      projects: new Deck<type.ProjectCard>([], ctx.random!.Shuffle),
-      resources: new Deck<type.ResourceCard>([], ctx.random!.Shuffle),
-      events: new Deck<type.EventCard>([], ctx.random!.Shuffle),
+    const decks: type.State.Root['decks'] = {
+      projects: {
+        pile: [],
+        discardPile: [],
+      },
+      resources: {
+        pile: [],
+        discardPile: [],
+      },
+      events: {
+        pile: [],
+        discardPile: [],
+      },
     };
 
-    const table = {
+    const table: type.State.Root['tables'] = {
       projects: [],
       max: 0,
     };
@@ -35,53 +45,89 @@ export const OpenStarTerVillage: Game<type.RootState> = {
     };
   },
   moves: {
-    createProject: () => { },
-    recruit: () => { },
-    contribute: () => { },
+
   },
   phases: {
-    init: {
+    play: {
       start: true,
       onBegin: (state, ctx) => {
         // shuffle cards
-        state.decks.events.shuffle();
+        state.decks.events.pile = ctx.random!.Shuffle(state.decks.events.pile);
 
-        state.decks.projects.shuffle();
+        state.decks.projects.pile = ctx.random!.Shuffle(state.decks.projects.pile);
+        state.decks.resources.pile = ctx.random!.Shuffle(state.decks.resources.pile);
+
+        state.decks.projects;
         for (let playerId in state.players) {
-          const cards = state.decks.projects.draw(2);
+          const cards = state.decks.projects.pile.splice(0, 2);
           state.players[playerId].hand.projects.push(...cards);
         }
 
-        state.decks.resources.shuffle();
+        state.decks.resources;
         for (let playerId in state.players) {
-          const cards = state.decks.resources.draw(5);
+          const cards = state.decks.resources.pile.splice(0, 5);
           state.players[playerId].hand.resources.push(...cards);
         }
 
         for (let playerId in state.players) {
           state.players[playerId].workerTokens = 10;
         }
-
-        ctx.events!.endPhase();
       },
-      turn: {
-        moveLimit: 0,
-        order: TurnOrder.ONCE,
-      },
-      moves: {},
-      next: 'play',
     },
-    play: {},
   },
   turn: {
-    order: TurnOrder.RESET,
-    onBegin: () => { },
+    onBegin: () => {
+      // roundStart do something
+    },
     stages: {
-      action: {},
-      settle: {},
-      discard: {},
-      refill: {},
+      action: {
+        moves: {
+          createProject: () => { },
+          recruit: () => { },
+          contribute: () => { },
+        },
+        next: 'settle',
+      },
+      settle: {
+        next: 'discard',
+      },
+      discard: {
+        moves: {
+          discardProjects: {
+            noLimit: true,
+            move: () => { },
+          },
+          discardResources: {
+            noLimit: true,
+            move: () => { },
+          }
+        },
+        next: 'refill',
+      },
+      refill: {
+        moves: {
+          drawProjects: () => { },
+          drawResources: () => { },
+        },
+      },
     },
     onEnd: () => { },
+  },
+  playerView: (state, ctx, playerId) => {
+    const { decks, players, ...view } = state;
+    const publicPlayers: Record<PlayerID, PartialBy<type.State.Player, 'hand'>> = {};
+    for (let id in players) {
+      const { hand, ...player } = players[id];
+      publicPlayers[id] = player;
+    }
+
+    if (playerId) {
+      publicPlayers[playerId] = players[playerId];
+    }
+
+    return {
+      ...view,
+      players: publicPlayers,
+    };
   },
 };

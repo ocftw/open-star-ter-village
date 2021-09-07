@@ -7,28 +7,30 @@ export declare namespace OpenStarTerVillageType {
   export type ForceCard = string;
   export type EventCard = string;
 
-  export interface RootState {
-    rules: RuleState;
-    decks: {
-      projects: IDeck<ProjectCard>;
-      resources: IDeck<ResourceCard>;
-      events: IDeck<EventCard>;
-    };
-    players: Record<PlayerID, PlayerState>;
-  }
+  export declare namespace State {
+    export interface Root {
+      rules: Rule;
+      decks: {
+        projects: Deck<ProjectCard>;
+        resources: Deck<ResourceCard>;
+        events: Deck<EventCard>;
+      };
+      tables: TableState;
+      players: Record<PlayerID, Player>;
+    }
 
-  export interface RuleState {
-  }
+    export interface Rule {
+    }
 
-  export interface PlayerState {
-    hand: { projects: ProjectCard[]; resources: ResourceCard[]; };
-    workerTokens: number;
-    closedProjects: number;
-  }
-}
+    export interface Deck<T> {
+      pile: T[];
+      discardPile: T[];
+    }
 
-export interface IDeck<T> {
-  draw: (n?: number) => T[];
-  discard: (card: T | T[]) => void;
-  shuffle: () => void;
+    export interface Player {
+      hand: { projects: ProjectCard[]; resources: ResourceCard[]; };
+      workerTokens: number;
+      closedProjects: number;
+    }
+  }
 }
