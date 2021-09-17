@@ -130,6 +130,3 @@ dist
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
-
-.yarn/plugins/** binary
-.yarn/releases/** binary
