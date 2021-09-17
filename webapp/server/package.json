@@ -5,6 +5,7 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
+    "@open-star-ter-village/webapp-game": "0.0.1",
     "boardgame.io": "^0.47.4"
   }
 }

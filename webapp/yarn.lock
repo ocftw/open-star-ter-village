@@ -2271,6 +2271,7 @@ __metadata:
   resolution: "@open-star-ter-village/webapp-game@workspace:packages/game"
   dependencies:
     "@types/jest": ^27.0.1
+    "@types/node": ^16.9.2
     boardgame.io: ^0.47.4
     jest: ^27.0.6
     ts-jest: ^27.0.5
@@ -2283,6 +2284,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@open-star-ter-village/webapp-server@workspace:server"
   dependencies:
+    "@open-star-ter-village/webapp-game": 0.0.1
     boardgame.io: ^0.47.4
   languageName: unknown
   linkType: soft
@@ -2959,6 +2961,13 @@ __metadata:
   version: 12.20.20
   resolution: "@types/node@npm:12.20.20"
   checksum: 69e59ca166d0cd569ee493e61dadc03c21063dac30e4ef072d74cd79363e341e009b2ee5fd2747513410f95f92cdc7e279e33999d1aa5a25dfe9d3f850640d04
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^16.9.2":
+  version: 16.9.2
+  resolution: "@types/node@npm:16.9.2"
+  checksum: 204aa883bc93a267f43804af8872e538935369ab905d5ca702d2c17a213339f8df974bb95d21e2e714e8f83f669b185d8526f7c4b5d16adbdb5d96d4f2e75fa9
   languageName: node
   linkType: hard
 
