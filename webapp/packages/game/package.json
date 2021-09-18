@@ -7,7 +7,7 @@
   "private": true,
   "scripts": {
     "build": "tsc --project tsconfig.build.json",
-    "dev": "tsc -w",
+    "dev": "yarn build --watch",
     "test": "jest src/"
   },
   "dependencies": {
