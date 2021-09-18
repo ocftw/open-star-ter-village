@@ -1,11 +1,21 @@
 {
   "name": "@open-star-ter-village/webapp-server",
   "version": "0.0.1",
-  "main": "index.ts",
+  "main": "build/index.js",
   "license": "MIT",
   "private": true,
+  "scripts": {
+    "build": "tsc --project tsconfig.build.json",
+    "dev": "tsc -w",
+    "start": "node build/index.js"
+  },
   "dependencies": {
     "@open-star-ter-village/webapp-game": "0.0.1",
     "boardgame.io": "^0.47.4"
+  },
+  "devDependencies": {
+    "@types/node": "^16.9.2",
+    "ts-node": "^10.2.1",
+    "typescript": "^4.3.5"
   }
 }

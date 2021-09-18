@@ -2097,7 +2097,10 @@ __metadata:
   resolution: "@open-star-ter-village/webapp-server@workspace:server"
   dependencies:
     "@open-star-ter-village/webapp-game": 0.0.1
+    "@types/node": ^16.9.2
     boardgame.io: ^0.47.4
+    ts-node: ^10.2.1
+    typescript: ^4.3.5
   languageName: unknown
   linkType: soft
 
