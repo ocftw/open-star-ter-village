@@ -15,7 +15,7 @@ export declare namespace OpenStarTerVillageType {
         resources: Deck<ResourceCard>;
         events: Deck<EventCard>;
       };
-      tables: TableState;
+      table: TableState;
       players: Record<PlayerID, Player>;
     }
 

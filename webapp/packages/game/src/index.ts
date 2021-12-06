@@ -32,7 +32,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
       },
     };
 
-    const table: type.State.Root['tables'] = {
+    const table: type.State.Root['table'] = {
       projects: [],
       max: 0,
     };
