@@ -2033,6 +2033,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@koa/router@npm:^10.1.1":
+  version: 10.1.1
+  resolution: "@koa/router@npm:10.1.1"
+  dependencies:
+    debug: ^4.1.1
+    http-errors: ^1.7.3
+    koa-compose: ^4.1.0
+    methods: ^1.1.2
+    path-to-regexp: ^6.1.0
+  checksum: 3475f4235576d24eaa218d55e845fb81946288d65b87aa8aeda1a23b11b5556a02b9a8ff1ea520bb988ec7201523c41cff5abce9285fd12b9e839d7590cd2ce1
+  languageName: node
+  linkType: hard
+
 "@nodelib/fs.scandir@npm:2.1.5":
   version: 2.1.5
   resolution: "@nodelib/fs.scandir@npm:2.1.5"
@@ -2083,7 +2096,7 @@ __metadata:
     "@types/node": ^12.0.0
     "@types/react": ^17.0.0
     "@types/react-dom": ^17.0.0
-    boardgame.io: ^0.47.4
+    boardgame.io: ^0.49.6
     react: ^17.0.2
     react-dom: ^17.0.2
     react-scripts: 4.0.3
@@ -2098,7 +2111,7 @@ __metadata:
   dependencies:
     "@types/jest": ^27.0.1
     "@types/node": ^16.9.2
-    boardgame.io: ^0.47.4
+    boardgame.io: ^0.49.6
     jest: 26.6.0
     ts-jest: ^27.0.5
     ts-node: ^10.2.1
@@ -2112,7 +2125,7 @@ __metadata:
   dependencies:
     "@open-star-ter-village/webapp-game": 0.0.1
     "@types/node": ^16.9.2
-    boardgame.io: ^0.47.4
+    boardgame.io: ^0.49.6
     nodemon: ^2.0.12
     ts-node: ^10.2.1
     typescript: ^4.3.5
@@ -2773,16 +2786,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/koa-router@npm:^7.4.0":
-  version: 7.4.4
-  resolution: "@types/koa-router@npm:7.4.4"
-  dependencies:
-    "@types/koa": "*"
-  checksum: 23ff5b725daa1427dc822602f5d4fdcecca5f990595af48879e41338a9c71819ae312326028eef4645beb6ea32ea852416e2f0761a2abd5bf80c2575a3301837
-  languageName: node
-  linkType: hard
-
-"@types/koa@npm:*, @types/koa@npm:^2.11.3":
+"@types/koa@npm:*, @types/koa@npm:^2.13.4":
   version: 2.13.4
   resolution: "@types/koa@npm:2.13.4"
   dependencies:
@@ -2795,6 +2799,15 @@ __metadata:
     "@types/koa-compose": "*"
     "@types/node": "*"
   checksum: 35a54e68944f74d6763537d55d01f8ed870d0ef816b5f27fce97a317b237540b7c249dc4a54abab44ad0afd0ce010b335122c9efb490b9589affe7929201d707
+  languageName: node
+  linkType: hard
+
+"@types/koa__router@npm:^8.0.8":
+  version: 8.0.11
+  resolution: "@types/koa__router@npm:8.0.11"
+  dependencies:
+    "@types/koa": "*"
+  checksum: 81f55ed77273871728c81a20fa546ee906bebfe72fd72e3723d983a19504eb7d9578908a0fb8ef230764c5495031412df4245eee93479161bd7bd5135ca1ea04
   languageName: node
   linkType: hard
 
@@ -3644,13 +3657,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"any-promise@npm:^1.1.0":
-  version: 1.3.0
-  resolution: "any-promise@npm:1.3.0"
-  checksum: 0ee8a9bdbe882c90464d75d1f55cf027f5458650c4bd1f0467e65aec38ccccda07ca5844969ee77ed46d04e7dded3eaceb027e8d32f385688523fe305fa7e1de
-  languageName: node
-  linkType: hard
-
 "anymatch@npm:^2.0.0":
   version: 2.0.0
   resolution: "anymatch@npm:2.0.0"
@@ -4325,32 +4331,33 @@ __metadata:
   languageName: node
   linkType: hard
 
-"boardgame.io@npm:^0.47.4":
-  version: 0.47.4
-  resolution: "boardgame.io@npm:0.47.4"
+"boardgame.io@npm:^0.49.6":
+  version: 0.49.6
+  resolution: "boardgame.io@npm:0.49.6"
   dependencies:
     "@koa/cors": ^3.1.0
-    "@types/koa": ^2.11.3
-    "@types/koa-router": ^7.4.0
+    "@koa/router": ^10.1.1
+    "@types/koa": ^2.13.4
+    "@types/koa__router": ^8.0.8
     flatted: ^3.2.1
     immer: ^9.0.5
-    koa: ^2.7.0
-    koa-body: ^4.1.0
-    koa-router: ^7.2.1
+    koa: ^2.13.3
+    koa-body: ^4.2.0
     koa-socket-2: ^2.0.0
     lodash.isplainobject: ^4.0.6
-    nanoid: ^3.1.23
+    nanoid: ^3.1.30
     p-queue: ^6.6.2
     prop-types: ^15.5.10
     react-cookies: ^0.1.0
     redux: ^4.1.0
     rfc6902: ^4.0.2
+    setimmediate: ^1.0.5
     socket.io: ^4.1.3
     socket.io-client: ^4.1.3
     svelte: ^3.41.0
     svelte-json-tree-auto: ^0.1.0
     ts-toolbelt: ^6.3.6
-  checksum: 082ecdcb63c97668abc00abc942fd20d931163b04f69320d022f30f346176a13323ad28a53510f73c59086b17d8748263afc590f650b3d584988b6ee724f6b90
+  checksum: 48790075a32ecf7423282e737822d37aaca8d21d07a769bc2efc4ab2fdcee5c6fb3e5f994a038040a87431edbcf828d8c3a318a7a4cc18167940ff04cc085879
   languageName: node
   linkType: hard
 
@@ -5950,7 +5957,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:^3.1.0, debug@npm:^3.1.1, debug@npm:^3.2.6, debug@npm:^3.2.7":
+"debug@npm:^3.1.1, debug@npm:^3.2.6, debug@npm:^3.2.7":
   version: 3.2.7
   resolution: "debug@npm:3.2.7"
   dependencies:
@@ -5959,12 +5966,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:~3.1.0":
-  version: 3.1.0
-  resolution: "debug@npm:3.1.0"
+"debug@npm:^4.3.2":
+  version: 4.3.3
+  resolution: "debug@npm:4.3.3"
   dependencies:
-    ms: 2.0.0
-  checksum: 0b52718ab957254a5b3ca07fc34543bc778f358620c206a08452251eb7fc193c3ea3505072acbf4350219c14e2d71ceb7bdaa0d3370aa630b50da790458d08b3
+    ms: 2.1.2
+  peerDependenciesMeta:
+    supports-color:
+      optional: true
+  checksum: 14472d56fe4a94dbcfaa6dbed2dd3849f1d72ba78104a1a328047bb564643ca49df0224c3a17fa63533fd11dd3d4c8636cd861191232a2c6735af00cc2d4de16
   languageName: node
   linkType: hard
 
@@ -8332,7 +8342,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"http-errors@npm:^1.3.1, http-errors@npm:^1.6.3":
+"http-errors@npm:^1.6.3":
   version: 1.8.0
   resolution: "http-errors@npm:1.8.0"
   dependencies:
@@ -8342,6 +8352,19 @@ fsevents@^1.2.7:
     statuses: ">= 1.5.0 < 2"
     toidentifier: 1.0.0
   checksum: 873d997bada0340b31cc69cbe8376e47ee142f60375b81447fa3ad7be512dd4026afb3b46ed2257ee59472d43782a34151994b34264b204bcaad02e67ad836cb
+  languageName: node
+  linkType: hard
+
+"http-errors@npm:^1.7.3":
+  version: 1.8.1
+  resolution: "http-errors@npm:1.8.1"
+  dependencies:
+    depd: ~1.1.2
+    inherits: 2.0.4
+    setprototypeof: 1.2.0
+    statuses: ">= 1.5.0 < 2"
+    toidentifier: 1.0.1
+  checksum: d3c7e7e776fd51c0a812baff570bdf06fe49a5dc448b700ab6171b1250e4cf7db8b8f4c0b133e4bfe2451022a5790c1ca6c2cae4094dedd6ac8304a1267f91d2
   languageName: node
   linkType: hard
 
@@ -9236,13 +9259,6 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"isarray@npm:0.0.1":
-  version: 0.0.1
-  resolution: "isarray@npm:0.0.1"
-  checksum: 49191f1425681df4a18c2f0f93db3adb85573bcdd6a4482539d98eac9e705d8961317b01175627e860516a2fc45f8f9302db26e5a380a97a520e272e2a40a8d4
-  languageName: node
-  linkType: hard
-
 "isarray@npm:1.0.0, isarray@npm:^1.0.0, isarray@npm:~1.0.0":
   version: 1.0.0
   resolution: "isarray@npm:1.0.0"
@@ -10130,7 +10146,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"koa-body@npm:^4.1.0":
+"koa-body@npm:^4.2.0":
   version: 4.2.0
   resolution: "koa-body@npm:4.2.0"
   dependencies:
@@ -10141,15 +10157,6 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"koa-compose@npm:^3.0.0":
-  version: 3.2.1
-  resolution: "koa-compose@npm:3.2.1"
-  dependencies:
-    any-promise: ^1.1.0
-  checksum: ff8e5fc0348455acf751179c6c613eb030a5fac6406d3b49ae9e00460b7ee8770db3ef62633fd3db0306cd4a6d2a0b5152399ebd5bb5e684418f9eeeb251c2de
-  languageName: node
-  linkType: hard
-
 "koa-compose@npm:^4.1.0":
   version: 4.1.0
   resolution: "koa-compose@npm:4.1.0"
@@ -10157,27 +10164,13 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"koa-convert@npm:^1.2.0":
-  version: 1.2.0
-  resolution: "koa-convert@npm:1.2.0"
+"koa-convert@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "koa-convert@npm:2.0.0"
   dependencies:
     co: ^4.6.0
-    koa-compose: ^3.0.0
-  checksum: a33944dbda4ed87565985f5b37ba1122a012db872724b216b6fd8f9176d4bba42c4a9bf3c129330e45f6474d28f50ca0ed28d41b9bccd2ab5d36d6436cf0d676
-  languageName: node
-  linkType: hard
-
-"koa-router@npm:^7.2.1":
-  version: 7.4.0
-  resolution: "koa-router@npm:7.4.0"
-  dependencies:
-    debug: ^3.1.0
-    http-errors: ^1.3.1
-    koa-compose: ^3.0.0
-    methods: ^1.0.1
-    path-to-regexp: ^1.1.1
-    urijs: ^1.19.0
-  checksum: fa39643a00d12964e0c0479beb9987b58b4a68367b0f2e93a5b9b7187912442ca50ceda31c084b49407d77ea4d9ba1fbcc432170cc528f5774dee738df9dcb4e
+    koa-compose: ^4.1.0
+  checksum: 7385b3391995f59c1312142e110d5dff677f9850dbfbcf387cd36a7b0af03b5d26e82b811eb9bb008b4f3e661cdab1f8817596e46b1929da2cf6e97a2f7456ed
   languageName: node
   linkType: hard
 
@@ -10191,16 +10184,16 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"koa@npm:^2.7.0":
-  version: 2.13.1
-  resolution: "koa@npm:2.13.1"
+"koa@npm:^2.13.3":
+  version: 2.13.4
+  resolution: "koa@npm:2.13.4"
   dependencies:
     accepts: ^1.3.5
     cache-content-type: ^1.0.0
     content-disposition: ~0.5.2
     content-type: ^1.0.4
     cookies: ~0.8.0
-    debug: ~3.1.0
+    debug: ^4.3.2
     delegates: ^1.0.0
     depd: ^2.0.0
     destroy: ^1.0.4
@@ -10211,14 +10204,14 @@ fsevents@^1.2.7:
     http-errors: ^1.6.3
     is-generator-function: ^1.0.7
     koa-compose: ^4.1.0
-    koa-convert: ^1.2.0
+    koa-convert: ^2.0.0
     on-finished: ^2.3.0
     only: ~0.0.2
     parseurl: ^1.3.2
     statuses: ^1.5.0
     type-is: ^1.6.16
     vary: ^1.1.2
-  checksum: c09c64eb32c6ab887527d3677a1b945bb7432f50d88de8b03d1d091baf51c827dafe3055763dd605b57c193b696414b1d597f58c829fb7bc47b2c6c5509670b4
+  checksum: c9a6f9c803433b2d143a0788308048c1432a71c5febcfea2af7f2e8bd732b9bfd75c2c220d553752ee9ab9a3f52490f006cfd521db97cd01d8461d67cc1ccc1f
   languageName: node
   linkType: hard
 
@@ -10678,7 +10671,7 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"methods@npm:^1.0.1, methods@npm:~1.1.2":
+"methods@npm:^1.1.2, methods@npm:~1.1.2":
   version: 1.1.2
   resolution: "methods@npm:1.1.2"
   checksum: 0917ff4041fa8e2f2fda5425a955fe16ca411591fbd123c0d722fcf02b73971ed6f764d85f0a6f547ce49ee0221ce2c19a5fa692157931cecb422984f1dcd13a
@@ -11037,6 +11030,15 @@ fsevents@^1.2.7:
   bin:
     nanoid: bin/nanoid.cjs
   checksum: e2353828c7d8fde65265e9c981380102e2021f292038a93fd27288bad390339833286e8cbc7531abe1cb2c6b317e55f38b895dcb775151637bb487388558e0ff
+  languageName: node
+  linkType: hard
+
+"nanoid@npm:^3.1.30":
+  version: 3.1.30
+  resolution: "nanoid@npm:3.1.30"
+  bin:
+    nanoid: bin/nanoid.cjs
+  checksum: 276d0d4b0c41c46aeefec5f09f093e4085a2352d06881c845db22b84f8ef72cc8defae6d76bfb1d8a2a128eb2dec42ab148d16582be4e7754c97905806ef57b6
   languageName: node
   linkType: hard
 
@@ -11950,12 +11952,10 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"path-to-regexp@npm:^1.1.1":
-  version: 1.8.0
-  resolution: "path-to-regexp@npm:1.8.0"
-  dependencies:
-    isarray: 0.0.1
-  checksum: 709f6f083c0552514ef4780cb2e7e4cf49b0cc89a97439f2b7cc69a608982b7690fb5d1720a7473a59806508fc2dae0be751ba49f495ecf89fd8fbc62abccbcd
+"path-to-regexp@npm:^6.1.0":
+  version: 6.2.0
+  resolution: "path-to-regexp@npm:6.2.0"
+  checksum: a6aca74d2d6e2e7594d812f653cf85e9cb5054d3a8d80f099722a44ef6ad22639b02078e5ea83d11db16321c3e4359e3f1ab0274fa78dad0754a6e53f630b0fc
   languageName: node
   linkType: hard
 
@@ -14427,7 +14427,7 @@ resolve@^2.0.0-next.3:
   languageName: node
   linkType: hard
 
-"setimmediate@npm:^1.0.4":
+"setimmediate@npm:^1.0.4, setimmediate@npm:^1.0.5":
   version: 1.0.5
   resolution: "setimmediate@npm:1.0.5"
   checksum: c9a6f2c5b51a2dabdc0247db9c46460152ffc62ee139f3157440bd48e7c59425093f42719ac1d7931f054f153e2d26cf37dfeb8da17a794a58198a2705e527fd
@@ -15615,6 +15615,13 @@ resolve@^2.0.0-next.3:
   languageName: node
   linkType: hard
 
+"toidentifier@npm:1.0.1":
+  version: 1.0.1
+  resolution: "toidentifier@npm:1.0.1"
+  checksum: 952c29e2a85d7123239b5cfdd889a0dde47ab0497f0913d70588f19c53f7e0b5327c95f4651e413c74b785147f9637b17410ac8c846d5d4a20a5a33eb6dc3a45
+  languageName: node
+  linkType: hard
+
 "touch@npm:^3.1.0":
   version: 3.1.0
   resolution: "touch@npm:3.1.0"
@@ -16093,13 +16100,6 @@ resolve@^2.0.0-next.3:
   dependencies:
     punycode: ^2.1.0
   checksum: 7167432de6817fe8e9e0c9684f1d2de2bb688c94388f7569f7dbdb1587c9f4ca2a77962f134ec90be0cc4d004c939ff0d05acc9f34a0db39a3c797dada262633
-  languageName: node
-  linkType: hard
-
-"urijs@npm:^1.19.0":
-  version: 1.19.7
-  resolution: "urijs@npm:1.19.7"
-  checksum: faf178c0ebad4d9eb255c2ed181a1249c496c70383f53383f40ecf783b8b51c84b51503f309b8508048bdc98347f766513ef16692a096888b310b5e1c08c1e46
   languageName: node
   linkType: hard
 
