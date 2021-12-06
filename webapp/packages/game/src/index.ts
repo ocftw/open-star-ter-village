@@ -117,12 +117,13 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
     const { decks, players, ...view } = state;
     const publicPlayers: Record<PlayerID, PartialBy<type.State.Player, 'hand'>> = {};
     for (let id in players) {
-      const { hand, ...player } = players[id];
-      publicPlayers[id] = player;
-    }
-
-    if (playerId) {
-      publicPlayers[playerId] = players[playerId];
+      if (id === playerId) {
+        publicPlayers[id] = players[id];
+      } else {
+        // hide hand from the other players and observers
+        const { hand, ...player } = players[id];
+        publicPlayers[id] = player;
+      }
     }
 
     return {
