@@ -33,8 +33,8 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
     };
 
     const table: type.State.Root['table'] = {
-      projects: [],
-      max: 0,
+      activeEvent: null,
+      activeProjects: [],
     };
 
     return {

@@ -35,13 +35,15 @@ namespace State
 |  |- players
 |     |- [playerId]: State.Player
 |
-|- Rule
+|- Rule // TBD: should be the same hierarchy as State.Root
 |
 |- Deck<T>
 |  |- pile: T[]
 |  |- discardPile: T[]
 |
 |- Table
+|  |- activeEvent: Card.Event | null
+|  |- activeProjects: Project[]
 |
 |- Player
 |  |- hand (hidden to observer)
@@ -50,6 +52,9 @@ namespace State
 |  |
 |  |- workerTokens: number
 |  |- closedProjects: number
+|
+|- Project
+|  |- card: Card.Project
 |
 |- Tree
    |- [treeTypes]: number

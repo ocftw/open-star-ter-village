@@ -30,6 +30,8 @@ export declare namespace OpenStarTerVillageType {
     }
 
     export interface Table {
+      activeEvent: Card.Event | null;
+      activeProjects: Project[];
     }
 
     export interface Player {
@@ -41,6 +43,10 @@ export declare namespace OpenStarTerVillageType {
     export interface Hand {
       projects: Card.Project[];
       resources: Card.Resource[];
+    }
+
+    export interface Project {
+      card: Card.Project;
     }
   }
 }
