@@ -11,8 +11,8 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
       .reduce((s: Record<PlayerID, type.State.Player>, playerId) => {
         s[playerId] = {
           hand: { projects: [], resources: [] },
-          workerTokens: 0,
-          closedProjects: 0,
+          token: { workers: 0 },
+          completed: { projects: [] },
         };
         return s;
       }, {});
@@ -70,7 +70,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
         }
 
         for (let playerId in state.players) {
-          state.players[playerId].workerTokens = 10;
+          state.players[playerId].token.workers = 10;
         }
       },
     },
