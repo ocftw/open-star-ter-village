@@ -50,8 +50,11 @@ namespace State
 |  |  |- projects: Card.Project[]
 |  |  |- resources: Card.Resource[]
 |  |
-|  |- workerTokens: number
-|  |- closedProjects: number
+|  |- token
+|  |  |- workers: number
+|  |
+|  |- completed
+|     |- projects: Card.Project[]
 |
 |- Project
 |  |- card: Card.Project

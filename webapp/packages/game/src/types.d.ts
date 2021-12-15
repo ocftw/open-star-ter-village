@@ -36,8 +36,12 @@ export declare namespace OpenStarTerVillageType {
 
     export interface Player {
       hand: Hand;
-      workerTokens: number;
-      closedProjects: number;
+      token: {
+        workers: number;
+      };
+      completed: {
+        projects: Card.Project[];
+      };
     }
 
     export interface Hand {
