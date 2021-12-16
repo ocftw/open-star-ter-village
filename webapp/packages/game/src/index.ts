@@ -19,15 +19,15 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
 
     const decks: type.State.Root['decks'] = {
       projects: {
-        pile: [],
+        drawPile: [],
         discardPile: [],
       },
       resources: {
-        pile: [],
+        drawPile: [],
         discardPile: [],
       },
       events: {
-        pile: [],
+        drawPile: [],
         discardPile: [],
       },
     };
@@ -52,20 +52,20 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
       start: true,
       onBegin: (state, ctx) => {
         // shuffle cards
-        state.decks.events.pile = ctx.random!.Shuffle(state.decks.events.pile);
+        state.decks.events.drawPile = ctx.random!.Shuffle(state.decks.events.drawPile);
 
-        state.decks.projects.pile = ctx.random!.Shuffle(state.decks.projects.pile);
-        state.decks.resources.pile = ctx.random!.Shuffle(state.decks.resources.pile);
+        state.decks.projects.drawPile = ctx.random!.Shuffle(state.decks.projects.drawPile);
+        state.decks.resources.drawPile = ctx.random!.Shuffle(state.decks.resources.drawPile);
 
         state.decks.projects;
         for (let playerId in state.players) {
-          const cards = state.decks.projects.pile.splice(0, 2);
+          const cards = state.decks.projects.drawPile.splice(0, 2);
           state.players[playerId].hand.projects.push(...cards);
         }
 
         state.decks.resources;
         for (let playerId in state.players) {
-          const cards = state.decks.resources.pile.splice(0, 5);
+          const cards = state.decks.resources.drawPile.splice(0, 5);
           state.players[playerId].hand.resources.push(...cards);
         }
 

@@ -38,7 +38,7 @@ namespace State
 |- Rule // TBD: should be the same hierarchy as State.Root
 |
 |- Deck<T>
-|  |- pile: T[]
+|  |- drawPile: T[]
 |  |- discardPile: T[]
 |
 |- Table
