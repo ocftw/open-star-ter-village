@@ -3,7 +3,7 @@ import { PlayerID } from 'boardgame.io';
 export declare namespace OpenStarTerVillageType {
   export declare namespace Card {
     export type Project = string;
-    export type Resource = string;
+    export type Resource = Job | Force;
     export type Job = string;
     export type Force = string;
     export type Event = string;
