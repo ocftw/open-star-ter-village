@@ -1,4 +1,5 @@
 import { Game, PlayerID } from 'boardgame.io';
+import { Deck, CardDeck } from './deck';
 import { OpenStarTerVillageType as type } from './types';
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
@@ -18,18 +19,9 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
       }, {});
 
     const decks: type.State.Root['decks'] = {
-      projects: {
-        pile: [],
-        discardPile: [],
-      },
-      resources: {
-        pile: [],
-        discardPile: [],
-      },
-      events: {
-        pile: [],
-        discardPile: [],
-      },
+      projects: new CardDeck<type.Card.Project>([]),
+      resources: new CardDeck<type.Card.Resource>([]),
+      events: new CardDeck<type.Card.Event>([]),
     };
 
     const table: type.State.Root['table'] = {
@@ -52,20 +44,18 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
       start: true,
       onBegin: (state, ctx) => {
         // shuffle cards
-        state.decks.events.pile = ctx.random!.Shuffle(state.decks.events.pile);
+        const shuffler = ctx.random!.Shuffle;
+        Deck.ShuffleDrawPile(state.decks.events, shuffler);
+        Deck.ShuffleDrawPile(state.decks.projects, shuffler);
+        Deck.ShuffleDrawPile(state.decks.resources, shuffler);
 
-        state.decks.projects.pile = ctx.random!.Shuffle(state.decks.projects.pile);
-        state.decks.resources.pile = ctx.random!.Shuffle(state.decks.resources.pile);
-
-        state.decks.projects;
         for (let playerId in state.players) {
-          const cards = state.decks.projects.pile.splice(0, 2);
+          const cards = Deck.Draw(state.decks.projects, 2);
           state.players[playerId].hand.projects.push(...cards);
         }
 
-        state.decks.resources;
         for (let playerId in state.players) {
-          const cards = state.decks.resources.pile.splice(0, 5);
+          const cards = Deck.Draw(state.decks.resources, 5);
           state.players[playerId].hand.resources.push(...cards);
         }
 

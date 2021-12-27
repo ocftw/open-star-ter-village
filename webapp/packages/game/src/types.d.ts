@@ -25,7 +25,7 @@ export declare namespace OpenStarTerVillageType {
     }
 
     export interface Deck<T> {
-      pile: T[];
+      drawPile: T[];
       discardPile: T[];
     }
 
