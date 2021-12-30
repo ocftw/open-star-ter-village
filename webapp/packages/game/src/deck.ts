@@ -2,14 +2,13 @@ import { OpenStarTerVillageType } from './types';
 
 type StateDeck<T> = OpenStarTerVillageType.State.Deck<T>;
 
-export class CardDeck<T> implements StateDeck<T> {
-  public drawPile: T[];
-  public discardPile: T[];
-  constructor(drawPile?: T[], discardPile?: T[]) {
-    this.drawPile = drawPile || [];
-    this.discardPile = discardPile || [];
-  }
+export function newCardDeck<T>(drawPile: T[] = [], discardPile: T[] = []): StateDeck<T> {
+  return {
+    drawPile,
+    discardPile,
+  };
 }
+
 export interface IDeck {
   ShuffleDrawPile<T>(deck: StateDeck<T>, shuffler: (pile: T[]) => T[]): void;
   ShuffleDiscardPile<T>(deck: StateDeck<T>, shuffler: (pile: T[]) => T[]): void;
