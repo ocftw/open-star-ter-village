@@ -1,6 +1,9 @@
 import { Game, PlayerID } from 'boardgame.io';
 import { Deck, newCardDeck } from './deck';
 import { OpenStarTerVillageType as type } from './types';
+import projectCards from './data/card/projects.json';
+import resourceCards from './data/card/resources.json';
+import eventCards from './data/card/events.json';
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
@@ -19,9 +22,10 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
       }, {});
 
     const decks: type.State.Root['decks'] = {
-      projects: newCardDeck<type.Card.Project>([]),
-      resources: newCardDeck<type.Card.Resource>([]),
-      events: newCardDeck<type.Card.Event>([]),
+      // TODO: update type.Card.Project, Resource, Event to be object
+      projects: newCardDeck<type.Card.Project>(projectCards.map(card => card.name)),
+      resources: newCardDeck<type.Card.Resource>(resourceCards.map(card => card.name)),
+      events: newCardDeck<type.Card.Event>(eventCards.map(card => card.name)),
     };
 
     const table: type.State.Root['table'] = {
