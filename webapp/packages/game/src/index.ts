@@ -1,5 +1,6 @@
 import { Game, PlayerID } from 'boardgame.io';
 import { Deck, newCardDeck } from './deck';
+import { HandCards } from './handCards';
 import { OpenStarTerVillageType as type } from './types';
 import projectCards from './data/card/projects.json';
 import resourceCards from './data/card/resources.json';
@@ -54,13 +55,13 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
         Deck.ShuffleDrawPile(state.decks.resources, shuffler);
 
         for (let playerId in state.players) {
-          const cards = Deck.Draw(state.decks.projects, 2);
-          state.players[playerId].hand.projects.push(...cards);
+          const projectCards = Deck.Draw(state.decks.projects, 2);
+          HandCards.Add(state.players[playerId].hand.projects, projectCards);
         }
 
         for (let playerId in state.players) {
-          const cards = Deck.Draw(state.decks.resources, 5);
-          state.players[playerId].hand.resources.push(...cards);
+          const resourceCards = Deck.Draw(state.decks.resources, 5);
+          HandCards.Add(state.players[playerId].hand.resources, resourceCards);
         }
 
         for (let playerId in state.players) {
