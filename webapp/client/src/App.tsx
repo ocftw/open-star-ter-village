@@ -8,19 +8,22 @@ function App() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Edit <code>src/App.tsx</code> and save to reload.
+          OpenStarTerVillage
         </p>
         <a
           className="App-link"
-          href="https://reactjs.org"
+          href="https://github.com/ocftw/open-star-ter-village"
           target="_blank"
           rel="noopener noreferrer"
         >
-          Learn React
+          Clone from github
         </a>
       </header>
+      <h1>player 0 view</h1>
       <Boardgame playerID="0" />
+      <h1>player 1 view</h1>
       <Boardgame playerID="1" />
+      <h1>observer view</h1>
       <Boardgame />
     </div>
   );
