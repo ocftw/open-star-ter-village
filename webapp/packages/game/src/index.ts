@@ -5,6 +5,7 @@ import { OpenStarTerVillageType as type } from './types';
 import projectCards from './data/card/projects.json';
 import resourceCards from './data/card/resources.json';
 import eventCards from './data/card/events.json';
+import goalCards from './data/card/goals.json';
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
@@ -27,6 +28,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
       projects: newCardDeck<type.Card.Project>(projectCards.map(card => card.name)),
       resources: newCardDeck<type.Card.Resource>(resourceCards.map(card => card.name)),
       events: newCardDeck<type.Card.Event>(eventCards.map(card => card.name)),
+      goals: newCardDeck<type.Card.Goal>(goalCards.map(card => card.name)),
     };
 
     const table: type.State.Root['table'] = {
@@ -53,6 +55,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
         Deck.ShuffleDrawPile(state.decks.events, shuffler);
         Deck.ShuffleDrawPile(state.decks.projects, shuffler);
         Deck.ShuffleDrawPile(state.decks.resources, shuffler);
+        Deck.ShuffleDrawPile(state.decks.goals, shuffler);
 
         for (let playerId in state.players) {
           const projectCards = Deck.Draw(state.decks.projects, 2);
