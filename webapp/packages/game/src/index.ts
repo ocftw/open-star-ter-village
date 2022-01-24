@@ -123,14 +123,15 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
           discardResources: {
             noLimit: true,
             move: () => { },
-          }
+          },
         },
         next: 'refill',
       },
       refill: {
         moves: {
-          drawProjects: () => { },
-          drawResources: () => { },
+          refillAndEnd: (G, ctx) => {
+            ctx.events?.endTurn()
+          }
         },
       },
     },
