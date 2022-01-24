@@ -27,10 +27,19 @@ const Board: React.FC<BoardProps<OpenStarTerVillageType.State.Root>> = ({ G, pla
     </div>
   ) : null;
 
+  // show game table
+  const Table = (
+    <div>
+      <div>Table</div>
+      {JSON.stringify(G.table)}
+    </div>
+  );
+
   return (
     <div className='board'>
       {Players}
       {CurrentPlayer}
+      {Table}
     </div>
   );
 }
