@@ -1,4 +1,5 @@
 import { Game, PlayerID } from 'boardgame.io';
+import { INVALID_MOVE } from 'boardgame.io/core';
 import { Deck, newCardDeck } from './deck';
 import { HandCards } from './handCards';
 import { OpenStarTerVillageType as type } from './types';
@@ -81,7 +82,24 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
       action: {
         moves: {
           createProject: () => { },
-          recruit: () => { },
+          recruit: (G, ctx, resourceCardIndex, slot: { index: number, projectIndex: number }) => {
+            const currentPlayer = ctx.playerID!;
+            const currentPlayerResources = G.players[currentPlayer].hand.resources;
+            if (!(0 <= resourceCardIndex && resourceCardIndex < currentPlayerResources.length)) {
+              return INVALID_MOVE;
+            }
+
+            const activeProjects = G.table.activeProjects
+            if (!(0 <= slot.projectIndex && slot.projectIndex < activeProjects.length)) {
+              return INVALID_MOVE;
+            }
+            if (activeProjects[slot.projectIndex].slots[slot.index] !== 0) {
+              return INVALID_MOVE;
+            }
+            const [resourceCard] = currentPlayerResources.splice(resourceCardIndex, 1);
+            activeProjects[slot.projectIndex].slots[slot.index] = 1;
+            Deck.Discard(G.decks.resources, [resourceCard]);
+          },
           contribute: () => { },
         },
         next: 'settle',
