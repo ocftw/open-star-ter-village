@@ -53,6 +53,7 @@ export declare namespace OpenStarTerVillageType {
 
     export interface Project {
       card: Card.Project;
+      slots: number[];
     }
   }
 }

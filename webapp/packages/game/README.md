@@ -58,6 +58,7 @@ namespace State
 |
 |- Project
 |  |- card: Card.Project
+|  |- slots: number[] # is 0 when slot is inactive, is 1-6 (positive number) when slot is active
 |
 |- Tree
    |- [treeTypes]: number
