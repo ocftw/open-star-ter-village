@@ -124,6 +124,24 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
             activeProjects[slot.projectIndex].slots[slot.index] = 1;
             Deck.Discard(G.decks.resources, [resourceCard]);
           },
+          contribute: (G, ctx, contributions: { id: number; slotId: number; value: number; }[]) => {
+            const activeProjects = G.table.activeProjects
+            const isInvalid = contributions.map(({ id, slotId }) => {
+              if (!(0 <= id && id < activeProjects.length)) {
+                return true;
+              }
+              if (activeProjects[id].slots[slotId] === 0) {
+                return true;
+              }
+            }).some(x => x);
+            if (isInvalid) {
+              return INVALID_MOVE;
+            }
+
+            contributions.forEach(({ id, slotId, value }) => {
+              activeProjects[id].slots[slotId] = Math.min(6, activeProjects[id].slots[slotId] + value);
+            });
+          },
         },
         next: 'settle',
       },
