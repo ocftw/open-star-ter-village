@@ -106,8 +106,24 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
             const slots: number[] = Array(6).fill(0);
             G.table.activeProjects.push({ card: projectCard, slots });
           },
-          recruit: () => { },
-          contribute: () => { },
+          recruit: (G, ctx, resourceCardIndex, slot: { index: number, projectIndex: number }) => {
+            const currentPlayer = ctx.playerID!;
+            const currentPlayerResources = G.players[currentPlayer].hand.resources;
+            if (!(0 <= resourceCardIndex && resourceCardIndex < currentPlayerResources.length)) {
+              return INVALID_MOVE;
+            }
+
+            const activeProjects = G.table.activeProjects
+            if (!(0 <= slot.projectIndex && slot.projectIndex < activeProjects.length)) {
+              return INVALID_MOVE;
+            }
+            if (activeProjects[slot.projectIndex].slots[slot.index] !== 0) {
+              return INVALID_MOVE;
+            }
+            const [resourceCard] = currentPlayerResources.splice(resourceCardIndex, 1);
+            activeProjects[slot.projectIndex].slots[slot.index] = 1;
+            Deck.Discard(G.decks.resources, [resourceCard]);
+          },
         },
         next: 'settle',
       },
