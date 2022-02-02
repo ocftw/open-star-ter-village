@@ -78,10 +78,34 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
     onBegin: () => {
       // roundStart do something
     },
+    /**
+     * send current player to action stage.
+     * Do not set maxMoves as action points because following reasons
+     *  1. Max moves capped all stage moves. i.e. 3 maxMoves means sum(moves in action/settle/discards/refill) <= 3
+     *  2. Each move costs one and no dynamic cost can be set. i.e. createProject should cost `2` action points
+     *  3. maxMoves cannot update after game starts. i.e. maxMoves cannot change when user has more than 3 action points
+     * Solution: validate them in each move. return INVALID_MOVE when action points is not enough
+     */
+    activePlayers: {
+      currentPlayer: {
+        stage: 'action',
+      },
+    },
     stages: {
       action: {
         moves: {
-          createProject: () => { },
+          createProject: (G, ctx, index) => {
+            const currentPlayer = ctx.playerID!;
+            const currentHandProjects = G.players[currentPlayer].hand.projects
+            if (!(0 <= index && index < currentHandProjects.length)) {
+              return INVALID_MOVE;
+            }
+
+            const [projectCard] = currentHandProjects.splice(index, 1);
+            // TODO: replace hard coded slots number with project card slots length
+            const slots: number[] = Array(6).fill(0);
+            G.table.activeProjects.push({ card: projectCard, slots });
+          },
           recruit: (G, ctx, resourceCardIndex, slot: { index: number, projectIndex: number }) => {
             const currentPlayer = ctx.playerID!;
             const currentPlayerResources = G.players[currentPlayer].hand.resources;
@@ -100,7 +124,6 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
             activeProjects[slot.projectIndex].slots[slot.index] = 1;
             Deck.Discard(G.decks.resources, [resourceCard]);
           },
-          contribute: () => { },
         },
         next: 'settle',
       },
@@ -116,14 +139,15 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
           discardResources: {
             noLimit: true,
             move: () => { },
-          }
+          },
         },
         next: 'refill',
       },
       refill: {
         moves: {
-          drawProjects: () => { },
-          drawResources: () => { },
+          refillAndEnd: (G, ctx) => {
+            ctx.events?.endTurn()
+          }
         },
       },
     },
