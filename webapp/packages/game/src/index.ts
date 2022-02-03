@@ -93,16 +93,33 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
     stages: {
       action: {
         moves: {
-          createProject: (G, ctx, index) => {
+          createProject: (G, ctx, projectCardIndex, resourceCardIndex) => {
             const currentPlayer = ctx.playerID!;
+            // check project card in in hand
             const currentHandProjects = G.players[currentPlayer].hand.projects
-            if (!(0 <= index && index < currentHandProjects.length)) {
+            if (!(0 <= projectCardIndex && projectCardIndex < currentHandProjects.length)) {
               return INVALID_MOVE;
             }
 
-            const [projectCard] = currentHandProjects.splice(index, 1);
+            // check resource card is in hand
+            const currentHandResources = G.players[currentPlayer].hand.resources;
+            if (!(0 <= resourceCardIndex && resourceCardIndex < currentHandResources.length)) {
+              return INVALID_MOVE;
+            }
+
+            // check resource card is required in project
+            if (!currentHandProjects[projectCardIndex].jobs.includes(currentHandResources[resourceCardIndex].name)) {
+              return INVALID_MOVE;
+            }
+
+            const [projectCard] = currentHandProjects.splice(projectCardIndex, 1);
+            const [resourceCard] = currentHandResources.splice(resourceCardIndex, 1);
             const slots: number[] = projectCard.jobs.map(p => 0);
-            G.table.activeProjects.push({ card: projectCard, slots });
+            const slotIndex = projectCard.jobs.findIndex(job => job === resourceCard.name);
+            // TODO: replace with rule of default contributions
+            slots[slotIndex] = 1;
+            const contributions = { [resourceCard.name]: 1 };
+            G.table.activeProjects.push({ card: projectCard, slots, contributions });
           },
           recruit: (G, ctx, resourceCardIndex, slot: { index: number, projectIndex: number }) => {
             const currentPlayer = ctx.playerID!;
