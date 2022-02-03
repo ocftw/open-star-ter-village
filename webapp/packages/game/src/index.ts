@@ -25,11 +25,10 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
       }, {});
 
     const decks: type.State.Root['decks'] = {
-      // TODO: update type.Card.Project, Resource, Event to be object
-      projects: newCardDeck<type.Card.Project>(projectCards.map(card => card.name)),
-      resources: newCardDeck<type.Card.Resource>(resourceCards.map(card => card.name)),
-      events: newCardDeck<type.Card.Event>(eventCards.map(card => card.name)),
-      goals: newCardDeck<type.Card.Goal>(goalCards.map(card => card.name)),
+      projects: newCardDeck<type.Card.Project>(projectCards),
+      resources: newCardDeck<type.Card.Resource>(resourceCards),
+      events: newCardDeck<type.Card.Event>(eventCards),
+      goals: newCardDeck<type.Card.Goal>(goalCards),
     };
 
     const table: type.State.Root['table'] = {
