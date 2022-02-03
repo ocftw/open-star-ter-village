@@ -7,6 +7,7 @@ import projectCards from './data/card/projects.json';
 import resourceCards from './data/card/resources.json';
 import eventCards from './data/card/events.json';
 import goalCards from './data/card/goals.json';
+import { isInRange } from './utils';
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
@@ -97,13 +98,13 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
             const currentPlayer = ctx.playerID!;
             // check project card in in hand
             const currentHandProjects = G.players[currentPlayer].hand.projects
-            if (!(0 <= projectCardIndex && projectCardIndex < currentHandProjects.length)) {
+            if (!isInRange(projectCardIndex, currentHandProjects.length)) {
               return INVALID_MOVE;
             }
 
             // check resource card is in hand
             const currentHandResources = G.players[currentPlayer].hand.resources;
-            if (!(0 <= resourceCardIndex && resourceCardIndex < currentHandResources.length)) {
+            if (!isInRange(resourceCardIndex, currentHandResources.length)) {
               return INVALID_MOVE;
             }
 
@@ -124,12 +125,12 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
           recruit: (G, ctx, resourceCardIndex, slot: { index: number, projectIndex: number }) => {
             const currentPlayer = ctx.playerID!;
             const currentPlayerResources = G.players[currentPlayer].hand.resources;
-            if (!(0 <= resourceCardIndex && resourceCardIndex < currentPlayerResources.length)) {
+            if (!isInRange(resourceCardIndex, currentPlayerResources.length)) {
               return INVALID_MOVE;
             }
 
             const activeProjects = G.table.activeProjects
-            if (!(0 <= slot.projectIndex && slot.projectIndex < activeProjects.length)) {
+            if (!isInRange(slot.projectIndex, activeProjects.length)) {
               return INVALID_MOVE;
             }
             if (activeProjects[slot.projectIndex].slots[slot.index] !== 0) {
@@ -142,7 +143,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
           contribute: (G, ctx, contributions: { id: number; slotId: number; value: number; }[]) => {
             const activeProjects = G.table.activeProjects
             const isInvalid = contributions.map(({ id, slotId }) => {
-              if (!(0 <= id && id < activeProjects.length)) {
+              if (!isInRange(id, activeProjects.length)) {
                 return true;
               }
               if (activeProjects[id].slots[slotId] === 0) {
