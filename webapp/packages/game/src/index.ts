@@ -101,8 +101,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
             }
 
             const [projectCard] = currentHandProjects.splice(index, 1);
-            // TODO: replace hard coded slots number with project card slots length
-            const slots: number[] = Array(6).fill(0);
+            const slots: number[] = projectCard.jobs.map(p => 0);
             G.table.activeProjects.push({ card: projectCard, slots });
           },
           recruit: (G, ctx, resourceCardIndex, slot: { index: number, projectIndex: number }) => {

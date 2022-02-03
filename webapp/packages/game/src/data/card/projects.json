@@ -1,92 +1,136 @@
 [
   {
-    "name": "台灣成功加入 OGP 組織"
+    "name": "台灣成功加入 OGP 組織",
+    "jobs": [
+      "行銷公關",
+      "行銷公關",
+      "法務",
+      "文字工作者",
+      "議題工作者",
+      "議題工作者"
+    ]
   },
   {
-    "name": "V 歹丸"
+    "name": "V 歹丸",
+    "jobs": [
+      "法務",
+      "公務員",
+      "公務員",
+      "文字工作者",
+      "議題工作者",
+      "議題工作者"
+    ]
   },
   {
-    "name": "政治獻金透明化修法"
+    "name": "政治獻金透明化修法",
+    "jobs": []
   },
   {
-    "name": "實價登錄到門牌"
+    "name": "實價登錄到門牌",
+    "jobs": []
   },
   {
-    "name": "民意代表投票指南"
+    "name": "民意代表投票指南",
+    "jobs": []
   },
   {
-    "name": "公共政策網路參與平臺"
+    "name": "公共政策網路參與平臺",
+    "jobs": []
   },
   {
-    "name": "政府資料開放平台"
+    "name": "政府資料開放平台",
+    "jobs": []
   },
   {
-    "name": "國民法官"
+    "name": "國民法官",
+    "jobs": []
   },
   {
-    "name": "開放國會直播"
+    "name": "開放國會直播",
+    "jobs": []
   },
   {
-    "name": "資料申請小精靈"
+    "name": "資料申請小精靈",
+    "jobs": []
   },
   {
-    "name": "在專制國家推動開放資料專法"
+    "name": "在專制國家推動開放資料專法",
+    "jobs": []
   },
   {
-    "name": "Open Street Guide"
+    "name": "Open Street Guide",
+    "jobs": []
   },
   {
-    "name": "嗶了再買"
+    "name": "嗶了再買",
+    "jobs": []
   },
   {
-    "name": "ㄅㄧㄤˋ典"
+    "name": "ㄅㄧㄤˋ典",
+    "jobs": []
   },
   {
-    "name": "全民追公車"
+    "name": "全民追公車",
+    "jobs": []
   },
   {
-    "name": "真假！？別再傳謠言"
+    "name": "真假！？別再傳謠言",
+    "jobs": []
   },
   {
-    "name": "口罩藏寶圖 口罩在哪裡"
+    "name": "口罩藏寶圖 口罩在哪裡",
+    "jobs": []
   },
   {
-    "name": "開放館藏"
+    "name": "開放館藏",
+    "jobs": []
   },
   {
-    "name": "就職順風耳"
+    "name": "就職順風耳",
+    "jobs": []
   },
   {
-    "name": "國家祕寶"
+    "name": "國家祕寶",
+    "jobs": []
   },
   {
-    "name": "Linux kerkernel"
+    "name": "Linux kerkernel",
+    "jobs": []
   },
   {
-    "name": "Firebox"
+    "name": "Firebox",
+    "jobs": []
   },
   {
-    "name": "BiangOffice.org"
+    "name": "BiangOffice.org",
+    "jobs": []
   },
   {
-    "name": "Public Money Public Code"
+    "name": "Public Money Public Code",
+    "jobs": []
   },
   {
-    "name": "Inksgap"
+    "name": "Inksgap",
+    "jobs": []
   },
   {
-    "name": "製作開源農業感測器"
+    "name": "製作開源農業感測器",
+    "jobs": []
   },
   {
-    "name": "了解開源授權"
+    "name": "了解開源授權",
+    "jobs": []
   },
   {
-    "name": "AllPass"
+    "name": "AllPass",
+    "jobs": []
   },
   {
-    "name": "酷音未來輸入法"
+    "name": "酷音未來輸入法",
+    "jobs": []
   },
   {
-    "name": "OCF Lab"
+    "name": "OCF Lab",
+    "jobs": []
   }
 ]
