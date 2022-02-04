@@ -16,9 +16,9 @@ This is the living document capture the current area of focus, and what needs to
 
 * [ ] Play Project cards *[T]*
   * [x] Basic play function
-  * [ ] Fill in jobs *[help needed]*
-  * [ ] Play Job card with Project card (validate, check eligible included) *[T]*
-  * [ ] Reduce player action point (validate, check eligible included)
+  * [x] Fill in jobs
+  * [x] Play Job card with Project card (validate, check eligible included)
+  * [ ] Reduce player action point (validate, check eligible included) *[T]*
   * [ ] Reduce player worker token (validate, check eligible included)
 * [ ] Play Job cards
   * [x] basic play function
