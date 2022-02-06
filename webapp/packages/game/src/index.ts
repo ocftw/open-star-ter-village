@@ -7,6 +7,7 @@ import projectCards from './data/card/projects.json';
 import resourceCards from './data/card/resources.json';
 import eventCards from './data/card/events.json';
 import goalCards from './data/card/goals.json';
+import { isInRange } from './utils';
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
@@ -25,11 +26,10 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
       }, {});
 
     const decks: type.State.Root['decks'] = {
-      // TODO: update type.Card.Project, Resource, Event to be object
-      projects: newCardDeck<type.Card.Project>(projectCards.map(card => card.name)),
-      resources: newCardDeck<type.Card.Resource>(resourceCards.map(card => card.name)),
-      events: newCardDeck<type.Card.Event>(eventCards.map(card => card.name)),
-      goals: newCardDeck<type.Card.Goal>(goalCards.map(card => card.name)),
+      projects: newCardDeck<type.Card.Project>(projectCards),
+      resources: newCardDeck<type.Card.Resource>(resourceCards),
+      events: newCardDeck<type.Card.Event>(eventCards),
+      goals: newCardDeck<type.Card.Goal>(goalCards),
     };
 
     const table: type.State.Root['table'] = {
@@ -94,27 +94,43 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
     stages: {
       action: {
         moves: {
-          createProject: (G, ctx, index) => {
+          createProject: (G, ctx, projectCardIndex, resourceCardIndex) => {
             const currentPlayer = ctx.playerID!;
+            // check project card in in hand
             const currentHandProjects = G.players[currentPlayer].hand.projects
-            if (!(0 <= index && index < currentHandProjects.length)) {
+            if (!isInRange(projectCardIndex, currentHandProjects.length)) {
               return INVALID_MOVE;
             }
 
-            const [projectCard] = currentHandProjects.splice(index, 1);
-            // TODO: replace hard coded slots number with project card slots length
-            const slots: number[] = Array(6).fill(0);
-            G.table.activeProjects.push({ card: projectCard, slots });
+            // check resource card is in hand
+            const currentHandResources = G.players[currentPlayer].hand.resources;
+            if (!isInRange(resourceCardIndex, currentHandResources.length)) {
+              return INVALID_MOVE;
+            }
+
+            // check resource card is required in project
+            if (!currentHandProjects[projectCardIndex].jobs.includes(currentHandResources[resourceCardIndex].name)) {
+              return INVALID_MOVE;
+            }
+
+            const [projectCard] = currentHandProjects.splice(projectCardIndex, 1);
+            const [resourceCard] = currentHandResources.splice(resourceCardIndex, 1);
+            const slots: number[] = projectCard.jobs.map(p => 0);
+            const slotIndex = projectCard.jobs.findIndex(job => job === resourceCard.name);
+            // TODO: replace with rule of default contributions
+            slots[slotIndex] = 1;
+            const contributions = { [resourceCard.name]: 1 };
+            G.table.activeProjects.push({ card: projectCard, slots, contributions });
           },
           recruit: (G, ctx, resourceCardIndex, slot: { index: number, projectIndex: number }) => {
             const currentPlayer = ctx.playerID!;
             const currentPlayerResources = G.players[currentPlayer].hand.resources;
-            if (!(0 <= resourceCardIndex && resourceCardIndex < currentPlayerResources.length)) {
+            if (!isInRange(resourceCardIndex, currentPlayerResources.length)) {
               return INVALID_MOVE;
             }
 
             const activeProjects = G.table.activeProjects
-            if (!(0 <= slot.projectIndex && slot.projectIndex < activeProjects.length)) {
+            if (!isInRange(slot.projectIndex, activeProjects.length)) {
               return INVALID_MOVE;
             }
             if (activeProjects[slot.projectIndex].slots[slot.index] !== 0) {
@@ -127,7 +143,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
           contribute: (G, ctx, contributions: { id: number; slotId: number; value: number; }[]) => {
             const activeProjects = G.table.activeProjects
             const isInvalid = contributions.map(({ id, slotId }) => {
-              if (!(0 <= id && id < activeProjects.length)) {
+              if (!isInRange(id, activeProjects.length)) {
                 return true;
               }
               if (activeProjects[id].slots[slotId] === 0) {

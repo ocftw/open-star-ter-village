@@ -2,12 +2,13 @@ import { PlayerID } from 'boardgame.io';
 
 export declare namespace OpenStarTerVillageType {
   export declare namespace Card {
-    export type Project = string;
+    export type Base = { name: string };
+    export type Project = Base & { jobs: string[] };
     export type Resource = Job | Force;
-    export type Job = string;
-    export type Force = string;
-    export type Event = string;
-    export type Goal = string;
+    export type Job = Base;
+    export type Force = Base;
+    export type Event = Base;
+    export type Goal = Base;
   }
 
   export declare namespace State {
@@ -54,6 +55,7 @@ export declare namespace OpenStarTerVillageType {
     export interface Project {
       card: Card.Project;
       slots: number[];
+      contributions: Record<string, number>;
     }
   }
 }
