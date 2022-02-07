@@ -22,7 +22,7 @@ This is the living document capture the current area of focus, and what needs to
   * [x] Reduce player worker token (validate, check eligible included)
 * [ ] Play Job cards *[T]*
   * [x] basic play function
-  * [ ] Play Job card on an Active project (includes validation and eligibility check)
+  * [x] Play Job card on an Active project (includes validation and eligibility check)
   * [ ] Deduct player action point (includes validation and eligibility check)
   * [ ] Deduct player worker token (includes validation and eligibility check)
 * [ ] Contribute the projects
