@@ -139,6 +139,16 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
           },
           recruit: (G, ctx, resourceCardIndex: number, activeProjectIndex: number) => {
             const currentPlayer = ctx.playerID!;
+            const currentPlayerToken = G.players[currentPlayer].token;
+            const recruitActionCosts = 1;
+            if (currentPlayerToken.actions < recruitActionCosts) {
+              return INVALID_MOVE;
+            }
+            const recruitWorkerCosts = 1;
+            if (currentPlayerToken.workers < recruitWorkerCosts) {
+              return INVALID_MOVE;
+            }
+
             const currentPlayerResources = G.players[currentPlayer].hand.resources;
             if (!isInRange(resourceCardIndex, currentPlayerResources.length)) {
               return INVALID_MOVE;
@@ -154,6 +164,10 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
             if (slotIndex < 0) {
               return INVALID_MOVE;
             }
+
+            // reduce action and worker tokens
+            currentPlayerToken.actions -= recruitActionCosts;
+            currentPlayerToken.workers -= recruitWorkerCosts;
             const [resourceCard] = currentPlayerResources.splice(resourceCardIndex, 1);
             activeProject.slots[slotIndex] = 1;
             Deck.Discard(G.decks.resources, [resourceCard]);
