@@ -97,10 +97,10 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
         moves: {
           createProject: (G, ctx, projectCardIndex, resourceCardIndex) => {
             const currentPlayer = ctx.playerID!;
-            const currnetPlayerToken = G.players[currentPlayer].token;
+            const currentPlayerToken = G.players[currentPlayer].token;
             // TODO: replace hardcoded number with dynamic rules
             const createProjectActionCosts = 2;
-            if (currnetPlayerToken.actions < createProjectActionCosts) {
+            if (currentPlayerToken.actions < createProjectActionCosts) {
               return INVALID_MOVE;
             }
 
@@ -122,7 +122,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
             }
 
             // reduce action tokens
-            currnetPlayerToken.actions -= createProjectActionCosts;
+            currentPlayerToken.actions -= createProjectActionCosts;
             const [projectCard] = currentHandProjects.splice(projectCardIndex, 1);
             const [resourceCard] = currentHandResources.splice(resourceCardIndex, 1);
             const slots: number[] = projectCard.jobs.map(p => 0);
