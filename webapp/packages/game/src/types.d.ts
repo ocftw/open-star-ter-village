@@ -41,6 +41,7 @@ export declare namespace OpenStarTerVillageType {
       hand: Hand;
       token: {
         workers: number;
+        actions: number;
       };
       completed: {
         projects: Card.Project[];

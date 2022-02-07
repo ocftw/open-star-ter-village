@@ -52,6 +52,7 @@ namespace State
 |  |
 |  |- token
 |  |  |- workers: number
+|  |  |- actions: number
 |  |
 |  |- completed
 |     |- projects: Card.Project[]
