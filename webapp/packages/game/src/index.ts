@@ -103,6 +103,10 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
             if (currentPlayerToken.actions < createProjectActionCosts) {
               return INVALID_MOVE;
             }
+            const createProjectWorkerCosts = 1;
+            if (currentPlayerToken.workers < createProjectWorkerCosts) {
+              return INVALID_MOVE;
+            }
 
             // check project card in in hand
             const currentHandProjects = G.players[currentPlayer].hand.projects
@@ -123,6 +127,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
 
             // reduce action tokens
             currentPlayerToken.actions -= createProjectActionCosts;
+            currentPlayerToken.workers -= createProjectWorkerCosts;
             const [projectCard] = currentHandProjects.splice(projectCardIndex, 1);
             const [resourceCard] = currentHandResources.splice(resourceCardIndex, 1);
             const slots: number[] = projectCard.jobs.map(p => 0);
