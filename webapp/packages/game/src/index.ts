@@ -19,7 +19,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
       .reduce((s: Record<PlayerID, type.State.Player>, playerId) => {
         s[playerId] = {
           hand: { projects: [], resources: [] },
-          token: { workers: 0 },
+          token: { workers: 0, actions: 0 },
           completed: { projects: [] },
         };
         return s;
@@ -70,6 +70,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
 
         for (let playerId in state.players) {
           state.players[playerId].token.workers = 10;
+          state.players[playerId].token.actions = 3;
         }
       },
     },
@@ -96,6 +97,13 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
         moves: {
           createProject: (G, ctx, projectCardIndex, resourceCardIndex) => {
             const currentPlayer = ctx.playerID!;
+            const currnetPlayerToken = G.players[currentPlayer].token;
+            // TODO: replace hardcoded number with dynamic rules
+            const createProjectActionCosts = 2;
+            if (currnetPlayerToken.actions < createProjectActionCosts) {
+              return INVALID_MOVE;
+            }
+
             // check project card in in hand
             const currentHandProjects = G.players[currentPlayer].hand.projects
             if (!isInRange(projectCardIndex, currentHandProjects.length)) {
@@ -113,6 +121,8 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               return INVALID_MOVE;
             }
 
+            // reduce action tokens
+            currnetPlayerToken.actions -= createProjectActionCosts;
             const [projectCard] = currentHandProjects.splice(projectCardIndex, 1);
             const [resourceCard] = currentHandResources.splice(resourceCardIndex, 1);
             const slots: number[] = projectCard.jobs.map(p => 0);
@@ -180,6 +190,8 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
       refill: {
         moves: {
           refillAndEnd: (G, ctx) => {
+            // refill action points
+            G.players[ctx.currentPlayer].token.actions = 3;
             ctx.events?.endTurn()
           }
         },
