@@ -137,7 +137,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
             const contributions = { [resourceCard.name]: 1 };
             G.table.activeProjects.push({ card: projectCard, slots, contributions });
           },
-          recruit: (G, ctx, resourceCardIndex, slot: { index: number, projectIndex: number }) => {
+          recruit: (G, ctx, resourceCardIndex: number, activeProjectIndex: number, slot: { index: number }) => {
             const currentPlayer = ctx.playerID!;
             const currentPlayerResources = G.players[currentPlayer].hand.resources;
             if (!isInRange(resourceCardIndex, currentPlayerResources.length)) {
@@ -145,14 +145,14 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
             }
 
             const activeProjects = G.table.activeProjects
-            if (!isInRange(slot.projectIndex, activeProjects.length)) {
+            if (!isInRange(activeProjectIndex, activeProjects.length)) {
               return INVALID_MOVE;
             }
-            if (activeProjects[slot.projectIndex].slots[slot.index] !== 0) {
+            if (activeProjects[activeProjectIndex].slots[slot.index] !== 0) {
               return INVALID_MOVE;
             }
             const [resourceCard] = currentPlayerResources.splice(resourceCardIndex, 1);
-            activeProjects[slot.projectIndex].slots[slot.index] = 1;
+            activeProjects[activeProjectIndex].slots[slot.index] = 1;
             Deck.Discard(G.decks.resources, [resourceCard]);
           },
           contribute: (G, ctx, contributions: { id: number; slotId: number; value: number; }[]) => {
