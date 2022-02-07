@@ -14,12 +14,12 @@ This is the living document capture the current area of focus, and what needs to
 
 ### Basic game logics
 
-* [ ] Play Project cards *[T]*
+* [x] Play Project cards
   * [x] Basic play function
   * [x] Fill in jobs
   * [x] Play Job card with Project card (validate, check eligible included)
   * [x] Reduce player action point (validate, check eligible included)
-  * [ ] Reduce player worker token (validate, check eligible included) *[T]*
+  * [x] Reduce player worker token (validate, check eligible included)
 * [ ] Play Job cards
   * [x] basic play function
 * [ ] Contribute the projects
