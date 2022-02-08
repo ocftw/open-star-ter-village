@@ -59,4 +59,10 @@ export declare namespace OpenStarTerVillageType {
       contributions: Record<string, number>;
     }
   }
+
+  export declare namespace Move {
+    export type CreateProject = (projectCardIndex: number, resourceCardIndex: number) => void;
+    export type Recruit = (resourceCardIndex: number, activeProjectIndex: number) => void;
+    export type Contribute = (contributions: { activeProjectIndex: number; slotIndex: number; value: number }[]) => void;
+  }
 }

@@ -1,4 +1,4 @@
-import { Game, PlayerID } from 'boardgame.io';
+import { Game, PlayerID, State } from 'boardgame.io';
 import { INVALID_MOVE } from 'boardgame.io/core';
 import { Deck, newCardDeck } from './deck';
 import { HandCards } from './handCards';
@@ -10,6 +10,7 @@ import goalCards from './data/card/goals.json';
 import { isInRange, zip } from './utils';
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+type WithGameState<G extends any, F extends (...args: any) => void> = (G: State<G>['G'], ctx: State<G>['ctx'], ...args: Parameters<F>) => any;
 
 export const OpenStarTerVillage: Game<type.State.Root> = {
   setup: (ctx) => {
@@ -98,7 +99,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
           createProject: {
             // client cannot see decks, discard resource card should evaluated on server side
             client: false,
-            move: (G, ctx, projectCardIndex, resourceCardIndex) => {
+            move: ((G, ctx, projectCardIndex, resourceCardIndex) => {
               const currentPlayer = ctx.playerID!;
               const currentPlayerToken = G.players[currentPlayer].token;
               // TODO: replace hardcoded number with dynamic rules
@@ -140,12 +141,12 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               const contributions = { [resourceCard.name]: 1 };
               G.table.activeProjects.push({ card: projectCard, slots, contributions });
               Deck.Discard(G.decks.resources, [resourceCard]);
-            }
+            }) as WithGameState<type.State.Root, type.Move.CreateProject>,
           },
           recruit: {
             // client cannot see decks, discard resource card should evaluated on server side
             client: false,
-            move: (G, ctx, resourceCardIndex: number, activeProjectIndex: number) => {
+            move: ((G, ctx, resourceCardIndex, activeProjectIndex) => {
               const currentPlayer = ctx.playerID!;
               const currentPlayerToken = G.players[currentPlayer].token;
               const recruitActionCosts = 1;
@@ -180,9 +181,9 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               const [resourceCard] = currentPlayerResources.splice(resourceCardIndex, 1);
               activeProject.slots[slotIndex] = 1;
               Deck.Discard(G.decks.resources, [resourceCard]);
-            }
+            }) as WithGameState<type.State.Root, type.Move.Recruit>,
           },
-          contribute: (G, ctx, contributions: { activeProjectIndex: number; slotIndex: number; value: number; }[]) => {
+          contribute: ((G, ctx, contributions) => {
             const currentPlayer = ctx.playerID!;
             const currentPlayerToken = G.players[currentPlayer].token;
             const contributeActionCosts = 1;
@@ -212,7 +213,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
             contributions.forEach(({ activeProjectIndex, slotIndex, value }) => {
               activeProjects[activeProjectIndex].slots[slotIndex] = Math.min(6, activeProjects[activeProjectIndex].slots[slotIndex] + value);
             });
-          },
+          }) as WithGameState<type.State.Root, type.Move.Contribute>,
         },
         next: 'settle',
       },

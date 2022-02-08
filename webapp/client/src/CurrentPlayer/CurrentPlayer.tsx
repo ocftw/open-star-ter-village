@@ -1,7 +1,7 @@
 import { BoardProps } from 'boardgame.io/react';
-import { OpenStarTerVillageType } from 'packages/game/src/types';
+import { OpenStarTerVillageType as Type } from 'packages/game/src/types';
 
-const CurrentPlayer: React.FC<BoardProps<OpenStarTerVillageType.State.Root>> = (props) => {
+const CurrentPlayer: React.FC<BoardProps<Type.State.Root>> = (props) => {
   const { G, playerID, moves, events, ctx } = props;
   if (playerID === null) {
     return null;
@@ -10,8 +10,8 @@ const CurrentPlayer: React.FC<BoardProps<OpenStarTerVillageType.State.Root>> = (
   const projectCardIndex: number = 0;
   const resourceCardIndex: number = 0;
   const activeProjectIndex: number = 0;
-  const onCreateProject = () => moves.createProject(projectCardIndex, resourceCardIndex);
-  const onRecruit = () => moves.recruit(resourceCardIndex, activeProjectIndex);
+  const onCreateProject = () => (moves.createProject as Type.Move.CreateProject)(projectCardIndex, resourceCardIndex);
+  const onRecruit = () => (moves.recruit as Type.Move.Recruit)(resourceCardIndex, activeProjectIndex);
   const onEndAction = () => events.endStage!();
   const onRefillAndEnd = () => moves.refillAndEnd();
   const myCurrentStage = ctx.activePlayers ? ctx.activePlayers[playerID] : ''
