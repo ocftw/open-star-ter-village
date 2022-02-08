@@ -7,7 +7,7 @@ import projectCards from './data/card/projects.json';
 import resourceCards from './data/card/resources.json';
 import eventCards from './data/card/events.json';
 import goalCards from './data/card/goals.json';
-import { isInRange } from './utils';
+import { isInRange, zip } from './utils';
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
@@ -159,8 +159,9 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               return INVALID_MOVE;
             }
             const activeProject = activeProjects[activeProjectIndex];
-            const slotIndex = activeProject.card.jobs.findIndex((job, index) =>
-              job === currentPlayerResources[resourceCardIndex].name && activeProject.slots[index] === 0);
+            const jobAndSlots = zip(activeProject.card.jobs, activeProject.slots);
+            const slotIndex = jobAndSlots.findIndex(([job, slot]) =>
+              job === currentPlayerResources[resourceCardIndex].name && slot === 0);
             if (slotIndex < 0) {
               return INVALID_MOVE;
             }
