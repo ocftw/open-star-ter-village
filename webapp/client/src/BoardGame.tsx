@@ -3,17 +3,10 @@ import { Client, BoardProps } from 'boardgame.io/react';
 import { Local } from 'boardgame.io/multiplayer';
 import { OpenStarTerVillageType } from 'packages/game/src/types';
 import Players from './Players/Players';
+import CurrentPlayer from './CurrentPlayer/CurrentPlayer';
 
 const Board: React.FC<BoardProps<OpenStarTerVillageType.State.Root>> = (props) => {
-  const { G, playerID } = props;
-  // show current player if not observer
-  const CurrentPlayer = playerID !== null ? (
-    <div>
-      <div>I am Player {playerID}</div>
-      Hand: {JSON.stringify(G.players[playerID].hand)}
-    </div>
-  ) : null;
-
+  const { G } = props;
   // show game table
   const Table = (
     <div>
@@ -25,7 +18,7 @@ const Board: React.FC<BoardProps<OpenStarTerVillageType.State.Root>> = (props) =
   return (
     <div className='board'>
       <Players {...props} />
-      {CurrentPlayer}
+      <CurrentPlayer {...props} />
       {Table}
     </div>
   );
