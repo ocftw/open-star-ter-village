@@ -139,6 +139,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               slots[slotIndex] = 1;
               const contributions = { [resourceCard.name]: 1 };
               G.table.activeProjects.push({ card: projectCard, slots, contributions });
+              Deck.Discard(G.decks.resources, [resourceCard]);
             }
           },
           recruit: {
