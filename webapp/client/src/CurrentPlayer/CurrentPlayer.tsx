@@ -9,7 +9,29 @@ const CurrentPlayer: React.FC<BoardProps<OpenStarTerVillageType.State.Root>> = (
   return (
     <div>
       <div>I am Player {playerID}</div>
-      Hand: {JSON.stringify(G.players[playerID].hand)}
+      <div>
+        Project Cards:
+        <ul>
+          {
+            G.players[playerID].hand.projects.map(p => (
+              <li>
+                <span>title: {p.name}</span>
+                <span>jobs: {JSON.stringify(p.jobs)}</span>
+              </li>))
+          }
+        </ul>
+      </div>
+      <div>
+        Resource Cards:
+        <ul>
+          {
+            G.players[playerID].hand.resources.map(r => (
+              <li>
+                <span>{r.name}</span>
+              </li>))
+          }
+        </ul>
+      </div>
     </div>
   );
 }
