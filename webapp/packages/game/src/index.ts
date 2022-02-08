@@ -95,83 +95,91 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
     stages: {
       action: {
         moves: {
-          createProject: (G, ctx, projectCardIndex, resourceCardIndex) => {
-            const currentPlayer = ctx.playerID!;
-            const currentPlayerToken = G.players[currentPlayer].token;
-            // TODO: replace hardcoded number with dynamic rules
-            const createProjectActionCosts = 2;
-            if (currentPlayerToken.actions < createProjectActionCosts) {
-              return INVALID_MOVE;
-            }
-            const createProjectWorkerCosts = 1;
-            if (currentPlayerToken.workers < createProjectWorkerCosts) {
-              return INVALID_MOVE;
-            }
+          createProject: {
+            // client cannot see decks, discard resource card should evaluated on server side
+            client: false,
+            move: (G, ctx, projectCardIndex, resourceCardIndex) => {
+              const currentPlayer = ctx.playerID!;
+              const currentPlayerToken = G.players[currentPlayer].token;
+              // TODO: replace hardcoded number with dynamic rules
+              const createProjectActionCosts = 2;
+              if (currentPlayerToken.actions < createProjectActionCosts) {
+                return INVALID_MOVE;
+              }
+              const createProjectWorkerCosts = 1;
+              if (currentPlayerToken.workers < createProjectWorkerCosts) {
+                return INVALID_MOVE;
+              }
 
-            // check project card in in hand
-            const currentHandProjects = G.players[currentPlayer].hand.projects
-            if (!isInRange(projectCardIndex, currentHandProjects.length)) {
-              return INVALID_MOVE;
-            }
+              // check project card in in hand
+              const currentHandProjects = G.players[currentPlayer].hand.projects
+              if (!isInRange(projectCardIndex, currentHandProjects.length)) {
+                return INVALID_MOVE;
+              }
 
-            // check resource card is in hand
-            const currentHandResources = G.players[currentPlayer].hand.resources;
-            if (!isInRange(resourceCardIndex, currentHandResources.length)) {
-              return INVALID_MOVE;
-            }
+              // check resource card is in hand
+              const currentHandResources = G.players[currentPlayer].hand.resources;
+              if (!isInRange(resourceCardIndex, currentHandResources.length)) {
+                return INVALID_MOVE;
+              }
 
-            // check resource card is required in project
-            if (!currentHandProjects[projectCardIndex].jobs.includes(currentHandResources[resourceCardIndex].name)) {
-              return INVALID_MOVE;
-            }
+              // check resource card is required in project
+              if (!currentHandProjects[projectCardIndex].jobs.includes(currentHandResources[resourceCardIndex].name)) {
+                return INVALID_MOVE;
+              }
 
-            // reduce action tokens
-            currentPlayerToken.actions -= createProjectActionCosts;
-            currentPlayerToken.workers -= createProjectWorkerCosts;
-            const [projectCard] = currentHandProjects.splice(projectCardIndex, 1);
-            const [resourceCard] = currentHandResources.splice(resourceCardIndex, 1);
-            const slots: number[] = projectCard.jobs.map(p => 0);
-            const slotIndex = projectCard.jobs.findIndex(job => job === resourceCard.name);
-            // TODO: replace with rule of default contributions
-            slots[slotIndex] = 1;
-            const contributions = { [resourceCard.name]: 1 };
-            G.table.activeProjects.push({ card: projectCard, slots, contributions });
+              // reduce action tokens
+              currentPlayerToken.actions -= createProjectActionCosts;
+              currentPlayerToken.workers -= createProjectWorkerCosts;
+              const [projectCard] = currentHandProjects.splice(projectCardIndex, 1);
+              const [resourceCard] = currentHandResources.splice(resourceCardIndex, 1);
+              const slots: number[] = projectCard.jobs.map(p => 0);
+              const slotIndex = projectCard.jobs.findIndex(job => job === resourceCard.name);
+              // TODO: replace with rule of default contributions
+              slots[slotIndex] = 1;
+              const contributions = { [resourceCard.name]: 1 };
+              G.table.activeProjects.push({ card: projectCard, slots, contributions });
+            }
           },
-          recruit: (G, ctx, resourceCardIndex: number, activeProjectIndex: number) => {
-            const currentPlayer = ctx.playerID!;
-            const currentPlayerToken = G.players[currentPlayer].token;
-            const recruitActionCosts = 1;
-            if (currentPlayerToken.actions < recruitActionCosts) {
-              return INVALID_MOVE;
-            }
-            const recruitWorkerCosts = 1;
-            if (currentPlayerToken.workers < recruitWorkerCosts) {
-              return INVALID_MOVE;
-            }
+          recruit: {
+            // client cannot see decks, discard resource card should evaluated on server side
+            client: false,
+            move: (G, ctx, resourceCardIndex: number, activeProjectIndex: number) => {
+              const currentPlayer = ctx.playerID!;
+              const currentPlayerToken = G.players[currentPlayer].token;
+              const recruitActionCosts = 1;
+              if (currentPlayerToken.actions < recruitActionCosts) {
+                return INVALID_MOVE;
+              }
+              const recruitWorkerCosts = 1;
+              if (currentPlayerToken.workers < recruitWorkerCosts) {
+                return INVALID_MOVE;
+              }
 
-            const currentPlayerResources = G.players[currentPlayer].hand.resources;
-            if (!isInRange(resourceCardIndex, currentPlayerResources.length)) {
-              return INVALID_MOVE;
-            }
+              const currentPlayerResources = G.players[currentPlayer].hand.resources;
+              if (!isInRange(resourceCardIndex, currentPlayerResources.length)) {
+                return INVALID_MOVE;
+              }
 
-            const activeProjects = G.table.activeProjects
-            if (!isInRange(activeProjectIndex, activeProjects.length)) {
-              return INVALID_MOVE;
-            }
-            const activeProject = activeProjects[activeProjectIndex];
-            const jobAndSlots = zip(activeProject.card.jobs, activeProject.slots);
-            const slotIndex = jobAndSlots.findIndex(([job, slot]) =>
-              job === currentPlayerResources[resourceCardIndex].name && slot === 0);
-            if (slotIndex < 0) {
-              return INVALID_MOVE;
-            }
+              const activeProjects = G.table.activeProjects
+              if (!isInRange(activeProjectIndex, activeProjects.length)) {
+                return INVALID_MOVE;
+              }
+              const activeProject = activeProjects[activeProjectIndex];
+              const jobAndSlots = zip(activeProject.card.jobs, activeProject.slots);
+              const slotIndex = jobAndSlots.findIndex(([job, slot]) =>
+                job === currentPlayerResources[resourceCardIndex].name && slot === 0);
+              if (slotIndex < 0) {
+                return INVALID_MOVE;
+              }
 
-            // reduce action and worker tokens
-            currentPlayerToken.actions -= recruitActionCosts;
-            currentPlayerToken.workers -= recruitWorkerCosts;
-            const [resourceCard] = currentPlayerResources.splice(resourceCardIndex, 1);
-            activeProject.slots[slotIndex] = 1;
-            Deck.Discard(G.decks.resources, [resourceCard]);
+              // reduce action and worker tokens
+              currentPlayerToken.actions -= recruitActionCosts;
+              currentPlayerToken.workers -= recruitWorkerCosts;
+              const [resourceCard] = currentPlayerResources.splice(resourceCardIndex, 1);
+              activeProject.slots[slotIndex] = 1;
+              Deck.Discard(G.decks.resources, [resourceCard]);
+            }
           },
           contribute: (G, ctx, contributions: { activeProjectIndex: number; slotIndex: number; value: number; }[]) => {
             const currentPlayer = ctx.playerID!;
