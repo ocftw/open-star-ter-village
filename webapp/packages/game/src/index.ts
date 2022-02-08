@@ -174,6 +174,12 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
             Deck.Discard(G.decks.resources, [resourceCard]);
           },
           contribute: (G, ctx, contributions: { id: number; slotId: number; value: number; }[]) => {
+            const currentPlayer = ctx.playerID!;
+            const currentPlayerToken = G.players[currentPlayer].token;
+            const contributeActionCosts = 1;
+            if (currentPlayerToken.actions < contributeActionCosts) {
+              return INVALID_MOVE;
+            }
             const activeProjects = G.table.activeProjects
             const isInvalid = contributions.map(({ id, slotId }) => {
               if (!isInRange(id, activeProjects.length)) {
@@ -186,7 +192,14 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
             if (isInvalid) {
               return INVALID_MOVE;
             }
+            const totalContributions = contributions.map(({ value }) => value).reduce((a, b) => a + b, 0);
+            const maxContributions = 3;
+            if (!(totalContributions <= maxContributions)) {
+              return INVALID_MOVE;
+            }
 
+            // deduct action tokens
+            currentPlayerToken.actions -= contributeActionCosts;
             contributions.forEach(({ id, slotId, value }) => {
               activeProjects[id].slots[slotId] = Math.min(6, activeProjects[id].slots[slotId] + value);
             });
