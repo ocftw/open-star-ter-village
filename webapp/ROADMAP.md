@@ -10,6 +10,9 @@ This is the living document capture the current area of focus, and what needs to
 ### Host Open Star Ter Village
 
 * [x] serve client build
+* [ ] refactor build folder under webapp/build
+  * [ ] copy client build
+  * [ ] copy server build and host both client pages and api requests
 * [ ] deploy to heroku
 * [ ] user can see the "click-to-deploy" button on the readme file when landed in the project
   * [ ] user can see the "click-to-deploy" button on the readme file with comprehensive information of the webapp project
