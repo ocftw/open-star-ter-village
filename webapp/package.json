@@ -14,6 +14,7 @@
     "predeploy": "rm -rf ./build && cp -r server/build ./build && cp -r client/build ./build/client",
     "execdeploy": "echo 'some script deploy to heroku'",
     "deploy": "yarn predeploy && yarn execdeploy",
+    "start": "node build/index.js",
     "test": "yarn workspaces foreach -p run test"
   },
   "engines": {
