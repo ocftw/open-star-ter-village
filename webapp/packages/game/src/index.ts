@@ -60,11 +60,13 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
         Deck.ShuffleDrawPile(state.decks.goals, shuffler);
 
         for (let playerId in state.players) {
+          // TODO: replace 2 with max project cards rule
           const projectCards = Deck.Draw(state.decks.projects, 2);
           HandCards.Add(state.players[playerId].hand.projects, projectCards);
         }
 
         for (let playerId in state.players) {
+          // TODO: replace 5 with max resource cards rule
           const resourceCards = Deck.Draw(state.decks.resources, 5);
           HandCards.Add(state.players[playerId].hand.resources, resourceCards);
         }
@@ -235,11 +237,30 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
       },
       refill: {
         moves: {
-          refillAndEnd: (G, ctx) => {
-            // refill action points
-            G.players[ctx.currentPlayer].token.actions = 3;
-            ctx.events?.endTurn()
-          }
+          refillAndEnd: {
+            client: false,
+            move: ((G, ctx) => {
+              const currentPlayer = ctx.currentPlayer;
+              // refill action points
+              G.players[currentPlayer].token.actions = 3;
+              const currentPlayerHand = G.players[currentPlayer].hand;
+              // refill project cards
+              // TODO: replace 2 with max project cards rule
+              const numProjectCardShouldDraw = 2 - currentPlayerHand.projects.length;
+              if (numProjectCardShouldDraw > 0) {
+                const projectCards = Deck.Draw(G.decks.projects, numProjectCardShouldDraw);
+                HandCards.Add(currentPlayerHand.projects, projectCards);
+              }
+              // refill resource cards
+              // TODO: replace 5 with max resource cards rule
+              const numResourceCardShouldDraw = 5 - currentPlayerHand.resources.length;
+              if (numResourceCardShouldDraw > 0) {
+                const resourceCards = Deck.Draw(G.decks.resources, numResourceCardShouldDraw);
+                HandCards.Add(currentPlayerHand.resources, resourceCards);
+              }
+              ctx.events?.endTurn()
+            }) as WithGameState<type.State.Root, type.Move.RefillAndEnd>,
+          },
         },
       },
     },
