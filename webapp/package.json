@@ -9,11 +9,22 @@
   ],
   "scripts": {
     "dev": "yarn workspaces foreach -pi run dev",
+    "//": "move server build and client build into root and serve it",
     "build": "yarn workspaces foreach -pt run build",
+    "predeploy": "rm -rf ./build && cp -r server/build ./build && cp -r client/build ./build/client",
+    "execdeploy": "echo 'some script deploy to heroku'",
+    "deploy": "yarn predeploy && yarn execdeploy",
+    "start": "node build/index.js",
     "test": "yarn workspaces foreach -p run test"
   },
   "engines": {
     "node": ">=12.0.0"
   },
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "@types/koa-static": "^4.0.2"
+  },
+  "dependencies": {
+    "koa-static": "^5.0.0"
+  }
 }
