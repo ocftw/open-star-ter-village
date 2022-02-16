@@ -1,4 +1,4 @@
-import { isInRange } from "./utils";
+import { isInRange, zip } from "./utils";
 
 describe('utils', () => {
   describe('isInRange', () => {
@@ -40,6 +40,17 @@ describe('utils', () => {
       ])('is NOT in the range', (val, lowerBond, upperBond) => {
         expect(isInRange(val, lowerBond, upperBond)).toBeFalsy();
       });
+    });
+  });
+
+  describe('zip', () => {
+    it('should zip two lists to be one list of tuples', () => {
+      const array1 = [3, 2, 1];
+      const array2 = ['foo', 'bar', 'foobar'];
+      const results = zip(array1, array2);
+      expect(results[0]).toEqual([3, 'foo']);
+      expect(results[1]).toEqual([2, 'bar']);
+      expect(results[2]).toEqual([1, 'foobar']);
     });
   });
 });

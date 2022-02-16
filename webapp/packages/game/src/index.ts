@@ -7,7 +7,7 @@ import projectCards from './data/card/projects.json';
 import resourceCards from './data/card/resources.json';
 import eventCards from './data/card/events.json';
 import goalCards from './data/card/goals.json';
-import { isInRange } from './utils';
+import { isInRange, zip } from './utils';
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
@@ -137,22 +137,40 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
             const contributions = { [resourceCard.name]: 1 };
             G.table.activeProjects.push({ card: projectCard, slots, contributions });
           },
-          recruit: (G, ctx, resourceCardIndex, slot: { index: number, projectIndex: number }) => {
+          recruit: (G, ctx, resourceCardIndex: number, activeProjectIndex: number) => {
             const currentPlayer = ctx.playerID!;
+            const currentPlayerToken = G.players[currentPlayer].token;
+            const recruitActionCosts = 1;
+            if (currentPlayerToken.actions < recruitActionCosts) {
+              return INVALID_MOVE;
+            }
+            const recruitWorkerCosts = 1;
+            if (currentPlayerToken.workers < recruitWorkerCosts) {
+              return INVALID_MOVE;
+            }
+
             const currentPlayerResources = G.players[currentPlayer].hand.resources;
             if (!isInRange(resourceCardIndex, currentPlayerResources.length)) {
               return INVALID_MOVE;
             }
 
             const activeProjects = G.table.activeProjects
-            if (!isInRange(slot.projectIndex, activeProjects.length)) {
+            if (!isInRange(activeProjectIndex, activeProjects.length)) {
               return INVALID_MOVE;
             }
-            if (activeProjects[slot.projectIndex].slots[slot.index] !== 0) {
+            const activeProject = activeProjects[activeProjectIndex];
+            const jobAndSlots = zip(activeProject.card.jobs, activeProject.slots);
+            const slotIndex = jobAndSlots.findIndex(([job, slot]) =>
+              job === currentPlayerResources[resourceCardIndex].name && slot === 0);
+            if (slotIndex < 0) {
               return INVALID_MOVE;
             }
+
+            // reduce action and worker tokens
+            currentPlayerToken.actions -= recruitActionCosts;
+            currentPlayerToken.workers -= recruitWorkerCosts;
             const [resourceCard] = currentPlayerResources.splice(resourceCardIndex, 1);
-            activeProjects[slot.projectIndex].slots[slot.index] = 1;
+            activeProject.slots[slotIndex] = 1;
             Deck.Discard(G.decks.resources, [resourceCard]);
           },
           contribute: (G, ctx, contributions: { id: number; slotId: number; value: number; }[]) => {
