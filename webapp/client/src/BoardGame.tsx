@@ -2,31 +2,11 @@ import { OpenStarTerVillage } from '@open-star-ter-village/webapp-game';
 import { Client, BoardProps } from 'boardgame.io/react';
 import { Local } from 'boardgame.io/multiplayer';
 import { OpenStarTerVillageType } from 'packages/game/src/types';
+import Players from './Players/Players';
+import CurrentPlayer from './CurrentPlayer/CurrentPlayer';
 
-const Board: React.FC<BoardProps<OpenStarTerVillageType.State.Root>> = ({ G, playerID }) => {
-  // show players summary
-  const Players = Object.keys(G.players).map(player => (
-    <div className='player' key={player}>
-      <div>Player {player}</div>
-      <ul>
-        <li>
-          WorkerTokens: {G.players[player].token.workers}
-        </li>
-        <li>
-          CompletedProjects: {G.players[player].completed.projects}
-        </li>
-      </ul>
-    </div>
-  ));
-
-  // show current player if not observer
-  const CurrentPlayer = playerID !== null ? (
-    <div>
-      <div>I am Player {playerID}</div>
-      Hand: {JSON.stringify(G.players[playerID].hand)}
-    </div>
-  ) : null;
-
+const Board: React.FC<BoardProps<OpenStarTerVillageType.State.Root>> = (props) => {
+  const { G } = props;
   // show game table
   const Table = (
     <div>
@@ -37,8 +17,8 @@ const Board: React.FC<BoardProps<OpenStarTerVillageType.State.Root>> = ({ G, pla
 
   return (
     <div className='board'>
-      {Players}
-      {CurrentPlayer}
+      <Players {...props} />
+      <CurrentPlayer {...props} />
       {Table}
     </div>
   );
