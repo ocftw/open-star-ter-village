@@ -13,7 +13,7 @@ const CurrentPlayer: React.FC<BoardProps<Type.State.Root>> = (props) => {
   const onCreateProject = () => (moves.createProject as Type.Move.CreateProject)(projectCardIndex, resourceCardIndex);
   const onRecruit = () => (moves.recruit as Type.Move.Recruit)(resourceCardIndex, activeProjectIndex);
   const onEndAction = () => events.endStage!();
-  const onRefillAndEnd = () => moves.refillAndEnd();
+  const onRefillAndEnd = () => (moves.refillAndEnd as Type.Move.RefillAndEnd)();
   const myCurrentStage = ctx.activePlayers ? ctx.activePlayers[playerID] : ''
   return (
     <div>
