@@ -3,6 +3,7 @@ import path from "path";
 import serve from "koa-static";
 import { Server, Origins } from "boardgame.io/server";
 
+const PORT = Number(process.env.PORT) || 8000;
 const isProduction = process.env.NODE_ENV === "production";
 const frontEndAppBuildPath = path.resolve(__dirname, "./client");
 
@@ -25,7 +26,7 @@ if (isProduction) {
 
 server.run(
   {
-    port: 8000,
+    port: PORT,
     lobbyConfig,
     callback: () => console.log("Main server running on port 8000..."),
   },

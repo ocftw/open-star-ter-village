@@ -1,0 +1,19 @@
+{
+  "name": "Open Star Ter Village - Web App",
+  "description": "Open Star Ter Village - Web App",
+  "repository": "https://github.com/kuoabu/open-star-ter-village",
+  "logo": "https://cdn.rawgit.com/heroku/node-js-getting-started/main/public/node.svg",
+  "keywords": [
+    "node",
+    "koa",
+    "react",
+    "boardgame.io",
+    "open-star-ter-village"
+  ],
+  "env": {
+    "NODE_MODULES_CACHE": {
+      "description": "https://devcenter.heroku.com/articles/migrating-to-yarn-2#update-heroku-environment-with-plug-n-play",
+      "value": "false"
+    }
+  }
+}

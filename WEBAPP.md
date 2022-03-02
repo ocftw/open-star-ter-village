@@ -18,22 +18,35 @@ cd open-star-ter-village/webapp
 
 > Note: OpenStarTerVillage requires node >= 12.0.0
 
-### spinning up *[not ready yet]*
+### spinning up*
 
 ```shell
 yarn
-yarn start
+yarn build:webapp
+yarn deploy:webapp
+yarn start:webapp
 ```
+
+## Deploying to Heroku
+
+```
+$ heroku create
+$ git push heroku main
+$ heroku open
+```
+or
+
+[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/ocftw/open-star-ter-village/tree/main)
 
 ## How to contribute in source code
 
 OpenStarTerVillage - WebApp is a typescript monorepo configure by yarn 2 with workspace-tools plugin. The core game engine is based on [boardgame.io](https://boardgame.io) on both server and client side. OpenStarTerVillage -  WebApp project divides into three parts. Core game logic, client UI, and game server. Their npm project name and locations are as follow table.
 
-|Project name|Location|Description|
-|------------|--------|-----------|
-|`@open-star-ter-village/webapp-game`|[./packages/game](./packages/game)|The core game logic|
-|`@open-star-ter-village/webapp-client`|[./client](./client)|The client UI|
-|`@open-star-ter-village/webapp-server`|[./server](./server)|The game server|
+| Project name                           | Location                           | Description         |
+| -------------------------------------- | ---------------------------------- | ------------------- |
+| `@open-star-ter-village/webapp-game`   | [./packages/game](./packages/game) | The core game logic |
+| `@open-star-ter-village/webapp-client` | [./client](./client)               | The client UI       |
+| `@open-star-ter-village/webapp-server` | [./server](./server)               | The game server     |
 
 ### How to start the local development environment
 
@@ -44,7 +57,7 @@ OpenStarTerVillage - Web app is using yarn 2 workspaces to manage the project. P
 The follow command would start client UI (create-react-app) in dev server, server (koa) in ts-node under watchmon, and game core (pure-typescript) in watch compile mode.
 
 ```shell
-yarn dev
+yarn dev:webapp
 ```
 
 Everything is settle up. Ready, get, set, code!
@@ -55,15 +68,15 @@ There are three outcome in OpenStarTerVillage - Web app. The major outcomes are 
 
 
 ```shell
-yarn build
+yarn build:webapp
 ```
 
 The project output table
-|Project name|Output Location|Description|
-|------------|--------|-----------|
-|`@open-star-ter-village/webapp-game`|./packages/game/dist|The core game logic|
-|`@open-star-ter-village/webapp-client`|./client/build|The client UI|
-|`@open-star-ter-village/webapp-server`|./server/build|The game server|
+| Project name                           | Output Location      | Description         |
+| -------------------------------------- | -------------------- | ------------------- |
+| `@open-star-ter-village/webapp-game`   | ./packages/game/dist | The core game logic |
+| `@open-star-ter-village/webapp-client` | ./client/build       | The client UI       |
+| `@open-star-ter-village/webapp-server` | ./server/build       | The game server     |
 
 > Note: The output folders are ignored by git. You can find them after built.
 
