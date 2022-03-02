@@ -2,5 +2,29 @@
   "name": "open-star-ter-village",
   "version": "0.0.1",
   "author": "Ben Liu <ben196888@gmail.com>, renovirtony <renovirtony@gmail.com>",
-  "private": true
+  "private": true,
+  "packageManager": "yarn@3.0.2",
+  "workspaces": [
+    "packages/*",
+    "client",
+    "server"
+  ],
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "scripts": {
+    "dev": "yarn workspaces foreach -pi run dev",
+    "build": "yarn workspaces foreach -pt run build",
+    "predeploy": "rm -rf ./build && cp -r server/build ./build && cp -r client/build ./build/client",
+    "execdeploy": "echo 'some script deploy to heroku'",
+    "deploy": "yarn predeploy && yarn execdeploy",
+    "start": "node build/index.js",
+    "test": "yarn workspaces foreach -p run test"
+  },
+  "devDependencies": {
+    "@types/koa-static": "^4.0.2"
+  },
+  "dependencies": {
+    "koa-static": "^5.0.0"
+  }
 }

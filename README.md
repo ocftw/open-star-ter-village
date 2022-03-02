@@ -69,7 +69,17 @@ Around 60 minutes
 
 ## Contributing
 
+### Code Base Overview
+
+- `packages/`
+  - `game/`
+  - `webapp-client/`
+  - `webapp-server/`
+  - `google-spreadsheet/`
+
 ### Start contributing now
+
+
 
 #### Open Issue
 
