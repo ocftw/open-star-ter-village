@@ -4,6 +4,7 @@ import serve from "koa-static";
 import { Server, Origins } from "boardgame.io/server";
 
 const isProduction = process.env.NODE_ENV === "production";
+const frontEndAppBuildPath = path.resolve(__dirname, "./client");
 
 const server = Server({
   games: [OpenStarTerVillage],
@@ -18,6 +19,10 @@ const lobbyConfig = {
   apiCallback: () => console.log("Lobby api running on port 8080"),
 };
 
+if (isProduction) {
+  server.app.use(serve(frontEndAppBuildPath));
+}
+
 server.run(
   {
     port: 8000,
@@ -26,8 +31,6 @@ server.run(
   },
   () => {
     if (isProduction) {
-      const frontEndAppBuildPath = path.resolve(__dirname, "./client");
-      server.app.use(serve(frontEndAppBuildPath));
       server.app.use(
         async (ctx, next) =>
           await serve(frontEndAppBuildPath)(
