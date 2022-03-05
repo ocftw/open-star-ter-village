@@ -41,9 +41,17 @@
 #### 增加功能
 
 * 參與卡片與圖板設計
-* [加入網頁版的開發](./webapp)
+* [加入網頁版的開發](./WEBAPP)
 
 #### 加入我們一起討論
+
+### 程式碼結構一覽
+
+* `packages/`
+  * `game/`
+* `client/`
+* `server/`
+* `google-spreadsheet/` (obsolete)
 
 ## 授權條款
 
@@ -71,13 +79,26 @@ Around 60 minutes
 
 ### Start contributing now
 
+Any participation way is welcome. Coding is not required, just contribute your idea! Current project contains physical board game publish and online. We will publish the board game accroding to the latest game rules, card and board designs. The online game was proof of concept on Google Spreadsheet and it worked in a few trials with positive feedback. So we are migrating to webapp to encourge more people to play or join open source community.
+
 #### Open Issue
 
 #### Solve Issue
 
 #### Add Features
 
-#### Join us in discusstions
+* Join to design the card and board from scratch.
+* [Join the webapp development](./WEBAPP)
+
+#### Join us in discussions
+
+### Code Base Overview
+
+* `packages/`
+  * `game/`
+* `client/`
+* `server/`
+* `google-spreadsheet/` (obsolete)
 
 ## License
 
