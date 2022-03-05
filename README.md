@@ -28,6 +28,16 @@
 
 約 60 分鐘
 
+## 現在開始玩
+
+### 開放遊戲伺服器
+
+建制中！
+
+### 打造你自己的遊戲伺服器
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/ocftw/open-star-ter-village)
+
 ## 參與貢獻
 
 ### 開始參與
@@ -74,6 +84,16 @@ An open source board game to encourage people join open source community. You ca
 ### Playing time
 
 Around 60 minutes
+
+## Play it now
+
+### Public server
+
+NOT READY YET
+
+### Deploy your own game server
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/ocftw/open-star-ter-village)
 
 ## Contributing
 
