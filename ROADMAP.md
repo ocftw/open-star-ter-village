@@ -20,14 +20,7 @@ This is the living document capture the current area of focus, and what needs to
 
 #### implementation
 
-* [ ] heroku multiple application deployment
-* [ ] if true:
-  * single subdomain name proxy in heroku
-    eg. https://abu-123.heroku.com/ => clientside,
-        https://abu-123.heroku.com/api/lobby => serverside:8080,
-        https://abu-123.heroku.com/api/ => serverside:8000
-  * client side served at one standalone service (nginx, node serve, web bucket) and
-  * server side served at another standalone service (deno, ts-node, node)
+* [ ] heroku single application deployment TBD *[T]*
 
 ### Basic game logics
 
@@ -45,6 +38,23 @@ This is the living document capture the current area of focus, and what needs to
 * [ ] Contribute the projects *[T]*
   * [x] basic play function
 * [ ] Goal cards
+
+#### Unit tests
+
+* [ ] Find a proper game-flows and integration tests btw different game states *[T]*
+  * [ ] Survey boardgame.io unit tests use cases
+  * [ ] Find solution and proposal
+
+#### User Interface / User Experience
+
+* [ ] Design UI flow scratch *[T]*
+  * references as follows
+  * [stone age](https://boardgamearena.com/gamepanel?game=stoneage)
+  * [pandemic](https://boardgamearena.com/gamepanel?game=pandemic)
+  * [agricola](https://boardgamearena.com/gamepanel?game=agricola)
+* [ ] Play Project cards
+* [ ] Play Job cards
+* [ ] Contribute the projects
 
 ### Advanced game logics
 
