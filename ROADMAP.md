@@ -10,13 +10,13 @@ This is the living document capture the current area of focus, and what needs to
 ### Host Open Star Ter Village
 
 * [x] serve client build
-* [ ] refactor build folder under webapp/build
-  * [ ] copy client build
-  * [ ] copy server build and host both client pages and api requests
-* [ ] deploy to heroku
-* [ ] user can see the "click-to-deploy" button on the readme file when landed in the project
-  * [ ] user can see the "click-to-deploy" button on the readme file with comprehensive information of the webapp project
-  * [ ] As a developer, I would like to understand how the heroku works with Open Star Ter Village webapp project
+* [x] refactor build folder under webapp/build
+  * [x] copy client build
+  * [x] copy server build and host both client pages and api requests
+* [x] deploy to heroku
+* [x] user can see the "click-to-deploy" button on the readme file when landed in the project
+  * [x] user can see the "click-to-deploy" button on the readme file with comprehensive information of the webapp project
+  * [x] As a developer, I would like to understand how the heroku works with Open Star Ter Village webapp project
 
 #### implementation
 
