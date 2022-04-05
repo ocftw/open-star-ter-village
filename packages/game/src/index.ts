@@ -180,6 +180,8 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               currentPlayerToken.workers -= recruitWorkerCosts;
               const [resourceCard] = currentPlayerResources.splice(resourceCardIndex, 1);
               activeProject.slots[slotIndex] = 1;
+              const prev = activeProject.contributions[resourceCard.name] ?? 0;
+              activeProject.contributions[resourceCard.name] = prev + 1;
               Deck.Discard(G.decks.resources, [resourceCard]);
             }) as WithGameState<type.State.Root, type.Move.Recruit>,
           },
