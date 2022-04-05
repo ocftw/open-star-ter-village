@@ -235,11 +235,11 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
       },
       refill: {
         moves: {
-          refillAndEnd: (G, ctx) => {
+          refillAndEnd: ((G, ctx) => {
             // refill action points
             G.players[ctx.currentPlayer].token.actions = 3;
             ctx.events?.endTurn()
-          }
+          }) as WithGameState<type.State.Root, type.Move.RefillAndEnd>,
         },
       },
     },
