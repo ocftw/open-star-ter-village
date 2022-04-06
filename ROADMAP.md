@@ -47,11 +47,50 @@ This is the living document capture the current area of focus, and what needs to
 
 #### User Interface / User Experience
 
-* [ ] Design UI flow scratch *[T]*
+* [x] Design UI flow scratch
   * references as follows
   * [stone age](https://boardgamearena.com/gamepanel?game=stoneage)
   * [pandemic](https://boardgamearena.com/gamepanel?game=pandemic)
   * [agricola](https://boardgamearena.com/gamepanel?game=agricola)
+* [x] Decide Styling tools
+
+  Note: Principle component guildline is fully decouple the styling component with layout components.
+  eg. ProjectCard (layout logic) depends on Card (Component with styles)
+
+  * Tailwind: We would love to try new things (Fancier :rocket:)
+  * Styled component: We would love to try new things (Classic :tada:)
+  * SASS: Old school
+  * ~~Material UI~~
+  * ~~Boostrap~~
+
+  Highly customised is our two project directions so Material UI and Bootstrap are not fit in our roadmap
+* [x] Design client folder structure
+  1. feature + style
+  * src/
+    * features/
+      * ResourceCard/
+        * ?styled.jsx
+      * ProjectCard
+      * GoalCard
+      * EventCard
+    * styled/
+      * CardVertical
+      * CardHorizontal
+      * ?ResourceCard.styled.jsx
+
+  2. feature
+  * src/
+    * features/
+      * ResourceCard/
+        * ResourceCard.jsx
+        * ResourceCard.styled.jsx
+      * ProjectCard/
+        * ProjectCard.jsx
+        * ProjectCard.styled.jsx
+      * GoalCard/
+      * EventCard/
+
+  Folders should be structured by features (scenario 2) but it is viable to have common styled components such as Button, Tab, or Input collected in the common folder (styled foder in scenario 1).
 * [ ] Play Project cards
 * [ ] Play Job cards
 * [ ] Contribute the projects
