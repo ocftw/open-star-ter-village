@@ -91,6 +91,9 @@ This is the living document capture the current area of focus, and what needs to
       * EventCard/
 
   Folders should be structured by features (scenario 2) but it is viable to have common styled components such as Button, Tab, or Input collected in the common folder (styled foder in scenario 1).
+* [ ] Table   *[T]*
+  * [ ] Table Layout
+  * [ ] Projct Card (read)
 * [ ] Play Project cards
 * [ ] Play Job cards
 * [ ] Contribute the projects
