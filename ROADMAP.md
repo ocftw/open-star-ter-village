@@ -20,14 +20,7 @@ This is the living document capture the current area of focus, and what needs to
 
 #### implementation
 
-* [ ] heroku multiple application deployment
-* [ ] if true:
-  * single subdomain name proxy in heroku
-    eg. https://abu-123.heroku.com/ => clientside,
-        https://abu-123.heroku.com/api/lobby => serverside:8080,
-        https://abu-123.heroku.com/api/ => serverside:8000
-  * client side served at one standalone service (nginx, node serve, web bucket) and
-  * server side served at another standalone service (deno, ts-node, node)
+* [ ] heroku single application deployment TBD *[T]*
 
 ### Basic game logics
 
@@ -45,6 +38,65 @@ This is the living document capture the current area of focus, and what needs to
 * [ ] Contribute the projects *[T]*
   * [x] basic play function
 * [ ] Goal cards
+
+#### Unit tests
+
+* [ ] Find a proper game-flows and integration tests btw different game states *[T]*
+  * [ ] Survey boardgame.io unit tests use cases
+  * [ ] Find solution and proposal
+
+#### User Interface / User Experience
+
+* [x] Design UI flow scratch
+  * references as follows
+  * [stone age](https://boardgamearena.com/gamepanel?game=stoneage)
+  * [pandemic](https://boardgamearena.com/gamepanel?game=pandemic)
+  * [agricola](https://boardgamearena.com/gamepanel?game=agricola)
+* [x] Decide Styling tools
+
+  Note: Principle component guildline is fully decouple the styling component with layout components.
+  eg. ProjectCard (layout logic) depends on Card (Component with styles)
+
+  * Tailwind: We would love to try new things (Fancier :rocket:)
+  * Styled component: We would love to try new things (Classic :tada:)
+  * SASS: Old school
+  * ~~Material UI~~
+  * ~~Boostrap~~
+
+  Highly customised is our two project directions so Material UI and Bootstrap are not fit in our roadmap
+* [x] Design client folder structure
+  1. feature + style
+  * src/
+    * features/
+      * ResourceCard/
+        * ?styled.jsx
+      * ProjectCard
+      * GoalCard
+      * EventCard
+    * styled/
+      * CardVertical
+      * CardHorizontal
+      * ?ResourceCard.styled.jsx
+
+  2. feature
+  * src/
+    * features/
+      * ResourceCard/
+        * ResourceCard.jsx
+        * ResourceCard.styled.jsx
+      * ProjectCard/
+        * ProjectCard.jsx
+        * ProjectCard.styled.jsx
+      * GoalCard/
+      * EventCard/
+
+  Folders should be structured by features (scenario 2) but it is viable to have common styled components such as Button, Tab, or Input collected in the common folder (styled foder in scenario 1).
+* [ ] Table   *[T]*
+  * [ ] Table Layout
+  * [ ] Projct Card (read)
+* [ ] Play Project cards
+* [ ] Play Job cards
+* [ ] Contribute the projects
 
 ### Advanced game logics
 
