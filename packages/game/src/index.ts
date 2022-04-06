@@ -145,8 +145,9 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               // TODO: replace with rule of inital contributions
               const contributionPoints = 1;
               activeProject.slots[slotIndex] = contributionPoints;
-              const prev = activeProject.contributions[resourceCard.name] ?? 0;
-              activeProject.contributions[resourceCard.name] = prev + contributionPoints;
+              const jobName = activeProject.card.jobs[slotIndex];
+              const prev = activeProject.contributions[jobName] ?? 0;
+              activeProject.contributions[jobName] = prev + contributionPoints;
 
               // discard resource card
               Deck.Discard(G.decks.resources, [resourceCard]);
@@ -193,8 +194,9 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               // TODO: replace with rule of recruit contributions
               const contributionPoints = 1;
               activeProject.slots[slotIndex] = contributionPoints;
-              const prev = activeProject.contributions[resourceCard.name] ?? 0;
-              activeProject.contributions[resourceCard.name] = prev + contributionPoints;
+              const jobName = activeProject.card.jobs[slotIndex];
+              const prev = activeProject.contributions[jobName] ?? 0;
+              activeProject.contributions[jobName] = prev + contributionPoints;
 
               // discard resource card
               Deck.Discard(G.decks.resources, [resourceCard]);
