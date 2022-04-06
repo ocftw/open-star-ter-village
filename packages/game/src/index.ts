@@ -134,12 +134,21 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               currentPlayerToken.workers -= createProjectWorkerCosts;
               const [projectCard] = currentHandProjects.splice(projectCardIndex, 1);
               const [resourceCard] = currentHandResources.splice(resourceCardIndex, 1);
+
+              // initial active project
               const slots: number[] = projectCard.jobs.map(p => 0);
+              G.table.activeProjects.push({ card: projectCard, slots, contributions: {} });
+              const activeProject = G.table.activeProjects[G.table.activeProjects.length - 1];
+
+              // update contribution to initial contribution points
               const slotIndex = projectCard.jobs.findIndex(job => job === resourceCard.name);
-              // TODO: replace with rule of default contributions
-              slots[slotIndex] = 1;
-              const contributions = { [resourceCard.name]: 1 };
-              G.table.activeProjects.push({ card: projectCard, slots, contributions });
+              // TODO: replace with rule of inital contributions
+              const contributionPoints = 1;
+              activeProject.slots[slotIndex] = contributionPoints;
+              const prev = activeProject.contributions[resourceCard.name] ?? 0;
+              activeProject.contributions[resourceCard.name] = prev + contributionPoints;
+
+              // discard resource card
               Deck.Discard(G.decks.resources, [resourceCard]);
             }) as WithGameState<type.State.Root, type.Move.CreateProject>,
           },
@@ -179,9 +188,15 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               currentPlayerToken.actions -= recruitActionCosts;
               currentPlayerToken.workers -= recruitWorkerCosts;
               const [resourceCard] = currentPlayerResources.splice(resourceCardIndex, 1);
-              activeProject.slots[slotIndex] = 1;
+
+              // update contribution to recruit contribution points
+              // TODO: replace with rule of recruit contributions
+              const contributionPoints = 1;
+              activeProject.slots[slotIndex] = contributionPoints;
               const prev = activeProject.contributions[resourceCard.name] ?? 0;
-              activeProject.contributions[resourceCard.name] = prev + 1;
+              activeProject.contributions[resourceCard.name] = prev + contributionPoints;
+
+              // discard resource card
               Deck.Discard(G.decks.resources, [resourceCard]);
             }) as WithGameState<type.State.Root, type.Move.Recruit>,
           },
