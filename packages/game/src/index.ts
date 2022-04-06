@@ -230,7 +230,12 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
             // deduct action tokens
             currentPlayerToken.actions -= contributeActionCosts;
             contributions.forEach(({ activeProjectIndex, slotIndex, value }) => {
-              activeProjects[activeProjectIndex].slots[slotIndex] = Math.min(6, activeProjects[activeProjectIndex].slots[slotIndex] + value);
+              // update contributions to given contribution points
+              const activeProject = activeProjects[activeProjectIndex];
+              activeProject.slots[slotIndex] = Math.min(6, activeProject.slots[slotIndex] + value);
+              const jobName = activeProject.card.jobs[slotIndex];
+              const prev = activeProject.contributions[jobName] ?? 0;
+              activeProject.contributions[jobName] = prev + value;
             });
           }) as WithGameState<type.State.Root, type.Move.Contribute>,
         },
