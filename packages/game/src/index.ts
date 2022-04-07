@@ -8,6 +8,7 @@ import resourceCards from './data/card/resources.json';
 import eventCards from './data/card/events.json';
 import goalCards from './data/card/goals.json';
 import { isInRange, zip } from './utils';
+import { ActiveProjects } from './activeProjects';
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 type WithGameState<G extends any, F extends (...args: any) => void> = (G: State<G>['G'], ctx: State<G>['ctx'], ...args: Parameters<F>) => any;
@@ -135,12 +136,8 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               const [resourceCard] = currentHandResources.splice(resourceCardIndex, 1);
 
               // initial active project
-              const card = projectCard;
-              const owner = currentPlayer;
-              const slots: number[] = projectCard.jobs.map(p => 0);
-              const workers = projectCard.jobs.map(_ => null);
-              G.table.activeProjects.push({ card, owner, contribution: { bySlot: slots, byJob: {} }, workers });
-              const activeProject = G.table.activeProjects[G.table.activeProjects.length - 1];
+              const activeProjectIndex = ActiveProjects.Add(G.table.activeProjects, projectCard, currentPlayer);
+              const activeProject = G.table.activeProjects[activeProjectIndex];
 
               // update contribution to initial contribution points
               const slotIndex = projectCard.jobs.findIndex(job => job === resourceCard.name);
