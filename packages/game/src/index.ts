@@ -137,17 +137,17 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
 
               // initial active project
               const slots: number[] = projectCard.jobs.map(p => 0);
-              G.table.activeProjects.push({ card: projectCard, slots, contributions: {} });
+              G.table.activeProjects.push({ card: projectCard, contribution: { bySlot: slots, byJob: {} } });
               const activeProject = G.table.activeProjects[G.table.activeProjects.length - 1];
 
               // update contribution to initial contribution points
               const slotIndex = projectCard.jobs.findIndex(job => job === resourceCard.name);
               // TODO: replace with rule of inital contributions
               const contributionPoints = 1;
-              activeProject.slots[slotIndex] = contributionPoints;
+              activeProject.contribution.bySlot[slotIndex] = contributionPoints;
               const jobName = activeProject.card.jobs[slotIndex];
-              const prev = activeProject.contributions[jobName] ?? 0;
-              activeProject.contributions[jobName] = prev + contributionPoints;
+              const prev = activeProject.contribution.byJob[jobName] ?? 0;
+              activeProject.contribution.byJob[jobName] = prev + contributionPoints;
 
               // discard resource card
               Deck.Discard(G.decks.resources, [resourceCard]);
@@ -178,7 +178,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
                 return INVALID_MOVE;
               }
               const activeProject = activeProjects[activeProjectIndex];
-              const jobAndSlots = zip(activeProject.card.jobs, activeProject.slots);
+              const jobAndSlots = zip(activeProject.card.jobs, activeProject.contribution.bySlot);
               const slotIndex = jobAndSlots.findIndex(([job, slot]) =>
                 job === currentPlayerResources[resourceCardIndex].name && slot === 0);
               if (slotIndex < 0) {
@@ -193,10 +193,10 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               // update contribution to recruit contribution points
               // TODO: replace with rule of recruit contributions
               const contributionPoints = 1;
-              activeProject.slots[slotIndex] = contributionPoints;
+              activeProject.contribution.bySlot[slotIndex] = contributionPoints;
               const jobName = activeProject.card.jobs[slotIndex];
-              const prev = activeProject.contributions[jobName] ?? 0;
-              activeProject.contributions[jobName] = prev + contributionPoints;
+              const prev = activeProject.contribution.byJob[jobName] ?? 0;
+              activeProject.contribution.byJob[jobName] = prev + contributionPoints;
 
               // discard resource card
               Deck.Discard(G.decks.resources, [resourceCard]);
@@ -214,7 +214,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               if (!isInRange(activeProjectIndex, activeProjects.length)) {
                 return true;
               }
-              if (activeProjects[activeProjectIndex].slots[slotIndex] === 0) {
+              if (activeProjects[activeProjectIndex].contribution.bySlot[slotIndex] === 0) {
                 return true;
               }
             }).some(x => x);
@@ -232,10 +232,10 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
             contributions.forEach(({ activeProjectIndex, slotIndex, value }) => {
               // update contributions to given contribution points
               const activeProject = activeProjects[activeProjectIndex];
-              activeProject.slots[slotIndex] = Math.min(6, activeProject.slots[slotIndex] + value);
+              activeProject.contribution.bySlot[slotIndex] = Math.min(6, activeProject.contribution.bySlot[slotIndex] + value);
               const jobName = activeProject.card.jobs[slotIndex];
-              const prev = activeProject.contributions[jobName] ?? 0;
-              activeProject.contributions[jobName] = prev + value;
+              const prev = activeProject.contribution.byJob[jobName] ?? 0;
+              activeProject.contribution.byJob[jobName] = prev + value;
             });
           }) as WithGameState<type.State.Root, type.Move.Contribute>,
         },
