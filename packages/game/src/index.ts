@@ -135,9 +135,11 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               const [resourceCard] = currentHandResources.splice(resourceCardIndex, 1);
 
               // initial active project
+              const card = projectCard;
+              const owner = currentPlayer;
               const slots: number[] = projectCard.jobs.map(p => 0);
               const workers = projectCard.jobs.map(_ => null);
-              G.table.activeProjects.push({ card: projectCard, contribution: { bySlot: slots, byJob: {} }, workers });
+              G.table.activeProjects.push({ card, owner, contribution: { bySlot: slots, byJob: {} }, workers });
               const activeProject = G.table.activeProjects[G.table.activeProjects.length - 1];
 
               // update contribution to initial contribution points
@@ -223,10 +225,11 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               if (!isInRange(activeProjectIndex, activeProjects.length)) {
                 return true;
               }
-              if (activeProjects[activeProjectIndex].contribution.bySlot[slotIndex] === 0) {
+              const activeProject = activeProjects[activeProjectIndex];
+              if (activeProject.contribution.bySlot[slotIndex] === 0) {
                 return true;
               }
-              if (activeProjects[activeProjectIndex].workers[slotIndex] !== currentPlayer) {
+              if (activeProject.owner !== currentPlayer && activeProject.workers[slotIndex] !== currentPlayer) {
                 return true;
               }
             }).some(x => x);
