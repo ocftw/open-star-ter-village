@@ -131,13 +131,13 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
 
               // reduce action tokens
               currentPlayerToken.actions -= createProjectActionCosts;
-              currentPlayerToken.workers -= createProjectWorkerCosts;
               const [projectCard] = currentHandProjects.splice(projectCardIndex, 1);
               const [resourceCard] = currentHandResources.splice(resourceCardIndex, 1);
 
               // initial active project
               const slots: number[] = projectCard.jobs.map(p => 0);
-              G.table.activeProjects.push({ card: projectCard, contribution: { bySlot: slots, byJob: {} } });
+              const workers = projectCard.jobs.map(_ => null);
+              G.table.activeProjects.push({ card: projectCard, contribution: { bySlot: slots, byJob: {} }, workers });
               const activeProject = G.table.activeProjects[G.table.activeProjects.length - 1];
 
               // update contribution to initial contribution points
@@ -148,6 +148,11 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               const jobName = activeProject.card.jobs[slotIndex];
               const prev = activeProject.contribution.byJob[jobName] ?? 0;
               activeProject.contribution.byJob[jobName] = prev + contributionPoints;
+
+              // reduce worker token
+              currentPlayerToken.workers -= createProjectWorkerCosts;
+              // assign worker token
+              activeProject.workers[slotIndex] = currentPlayer;
 
               // discard resource card
               Deck.Discard(G.decks.resources, [resourceCard]);
@@ -185,9 +190,8 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
                 return INVALID_MOVE;
               }
 
-              // reduce action and worker tokens
+              // reduce action
               currentPlayerToken.actions -= recruitActionCosts;
-              currentPlayerToken.workers -= recruitWorkerCosts;
               const [resourceCard] = currentPlayerResources.splice(resourceCardIndex, 1);
 
               // update contribution to recruit contribution points
@@ -197,6 +201,11 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               const jobName = activeProject.card.jobs[slotIndex];
               const prev = activeProject.contribution.byJob[jobName] ?? 0;
               activeProject.contribution.byJob[jobName] = prev + contributionPoints;
+
+              // reduce worker tokens
+              currentPlayerToken.workers -= recruitWorkerCosts;
+              // assign worker token
+              activeProject.workers[slotIndex] = currentPlayer;
 
               // discard resource card
               Deck.Discard(G.decks.resources, [resourceCard]);
@@ -215,6 +224,9 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
                 return true;
               }
               if (activeProjects[activeProjectIndex].contribution.bySlot[slotIndex] === 0) {
+                return true;
+              }
+              if (activeProjects[activeProjectIndex].workers[slotIndex] !== currentPlayer) {
                 return true;
               }
             }).some(x => x);

@@ -55,6 +55,7 @@ export declare namespace OpenStarTerVillageType {
 
     export interface Project {
       card: Card.Project;
+      workers: (PlayerID | null)[];
       contribution: {
         bySlot: number[];
         byJob: Record<string, number>;
