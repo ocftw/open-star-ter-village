@@ -8,6 +8,7 @@ type ActiveProjectType = OpenStarTerVillageType.State.Project;
 export interface IActiveProjects {
   // add a project card in active projects pool and assign it to the owner. Return the active project index
   Add(activeProjects: ActiveProjects, card: ProjectCard, owner: PlayerID): number;
+  GetById(activeProjects: ActiveProjects, index: number): ActiveProjectType;
 }
 
 export const ActiveProjects: IActiveProjects = {
@@ -28,5 +29,8 @@ export const ActiveProjects: IActiveProjects = {
     activeProjects.push(activeProject);
     // return the active project index
     return activeProjects.length - 1;
+  },
+  GetById(activeProjects, index) {
+    return activeProjects[index];
   },
 };

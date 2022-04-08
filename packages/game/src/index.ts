@@ -137,7 +137,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
 
               // initial active project
               const activeProjectIndex = ActiveProjects.Add(G.table.activeProjects, projectCard, currentPlayer);
-              const activeProject = G.table.activeProjects[activeProjectIndex];
+              const activeProject = ActiveProjects.GetById(G.table.activeProjects, activeProjectIndex);
 
               // update contribution to initial contribution points
               const slotIndex = projectCard.jobs.findIndex(job => job === resourceCard.name);
@@ -181,7 +181,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               if (!isInRange(activeProjectIndex, activeProjects.length)) {
                 return INVALID_MOVE;
               }
-              const activeProject = activeProjects[activeProjectIndex];
+              const activeProject = ActiveProjects.GetById(G.table.activeProjects, activeProjectIndex);
               const jobAndSlots = zip(activeProject.card.jobs, activeProject.contribution.bySlot);
               const slotIndex = jobAndSlots.findIndex(([job, slot]) =>
                 job === currentPlayerResources[resourceCardIndex].name && slot === 0);
@@ -222,7 +222,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               if (!isInRange(activeProjectIndex, activeProjects.length)) {
                 return true;
               }
-              const activeProject = activeProjects[activeProjectIndex];
+              const activeProject = ActiveProjects.GetById(activeProjects, activeProjectIndex);
               if (activeProject.contribution.bySlot[slotIndex] === 0) {
                 return true;
               }
@@ -243,7 +243,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
             currentPlayerToken.actions -= contributeActionCosts;
             contributions.forEach(({ activeProjectIndex, slotIndex, value }) => {
               // update contributions to given contribution points
-              const activeProject = activeProjects[activeProjectIndex];
+              const activeProject = ActiveProjects.GetById(G.table.activeProjects, activeProjectIndex);
               activeProject.contribution.bySlot[slotIndex] = Math.min(6, activeProject.contribution.bySlot[slotIndex] + value);
               const jobName = activeProject.card.jobs[slotIndex];
               const prev = activeProject.contribution.byJob[jobName] ?? 0;
