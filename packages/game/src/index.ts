@@ -8,7 +8,7 @@ import resourceCards from './data/card/resources.json';
 import eventCards from './data/card/events.json';
 import goalCards from './data/card/goals.json';
 import { isInRange, zip } from './utils';
-import { ActiveProjects } from './activeProjects';
+import { ActiveProject, ActiveProjects } from './activeProjects';
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 type WithGameState<G extends any, F extends (...args: any) => void> = (G: State<G>['G'], ctx: State<G>['ctx'], ...args: Parameters<F>) => any;
@@ -143,10 +143,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               const slotIndex = projectCard.jobs.findIndex(job => job === resourceCard.name);
               // TODO: replace with rule of inital contributions
               const contributionPoints = 1;
-              activeProject.contribution.bySlot[slotIndex] = contributionPoints;
-              const jobName = activeProject.card.jobs[slotIndex];
-              const prev = activeProject.contribution.byJob[jobName] ?? 0;
-              activeProject.contribution.byJob[jobName] = prev + contributionPoints;
+              ActiveProject.Contribute(activeProject, slotIndex, contributionPoints);
 
               // reduce worker token
               currentPlayerToken.workers -= createProjectWorkerCosts;
@@ -196,10 +193,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               // update contribution to recruit contribution points
               // TODO: replace with rule of recruit contributions
               const contributionPoints = 1;
-              activeProject.contribution.bySlot[slotIndex] = contributionPoints;
-              const jobName = activeProject.card.jobs[slotIndex];
-              const prev = activeProject.contribution.byJob[jobName] ?? 0;
-              activeProject.contribution.byJob[jobName] = prev + contributionPoints;
+              ActiveProject.Contribute(activeProject, slotIndex, contributionPoints);
 
               // reduce worker tokens
               currentPlayerToken.workers -= recruitWorkerCosts;
@@ -244,10 +238,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
             contributions.forEach(({ activeProjectIndex, slotIndex, value }) => {
               // update contributions to given contribution points
               const activeProject = ActiveProjects.GetById(G.table.activeProjects, activeProjectIndex);
-              activeProject.contribution.bySlot[slotIndex] = Math.min(6, activeProject.contribution.bySlot[slotIndex] + value);
-              const jobName = activeProject.card.jobs[slotIndex];
-              const prev = activeProject.contribution.byJob[jobName] ?? 0;
-              activeProject.contribution.byJob[jobName] = prev + value;
+              ActiveProject.Contribute(activeProject, slotIndex, value);
             });
           }) as WithGameState<type.State.Root, type.Move.Contribute>,
         },

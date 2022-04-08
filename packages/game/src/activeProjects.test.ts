@@ -1,4 +1,4 @@
-import { ActiveProjects } from "./activeProjects";
+import { ActiveProject, ActiveProjects } from "./activeProjects";
 import { OpenStarTerVillageType } from "./types";
 
 describe('ActiveProjects', () => {
@@ -18,6 +18,22 @@ describe('ActiveProjects', () => {
       const activeProjectId = ActiveProjects.Add(activeProjects, card, 'test onwer');
       const activeProject = ActiveProjects.GetById(activeProjects, activeProjectId);
       expect(activeProject.card).toEqual(card);
+    });
+  });
+});
+
+describe('ActiveProject', () => {
+  describe('Contribute', () => {
+    it('should increase value by slot and by job', () => {
+      const activeProjects: OpenStarTerVillageType.State.Project[] = [];
+      const card: OpenStarTerVillageType.Card.Project = { name: 'test 1', jobs: ['a', 'a', 'a', 'b', 'c', 'c'] };
+      const activeProjectId = ActiveProjects.Add(activeProjects, card, 'test onwer');
+      const activeProject = ActiveProjects.GetById(activeProjects, activeProjectId);
+
+      ActiveProject.Contribute(activeProject, 0, 3);
+
+      expect(activeProject.contribution.bySlot[0]).toEqual(3);
+      expect(activeProject.contribution.byJob['a']).toEqual(3);
     });
   });
 });

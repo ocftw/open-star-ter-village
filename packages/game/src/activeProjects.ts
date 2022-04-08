@@ -34,3 +34,18 @@ export const ActiveProjects: IActiveProjects = {
     return activeProjects[index];
   },
 };
+
+export interface IActiveProject {
+  // contribute project slot with an amount of contribution points
+  Contribute(activeProject: ActiveProjectType, slotIndex: number, points: number): void;
+}
+
+export const ActiveProject: IActiveProject = {
+  Contribute(activeProject, slotIndex, points) {
+    // update contribution by slot
+    activeProject.contribution.bySlot[slotIndex] += points;
+    // update contribution by job
+    const jobName = activeProject.card.jobs[slotIndex];
+    activeProject.contribution.byJob[jobName] += points;
+  },
+};
