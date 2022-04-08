@@ -36,11 +36,15 @@ export const ActiveProjects: IActiveProjects = {
 };
 
 export interface IActiveProject {
+  AssignWorker(activeProject: ActiveProjectType, slotIndex: number, player: PlayerID): void;
   // contribute project slot with an amount of contribution points
   Contribute(activeProject: ActiveProjectType, slotIndex: number, points: number): void;
 }
 
 export const ActiveProject: IActiveProject = {
+  AssignWorker(activeProject, slotIndex, player) {
+    activeProject.workers[slotIndex] = player;
+  },
   Contribute(activeProject, slotIndex, points) {
     // update contribution by slot
     activeProject.contribution.bySlot[slotIndex] += points;

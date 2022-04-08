@@ -148,7 +148,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               // reduce worker token
               currentPlayerToken.workers -= createProjectWorkerCosts;
               // assign worker token
-              activeProject.workers[slotIndex] = currentPlayer;
+              ActiveProject.AssignWorker(activeProject, slotIndex, currentPlayer);
 
               // discard resource card
               Deck.Discard(G.decks.resources, [resourceCard]);
@@ -198,7 +198,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               // reduce worker tokens
               currentPlayerToken.workers -= recruitWorkerCosts;
               // assign worker token
-              activeProject.workers[slotIndex] = currentPlayer;
+              ActiveProject.AssignWorker(activeProject, slotIndex, currentPlayer);
 
               // discard resource card
               Deck.Discard(G.decks.resources, [resourceCard]);
