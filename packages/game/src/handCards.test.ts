@@ -1,6 +1,14 @@
 import { HandCards } from './handCards';
 
-describe('handCard', () => {
+describe('HandCards', () => {
+  describe('GetById', () => {
+    it('should return hand card', () => {
+      const handCards = ['K', 'Q', 'J', 'T'];
+      const handCard = HandCards.GetById(handCards, 2);
+      expect(handCard).toEqual('J');
+    });
+  });
+
   describe('Add', () => {
     it('should merge new card into hand cards', () => {
       const handCards = ['knight', 'king', 'bishop'];

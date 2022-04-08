@@ -1,4 +1,5 @@
 export interface IHandCards {
+  GetById<T>(handCards: T[], index: number): T;
   Add<T>(handCards: T[], newCards: T[]): void;
   Remove<T>(handCards: T[], discardCards: T[]): void;
 }
@@ -17,6 +18,9 @@ function filterInplace<T>(array: T[], condition: (t: T, i: number, thisArg: T[])
 }
 
 export const HandCards: IHandCards = {
+  GetById(handCards, index) {
+    return handCards[index];
+  },
   Add<T>(handCards: T[], newCards: T[]): void {
     handCards.push(...newCards);
   },
