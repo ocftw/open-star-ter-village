@@ -134,8 +134,8 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
 
               // reduce action tokens
               currentPlayerToken.actions -= createProjectActionCosts;
-              HandCards.Remove(currentHandProjects, [projectCard]);
-              HandCards.Remove(currentHandResources, [resourceCard]);
+              HandCards.RemoveOne(currentHandProjects, projectCard);
+              HandCards.RemoveOne(currentHandResources, resourceCard);
 
               // initial active project
               const activeProjectIndex = ActiveProjects.Add(G.table.activeProjects, projectCard, currentPlayer);
@@ -191,7 +191,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
 
               // reduce action
               currentPlayerToken.actions -= recruitActionCosts;
-              HandCards.Remove(currentPlayerResources, [resourceCard]);
+              HandCards.RemoveOne(currentPlayerResources, resourceCard);
 
               // update contribution to recruit contribution points
               // TODO: replace with rule of recruit contributions
