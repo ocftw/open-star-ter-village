@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { BoardProps } from 'boardgame.io/react';
 import { OpenStarTerVillageType as Type } from 'packages/game/src/types';
 
@@ -16,6 +16,20 @@ const CurrentPlayer: React.FC<BoardProps<Type.State.Root>> = (props) => {
   const [activeProjectIndex, setActiveProjectIndex] = useState(-1);
   const onActiveProjectIndexChange: React.ChangeEventHandler<HTMLInputElement> = (event) =>
     setActiveProjectIndex(parseInt(event.target.value, 10));
+  const [slotIndex, setSlotIndex] = useState(-1);
+  const onSlotIndexChange: React.ChangeEventHandler<HTMLInputElement> = (event) =>
+    setSlotIndex(parseInt(event.target.value, 10));
+  const [value, setValue] = useState(-1);
+  const onValueChange: React.ChangeEventHandler<HTMLInputElement> = (event) =>
+    setValue(parseInt(event.target.value, 10));
+  const [contributions, setContributions] = useState<{ activeProjectIndex: number; slotIndex: number; value: number }[]>([]);
+  const onAddContribution = useCallback(() => {
+    if (activeProjectIndex >= 0 && slotIndex >= 0 && value > 0) {
+      setContributions(cons => {
+        return [...cons, { activeProjectIndex, slotIndex, value }];
+      });
+    }
+  }, [activeProjectIndex, slotIndex, value]);
 
   if (playerID === null) {
     return null;
@@ -23,6 +37,10 @@ const CurrentPlayer: React.FC<BoardProps<Type.State.Root>> = (props) => {
 
   const onCreateProject = () => moves.createProject(projectCardIndex, resourceCardIndex);
   const onRecruit = () => moves.recruit(resourceCardIndex, activeProjectIndex);
+  const onContribute = () => {
+    moves.contribute(contributions);
+    setContributions([]);
+  };
   const onEndAction = () => events.endStage!();
   const onRefillAndEnd = () => moves.refillAndEnd();
   const myCurrentStage = ctx.activePlayers ? ctx.activePlayers[playerID] : ''
@@ -61,8 +79,31 @@ const CurrentPlayer: React.FC<BoardProps<Type.State.Root>> = (props) => {
             onChange={onActiveProjectIndexChange}
           />
         </div>
+        <div>
+          <label>slot index:</label>
+          <input
+            type="number"
+            min={-1}
+            max={5}
+            value={slotIndex}
+            onChange={onSlotIndexChange}
+          />
+        </div>
+        <div>
+          <label>value:</label>
+          <input
+            type="number"
+            min={-1}
+            max={3}
+            value={value}
+            onChange={onValueChange}
+          />
+        </div>
         <button onClick={onCreateProject}>Create Project</button>
         <button onClick={onRecruit}>Recruit</button>
+        <button onClick={onAddContribution}>add contribution entity</button>
+        <div>current contribution entities: {JSON.stringify(contributions)}</div>
+        <button onClick={onContribute}>Contribute</button>
         <button onClick={onEndAction}>End Action</button>
         <button onClick={onRefillAndEnd}>Refill and End</button>
       </div>

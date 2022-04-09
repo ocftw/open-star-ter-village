@@ -59,7 +59,11 @@ namespace State
 |
 |- Project
 |  |- card: Card.Project
-|  |- slots: number[] # is 0 when slot is inactive, is 1-6 (positive number) when slot is active
+|  |- owner: playerId
+|  |- workers: (playerId | null)[]
+|  |- contribution
+|  |  |- bySlot: number[] # is 0 when slot is inactive, is 1-6 (positive number) when slot is active
+|  |  |- byJob: { [job name]: number } # accumulated contribution points by
 |
 |- Tree
    |- [treeTypes]: number
