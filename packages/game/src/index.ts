@@ -114,7 +114,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               }
 
               // check project card in in hand
-              const currentHandProjects = G.players[currentPlayer].hand.projects
+              const currentHandProjects = G.players[currentPlayer].hand.projects;
               if (!isInRange(projectCardIndex, currentHandProjects.length)) {
                 return INVALID_MOVE;
               }
@@ -126,14 +126,16 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               }
 
               // check resource card is required in project
-              if (!currentHandProjects[projectCardIndex].jobs.includes(currentHandResources[resourceCardIndex].name)) {
+              const projectCard = HandCards.GetById(currentHandProjects, projectCardIndex);
+              const resourceCard = HandCards.GetById(currentHandResources, resourceCardIndex);
+              if (!projectCard.jobs.includes(resourceCard.name)) {
                 return INVALID_MOVE;
               }
 
               // reduce action tokens
               currentPlayerToken.actions -= createProjectActionCosts;
-              const [projectCard] = currentHandProjects.splice(projectCardIndex, 1);
-              const [resourceCard] = currentHandResources.splice(resourceCardIndex, 1);
+              HandCards.RemoveOne(currentHandProjects, projectCard);
+              HandCards.RemoveOne(currentHandResources, resourceCard);
 
               // initial active project
               const activeProjectIndex = ActiveProjects.Add(G.table.activeProjects, projectCard, currentPlayer);
@@ -178,17 +180,18 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               if (!isInRange(activeProjectIndex, activeProjects.length)) {
                 return INVALID_MOVE;
               }
+              const resourceCard = HandCards.GetById(currentPlayerResources, resourceCardIndex);
               const activeProject = ActiveProjects.GetById(G.table.activeProjects, activeProjectIndex);
               const jobAndSlots = zip(activeProject.card.jobs, activeProject.contribution.bySlot);
               const slotIndex = jobAndSlots.findIndex(([job, slot]) =>
-                job === currentPlayerResources[resourceCardIndex].name && slot === 0);
+                job === resourceCard.name && slot === 0);
               if (slotIndex < 0) {
                 return INVALID_MOVE;
               }
 
               // reduce action
               currentPlayerToken.actions -= recruitActionCosts;
-              const [resourceCard] = currentPlayerResources.splice(resourceCardIndex, 1);
+              HandCards.RemoveOne(currentPlayerResources, resourceCard);
 
               // update contribution to recruit contribution points
               // TODO: replace with rule of recruit contributions
