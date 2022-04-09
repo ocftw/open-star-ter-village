@@ -11,7 +11,7 @@
     "test": "jest src/"
   },
   "dependencies": {
-    "boardgame.io": "^0.49.6"
+    "boardgame.io": "^0.49.11"
   },
   "devDependencies": {
     "@types/jest": "^26.0.24",
