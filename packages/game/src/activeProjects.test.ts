@@ -1,7 +1,7 @@
 import { ActiveProject, ActiveProjects } from "./activeProjects";
 import { OpenStarTerVillageType } from "./types";
 
-const mockCard: OpenStarTerVillageType.Card.Project = { name: 'test 1', jobs: ['a', 'a', 'a', 'b', 'c', 'c'] };
+const mockCard: OpenStarTerVillageType.Card.Project = { name: 'test 1', jobs: ['a', 'a', 'a', 'b', 'c', 'c'], thresholds: { a: 5, b: 4, c: 8 } };
 const mockPlayer = 'test owner';
 
 describe('ActiveProjects', () => {

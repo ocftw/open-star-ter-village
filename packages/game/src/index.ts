@@ -28,7 +28,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
       }, {});
 
     const decks: type.State.Root['decks'] = {
-      projects: newCardDeck<type.Card.Project>(projectCards),
+      projects: newCardDeck<type.Card.Project>(projectCards as unknown as type.Card.Project[]),
       resources: newCardDeck<type.Card.Resource>(resourceCards),
       events: newCardDeck<type.Card.Event>(eventCards),
       goals: newCardDeck<type.Card.Goal>(goalCards),
