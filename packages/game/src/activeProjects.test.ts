@@ -52,4 +52,20 @@ describe('ActiveProject', () => {
       expect(activeProject.contribution.byJob['a']).toEqual(3);
     });
   });
+
+  describe('FilterFulfilled', () => {
+    it('should return fulfilled active projects', () => {
+      const activeProjects: OpenStarTerVillageType.State.Project[] = [];
+      const activeProjectId = ActiveProjects.Add(activeProjects, mockCard, mockPlayer);
+      const activeProject = ActiveProjects.GetById(activeProjects, activeProjectId);
+      ActiveProject.Contribute(activeProject, 0, 5);
+      ActiveProject.Contribute(activeProject, 3, 4);
+      ActiveProject.Contribute(activeProject, 4, 5);
+      ActiveProject.Contribute(activeProject, 4, 3);
+
+      const fulfilledProjects = ActiveProjects.FilterFulfilled(activeProjects);
+      expect(fulfilledProjects).toHaveLength(1);
+      expect(fulfilledProjects[0].card).toEqual(mockCard);
+    });
+  });
 });

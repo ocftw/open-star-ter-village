@@ -9,6 +9,7 @@ export interface IActiveProjects {
   // add a project card in active projects pool and assign it to the owner. Return the active project index
   Add(activeProjects: ActiveProjects, card: ProjectCard, owner: PlayerID): number;
   GetById(activeProjects: ActiveProjects, index: number): ActiveProjectType;
+  FilterFulfilled(activeProjects: ActiveProjects): ActiveProjects;
 }
 
 export const ActiveProjects: IActiveProjects = {
@@ -32,6 +33,13 @@ export const ActiveProjects: IActiveProjects = {
   },
   GetById(activeProjects, index) {
     return activeProjects[index];
+  },
+  FilterFulfilled(activeProjects) {
+    return activeProjects.filter(project => {
+      const fulfilledThresholds = Object.keys(project.card.thresholds)
+        .map(jobName => project.contribution.byJob[jobName] >= project.card.thresholds[jobName]);
+      return fulfilledThresholds.every(x => x);
+    });
   },
 };
 
