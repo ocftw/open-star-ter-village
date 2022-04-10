@@ -70,11 +70,13 @@ export declare namespace OpenStarTerVillageType {
       createProject: CreateProject;
       recruit: Recruit;
       contribute: Contribute;
+      settle: Settle;
       refillAndEnd: RefillAndEnd;
     };
     export type CreateProject = (projectCardIndex: number, resourceCardIndex: number) => void;
     export type Recruit = (resourceCardIndex: number, activeProjectIndex: number) => void;
     export type Contribute = (contributions: { activeProjectIndex: number; slotIndex: number; value: number }[]) => void;
+    export type Settle = () => void;
     export type RefillAndEnd = () => void;
   }
 }

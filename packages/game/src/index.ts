@@ -248,6 +248,41 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
         next: 'settle',
       },
       settle: {
+        moves: {
+          settle: {
+            client: false,
+            // client trigger settle project and move on to next stage
+            move: ((G) => {
+              const activeProjects = G.table.activeProjects;
+              const fulfilledProjects = ActiveProjects.FilterFulfilled(activeProjects);
+              if (fulfilledProjects.length === 0) {
+                return;
+              }
+              // Update Score / Goals
+              // Return Tokens
+              const returnTokens = fulfilledProjects.map(project =>
+                project.workers.reduce<Record<PlayerID, number>>((result, worker) => {
+                  if (worker) {
+                    const prev = result[worker] ?? 0;
+                    result[worker] = prev + 1;
+                  }
+                  return result;
+                }, {}));
+
+              returnTokens.forEach(returnTokenMap => {
+                for (let playerId in returnTokenMap) {
+                  G.players[playerId].token.workers += returnTokenMap[playerId];
+                }
+              });
+              // Update OpenSourceTree
+              // Remove from table
+              ActiveProjects.Remove(activeProjects, fulfilledProjects);
+              // Discard Project Card
+              const projectCards = fulfilledProjects.map(project => project.card);
+              Deck.Discard(G.decks.projects, projectCards);
+            }) as WithGameState<type.State.Root, type.Move.Settle>,
+          },
+        },
         next: 'discard',
       },
       discard: {
