@@ -47,11 +47,11 @@ const CurrentPlayer: React.FC<BoardProps<Type.State.Root>> = (props) => {
   const onRefillAndEnd = () => moves.refillAndEnd();
   const myCurrentStage = ctx.activePlayers ? ctx.activePlayers[playerID] : ''
   return (
-    <div>
+    <div className='CurrentPlayer'>
       <div>I am Player {playerID}</div>
       {myCurrentStage ? <div>my current stage: {myCurrentStage}</div> : null}
       <div>
-        <div>
+        <>
           <label>project card index:</label>
           <input
             type="number"
@@ -60,8 +60,8 @@ const CurrentPlayer: React.FC<BoardProps<Type.State.Root>> = (props) => {
             value={projectCardIndex}
             onChange={onProjectCardIndexChange}
           />
-        </div>
-        <div>
+        </>
+        <>
           <label>resource card index:</label>
           <input
             type="number"
@@ -70,8 +70,8 @@ const CurrentPlayer: React.FC<BoardProps<Type.State.Root>> = (props) => {
             value={resourceCardIndex}
             onChange={onResourceCardIndexChange}
           />
-        </div>
-        <div>
+        </>
+        <>
           <label>active project index:</label>
           <input
             type="number"
@@ -80,8 +80,8 @@ const CurrentPlayer: React.FC<BoardProps<Type.State.Root>> = (props) => {
             value={activeProjectIndex}
             onChange={onActiveProjectIndexChange}
           />
-        </div>
-        <div>
+        </>
+        <>
           <label>slot index:</label>
           <input
             type="number"
@@ -90,8 +90,8 @@ const CurrentPlayer: React.FC<BoardProps<Type.State.Root>> = (props) => {
             value={slotIndex}
             onChange={onSlotIndexChange}
           />
-        </div>
-        <div>
+        </>
+        <>
           <label>value:</label>
           <input
             type="number"
@@ -100,16 +100,23 @@ const CurrentPlayer: React.FC<BoardProps<Type.State.Root>> = (props) => {
             value={value}
             onChange={onValueChange}
           />
+        </>
+        <div className='group actions'>
+          <button onClick={onCreateProject}>Create Project</button>
+          <button onClick={onRecruit}>Recruit</button>
+          <button onClick={onAddContribution}>add contribution entity</button>
+          <div>current contribution entities: {JSON.stringify(contributions)}</div>
+          <button onClick={onContribute}>Contribute</button>
+          <button onClick={onEndAction}>End Action</button>
         </div>
-        <button onClick={onCreateProject}>Create Project</button>
-        <button onClick={onRecruit}>Recruit</button>
-        <button onClick={onAddContribution}>add contribution entity</button>
-        <div>current contribution entities: {JSON.stringify(contributions)}</div>
-        <button onClick={onContribute}>Contribute</button>
-        <button onClick={onEndAction}>End Action</button>
-        <button onClick={onSettle}>Settle</button>
-        <button onClick={onEndSettle}>End Settle</button>
-        <button onClick={onRefillAndEnd}>Refill and End</button>
+        <div className='group settles'>
+          <button onClick={onSettle}>Settle</button>
+          <button onClick={onEndSettle}>End Settle</button>
+        </div>
+        <div className='group discards'>
+          <button onClick={() => events.endStage!()}>End Discard</button>
+        </div>
+        <button onClick={onRefillAndEnd}>Refill and End turn</button>
       </div>
       <div>
         Project Cards:

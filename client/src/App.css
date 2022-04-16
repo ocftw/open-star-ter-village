@@ -1,5 +1,7 @@
-.App {
-  text-align: center;
+.App {}
+
+.Players {
+  display: flex;
 }
 
 .App-logo {
@@ -24,6 +26,10 @@
   color: white;
 }
 
+.App-context {
+  margin-left: 5em;
+}
+
 .App-link {
   color: #61dafb;
 }
@@ -32,6 +38,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
