@@ -7,7 +7,7 @@
     "boardgame.io": "^0.49.11",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "react-scripts": "4.0.3",
+    "react-scripts": "^5.0.0",
     "web-vitals": "^1.0.1"
   },
   "devDependencies": {
@@ -19,6 +19,9 @@
     "@types/node": "^12.0.0",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
+    "autoprefixer": "^10.4.4",
+    "postcss": "^8.4.12",
+    "tailwindcss": "^3.0.24",
     "typescript": "^4.1.2"
   },
   "scripts": {
