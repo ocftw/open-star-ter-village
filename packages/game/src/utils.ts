@@ -16,14 +16,14 @@ export function zip<S = any, T = any>(array1: S[], array2: T[]): [S, T][] {
 }
 
 export function filterInplace<T>(array: T[], condition: (t: T, i: number, thisArg: T[]) => boolean) {
-  let write_ptr = 0;
-  let read_ptr = 0;
-  while (read_ptr < array.length) {
-    if (condition(array[read_ptr], read_ptr, array)) {
-      array[write_ptr] = array[read_ptr];
-      write_ptr++;
+  let writePtr = 0;
+  let readPtr = 0;
+  while (readPtr < array.length) {
+    if (condition(array[readPtr], readPtr, array)) {
+      array[writePtr] = array[readPtr];
+      writePtr++;
     }
-    read_ptr++;
+    readPtr++;
   }
-  array.length = write_ptr;
+  array.length = writePtr;
 }
