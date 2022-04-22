@@ -10,13 +10,13 @@ const Board: React.FC<BoardProps<OpenStarTerVillageType.State.Root>> = (props) =
   // show game table
   const Table = (
     <div>
-      <div>Table</div>
+      <h2>Table</h2>
       {JSON.stringify(G.table)}
     </div>
   );
 
   return (
-    <div className='board'>
+    <div className='Board'>
       <Players {...props} />
       <CurrentPlayer {...props} />
       {Table}

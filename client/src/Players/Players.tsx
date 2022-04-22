@@ -4,7 +4,7 @@ import { OpenStarTerVillageType } from 'packages/game/src/types';
 const Players: React.FC<BoardProps<OpenStarTerVillageType.State.Root>> = (props) => {
   const { G } = props;
   const players = Object.keys(G.players).map(player => (
-    <div className='player' key={player}>
+    <div className='Player' key={player}>
       <div>Player {player}</div>
       <ul>
         <li>
@@ -14,12 +14,17 @@ const Players: React.FC<BoardProps<OpenStarTerVillageType.State.Root>> = (props)
           ActionTokens: {G.players[player].token.actions}
         </li>
         <li>
-          CompletedProjects: {G.players[player].completed.projects}
+          CompletedProjects: {JSON.stringify(G.players[player].completed.projects)}
         </li>
       </ul>
     </div>
   ));
-  return (<>{players}</>);
+  return (
+    <>
+      <h2>Players</h2>
+      <div className='Players'>{players}</div>
+    </>
+  );
 }
 
 export default Players;

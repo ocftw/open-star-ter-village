@@ -19,12 +19,18 @@ function App() {
           Clone from github
         </a>
       </header>
-      <h1>player 0 view</h1>
-      <Boardgame playerID="0" />
-      <h1>player 1 view</h1>
-      <Boardgame playerID="1" />
-      <h1>observer view</h1>
-      <Boardgame />
+      <div className='App-context'>
+        <h1>player 0 view</h1>
+        <Boardgame playerID="0" />
+      </div>
+      <div className='App-context'>
+        <h1>player 1 view</h1>
+        <Boardgame playerID="1" />
+      </div>
+      <div className='App-context'>
+        <h1>observer view</h1>
+        <Boardgame />
+      </div>
     </div>
   );
 }
