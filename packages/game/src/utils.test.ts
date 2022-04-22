@@ -1,4 +1,4 @@
-import { isInRange, zip } from "./utils";
+import { filterInplace, isInRange, zip } from "./utils";
 
 describe('utils', () => {
   describe('isInRange', () => {
@@ -51,6 +51,14 @@ describe('utils', () => {
       expect(results[0]).toEqual([3, 'foo']);
       expect(results[1]).toEqual([2, 'bar']);
       expect(results[2]).toEqual([1, 'foobar']);
+    });
+  });
+
+  describe('filterInplace', () => {
+    it('should filter inplace', () => {
+      const array = [1, 2, 3, 4, 5];
+      filterInplace(array, x => x % 2 == 0);
+      expect(array).toEqual([2, 4]);
     });
   });
 });

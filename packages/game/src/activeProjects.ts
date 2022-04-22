@@ -1,5 +1,6 @@
 import { PlayerID } from "boardgame.io";
 import { OpenStarTerVillageType } from "./types";
+import { filterInplace } from "./utils";
 
 type ProjectCard = OpenStarTerVillageType.Card.Project;
 type ActiveProjects = OpenStarTerVillageType.State.Table['activeProjects'];
@@ -9,6 +10,8 @@ export interface IActiveProjects {
   // add a project card in active projects pool and assign it to the owner. Return the active project index
   Add(activeProjects: ActiveProjects, card: ProjectCard, owner: PlayerID): number;
   GetById(activeProjects: ActiveProjects, index: number): ActiveProjectType;
+  FilterFulfilled(activeProjects: ActiveProjects): ActiveProjects;
+  Remove(activeProjects: ActiveProjects, removedProjects: ActiveProjects): void;
 }
 
 export const ActiveProjects: IActiveProjects = {
@@ -32,6 +35,16 @@ export const ActiveProjects: IActiveProjects = {
   },
   GetById(activeProjects, index) {
     return activeProjects[index];
+  },
+  FilterFulfilled(activeProjects) {
+    return activeProjects.filter(project => {
+      const fulfilledThresholds = Object.keys(project.card.thresholds)
+        .map(jobName => project.contribution.byJob[jobName] >= project.card.thresholds[jobName]);
+      return fulfilledThresholds.every(x => x);
+    });
+  },
+  Remove(activeProjects, removedProjects) {
+    filterInplace(activeProjects, project => !removedProjects.includes(project));
   },
 };
 

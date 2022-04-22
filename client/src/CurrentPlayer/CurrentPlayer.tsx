@@ -42,6 +42,8 @@ const CurrentPlayer: React.FC<BoardProps<Type.State.Root>> = (props) => {
     setContributions([]);
   };
   const onEndAction = () => events.endStage!();
+  const onSettle = () => moves.settle();
+  const onEndSettle = () => events.endStage!();
   const onRefillAndEnd = () => moves.refillAndEnd();
   const myCurrentStage = ctx.activePlayers ? ctx.activePlayers[playerID] : ''
   return (
@@ -105,6 +107,8 @@ const CurrentPlayer: React.FC<BoardProps<Type.State.Root>> = (props) => {
         <div>current contribution entities: {JSON.stringify(contributions)}</div>
         <button onClick={onContribute}>Contribute</button>
         <button onClick={onEndAction}>End Action</button>
+        <button onClick={onSettle}>Settle</button>
+        <button onClick={onEndSettle}>End Settle</button>
         <button onClick={onRefillAndEnd}>Refill and End</button>
       </div>
       <div>

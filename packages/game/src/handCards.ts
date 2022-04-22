@@ -1,22 +1,11 @@
+import { filterInplace } from './utils';
+
 export interface IHandCards {
   GetById<T>(handCards: T[], index: number): T;
   Add<T>(handCards: T[], newCards: T[]): void;
   AddOne<T>(handCards: T[], newCard: T): void;
   Remove<T>(handCards: T[], discardCards: T[]): void;
   RemoveOne<T>(handCards: T[], discardCard: T): void;
-}
-
-function filterInplace<T>(array: T[], condition: (t: T, i: number, thisArg: T[]) => boolean) {
-  let write_ptr = 0;
-  let read_ptr = 0;
-  while (read_ptr < array.length) {
-    if (condition(array[read_ptr], read_ptr, array)) {
-      array[write_ptr] = array[read_ptr];
-      write_ptr++;
-    }
-    read_ptr++;
-  }
-  array.length = write_ptr;
 }
 
 export const HandCards: IHandCards = {

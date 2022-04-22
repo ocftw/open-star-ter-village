@@ -1,9 +1,10 @@
 import { PlayerID } from 'boardgame.io';
 
 export declare namespace OpenStarTerVillageType {
+  type JobName = string;
   export declare namespace Card {
     export type Base = { name: string };
-    export type Project = Base & { jobs: string[] };
+    export type Project = Base & { jobs: JobName[], thresholds: Record<JobName, number> };
     export type Resource = Job | Force;
     export type Job = Base;
     export type Force = Base;
@@ -69,11 +70,13 @@ export declare namespace OpenStarTerVillageType {
       createProject: CreateProject;
       recruit: Recruit;
       contribute: Contribute;
+      settle: Settle;
       refillAndEnd: RefillAndEnd;
     };
     export type CreateProject = (projectCardIndex: number, resourceCardIndex: number) => void;
     export type Recruit = (resourceCardIndex: number, activeProjectIndex: number) => void;
     export type Contribute = (contributions: { activeProjectIndex: number; slotIndex: number; value: number }[]) => void;
+    export type Settle = () => void;
     export type RefillAndEnd = () => void;
   }
 }
