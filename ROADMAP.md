@@ -24,6 +24,8 @@ This is the living document capture the current area of focus, and what needs to
 
 ### Basic game logics
 
+#### Action Stage
+
 * [x] Play Project cards
   * [x] Basic play function
   * [x] Fill in jobs
@@ -35,9 +37,28 @@ This is the living document capture the current area of focus, and what needs to
   * [x] Play Job card on an Active project (includes validation and eligibility check)
   * [x] Deduct player action point (includes validation and eligibility check)
   * [x] Deduct player worker token (includes validation and eligibility check)
-* [ ] Contribute the projects *[T]*
+* [x] Contribute the projects
   * [x] basic play function
 * [ ] Goal cards
+
+#### Settle Stage
+
+* [x] Close projects
+
+#### Discard Stage
+
+* [ ] Discard resource cards *[T]*
+* [ ] Discard project cards
+
+#### Refill Stage
+
+* [ ] Refill resource cards
+* [ ] Refill project cards
+
+#### End Game
+
+* [ ] Assume first player is Game Master who can end the current game *[T]*
+* [x] Replace Local game with Server game
 
 #### Unit tests
 
@@ -91,6 +112,7 @@ This is the living document capture the current area of focus, and what needs to
       * EventCard/
 
   Folders should be structured by features (scenario 2) but it is viable to have common styled components such as Button, Tab, or Input collected in the common folder (styled foder in scenario 1).
+* [x] Header
 * [ ] Table   *[T]*
   * [ ] Table Layout
   * [ ] Projct Card (read)
