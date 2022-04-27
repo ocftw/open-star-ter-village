@@ -1,0 +1,11 @@
+.app {
+  @apply text-center;
+}
+
+.heading {
+  @apply text-2xl font-bold leading-loose;
+}
+
+.context {
+  margin-left: 5em;
+}

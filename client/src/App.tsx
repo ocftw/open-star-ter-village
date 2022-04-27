@@ -1,25 +1,24 @@
 import AppHeader from './features/AppHeader/AppHeader';
 import Boardgame from './BoardGame';
-import { AppContainer, H1 } from './App.styled';
-import './App.css';
+import styles from './App.module.css';
 
 function App() {
   return (
-    <AppContainer>
+    <div className={styles.app}>
       <AppHeader />
-      <div className='App-context'>
-        <H1>player 0 view</H1>
+      <div className={styles.context}>
+        <h1 className={styles.heading}>player 0 view</h1>
         <Boardgame playerID="0" />
       </div>
-      <div className='App-context'>
-        <H1>player 1 view</H1>
+      <div className={styles.context}>
+        <h1 className={styles.heading}>player 1 view</h1>
         <Boardgame playerID="1" />
       </div>
-      <div className='App-context'>
-        <H1>observer view</H1>
+      <div className={styles.context}>
+        <h1 className={styles.heading}>observer view</h1>
         <Boardgame />
       </div>
-    </AppContainer>
+    </div>
   );
 }
 
