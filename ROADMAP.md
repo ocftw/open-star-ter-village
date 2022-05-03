@@ -41,6 +41,16 @@ This is the living document capture the current area of focus, and what needs to
   * [x] basic play function
 * [ ] Goal cards
 
+Move interfaces:
+
+```ts
+function createProject(G: G, ctx: ctx, projectCardIndex: number, resourceCardIndex: number): void
+
+function recruit(G: G, ctx: ctx, resourceCardIndex: number, activeProjectIndex: number): void
+
+function contribute(G: G, ctx: ctx, contributions: Array<{ activeProjectIndex: number, slotIndex: number, value: number }>): void
+```
+
 #### Settle Stage
 
 * [x] Close projects
@@ -50,10 +60,26 @@ This is the living document capture the current area of focus, and what needs to
 * [ ] Discard resource cards *[T]*
 * [ ] Discard project cards
 
+Move interfaces:
+
+```ts
+function discardProjectCards(G: G, ctx: ctx, projectIndices: number[]): void
+
+function discardResourceCards(G: G, ctx: ctx, resourceIndices: number[]): void
+```
+
 #### Refill Stage
 
-* [ ] Refill resource cards
-* [ ] Refill project cards
+* [ ] Refill and End
+  * [ ] Refill resource cards
+  * [ ] Refill project cards
+  * [x] Refill action points
+
+Move interface:
+
+```ts
+function refillAndEnd(G: G, ctx: ctx): void
+```
 
 #### End Game
 
