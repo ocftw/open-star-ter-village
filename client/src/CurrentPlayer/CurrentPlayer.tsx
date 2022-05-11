@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { BoardProps } from 'boardgame.io/react';
 import { OpenStarTerVillageType as Type } from 'packages/game/src/types';
-import { FormLabel, Input, Flex, Button, Box, UnorderedList, ListItem } from '@chakra-ui/react'
+import { FormLabel, Input, Stack, HStack, Button, Box, UnorderedList, ListItem } from '@chakra-ui/react'
 
 const CurrentPlayer: React.FC<BoardProps<Type.State.Root>> = (props) => {
   const { G, playerID, moves: nonTypeMoves, events, ctx } = props;
@@ -51,8 +51,8 @@ const CurrentPlayer: React.FC<BoardProps<Type.State.Root>> = (props) => {
     <div className='CurrentPlayer'>
       <div>I am Player {playerID}</div>
       {myCurrentStage ? <div>my current stage: {myCurrentStage}</div> : null}
-      <Flex mt={2}>
-        <Flex flex='1'>
+      <Stack direction={['column', 'row']} mt={2}>
+        <HStack w={['100%', '100%', '20%']}>
           <Box>
             <FormLabel>project card index:</FormLabel>
           </Box>
@@ -66,8 +66,8 @@ const CurrentPlayer: React.FC<BoardProps<Type.State.Root>> = (props) => {
               onChange={onProjectCardIndexChange}
             />
           </Box>
-        </Flex>
-        <Flex flex='1'>
+        </HStack>
+        <HStack w={['100%', '100%', '20%']}>
           <Box>
             <FormLabel>resource card index:</FormLabel>
           </Box>
@@ -81,8 +81,8 @@ const CurrentPlayer: React.FC<BoardProps<Type.State.Root>> = (props) => {
               onChange={onResourceCardIndexChange}
             />
           </Box>
-        </Flex>
-        <Flex flex='1'>
+        </HStack>
+        <HStack w={['100%', '100%', '20%']}>
           <Box>
             <FormLabel>active project index:</FormLabel>
           </Box>
@@ -96,8 +96,8 @@ const CurrentPlayer: React.FC<BoardProps<Type.State.Root>> = (props) => {
               onChange={onActiveProjectIndexChange}
             />
           </Box>
-        </Flex>
-        <Flex flex='1'>
+        </HStack>
+        <HStack w={['100%', '100%', '20%']}>
           <Box>
             <FormLabel>slot index:</FormLabel>
           </Box>
@@ -111,8 +111,8 @@ const CurrentPlayer: React.FC<BoardProps<Type.State.Root>> = (props) => {
               onChange={onSlotIndexChange}
             />
           </Box>
-        </Flex>
-        <Flex flex='1'>
+        </HStack>
+        <HStack w={['100%', '100%', '20%']}>
           <Box>
             <FormLabel>value:</FormLabel>
           </Box>
@@ -126,38 +126,36 @@ const CurrentPlayer: React.FC<BoardProps<Type.State.Root>> = (props) => {
               onChange={onValueChange}
             />
           </Box>
-        </Flex>
-      </Flex>
-      <Flex mt={1}>
+        </HStack>
+      </Stack>
+      <Stack direction={['column', 'row']} mt={1}>
         <Button size='xs' onClick={onCreateProject}>Create Project</Button>
         <Button size='xs' onClick={onRecruit}>Recruit</Button>
         <Button size='xs' onClick={onAddContribution}>add contribution entity</Button>
-      </Flex>
-      <Flex mt={1}>
+      </Stack>
+      <Stack direction={['column', 'row']} mt={1}>
         <div>current contribution entities: {JSON.stringify(contributions)}</div>
-      </Flex>
-      <Flex mt={1}>
+      </Stack>
+      <Stack direction={['column', 'row']} mt={1}>
         <Button size='xs' onClick={onContribute}>Contribute</Button>
         <Button size='xs' onClick={onEndAction}>End Action</Button>
-      </Flex>
-      <Flex mt={1}>
+      </Stack>
+      <Stack direction={['column', 'row']} mt={1}>
         <div className='group settles'>
           <Button size='xs' onClick={onSettle}>Settle</Button>
           <Button size='xs' onClick={onEndSettle}>End Settle</Button>
         </div>
-      </Flex>
-      <Flex mt={1}>
+      </Stack>
+      <Stack direction={['column', 'row']} mt={1}>
         <div className='group discards'>
           <Button size='xs' onClick={() => events.endStage!()}>End Discard</Button>
         </div>
-      </Flex>
-      <Flex mt={1}>
+      </Stack>
+      <Stack direction={['column', 'row']} mt={1}>
         <Button size='xs' onClick={onRefillAndEnd}>Refill and End turn</Button>
-      </Flex>
-      <Flex mt={1}>
-        <Box>
-          Project Cards:
-        </Box>
+      </Stack>
+      <Stack direction={['column', 'row']} mt={1}>
+        <Box>Project Cards:</Box>
         <UnorderedList>
           {
             G.players[playerID].hand.projects.map(p => (
@@ -167,9 +165,9 @@ const CurrentPlayer: React.FC<BoardProps<Type.State.Root>> = (props) => {
               </ListItem>))
           }
         </UnorderedList>
-      </Flex>
-      <Flex mt={1}>
-        Resource Cards:
+      </Stack>
+      <Stack direction={['column', 'row']} mt={1}>
+        <Box>Resource Cards:</Box>
         <UnorderedList>
           {
             G.players[playerID].hand.resources.map(r => (
@@ -178,7 +176,7 @@ const CurrentPlayer: React.FC<BoardProps<Type.State.Root>> = (props) => {
               </ListItem>))
           }
         </UnorderedList>
-      </Flex>
+      </Stack>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { Heading, Flex, Box, Text, Link, Image } from '@chakra-ui/react';
+import { Heading, HStack, Box, Text, Link, Image } from '@chakra-ui/react';
 import Boardgame from './BoardGame';
 import logo from './logo.svg';
 import './App.css';
@@ -6,7 +6,7 @@ import './App.css';
 function App() {
   return (
     <>
-      <Flex bg="blue.900" flexDirection="row" alignItems="center" justifyContent="center">
+      <HStack bg="blue.900" align="center" justify="center">
         <Image src={logo} alt="logo" boxSize="62px" className="App-logo" />
         <Box as="p" py="4">
           <Text color="white" fontSize="xl">OpenStarTerVillage</Text>
@@ -21,7 +21,7 @@ function App() {
             Clone from github
           </Link>
         </Box>
-      </Flex>
+      </HStack>
       <Box ml="10" mt="5">
         <Heading as="h1" size="xl">Player 0 view</Heading>
         <Boardgame playerID="0" />
