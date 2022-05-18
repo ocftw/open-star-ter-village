@@ -8,10 +8,10 @@ function App() {
     <>
       <HStack bg="blue.900" align="center" justify="center">
         <Image src={logo} alt="logo" boxSize="62px" className="App-logo" />
-        <Box as="p" py="4">
+        <Box py="4">
           <Text color="white" fontSize="xl">OpenStarTerVillage</Text>
         </Box>
-        <Box as="p" py="4" pl="2">
+        <Box py="4" pl="2">
           <Link
             color="cyan.300"
             href="https://github.com/ocftw/open-star-ter-village"
