@@ -9,9 +9,9 @@ import CurrentPlayer from './CurrentPlayer/CurrentPlayer';
 const Board: React.FC<BoardProps<OpenStarTerVillageType.State.Root>> = (props) => {
   return (
     <div className='Board'>
+      <Table {...props} />
       <Players {...props} />
       <CurrentPlayer {...props} />
-      <Table {...props} />
     </div>
   );
 }
