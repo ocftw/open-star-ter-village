@@ -43,10 +43,10 @@ const ActiveProject: React.FC<Props> = ({ project }) => {
   return (
     <Box m="4" px="4" border="1px" borderRadius="lg" borderColor="gray.100">
       <TableContainer overflowX="hidden" overflowY="hidden">
-        <Table>
-          <TableCaption placement="top">{project.card.name}</TableCaption>
+        <Table size="sm">
+          <TableCaption placement="top" h="9">{project.card.name}</TableCaption>
           <Thead>
-            <Tr>
+            <Tr h="6">
               <Th w="30%">玩家</Th>
               <Th w="30%">職業</Th>
               <Th w="20%">貢獻</Th>
@@ -59,7 +59,7 @@ const ActiveProject: React.FC<Props> = ({ project }) => {
               const threshold = project.card.thresholds[jobName];
 
               return slots.map((slot, slotIndex) => (
-                <Tr key={`slot-${slotIndex}`}>
+                <Tr key={`slot-${slotIndex}`} h="9">
                   <Td>{slot.worker}</Td>
                   <Td>{jobName}</Td>
                   <Td>{slot.workerContribution}/{slot.workerThreshold}</Td>
@@ -71,7 +71,7 @@ const ActiveProject: React.FC<Props> = ({ project }) => {
             })}
           </Tbody>
           <Tfoot>
-            <Tr>
+            <Tr h="6">
               <Th w="30%">玩家</Th>
               <Th w="30%">職業</Th>
               <Th w="20%">貢獻</Th>
