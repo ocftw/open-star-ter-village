@@ -1,4 +1,3 @@
-import _groupby from 'lodash/groupBy';
 import { OpenStarTerVillageType as Type } from 'packages/game/src/types';
 import {
   Box,
@@ -53,7 +52,12 @@ const ActiveProject: React.FC<Props> = ({ project }) => {
 
   if (project) {
     const denormalizedSlots = reduceProjectToDenormalizedSlots(project);
-    const jobGroups = _groupby(denormalizedSlots, slot => slot.jobName);
+    const jobGroups = denormalizedSlots.reduce<Record<DenormalizeSlot['jobName'], DenormalizeSlot[]>>((acc, slot) => {
+      acc[slot.jobName] = acc[slot.jobName] || [];
+      acc[slot.jobName].push(slot);
+
+      return acc;
+    }, {});
 
     slotRows = Object.entries(jobGroups).map(([jobName, slots]) => {
       const contribution = project.contribution.byJob[jobName];
