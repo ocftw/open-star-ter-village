@@ -158,8 +158,8 @@ const CurrentPlayer: React.FC<BoardProps<Type.State.Root>> = (props) => {
         <Box>Project Cards:</Box>
         <UnorderedList>
           {
-            G.players[playerID].hand.projects.map(p => (
-              <ListItem>
+            G.players[playerID].hand.projects.map((p, i) => (
+              <ListItem key={`project-card-${i}`}>
                 <span>title: {p.name}</span>
                 <span>jobs: {JSON.stringify(p.jobs)}</span>
               </ListItem>))
@@ -170,8 +170,8 @@ const CurrentPlayer: React.FC<BoardProps<Type.State.Root>> = (props) => {
         <Box>Resource Cards:</Box>
         <UnorderedList>
           {
-            G.players[playerID].hand.resources.map(r => (
-              <ListItem>
+            G.players[playerID].hand.resources.map((r, i) => (
+              <ListItem key={`resource-card-${i}`}>
                 <span>{r.name}</span>
               </ListItem>))
           }
