@@ -57,7 +57,7 @@ function contribute(G: G, ctx: ctx, contributions: Array<{ activeProjectIndex: n
 
 #### Discard Stage
 
-* [ ] Discard resource cards *[T]*
+* [ ] Discard resource cards
 * [ ] Discard project cards
 
 Move interfaces:
@@ -71,13 +71,17 @@ function discardResourceCards(G: G, ctx: ctx, resourceIndices: number[]): void
 #### Refill Stage
 
 * [ ] Refill and End
-  * [ ] Refill resource cards
-  * [ ] Refill project cards
+  * [ ] Refill resource cards  *[T]*
+  * [ ] Refill project cards  *[T]*
   * [x] Refill action points
 
 Move interface:
 
 ```ts
+// inner function
+function refillResource(): void {}
+
+// exposed function
 function refillAndEnd(G: G, ctx: ctx): void
 ```
 
@@ -139,15 +143,31 @@ function refillAndEnd(G: G, ctx: ctx): void
 
   Folders should be structured by features (scenario 2) but it is viable to have common styled components such as Button, Tab, or Input collected in the common folder (styled foder in scenario 1).
 * [x] Header
-* [ ] Table   *[T]*
-  * [ ] Table Layout
-  * [ ] Projct Card (read)
-* [ ] Play Project cards
+* [x] Table
+  * [x] Table Layout
+  * [x] Projct Card (read)
+* [ ] Play Project cards *[T]*
 * [ ] Play Job cards
 * [ ] Contribute the projects
 
 ### Advanced game logics
 
+* [ ] Apply New rules *[T]*
+  * [ ] Decouple Job and Force cards in Player Hand
+
+  ```ts
+    function createProject(G: G, ctx: ctx, projectCardIndex: number, jobCardIndex: number): void
+  ```
+
+  * [ ] Split Job and Force cards deck
+
+  ```ts
+  // inner function
+  function refillJob(): void {}
+  function refillForce(): void {}
+  ```
+
+  * [ ] Move Job cards from Player Hand to Table
 * [ ] Play Force cards
 * [ ] Event cards
 
