@@ -50,7 +50,6 @@ namespace State
 |- Player
 |  |- hand (hidden to observer)
 |  |  |- projects: Card.Project[]
-|  |  |- jobs: Card.Job[]
 |  |  |- forces: Card.Force[]
 |  |
 |  |- token

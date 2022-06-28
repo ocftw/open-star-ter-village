@@ -4,7 +4,17 @@ export declare namespace OpenStarTerVillageType {
   type JobName = string;
   export declare namespace Card {
     export type Base = { name: string };
-    export type Project = Base & { jobs: JobName[], thresholds: Record<JobName, number> };
+    export type Project = Base & {
+      /**
+       * @deprecated will be removed, use requirements key instead
+       */
+      jobs: JobName[];
+      /**
+       * @deprecated will be removed, use requirements instead
+       */
+      thresholds: Record<JobName, number>;
+      requirements: Record<JobName, number>;
+    };
     export type Job = Base;
     export type Force = Base;
     export type Event = Base;
