@@ -45,6 +45,7 @@ namespace State
 |- Table
 |  |- activeEvent: Card.Event | null
 |  |- activeProjects: Project[]
+|  |- activeJobs: Card.Job[]
 |
 |- Player
 |  |- hand (hidden to observer)

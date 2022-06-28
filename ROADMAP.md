@@ -172,7 +172,7 @@ function refillAndEnd(G: G, ctx: ctx): void
   function refillForce(): void {}
   ```
 
-  * [ ] Move Job cards from Player Hand to Table
+  * [x] Move Job cards from Player Hand to Table
 * [ ] Play Force cards
 * [ ] Event cards
 

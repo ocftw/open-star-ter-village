@@ -36,6 +36,7 @@ export declare namespace OpenStarTerVillageType {
     export interface Table {
       activeEvent: Card.Event | null;
       activeProjects: Project[];
+      activeJobs: Card.Job[];
     }
 
     export interface Player {
@@ -51,7 +52,6 @@ export declare namespace OpenStarTerVillageType {
 
     export interface Hand {
       projects: Card.Project[];
-      jobs: Card.Job[];
       forces: Card.Force[];
     }
 
@@ -73,6 +73,7 @@ export declare namespace OpenStarTerVillageType {
       contribute: Contribute;
       settle: Settle;
       refillAndEnd: RefillAndEnd;
+      refillJob: RefillJob;
     };
     export type CreateProject = (projectCardIndex: number, jobCardIndex: number) => void;
     export type Recruit = (resourceCardIndex: number, activeProjectIndex: number) => void;
