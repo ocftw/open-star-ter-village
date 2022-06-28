@@ -29,7 +29,8 @@ namespace State
 |  |- rules: State.Rule
 |  |- decks
 |  |  |- projects: State.Deck<Card.Project>
-|  |  |- resources: State.Deck<Card.Resource>
+|  |  |- jobs: State.Deck<Card.Job>
+|  |  |- forces: State.Deck<Card.Force>
 |  |  |- events: State.Deck<Card.Event>
 |  |- table: State.Table
 |  |- players
@@ -48,7 +49,8 @@ namespace State
 |- Player
 |  |- hand (hidden to observer)
 |  |  |- projects: Card.Project[]
-|  |  |- resources: Card.Resource[]
+|  |  |- jobs: Card.Job[]
+|  |  |- forces: Card.Force[]
 |  |
 |  |- token
 |  |  |- workers: number

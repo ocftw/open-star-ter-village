@@ -44,9 +44,9 @@ This is the living document capture the current area of focus, and what needs to
 Move interfaces:
 
 ```ts
-function createProject(G: G, ctx: ctx, projectCardIndex: number, resourceCardIndex: number): void
+function createProject(G: G, ctx: ctx, projectCardIndex: number, jobCardIndex: number): void
 
-function recruit(G: G, ctx: ctx, resourceCardIndex: number, activeProjectIndex: number): void
+function recruit(G: G, ctx: ctx, jobCardIndex: number, activeProjectIndex: number): void
 
 function contribute(G: G, ctx: ctx, contributions: Array<{ activeProjectIndex: number, slotIndex: number, value: number }>): void
 ```
@@ -57,7 +57,7 @@ function contribute(G: G, ctx: ctx, contributions: Array<{ activeProjectIndex: n
 
 #### Discard Stage
 
-* [ ] Discard resource cards
+* [ ] Discard force cards
 * [ ] Discard project cards
 
 Move interfaces:
@@ -65,7 +65,7 @@ Move interfaces:
 ```ts
 function discardProjectCards(G: G, ctx: ctx, projectIndices: number[]): void
 
-function discardResourceCards(G: G, ctx: ctx, resourceIndices: number[]): void
+function discardForceCards(G: G, ctx: ctx, forceIndices: number[]): void
 ```
 
 #### Refill Stage
@@ -79,7 +79,8 @@ Move interface:
 
 ```ts
 // inner function
-function refillResource(): void {}
+function refillForce(): void {}
+function refillProject(): void {}
 
 // exposed function
 function refillAndEnd(G: G, ctx: ctx): void
@@ -159,7 +160,7 @@ function refillAndEnd(G: G, ctx: ctx): void
     function createProject(G: G, ctx: ctx, projectCardIndex: number, jobCardIndex: number): void
   ```
 
-  * [ ] Split Job and Force cards deck
+  * [x] Split Job and Force cards deck
 
   ```ts
   // inner function

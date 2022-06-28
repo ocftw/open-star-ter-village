@@ -5,7 +5,6 @@ export declare namespace OpenStarTerVillageType {
   export declare namespace Card {
     export type Base = { name: string };
     export type Project = Base & { jobs: JobName[], thresholds: Record<JobName, number> };
-    export type Resource = Job | Force;
     export type Job = Base;
     export type Force = Base;
     export type Event = Base;
@@ -17,7 +16,8 @@ export declare namespace OpenStarTerVillageType {
       rules: Rule;
       decks: {
         projects: Deck<Card.Project>;
-        resources: Deck<Card.Resource>;
+        jobs: Deck<Card.Job>;
+        forces: Deck<Card.Force>;
         events: Deck<Card.Event>;
         goals: Deck<Card.Goal>;
       };
@@ -51,7 +51,8 @@ export declare namespace OpenStarTerVillageType {
 
     export interface Hand {
       projects: Card.Project[];
-      resources: Card.Resource[];
+      jobs: Card.Job[];
+      forces: Card.Force[];
     }
 
     export interface Project {
@@ -73,7 +74,7 @@ export declare namespace OpenStarTerVillageType {
       settle: Settle;
       refillAndEnd: RefillAndEnd;
     };
-    export type CreateProject = (projectCardIndex: number, resourceCardIndex: number) => void;
+    export type CreateProject = (projectCardIndex: number, jobCardIndex: number) => void;
     export type Recruit = (resourceCardIndex: number, activeProjectIndex: number) => void;
     export type Contribute = (contributions: { activeProjectIndex: number; slotIndex: number; value: number }[]) => void;
     export type Settle = () => void;
