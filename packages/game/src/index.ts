@@ -1,7 +1,7 @@
 import { Game, PlayerID, State } from 'boardgame.io';
 import { INVALID_MOVE } from 'boardgame.io/core';
 import { Deck, newCardDeck } from './deck';
-import { HandCards } from './handCards';
+import { Cards } from './cards';
 import { OpenStarTerVillageType as type } from './types';
 import projectCards from './data/card/projects.json';
 import jobCards from './data/card/jobs.json';
@@ -67,13 +67,13 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
         const maxProjectCards = 2;
         for (let playerId in state.players) {
           const projectCards = Deck.Draw(state.decks.projects, maxProjectCards);
-          HandCards.Add(state.players[playerId].hand.projects, projectCards);
+          Cards.Add(state.players[playerId].hand.projects, projectCards);
         }
 
         const maxForceCards = 2;
         for (let playerId in state.players) {
           const forceCards = Deck.Draw(state.decks.forces, maxForceCards);
-          HandCards.Add(state.players[playerId].hand.forces, forceCards);
+          Cards.Add(state.players[playerId].hand.forces, forceCards);
         }
 
         const maxJobCards = 5;
@@ -136,16 +136,16 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               }
 
               // check job card is required in project
-              const projectCard = HandCards.GetById(currentHandProjects, projectCardIndex);
-              const jobCard = HandCards.GetById(currentJobs, jobCardIndex);
+              const projectCard = Cards.GetById(currentHandProjects, projectCardIndex);
+              const jobCard = Cards.GetById(currentJobs, jobCardIndex);
               if (!projectCard.jobs.includes(jobCard.name)) {
                 return INVALID_MOVE;
               }
 
               // reduce action tokens
               currentPlayerToken.actions -= createProjectActionCosts;
-              HandCards.RemoveOne(currentHandProjects, projectCard);
-              HandCards.RemoveOne(currentJobs, jobCard);
+              Cards.RemoveOne(currentHandProjects, projectCard);
+              Cards.RemoveOne(currentJobs, jobCard);
 
               // initial active project
               const activeProjectIndex = ActiveProjects.Add(G.table.activeProjects, projectCard, currentPlayer);
@@ -190,7 +190,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               if (!isInRange(activeProjectIndex, activeProjects.length)) {
                 return INVALID_MOVE;
               }
-              const jobCard = HandCards.GetById(currentJob, jobCardIndex);
+              const jobCard = Cards.GetById(currentJob, jobCardIndex);
               const activeProject = ActiveProjects.GetById(G.table.activeProjects, activeProjectIndex);
               const jobAndSlots = zip(activeProject.card.jobs, activeProject.contribution.bySlot);
               const slotIndex = jobAndSlots.findIndex(([job, slot]) =>
@@ -201,7 +201,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
 
               // reduce action
               currentPlayerToken.actions -= recruitActionCosts;
-              HandCards.RemoveOne(currentJob, jobCard);
+              Cards.RemoveOne(currentJob, jobCard);
 
               // update contribution to recruit contribution points
               // TODO: replace with rule of recruit contributions
@@ -258,7 +258,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
             const maxJobCards = 5;
             const refillCardNumber = maxJobCards - G.table.activeJobs.length;
             const jobCards = Deck.Draw(G.decks.jobs, refillCardNumber);
-            HandCards.Add(G.table.activeJobs, jobCards);
+            Cards.Add(G.table.activeJobs, jobCards);
           }) as WithGameState<type.State.Root, type.Move.RefillJob>,
         },
         next: 'settle',
@@ -321,14 +321,14 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               const maxProjectCards = 2;
               const refillCardNumber = maxProjectCards - G.players[ctx.currentPlayer].hand.projects.length;
               const projectCards = Deck.Draw(G.decks.projects, refillCardNumber);
-              HandCards.Add(G.players[ctx.currentPlayer].hand.projects, projectCards);
+              Cards.Add(G.players[ctx.currentPlayer].hand.projects, projectCards);
             }) as WithGameState<type.State.Root, type.Move.RefillProject>;
 
             const refillForce = ((G, ctx) => {
               const maxForceCards = 2;
               const refillCardNumber = maxForceCards - G.players[ctx.currentPlayer].hand.forces.length;
               const forceCards = Deck.Draw(G.decks.forces, refillCardNumber);
-              HandCards.Add(G.players[ctx.currentPlayer].hand.forces, forceCards);
+              Cards.Add(G.players[ctx.currentPlayer].hand.forces, forceCards);
             }) as WithGameState<type.State.Root, type.Move.RefillForce>;
 
             // refill cards
