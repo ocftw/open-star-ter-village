@@ -138,7 +138,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               // check job card is required in project
               const projectCard = Cards.GetById(currentHandProjects, projectCardIndex);
               const jobCard = Cards.GetById(currentJobs, jobCardIndex);
-              if (!projectCard.jobs.includes(jobCard.name)) {
+              if (!Object.keys(projectCard.requirements).includes(jobCard.name)) {
                 return INVALID_MOVE;
               }
 
@@ -151,16 +151,11 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               const activeProjectIndex = ActiveProjects.Add(G.table.activeProjects, projectCard, currentPlayer);
               const activeProject = ActiveProjects.GetById(G.table.activeProjects, activeProjectIndex);
 
-              // update contribution to initial contribution points
-              const slotIndex = projectCard.jobs.findIndex(job => job === jobCard.name);
-              // TODO: replace with rule of inital contributions
-              const contributionPoints = 1;
-              ActiveProject.Contribute(activeProject, slotIndex, contributionPoints);
-
               // reduce worker token
               currentPlayerToken.workers -= createProjectWorkerCosts;
               // assign worker token
-              ActiveProject.AssignWorker(activeProject, slotIndex, currentPlayer);
+              const jobInitPoints = 1;
+              ActiveProject.AssignWorker(activeProject, jobCard.name, currentPlayer, jobInitPoints);
 
               // discard job card
               Deck.Discard(G.decks.jobs, [jobCard]);
@@ -192,10 +187,16 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               }
               const jobCard = Cards.GetById(currentJob, jobCardIndex);
               const activeProject = ActiveProjects.GetById(G.table.activeProjects, activeProjectIndex);
-              const jobAndSlots = zip(activeProject.card.jobs, activeProject.contribution.bySlot);
-              const slotIndex = jobAndSlots.findIndex(([job, slot]) =>
-                job === jobCard.name && slot === 0);
-              if (slotIndex < 0) {
+              const jobContribution = activeProject.contributions
+                .filter(({ jobName }) => jobName === jobCard.name)
+                .map(({ value }) => value)
+                .reduce((a, b) => a + b, 0);
+              // Check job requirment is not fulfilled yet
+              if (!(jobContribution < activeProject.card.requirements[jobCard.name])) {
+                return INVALID_MOVE;
+              }
+              // User cannot place more than one worker in same job
+              if (ActiveProject.HasWorker(activeProject, jobCard.name, currentPlayer)) {
                 return INVALID_MOVE;
               }
 
@@ -203,15 +204,11 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               currentPlayerToken.actions -= recruitActionCosts;
               Cards.RemoveOne(currentJob, jobCard);
 
-              // update contribution to recruit contribution points
-              // TODO: replace with rule of recruit contributions
-              const contributionPoints = 1;
-              ActiveProject.Contribute(activeProject, slotIndex, contributionPoints);
-
               // reduce worker tokens
               currentPlayerToken.workers -= recruitWorkerCosts;
               // assign worker token
-              ActiveProject.AssignWorker(activeProject, slotIndex, currentPlayer);
+              const jobInitPoints = 1;
+              ActiveProject.AssignWorker(activeProject, jobCard.name, currentPlayer, jobInitPoints);
 
               // discard job card
               Deck.Discard(G.decks.jobs, [jobCard]);
@@ -225,15 +222,12 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               return INVALID_MOVE;
             }
             const activeProjects = G.table.activeProjects
-            const isInvalid = contributions.map(({ activeProjectIndex, slotIndex }) => {
+            const isInvalid = contributions.map(({ activeProjectIndex, jobName }) => {
               if (!isInRange(activeProjectIndex, activeProjects.length)) {
                 return true;
               }
               const activeProject = ActiveProjects.GetById(activeProjects, activeProjectIndex);
-              if (activeProject.contribution.bySlot[slotIndex] === 0) {
-                return true;
-              }
-              if (activeProject.owner !== currentPlayer && activeProject.workers[slotIndex] !== currentPlayer) {
+              if (!ActiveProject.HasWorker(activeProject, jobName, currentPlayer)) {
                 return true;
               }
             }).some(x => x);
@@ -248,10 +242,10 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
 
             // deduct action tokens
             currentPlayerToken.actions -= contributeActionCosts;
-            contributions.forEach(({ activeProjectIndex, slotIndex, value }) => {
+            contributions.forEach(({ activeProjectIndex, jobName, value }) => {
               // update contributions to given contribution points
               const activeProject = ActiveProjects.GetById(G.table.activeProjects, activeProjectIndex);
-              ActiveProject.Contribute(activeProject, slotIndex, value);
+              ActiveProject.PushWorker(activeProject, jobName, currentPlayer, value);
             });
           }) as WithGameState<type.State.Root, type.Move.Contribute>,
           refillJob: ((G) => {
@@ -277,11 +271,9 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               // Update Score / Goals
               // Return Tokens
               const returnTokens = fulfilledProjects.map(project =>
-                project.workers.reduce<Record<PlayerID, number>>((result, worker) => {
-                  if (worker) {
-                    const prev = result[worker] ?? 0;
-                    result[worker] = prev + 1;
-                  }
+                project.contributions.reduce<Record<PlayerID, number>>((result, { worker }) => {
+                  const prev = result[worker] ?? 0;
+                  result[worker] = prev + 1;
                   return result;
                 }, {}));
 

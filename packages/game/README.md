@@ -66,6 +66,7 @@ namespace State
 |  |- contribution
 |  |  |- bySlot: number[] # is 0 when slot is inactive, is 1-6 (positive number) when slot is active
 |  |  |- byJob: { [job name]: number } # accumulated contribution points by
+|  |- contributions: { jobName: JobName, worker: playerId, value: number }
 |
 |- Tree
    |- [treeTypes]: number

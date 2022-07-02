@@ -68,11 +68,18 @@ export declare namespace OpenStarTerVillageType {
     export interface Project {
       card: Card.Project;
       owner: PlayerID;
+      /**
+       * @deprecated will be removed, use contributions instead
+       */
       workers: (PlayerID | null)[];
+      /**
+       * @deprecated will be removed, use contributions instead
+       */
       contribution: {
         bySlot: number[];
         byJob: Record<string, number>;
       };
+      contributions: { jobName: JobName; worker: PlayerID; value: number }[];
     }
   }
 
@@ -87,7 +94,7 @@ export declare namespace OpenStarTerVillageType {
     };
     export type CreateProject = (projectCardIndex: number, jobCardIndex: number) => void;
     export type Recruit = (resourceCardIndex: number, activeProjectIndex: number) => void;
-    export type Contribute = (contributions: { activeProjectIndex: number; slotIndex: number; value: number }[]) => void;
+    export type Contribute = (contributions: { activeProjectIndex: number; jobName: JobName; value: number }[]) => void;
     export type Settle = () => void;
     export type RefillAndEnd = () => void;
     export type RefillJob = () => void;
