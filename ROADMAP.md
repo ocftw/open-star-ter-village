@@ -169,6 +169,8 @@ function refillAndEnd(G: G, ctx: ctx): void
 
   * [x] Move Job cards from Player Hand to Table
   * [x] Refactor project cards
+  * [x] Add victory points
+  * [x] Calculate victory points when project is fulfilled
 * [ ] Play Force cards
 * [ ] Event cards
 

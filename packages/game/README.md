@@ -57,7 +57,8 @@ namespace State
 |  |  |- actions: number
 |  |
 |  |- completed
-|     |- projects: Card.Project[]
+|  |  |- projects: Card.Project[]
+|  |- victoryPoints: number
 |
 |- Project
 |  |- card: Card.Project

@@ -24,6 +24,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
           hand: { projects: [], forces: [] },
           token: { workers: 0, actions: 0 },
           completed: { projects: [] },
+          victoryPoints: 0,
         };
         return s;
       }, {});
@@ -265,7 +266,13 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               if (fulfilledProjects.length === 0) {
                 return;
               }
-              // Update Score / Goals
+              fulfilledProjects.forEach(project => {
+                // Update Score / Goals
+                Object.keys(G.players).forEach(playerId => {
+                  const victoryPoints = ActiveProject.GetPlayerContribution(project, playerId);
+                  G.players[playerId].victoryPoints += victoryPoints;
+                });
+              });
               // Return Tokens
               const returnTokens = fulfilledProjects.map(project =>
                 project.contributions.reduce<Record<PlayerID, number>>((result, { worker }) => {

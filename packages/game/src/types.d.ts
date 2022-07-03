@@ -50,6 +50,7 @@ export declare namespace OpenStarTerVillageType {
       completed: {
         projects: Card.Project[];
       };
+      victoryPoints: number;
     }
 
     export interface Hand {
