@@ -272,19 +272,11 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
                   const victoryPoints = ActiveProject.GetPlayerContribution(project, playerId);
                   G.players[playerId].victoryPoints += victoryPoints;
                 });
-              });
-              // Return Tokens
-              const returnTokens = fulfilledProjects.map(project =>
-                project.contributions.reduce<Record<PlayerID, number>>((result, { worker }) => {
-                  const prev = result[worker] ?? 0;
-                  result[worker] = prev + 1;
-                  return result;
-                }, {}));
-
-              returnTokens.forEach(returnTokenMap => {
-                for (let playerId in returnTokenMap) {
-                  G.players[playerId].token.workers += returnTokenMap[playerId];
-                }
+                // Return Tokens
+                Object.keys(G.players).forEach(playerId => {
+                  const workerTokens = ActiveProject.GetPlayerWorkerTokens(project, playerId);
+                  G.players[playerId].token.workers += workerTokens;
+                });
               });
               // Update OpenSourceTree
               // Remove from table

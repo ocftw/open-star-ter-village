@@ -171,6 +171,7 @@ function refillAndEnd(G: G, ctx: ctx): void
   * [x] Refactor project cards
   * [x] Add victory points
   * [x] Calculate victory points when project is fulfilled
+  * [x] Refactor worker token on project card
 * [ ] Play Force cards
 * [ ] Event cards
 

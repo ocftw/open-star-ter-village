@@ -124,6 +124,24 @@ describe('ActiveProject', () => {
       const activeProject = ActiveProjects.GetById(activeProjects, activeProjectId);
       expect(ActiveProject.GetPlayerContribution(activeProject, mockPlayer)).toBe(0);
     });
+
+    test('owner should have one worker token', () => {
+      const activeProjects: OpenStarTerVillageType.State.Project[] = [];
+
+      const activeProjectId = ActiveProjects.Add(activeProjects, mockCard, mockPlayer1);
+
+      const activeProject = ActiveProjects.GetById(activeProjects, activeProjectId);
+      expect(ActiveProject.GetPlayerWorkerTokens(activeProject, mockPlayer1)).toBe(1);
+    });
+
+    test('the other players should have NO worker token', () => {
+      const activeProjects: OpenStarTerVillageType.State.Project[] = [];
+
+      const activeProjectId = ActiveProjects.Add(activeProjects, mockCard, mockPlayer1);
+
+      const activeProject = ActiveProjects.GetById(activeProjects, activeProjectId);
+      expect(ActiveProject.GetPlayerWorkerTokens(activeProject, mockPlayer2)).toBe(0);
+    });
   });
 
   describe('AssignWorker', () => {
@@ -176,6 +194,21 @@ describe('ActiveProject', () => {
       expect(ActiveProject.GetJobContribution(activeProject, mockJob2)).toBe(initPoints);
       expect(ActiveProject.GetPlayerContribution(activeProject, mockPlayer1)).toBe(initPoints + initPoints);
     });
+
+    it('should use one job token', () => {
+      const activeProjects: OpenStarTerVillageType.State.Project[] = [];
+
+      const activeProjectId = ActiveProjects.Add(activeProjects, mockCard, mockPlayer1);
+      const activeProject = ActiveProjects.GetById(activeProjects, activeProjectId);
+      const initPoints = 1;
+      ActiveProject.AssignWorker(activeProject, mockJob1, mockPlayer1, initPoints);
+      ActiveProject.AssignWorker(activeProject, mockJob1, mockPlayer2, initPoints);
+
+      const ownerToken = 1;
+      const jobToken = 1;
+      expect(ActiveProject.GetPlayerWorkerTokens(activeProject, mockPlayer1)).toBe(ownerToken + jobToken);
+      expect(ActiveProject.GetPlayerWorkerTokens(activeProject, mockPlayer2)).toBe(jobToken);
+    });
   });
 
   describe('PushWorker', () => {
@@ -193,6 +226,21 @@ describe('ActiveProject', () => {
       expect(ActiveProject.GetWorkerContribution(activeProject, mockJob1, mockPlayer1)).toBe(initPoints + pushedPoints);
       expect(ActiveProject.GetJobContribution(activeProject, mockJob1)).toBe(initPoints + pushedPoints);
       expect(ActiveProject.GetPlayerContribution(activeProject, mockPlayer1)).toBe(initPoints + pushedPoints);
+    });
+
+    it('should NOT increase job token usage', () => {
+      const activeProjects: OpenStarTerVillageType.State.Project[] = [];
+      const activeProjectId = ActiveProjects.Add(activeProjects, mockCard, mockPlayer1);
+      const activeProject = ActiveProjects.GetById(activeProjects, activeProjectId);
+      const initPoints = 1;
+      ActiveProject.AssignWorker(activeProject, mockJob1, mockPlayer1, initPoints);
+      const workerTokensBeforeAct = ActiveProject.GetPlayerWorkerTokens(activeProject, mockPlayer1);
+
+      const pushedPoints = 3;
+      ActiveProject.PushWorker(activeProject, mockJob1, mockPlayer1, pushedPoints);
+
+      const workerTokensAfterAct = ActiveProject.GetPlayerWorkerTokens(activeProject, mockPlayer1);
+      expect(workerTokensAfterAct).toBe(workerTokensBeforeAct);
     });
 
     it('should throw error when push a non assigned worker', () => {
