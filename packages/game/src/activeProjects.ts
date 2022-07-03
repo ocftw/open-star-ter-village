@@ -20,8 +20,6 @@ export const ActiveProjects: IActiveProjects = {
     const activeProject: ActiveProjectType = {
       card,
       owner,
-      workers: [],
-      contribution: { bySlot: [], byJob: {} },
       contributions: [],
     };
     activeProjects.push(activeProject);
@@ -48,14 +46,6 @@ export interface IActiveProject {
   GetWorkerContribution(activeProject: ActiveProjectType, jobName: JobName, playerId: PlayerID): number;
   GetJobContribution(activeProject: ActiveProjectType, jobName: JobName): number;
   AssignWorker(activeProject: ActiveProjectType, jobName: JobName, playerId: PlayerID, points: number): void;
-  // contribute project slot with an amount of contribution points
-  /**
-   * @deprecated
-   * @param activeProject
-   * @param slotIndex
-   * @param points
-   */
-  Contribute(activeProject: ActiveProjectType, slotIndex: number, points: number): void;
   PushWorker(activeProject: ActiveProjectType, jobName: JobName, playerId: PlayerID, points: number): void;
 }
 
@@ -80,13 +70,6 @@ export const ActiveProject: IActiveProject = {
   },
   AssignWorker(activeProject, jobName, playerId, points) {
     activeProject.contributions.push({ jobName, worker: playerId, value: points });
-  },
-  Contribute(activeProject, slotIndex, points) {
-    // update contribution by slot
-    activeProject.contribution.bySlot[slotIndex] += points;
-    // update contribution by job
-    const jobName = activeProject.card.jobs[slotIndex];
-    activeProject.contribution.byJob[jobName] += points;
   },
   PushWorker(activeProject, jobName, playerId, points) {
     const contribution = findContribution(activeProject.contributions, jobName, playerId);

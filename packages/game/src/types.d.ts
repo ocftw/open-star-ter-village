@@ -5,14 +5,6 @@ export declare namespace OpenStarTerVillageType {
   export declare namespace Card {
     export type Base = { name: string };
     export type Project = Base & {
-      /**
-       * @deprecated will be removed, use requirements key instead
-       */
-      jobs: JobName[];
-      /**
-       * @deprecated will be removed, use requirements instead
-       */
-      thresholds: Record<JobName, number>;
       requirements: Record<JobName, number>;
     };
     export type Job = Base;
@@ -68,17 +60,6 @@ export declare namespace OpenStarTerVillageType {
     export interface Project {
       card: Card.Project;
       owner: PlayerID;
-      /**
-       * @deprecated will be removed, use contributions instead
-       */
-      workers: (PlayerID | null)[];
-      /**
-       * @deprecated will be removed, use contributions instead
-       */
-      contribution: {
-        bySlot: number[];
-        byJob: Record<string, number>;
-      };
       contributions: { jobName: JobName; worker: PlayerID; value: number }[];
     }
   }

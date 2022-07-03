@@ -158,11 +158,6 @@ function refillAndEnd(G: G, ctx: ctx): void
 
 * [ ] Apply New rules *[T]*
   * [x] Decouple Job and Force cards in Player Hand
-
-  ```ts
-    function createProject(G: G, ctx: ctx, projectCardIndex: number, jobCardIndex: number): void
-  ```
-
   * [x] Split Job and Force cards deck
 
   ```ts
@@ -173,6 +168,7 @@ function refillAndEnd(G: G, ctx: ctx): void
   ```
 
   * [x] Move Job cards from Player Hand to Table
+  * [x] Refactor project cards
 * [ ] Play Force cards
 * [ ] Event cards
 

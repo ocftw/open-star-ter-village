@@ -6,8 +6,6 @@ const mockJob2 = 'b';
 const mockJob3 = 'c';
 const mockCard: OpenStarTerVillageType.Card.Project = {
   name: 'test 1',
-  jobs: [],
-  thresholds: {},
   requirements: { [mockJob1]: 5, [mockJob2]: 4, [mockJob3]: 8 },
 };
 const mockPlayer1 = 'test player 1';
@@ -195,19 +193,6 @@ describe('ActiveProject', () => {
       } catch (err) {
         expect(err).toBeTruthy();
       }
-    });
-  });
-
-  describe.skip('Contribute', () => {
-    it('should increase value by slot and by job', () => {
-      const activeProjects: OpenStarTerVillageType.State.Project[] = [];
-      const activeProjectId = ActiveProjects.Add(activeProjects, mockCard, mockPlayer1);
-      const activeProject = ActiveProjects.GetById(activeProjects, activeProjectId);
-
-      ActiveProject.Contribute(activeProject, 0, 3);
-
-      expect(activeProject.contribution.bySlot[0]).toEqual(3);
-      expect(activeProject.contribution.byJob['a']).toEqual(3);
     });
   });
 });
