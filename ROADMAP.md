@@ -39,6 +39,8 @@ This is the living document capture the current area of focus, and what needs to
   * [x] Deduct player worker token (includes validation and eligibility check)
 * [x] Contribute the projects
   * [x] basic play function
+  * [x] contribute owned projects
+  * [x] contribute other projects
 * [ ] Goal cards
 
 Move interfaces:
@@ -48,7 +50,9 @@ function createProject(G: G, ctx: ctx, projectCardIndex: number, jobCardIndex: n
 
 function recruit(G: G, ctx: ctx, jobCardIndex: number, activeProjectIndex: number): void
 
-function contribute(G: G, ctx: ctx, contributions: { activeProjectIndex: number; jobName: JobName; value: number }[]): void
+function contributeOwnedProjects(G: G, ctx: ctx, contributions: { activeProjectIndex: number; jobName: JobName; value: number }[]): void
+
+function contributeOtherProjects(G: G, ctx: ctx, contributions: { activeProjectIndex: number; jobName: JobName; value: number }[]): void
 
 // TODO: replace it with remove and refill job
 function refillJob(): void

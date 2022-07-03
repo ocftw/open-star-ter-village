@@ -212,7 +212,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               Deck.Discard(G.decks.jobs, [jobCard]);
             }) as WithGameState<type.State.Root, type.Move.Recruit>,
           },
-          contribute: ((G, ctx, contributions) => {
+          contributeOwned: ((G, ctx, contributions) => {
             const currentPlayer = ctx.playerID!;
             const currentPlayerToken = G.players[currentPlayer].token;
             const contributeActionCosts = 1;
@@ -225,6 +225,10 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
                 return true;
               }
               const activeProject = ActiveProjects.GetById(activeProjects, activeProjectIndex);
+              if (activeProject.owner !== currentPlayer) {
+                return true;
+              }
+
               if (!ActiveProject.HasWorker(activeProject, jobName, currentPlayer)) {
                 return true;
               }
@@ -233,8 +237,8 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               return INVALID_MOVE;
             }
             const totalContributions = contributions.map(({ value }) => value).reduce((a, b) => a + b, 0);
-            const maxContributions = 3;
-            if (!(totalContributions <= maxContributions)) {
+            const maxOwnedContributions = 4;
+            if (!(totalContributions <= maxOwnedContributions)) {
               return INVALID_MOVE;
             }
 
@@ -245,7 +249,45 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               const activeProject = ActiveProjects.GetById(G.table.activeProjects, activeProjectIndex);
               ActiveProject.PushWorker(activeProject, jobName, currentPlayer, value);
             });
-          }) as WithGameState<type.State.Root, type.Move.Contribute>,
+          }) as WithGameState<type.State.Root, type.Move.ContributeOwned>,
+          contributeJoined: ((G, ctx, contributions) => {
+            const currentPlayer = ctx.playerID!;
+            const currentPlayerToken = G.players[currentPlayer].token;
+            const contributeActionCosts = 1;
+            if (currentPlayerToken.actions < contributeActionCosts) {
+              return INVALID_MOVE;
+            }
+            const activeProjects = G.table.activeProjects
+            const isInvalid = contributions.map(({ activeProjectIndex, jobName }) => {
+              if (!isInRange(activeProjectIndex, activeProjects.length)) {
+                return true;
+              }
+              const activeProject = ActiveProjects.GetById(activeProjects, activeProjectIndex);
+              if (activeProject.owner === currentPlayer) {
+                return true;
+              }
+
+              if (!ActiveProject.HasWorker(activeProject, jobName, currentPlayer)) {
+                return true;
+              }
+            }).some(x => x);
+            if (isInvalid) {
+              return INVALID_MOVE;
+            }
+            const totalContributions = contributions.map(({ value }) => value).reduce((a, b) => a + b, 0);
+            const maxJoinedContributions = 3;
+            if (!(totalContributions <= maxJoinedContributions)) {
+              return INVALID_MOVE;
+            }
+
+            // deduct action tokens
+            currentPlayerToken.actions -= contributeActionCosts;
+            contributions.forEach(({ activeProjectIndex, jobName, value }) => {
+              // update contributions to given contribution points
+              const activeProject = ActiveProjects.GetById(G.table.activeProjects, activeProjectIndex);
+              ActiveProject.PushWorker(activeProject, jobName, currentPlayer, value);
+            });
+          }) as WithGameState<type.State.Root, type.Move.ContributeJoined>,
           refillJob: ((G) => {
             const maxJobCards = 5;
             const refillCardNumber = maxJobCards - G.table.activeJobs.length;
