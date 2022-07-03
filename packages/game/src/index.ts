@@ -312,6 +312,32 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
       refill: {
         moves: {
           refillAndEnd: ((G, ctx) => {
+            const refillProject = ((G, ctx) => {
+              const maxProjectCards = 2;
+              const refillCardNumber = maxProjectCards - G.players[ctx.currentPlayer].hand.projects.length;
+              const projectCards = Deck.Draw(G.decks.projects, refillCardNumber);
+              HandCards.Add(G.players[ctx.currentPlayer].hand.projects, projectCards);
+            }) as WithGameState<type.State.Root, type.Move.RefillProject>;
+
+            const refillJob = ((G, ctx) => {
+              const maxJobCards = 5;
+              const refillCardNumber = maxJobCards - G.players[ctx.currentPlayer].hand.jobs.length;
+              const jobCards = Deck.Draw(G.decks.jobs, refillCardNumber);
+              HandCards.Add(G.players[ctx.currentPlayer].hand.jobs, jobCards);
+            }) as WithGameState<type.State.Root, type.Move.RefillJob>;
+
+            const refillForce = ((G, ctx) => {
+              const maxForceCards = 2;
+              const refillCardNumber = maxForceCards - G.players[ctx.currentPlayer].hand.forces.length;
+              const forceCards = Deck.Draw(G.decks.forces, refillCardNumber);
+              HandCards.Add(G.players[ctx.currentPlayer].hand.forces, forceCards);
+            }) as WithGameState<type.State.Root, type.Move.RefillForce>;
+
+            // refill cards
+            refillProject(G, ctx);
+            refillJob(G, ctx);
+            refillForce(G, ctx);
+
             // refill action points
             G.players[ctx.currentPlayer].token.actions = 3;
             ctx.events?.endTurn()

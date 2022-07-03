@@ -79,5 +79,8 @@ export declare namespace OpenStarTerVillageType {
     export type Contribute = (contributions: { activeProjectIndex: number; slotIndex: number; value: number }[]) => void;
     export type Settle = () => void;
     export type RefillAndEnd = () => void;
+    export type RefillJob = () => void;
+    export type RefillProject = () => void;
+    export type RefillForce = () => void;
   }
 }

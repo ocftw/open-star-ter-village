@@ -49,6 +49,9 @@ function createProject(G: G, ctx: ctx, projectCardIndex: number, jobCardIndex: n
 function recruit(G: G, ctx: ctx, jobCardIndex: number, activeProjectIndex: number): void
 
 function contribute(G: G, ctx: ctx, contributions: Array<{ activeProjectIndex: number, slotIndex: number, value: number }>): void
+
+// TODO: replace it with remove and refill job
+function refillJob(): void
 ```
 
 #### Settle Stage
@@ -70,9 +73,9 @@ function discardForceCards(G: G, ctx: ctx, forceIndices: number[]): void
 
 #### Refill Stage
 
-* [ ] Refill and End
-  * [ ] Refill resource cards  *[T]*
-  * [ ] Refill project cards  *[T]*
+* [x] Refill and End
+  * [x] Refill force cards
+  * [x] Refill project cards
   * [x] Refill action points
 
 Move interface:
@@ -154,7 +157,7 @@ function refillAndEnd(G: G, ctx: ctx): void
 ### Advanced game logics
 
 * [ ] Apply New rules *[T]*
-  * [ ] Decouple Job and Force cards in Player Hand
+  * [x] Decouple Job and Force cards in Player Hand
 
   ```ts
     function createProject(G: G, ctx: ctx, projectCardIndex: number, jobCardIndex: number): void
@@ -164,6 +167,7 @@ function refillAndEnd(G: G, ctx: ctx): void
 
   ```ts
   // inner function
+  function refillProject(): void {}
   function refillJob(): void {}
   function refillForce(): void {}
   ```
