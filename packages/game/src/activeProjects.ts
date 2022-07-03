@@ -34,7 +34,7 @@ export const ActiveProjects: IActiveProjects = {
   FilterFulfilled(activeProjects) {
     return activeProjects.filter(project => {
       const fulfilledThresholds = Object.keys(project.card.requirements)
-        .map(jobName => project.contribution.byJob[jobName] >= project.card.thresholds[jobName]);
+        .map(jobName => ActiveProject.GetJobContribution(project, jobName) >= project.card.requirements[jobName]);
       return fulfilledThresholds.every(x => x);
     });
   },

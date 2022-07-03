@@ -34,6 +34,53 @@ describe('ActiveProjects', () => {
       expect(activeProject.card).toEqual(mockCard);
     });
   });
+
+  describe('FilterFulfilled', () => {
+    it('should return fulfilled active projects', () => {
+      const activeProjects: OpenStarTerVillageType.State.Project[] = [];
+      const activeProjectId = ActiveProjects.Add(activeProjects, mockCard, mockPlayer1);
+      const activeProject = ActiveProjects.GetById(activeProjects, activeProjectId);
+      const initPoints = 1;
+      // job 1: 1 / 5
+      ActiveProject.AssignWorker(activeProject, mockJob1, mockPlayer1, initPoints);
+      // job 2: 1 / 4
+      ActiveProject.AssignWorker(activeProject, mockJob2, mockPlayer2, initPoints);
+      // job 3: 1 / 8
+      ActiveProject.AssignWorker(activeProject, mockJob3, mockPlayer1, initPoints);
+      // job 3: 2 / 8
+      ActiveProject.AssignWorker(activeProject, mockJob3, mockPlayer2, initPoints);
+      // job 1: 5 / 5
+      ActiveProject.PushWorker(activeProject, mockJob1, mockPlayer1, 4);
+      // job 2: 4 / 4
+      ActiveProject.PushWorker(activeProject, mockJob2, mockPlayer2, 3);
+      // job 3: 6 / 8
+      ActiveProject.PushWorker(activeProject, mockJob3, mockPlayer2, 4);
+      // job 3: 8 / 8
+      ActiveProject.PushWorker(activeProject, mockJob3, mockPlayer1, 2);
+
+      const fulfilledProjects = ActiveProjects.FilterFulfilled(activeProjects);
+
+      expect(fulfilledProjects).toHaveLength(1);
+      expect(fulfilledProjects[0].card).toEqual(mockCard);
+    });
+  });
+
+  describe('Remove', () => {
+    const activeProjects: OpenStarTerVillageType.State.Project[] = [];
+    const activeProjectId = ActiveProjects.Add(activeProjects, mockCard, mockPlayer1);
+    const activeProject = ActiveProjects.GetById(activeProjects, activeProjectId);
+    // job 1: 5
+    ActiveProject.AssignWorker(activeProject, mockJob1, mockPlayer1, 5);
+    // job 2: 4
+    ActiveProject.AssignWorker(activeProject, mockJob2, mockPlayer2, 4);
+    // job 3: 8
+    ActiveProject.AssignWorker(activeProject, mockJob3, mockPlayer1, 8);
+    const fulfilledProjects = ActiveProjects.FilterFulfilled(activeProjects);
+
+    ActiveProjects.Remove(activeProjects, fulfilledProjects);
+
+    expect(activeProjects).toHaveLength(0);
+  });
 });
 
 describe('ActiveProject', () => {
@@ -162,36 +209,5 @@ describe('ActiveProject', () => {
       expect(activeProject.contribution.bySlot[0]).toEqual(3);
       expect(activeProject.contribution.byJob['a']).toEqual(3);
     });
-  });
-
-  describe('FilterFulfilled', () => {
-    it('should return fulfilled active projects', () => {
-      const activeProjects: OpenStarTerVillageType.State.Project[] = [];
-      const activeProjectId = ActiveProjects.Add(activeProjects, mockCard, mockPlayer1);
-      const activeProject = ActiveProjects.GetById(activeProjects, activeProjectId);
-      ActiveProject.Contribute(activeProject, 0, 5);
-      ActiveProject.Contribute(activeProject, 3, 4);
-      ActiveProject.Contribute(activeProject, 4, 5);
-      ActiveProject.Contribute(activeProject, 4, 3);
-
-      const fulfilledProjects = ActiveProjects.FilterFulfilled(activeProjects);
-      expect(fulfilledProjects).toHaveLength(1);
-      expect(fulfilledProjects[0].card).toEqual(mockCard);
-    });
-  });
-
-  describe('Remove', () => {
-    const activeProjects: OpenStarTerVillageType.State.Project[] = [];
-    const activeProjectId = ActiveProjects.Add(activeProjects, mockCard, mockPlayer1);
-    const activeProject = ActiveProjects.GetById(activeProjects, activeProjectId);
-    ActiveProject.Contribute(activeProject, 0, 5);
-    ActiveProject.Contribute(activeProject, 3, 4);
-    ActiveProject.Contribute(activeProject, 4, 5);
-    ActiveProject.Contribute(activeProject, 4, 3);
-    const fulfilledProjects = ActiveProjects.FilterFulfilled(activeProjects);
-
-    ActiveProjects.Remove(activeProjects, fulfilledProjects);
-
-    expect(activeProjects).toHaveLength(0);
   });
 });
