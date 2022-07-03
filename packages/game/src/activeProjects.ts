@@ -45,6 +45,7 @@ export interface IActiveProject {
   HasWorker(activeProject: ActiveProjectType, jobName: JobName, playerId: PlayerID): boolean;
   GetWorkerContribution(activeProject: ActiveProjectType, jobName: JobName, playerId: PlayerID): number;
   GetJobContribution(activeProject: ActiveProjectType, jobName: JobName): number;
+  GetPlayerContribution(activeProject: ActiveProjectType, playerId: PlayerID): number;
   AssignWorker(activeProject: ActiveProjectType, jobName: JobName, playerId: PlayerID, points: number): void;
   PushWorker(activeProject: ActiveProjectType, jobName: JobName, playerId: PlayerID, points: number): void;
 }
@@ -67,6 +68,13 @@ export const ActiveProject: IActiveProject = {
       .map(contribution => contribution.value)
       .reduce((a, b) => a + b, 0);
     return jobContribution;
+  },
+  GetPlayerContribution(activeProject, playerId) {
+    const playerContribution = activeProject.contributions
+      .filter(contribution => contribution.worker === playerId)
+      .map(contribution => contribution.value)
+      .reduce((a, b) => a + b, 0);
+    return playerContribution;
   },
   AssignWorker(activeProject, jobName, playerId, points) {
     activeProject.contributions.push({ jobName, worker: playerId, value: points });
