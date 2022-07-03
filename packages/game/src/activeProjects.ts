@@ -46,6 +46,7 @@ export const ActiveProjects: IActiveProjects = {
 export interface IActiveProject {
   HasWorker(activeProject: ActiveProjectType, jobName: JobName, playerId: PlayerID): boolean;
   GetWorkerContribution(activeProject: ActiveProjectType, jobName: JobName, playerId: PlayerID): number;
+  GetJobContribution(activeProject: ActiveProjectType, jobName: JobName): number;
   AssignWorker(activeProject: ActiveProjectType, jobName: JobName, playerId: PlayerID, points: number): void;
   // contribute project slot with an amount of contribution points
   /**
@@ -69,6 +70,13 @@ export const ActiveProject: IActiveProject = {
   GetWorkerContribution(activeProject, jobName, playerId) {
     const contribution = findContribution(activeProject.contributions, jobName, playerId);
     return contribution?.value ?? 0;
+  },
+  GetJobContribution(activeProject, jobName) {
+    const jobContribution = activeProject.contributions
+      .filter(contribution => contribution.jobName === jobName)
+      .map(contribution => contribution.value)
+      .reduce((a, b) => a + b, 0);
+    return jobContribution;
   },
   AssignWorker(activeProject, jobName, playerId, points) {
     activeProject.contributions.push({ jobName, worker: playerId, value: points });

@@ -38,16 +38,14 @@ describe('ActiveProjects', () => {
 
 describe('ActiveProject', () => {
   describe('New Active Project', () => {
-    const testCases = [
+    test.each([
       [mockJob1, mockPlayer1],
       [mockJob1, mockPlayer2],
       [mockJob2, mockPlayer1],
       [mockJob2, mockPlayer2],
       [mockJob3, mockPlayer1],
       [mockJob3, mockPlayer2],
-    ];
-
-    test.each(testCases)('job %s x player %s should has no worker', (mockJob, mockPlayer) => {
+    ])('job %s x player %s should has no worker', (mockJob, mockPlayer) => {
       const activeProjects: OpenStarTerVillageType.State.Project[] = [];
 
       const activeProjectId = ActiveProjects.Add(activeProjects, mockCard, mockPlayer1);
@@ -55,6 +53,19 @@ describe('ActiveProject', () => {
       const activeProject = ActiveProjects.GetById(activeProjects, activeProjectId);
       expect(ActiveProject.HasWorker(activeProject, mockJob, mockPlayer)).toBeFalsy();
       expect(ActiveProject.GetWorkerContribution(activeProject, mockJob, mockPlayer)).toBe(0);
+    });
+
+    test.each([
+      [mockJob1],
+      [mockJob2],
+      [mockJob3],
+    ])('job %s should has no contribution', (mockJob) => {
+      const activeProjects: OpenStarTerVillageType.State.Project[] = [];
+
+      const activeProjectId = ActiveProjects.Add(activeProjects, mockCard, mockPlayer1);
+
+      const activeProject = ActiveProjects.GetById(activeProjects, activeProjectId);
+      expect(ActiveProject.GetJobContribution(activeProject, mockJob)).toBe(0);
     });
   });
 
@@ -69,6 +80,40 @@ describe('ActiveProject', () => {
 
       expect(ActiveProject.HasWorker(activeProject, mockJob1, mockPlayer1)).toBeTruthy();
       expect(ActiveProject.GetWorkerContribution(activeProject, mockJob1, mockPlayer1)).toBe(initPoints);
+      expect(ActiveProject.GetJobContribution(activeProject, mockJob1)).toBe(initPoints);
+    });
+
+    it('should store each initial points on same job from different players', () => {
+      const activeProjects: OpenStarTerVillageType.State.Project[] = [];
+      const activeProjectId = ActiveProjects.Add(activeProjects, mockCard, mockPlayer1);
+      const activeProject = ActiveProjects.GetById(activeProjects, activeProjectId);
+
+      const initPoints = 1;
+      ActiveProject.AssignWorker(activeProject, mockJob1, mockPlayer1, initPoints);
+      ActiveProject.AssignWorker(activeProject, mockJob1, mockPlayer2, initPoints);
+
+      expect(ActiveProject.HasWorker(activeProject, mockJob1, mockPlayer1)).toBeTruthy();
+      expect(ActiveProject.HasWorker(activeProject, mockJob1, mockPlayer2)).toBeTruthy();
+      expect(ActiveProject.GetWorkerContribution(activeProject, mockJob1, mockPlayer1)).toBe(initPoints);
+      expect(ActiveProject.GetWorkerContribution(activeProject, mockJob1, mockPlayer2)).toBe(initPoints);
+      expect(ActiveProject.GetJobContribution(activeProject, mockJob1)).toBe(initPoints + initPoints);
+    });
+
+    it('should store each initial points on different job from the same player', () => {
+      const activeProjects: OpenStarTerVillageType.State.Project[] = [];
+      const activeProjectId = ActiveProjects.Add(activeProjects, mockCard, mockPlayer1);
+      const activeProject = ActiveProjects.GetById(activeProjects, activeProjectId);
+
+      const initPoints = 1;
+      ActiveProject.AssignWorker(activeProject, mockJob1, mockPlayer1, initPoints);
+      ActiveProject.AssignWorker(activeProject, mockJob2, mockPlayer1, initPoints);
+
+      expect(ActiveProject.HasWorker(activeProject, mockJob1, mockPlayer1)).toBeTruthy();
+      expect(ActiveProject.HasWorker(activeProject, mockJob2, mockPlayer1)).toBeTruthy();
+      expect(ActiveProject.GetWorkerContribution(activeProject, mockJob1, mockPlayer1)).toBe(initPoints);
+      expect(ActiveProject.GetWorkerContribution(activeProject, mockJob2, mockPlayer1)).toBe(initPoints);
+      expect(ActiveProject.GetJobContribution(activeProject, mockJob1)).toBe(initPoints);
+      expect(ActiveProject.GetJobContribution(activeProject, mockJob2)).toBe(initPoints);
     });
   });
 
@@ -85,6 +130,7 @@ describe('ActiveProject', () => {
 
       expect(ActiveProject.HasWorker(activeProject, mockJob1, mockPlayer1)).toBeTruthy();
       expect(ActiveProject.GetWorkerContribution(activeProject, mockJob1, mockPlayer1)).toBe(initPoints + pushedPoints);
+      expect(ActiveProject.GetJobContribution(activeProject, mockJob1)).toBe(initPoints + pushedPoints);
     });
 
     it('should throw error when push a non assigned worker', () => {

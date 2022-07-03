@@ -187,10 +187,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               }
               const jobCard = Cards.GetById(currentJob, jobCardIndex);
               const activeProject = ActiveProjects.GetById(G.table.activeProjects, activeProjectIndex);
-              const jobContribution = activeProject.contributions
-                .filter(({ jobName }) => jobName === jobCard.name)
-                .map(({ value }) => value)
-                .reduce((a, b) => a + b, 0);
+              const jobContribution = ActiveProject.GetJobContribution(activeProject, jobCard.name);
               // Check job requirment is not fulfilled yet
               if (!(jobContribution < activeProject.card.requirements[jobCard.name])) {
                 return INVALID_MOVE;
