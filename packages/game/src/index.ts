@@ -157,6 +157,9 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               // assign worker token
               const jobInitPoints = 1;
               ActiveProject.AssignWorker(activeProject, jobCard.name, currentPlayer, jobInitPoints);
+              // score victory points
+              const createProjectVictoryPoints = 1;
+              G.players[currentPlayer].victoryPoints += createProjectVictoryPoints;
 
               // discard job card
               Deck.Discard(G.decks.jobs, [jobCard]);
