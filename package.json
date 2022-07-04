@@ -21,9 +21,12 @@
     "test": "yarn workspaces foreach -p run test"
   },
   "devDependencies": {
-    "@types/koa-static": "^4.0.2"
+    "@types/koa-static": "^4.0.2",
+    "@types/react-redux": "^7.1.24"
   },
   "dependencies": {
-    "koa-static": "^5.0.0"
+    "@reduxjs/toolkit": "^1.8.3",
+    "koa-static": "^5.0.0",
+    "react-redux": "^8.0.2"
   }
 }
