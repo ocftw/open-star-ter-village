@@ -22,7 +22,7 @@ import {
 
 const CurrentPlayer: React.FC<BoardProps<Type.State.Root>> = (props) => {
   const { G, playerID, moves: nonTypeMoves, events, ctx } = props;
-  const moves = nonTypeMoves as unknown as Type.Move.Moves;
+  const moves = nonTypeMoves as unknown as Type.Move.AllMoves;
 
   const [projectCardIndex, setProjectCardIndex] = useState(0);
   const [activeJobCardIndex, setActiveJobCardIndex] = useState(0);

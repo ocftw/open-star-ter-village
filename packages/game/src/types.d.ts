@@ -37,6 +37,7 @@ export declare namespace OpenStarTerVillageType {
       activeEvent: Card.Event | null;
       activeProjects: Project[];
       activeJobs: Card.Job[];
+      activeMoves: Record<keyof Move.ActionMoves, boolean>;
     }
 
     export interface Player {
@@ -64,15 +65,19 @@ export declare namespace OpenStarTerVillageType {
   }
 
   export declare namespace Move {
-    export interface Moves {
+    export type AllMoves = ActionMoves & StageMoves;
+    export interface ActionMoves {
       createProject: CreateProject;
       recruit: Recruit;
       contributeOwnedProjects: ContributeOwnedProjects;
       contributeJoinedProjects: ContributeJoinedProjects;
-      settle: Settle;
-      refillAndEnd: RefillAndEnd;
       removeAndRefillJobs: RemoveAndRefillJobs;
     };
+    export interface StageMoves {
+      settle: Settle;
+      refillAndEnd: RefillAndEnd;
+    };
+
     export type CreateProject = (projectCardIndex: number, jobCardIndex: number) => void;
     export type Recruit = (resourceCardIndex: number, activeProjectIndex: number) => void;
     export type ContributeOwnedProjects = (contributions: { activeProjectIndex: number; jobName: JobName; value: number }[]) => void;

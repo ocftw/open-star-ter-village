@@ -39,6 +39,13 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
       activeEvent: null,
       activeProjects: [],
       activeJobs: [],
+      activeMoves: {
+        contributeJoinedProjects: true,
+        contributeOwnedProjects: true,
+        createProject: true,
+        recruit: true,
+        removeAndRefillJobs: true,
+      },
     };
 
     return {
