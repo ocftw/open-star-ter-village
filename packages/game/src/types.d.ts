@@ -69,16 +69,16 @@ export declare namespace OpenStarTerVillageType {
     export interface Moves {
       createProject: CreateProject;
       recruit: Recruit;
-      contributeOwned: ContributeOwned;
-      contributeJoined: ContributeJoined;
+      contributeOwnedProjects: ContributeOwnedProjects;
+      contributeJoinedProjects: ContributeJoinedProjects;
       settle: Settle;
       refillAndEnd: RefillAndEnd;
       refillJob: RefillJob;
     };
     export type CreateProject = (projectCardIndex: number, jobCardIndex: number) => void;
     export type Recruit = (resourceCardIndex: number, activeProjectIndex: number) => void;
-    export type ContributeOwned = (contributions: { activeProjectIndex: number; jobName: JobName; value: number }[]) => void;
-    export type ContributeJoined = (contributions: { activeProjectIndex: number; jobName: JobName; value: number }[]) => void;
+    export type ContributeOwnedProjects = (contributions: { activeProjectIndex: number; jobName: JobName; value: number }[]) => void;
+    export type ContributeJoinedProjects = (contributions: { activeProjectIndex: number; jobName: JobName; value: number }[]) => void;
     export type Settle = () => void;
     export type RefillAndEnd = () => void;
     export type RefillJob = () => void;

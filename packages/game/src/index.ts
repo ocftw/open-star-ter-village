@@ -212,7 +212,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               Deck.Discard(G.decks.jobs, [jobCard]);
             }) as WithGameState<type.State.Root, type.Move.Recruit>,
           },
-          contributeOwned: ((G, ctx, contributions) => {
+          contributeOwnedProjects: ((G, ctx, contributions) => {
             const currentPlayer = ctx.playerID!;
             const currentPlayerToken = G.players[currentPlayer].token;
             const contributeActionCosts = 1;
@@ -249,8 +249,8 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               const activeProject = ActiveProjects.GetById(G.table.activeProjects, activeProjectIndex);
               ActiveProject.PushWorker(activeProject, jobName, currentPlayer, value);
             });
-          }) as WithGameState<type.State.Root, type.Move.ContributeOwned>,
-          contributeJoined: ((G, ctx, contributions) => {
+          }) as WithGameState<type.State.Root, type.Move.ContributeOwnedProjects>,
+          contributeJoinedProjects: ((G, ctx, contributions) => {
             const currentPlayer = ctx.playerID!;
             const currentPlayerToken = G.players[currentPlayer].token;
             const contributeActionCosts = 1;
@@ -287,7 +287,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               const activeProject = ActiveProjects.GetById(G.table.activeProjects, activeProjectIndex);
               ActiveProject.PushWorker(activeProject, jobName, currentPlayer, value);
             });
-          }) as WithGameState<type.State.Root, type.Move.ContributeJoined>,
+          }) as WithGameState<type.State.Root, type.Move.ContributeJoinedProjects>,
           refillJob: ((G) => {
             const maxJobCards = 5;
             const refillCardNumber = maxJobCards - G.table.activeJobs.length;
