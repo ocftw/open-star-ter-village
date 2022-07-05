@@ -119,6 +119,10 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
             // client cannot see decks, discard job card should evaluated on server side
             client: false,
             move: ((G, ctx, projectCardIndex, jobCardIndex) => {
+              if (!G.table.activeMoves.createProject) {
+                return INVALID_MOVE;
+              }
+
               const currentPlayer = ctx.playerID!;
               const currentPlayerToken = G.players[currentPlayer].token;
               // TODO: replace hardcoded number with dynamic rules
@@ -170,12 +174,18 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
 
               // discard job card
               Deck.Discard(G.decks.jobs, [jobCard]);
+
+              G.table.activeMoves.createProject = false;
             }) as WithGameState<type.State.Root, type.Move.CreateProject>,
           },
           recruit: {
             // client cannot see decks, discard job card should evaluated on server side
             client: false,
             move: ((G, ctx, jobCardIndex, activeProjectIndex) => {
+              if (!G.table.activeMoves.recruit) {
+                return INVALID_MOVE;
+              }
+
               const currentPlayer = ctx.playerID!;
               const currentPlayerToken = G.players[currentPlayer].token;
               const recruitActionCosts = 1;
@@ -220,9 +230,15 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
 
               // discard job card
               Deck.Discard(G.decks.jobs, [jobCard]);
+
+              G.table.activeMoves.recruit = false;
             }) as WithGameState<type.State.Root, type.Move.Recruit>,
           },
           contributeOwnedProjects: ((G, ctx, contributions) => {
+            if (!G.table.activeMoves.contributeOwnedProjects) {
+              return INVALID_MOVE;
+            }
+
             const currentPlayer = ctx.playerID!;
             const currentPlayerToken = G.players[currentPlayer].token;
             const contributeActionCosts = 1;
@@ -259,8 +275,14 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               const activeProject = ActiveProjects.GetById(G.table.activeProjects, activeProjectIndex);
               ActiveProject.PushWorker(activeProject, jobName, currentPlayer, value);
             });
+
+            G.table.activeMoves.contributeOwnedProjects = false;
           }) as WithGameState<type.State.Root, type.Move.ContributeOwnedProjects>,
           contributeJoinedProjects: ((G, ctx, contributions) => {
+            if (!G.table.activeMoves.contributeJoinedProjects) {
+              return INVALID_MOVE;
+            }
+
             const currentPlayer = ctx.playerID!;
             const currentPlayerToken = G.players[currentPlayer].token;
             const contributeActionCosts = 1;
@@ -297,8 +319,14 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               const activeProject = ActiveProjects.GetById(G.table.activeProjects, activeProjectIndex);
               ActiveProject.PushWorker(activeProject, jobName, currentPlayer, value);
             });
+
+            G.table.activeMoves.contributeJoinedProjects = false;
           }) as WithGameState<type.State.Root, type.Move.ContributeJoinedProjects>,
           removeAndRefillJobs: ((G, ctx, jobCardIndices) => {
+            if (!G.table.activeMoves.removeAndRefillJobs) {
+              return INVALID_MOVE;
+            }
+
             const currentJob = G.table.activeJobs;
             const jobDeck = G.decks.jobs;
             const isInvalid = jobCardIndices.map(index => !isInRange(index, currentJob.length)).some(x => x);
@@ -313,6 +341,8 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
             const refillCardNumber = maxJobCards - currentJob.length;
             const jobCards = Deck.Draw(jobDeck, refillCardNumber);
             Cards.Add(currentJob, jobCards);
+
+            G.table.activeMoves.removeAndRefillJobs = false;
           }) as WithGameState<type.State.Root, type.Move.RemoveAndRefillJobs>,
         },
         next: 'settle',
@@ -392,6 +422,11 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
 
             // refill action points
             G.players[ctx.currentPlayer].token.actions = 3;
+
+            // reset active moves
+            Object.keys(G.table.activeMoves).forEach(move => {
+              G.table.activeMoves[move as keyof type.Move.ActionMoves] = true;
+            });
             ctx.events?.endTurn()
           }) as WithGameState<type.State.Root, type.Move.RefillAndEnd>,
         },
