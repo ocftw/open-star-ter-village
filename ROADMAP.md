@@ -41,7 +41,6 @@ This is the living document capture the current area of focus, and what needs to
   * [x] basic play function
   * [x] contribute owned projects
   * [x] contribute other projects
-* [ ] Goal cards
 
 Move interfaces:
 
@@ -130,7 +129,6 @@ function refillAndEnd(G: G, ctx: ctx): void
       * ResourceCard/
         * ?styled.jsx
       * ProjectCard
-      * GoalCard
       * EventCard
     * styled/
       * CardVertical
@@ -146,7 +144,6 @@ function refillAndEnd(G: G, ctx: ctx): void
       * ProjectCard/
         * ProjectCard.jsx
         * ProjectCard.styled.jsx
-      * GoalCard/
       * EventCard/
 
   Folders should be structured by features (scenario 2) but it is viable to have common styled components such as Button, Tab, or Input collected in the common folder (styled foder in scenario 1).

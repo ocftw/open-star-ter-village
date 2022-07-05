@@ -10,7 +10,6 @@ export declare namespace OpenStarTerVillageType {
     export type Job = Base;
     export type Force = Base;
     export type Event = Base;
-    export type Goal = Base;
   }
 
   export declare namespace State {
@@ -21,7 +20,6 @@ export declare namespace OpenStarTerVillageType {
         jobs: Deck<Card.Job>;
         forces: Deck<Card.Force>;
         events: Deck<Card.Event>;
-        goals: Deck<Card.Goal>;
       };
       table: Table;
       players: Record<PlayerID, Player>;

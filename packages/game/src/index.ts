@@ -7,8 +7,7 @@ import projectCards from './data/card/projects.json';
 import jobCards from './data/card/jobs.json';
 import forceCards from './data/card/forces.json';
 import eventCards from './data/card/events.json';
-import goalCards from './data/card/goals.json';
-import { isInRange, zip } from './utils';
+import { isInRange } from './utils';
 import { ActiveProject, ActiveProjects } from './activeProjects';
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
@@ -34,7 +33,6 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
       jobs: newCardDeck<type.Card.Job>(jobCards),
       forces: newCardDeck<type.Card.Force>(forceCards),
       events: newCardDeck<type.Card.Event>(eventCards),
-      goals: newCardDeck<type.Card.Goal>(goalCards),
     };
 
     const table: type.State.Root['table'] = {
@@ -63,7 +61,6 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
         Deck.ShuffleDrawPile(state.decks.projects, shuffler);
         Deck.ShuffleDrawPile(state.decks.forces, shuffler);
         Deck.ShuffleDrawPile(state.decks.jobs, shuffler);
-        Deck.ShuffleDrawPile(state.decks.goals, shuffler);
 
         const maxProjectCards = 2;
         for (let playerId in state.players) {
@@ -312,7 +309,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
                 return;
               }
               fulfilledProjects.forEach(project => {
-                // Update Score / Goals
+                // Update Score
                 Object.keys(G.players).forEach(playerId => {
                   const victoryPoints = ActiveProject.GetPlayerContribution(project, playerId);
                   G.players[playerId].victoryPoints += victoryPoints;
