@@ -183,7 +183,7 @@ function refillForce(): void {}
 * [x] Add victory points
 * [x] Refactor worker token on project card
 * [x] Remove goal cards
-* [ ] Remove force cards from main game
+* [x] Remove force cards from main game
 
 ### Advanced game logics
 

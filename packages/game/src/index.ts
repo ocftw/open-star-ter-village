@@ -58,22 +58,25 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
         // shuffle cards
         const shuffler = ctx.random!.Shuffle;
         Deck.ShuffleDrawPile(state.decks.events, shuffler);
-        Deck.ShuffleDrawPile(state.decks.projects, shuffler);
-        Deck.ShuffleDrawPile(state.decks.forces, shuffler);
-        Deck.ShuffleDrawPile(state.decks.jobs, shuffler);
 
+        Deck.ShuffleDrawPile(state.decks.projects, shuffler);
         const maxProjectCards = 2;
         for (let playerId in state.players) {
           const projectCards = Deck.Draw(state.decks.projects, maxProjectCards);
           Cards.Add(state.players[playerId].hand.projects, projectCards);
         }
 
-        const maxForceCards = 2;
-        for (let playerId in state.players) {
-          const forceCards = Deck.Draw(state.decks.forces, maxForceCards);
-          Cards.Add(state.players[playerId].hand.forces, forceCards);
+        const isForceCardsEnabled = false;
+        if (isForceCardsEnabled) {
+          Deck.ShuffleDrawPile(state.decks.forces, shuffler);
+          const maxForceCards = 2;
+          for (let playerId in state.players) {
+            const forceCards = Deck.Draw(state.decks.forces, maxForceCards);
+            Cards.Add(state.players[playerId].hand.forces, forceCards);
+          }
         }
 
+        Deck.ShuffleDrawPile(state.decks.jobs, shuffler);
         const maxJobCards = 5;
         const jobCards = Deck.Draw(state.decks.jobs, maxJobCards);
         Cards.Add(state.table.activeJobs, jobCards);
@@ -337,9 +340,11 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
             noLimit: true,
             move: () => { },
           },
-          discardResources: {
-            noLimit: true,
-            move: () => { },
+          discardForces: () => {
+            const isForceCardsEnabled = false;
+            if (!isForceCardsEnabled) {
+              return INVALID_MOVE;
+            }
           },
         },
         next: 'refill',
@@ -363,7 +368,10 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
 
             // refill cards
             refillProject(G, ctx);
-            refillForce(G, ctx);
+            const isForceCardsEnabled = false;
+            if (isForceCardsEnabled) {
+              refillForce(G, ctx);
+            }
 
             // refill action points
             G.players[ctx.currentPlayer].token.actions = 3;
