@@ -20,9 +20,22 @@ This is the living document capture the current area of focus, and what needs to
 
 #### implementation
 
-* [ ] heroku single application deployment TBD *[T]*
+* [x] heroku single application deployment
+
+#### End A Game
+
+* [ ] Assume first player is Game Master who can end the current game *[T]*
+* [x] Replace Local game with Server game
 
 ### Basic game logics
+
+* [x] Victory points
+* [x] Action points
+* [ ] Action can be executed only once (except clone action)
+* [ ] Player closed project may score extra victory points
+* [ ] Migrate settle phase into action stage. Projects are immediately closed when they reach the requirements. Then Remove Settle phase.
+* [ ] Activate and deactivate Event cards
+* [ ] End game
 
 #### Action Stage
 
@@ -32,15 +45,21 @@ This is the living document capture the current area of focus, and what needs to
   * [x] Play Job card with Project card (validate, check eligible included)
   * [x] Reduce player action point (validate, check eligible included)
   * [x] Reduce player worker token (validate, check eligible included)
+  * [ ] Player play project card may score victory points
 * [x] Play Job cards
   * [x] basic play function
   * [x] Play Job card on an Active project (includes validation and eligibility check)
   * [x] Deduct player action point (includes validation and eligibility check)
   * [x] Deduct player worker token (includes validation and eligibility check)
-* [x] Contribute the projects
+  * [ ] Recruit two ppl once (in the basic rule)
+* [x] contribute owned projects
   * [x] basic play function
-  * [x] contribute owned projects
-  * [x] contribute other projects
+  * [ ] Contribute Owned projects value adjustment
+* [x] contribute joined projects
+  * [x] basic play function
+  * [ ] Contribute Joined projects value adjustment
+* [ ] Remove and refill job cards
+* [ ] Clone
 
 Move interfaces:
 
@@ -59,25 +78,23 @@ function refillJob(): void
 
 #### Settle Stage
 
+> TODO: migrate into action stage. Projects closed immediately when fulfilled the requirements
+
 * [x] Close projects
 
 #### Discard Stage
 
-* [ ] Discard force cards
 * [ ] Discard project cards
 
 Move interfaces:
 
 ```ts
 function discardProjectCards(G: G, ctx: ctx, projectIndices: number[]): void
-
-function discardForceCards(G: G, ctx: ctx, forceIndices: number[]): void
 ```
 
 #### Refill Stage
 
 * [x] Refill and End
-  * [x] Refill force cards
   * [x] Refill project cards
   * [x] Refill action points
 
@@ -85,17 +102,11 @@ Move interface:
 
 ```ts
 // inner function
-function refillForce(): void {}
 function refillProject(): void {}
 
 // exposed function
 function refillAndEnd(G: G, ctx: ctx): void
 ```
-
-#### End Game
-
-* [ ] Assume first player is Game Master who can end the current game *[T]*
-* [x] Replace Local game with Server game
 
 #### Unit tests
 
@@ -155,25 +166,54 @@ function refillAndEnd(G: G, ctx: ctx): void
 * [ ] Play Job cards
 * [ ] Contribute the projects
 
+### Apply New Rules
+
+* [x] Decouple Job and Force cards in Player Hand
+* [x] Split Job and Force cards deck
+
+```ts
+// inner function
+function refillProject(): void {}
+function refillJob(): void {}
+function refillForce(): void {}
+```
+
+* [x] Move Job cards from Player Hand to Table
+* [x] Refactor project cards
+* [x] Add victory points
+* [x] Refactor worker token on project card
+* [x] Remove goal cards
+* [ ] Remove force cards from main game
+
 ### Advanced game logics
 
-* [ ] Apply New rules *[T]*
-  * [x] Decouple Job and Force cards in Player Hand
-  * [x] Split Job and Force cards deck
+* [ ] Apply Basic Rule and Advanced Rule
+* [ ] Build Open Star Tree
 
-  ```ts
-  // inner function
-  function refillProject(): void {}
-  function refillJob(): void {}
-  function refillForce(): void {}
-  ```
+#### Action Stage
 
-  * [x] Move Job cards from Player Hand to Table
-  * [x] Refactor project cards
-  * [x] Add victory points
-  * [x] Calculate victory points when project is fulfilled
-  * [x] Refactor worker token on project card
+* [ ] Growth Open Star Tree
+
+### Expansions
+
+#### Core Logic
+
+* [ ] Build Force cards
+
+#### Action Stage
+
 * [ ] Play Force cards
-* [ ] Event cards
 
-### Expansions (TBD)
+#### Discard Stage
+
+* [ ] Discard force cards
+
+#### Refill Stage
+
+* [x] Refill force cards
+
+```ts
+function discardForceCards(G: G, ctx: ctx, forceIndices: number[]): void
+// inner function
+function refillForce(): void {}
+```
