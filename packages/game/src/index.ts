@@ -291,12 +291,22 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               ActiveProject.PushWorker(activeProject, jobName, currentPlayer, value);
             });
           }) as WithGameState<type.State.Root, type.Move.ContributeJoinedProjects>,
-          refillJob: ((G) => {
+          removeAndRefillJobs: ((G, ctx, jobCardIndices) => {
+            const currentJob = G.table.activeJobs;
+            const jobDeck = G.decks.jobs;
+            const isInvalid = jobCardIndices.map(index => !isInRange(index, currentJob.length)).some(x => x);
+            if (isInvalid) {
+              return INVALID_MOVE;
+            }
+            const removedJobCards = jobCardIndices.map(index => currentJob[index]);
+            Cards.Remove(currentJob, removedJobCards);
+            Deck.Discard(jobDeck, removedJobCards);
+
             const maxJobCards = 5;
-            const refillCardNumber = maxJobCards - G.table.activeJobs.length;
-            const jobCards = Deck.Draw(G.decks.jobs, refillCardNumber);
-            Cards.Add(G.table.activeJobs, jobCards);
-          }) as WithGameState<type.State.Root, type.Move.RefillJob>,
+            const refillCardNumber = maxJobCards - currentJob.length;
+            const jobCards = Deck.Draw(jobDeck, refillCardNumber);
+            Cards.Add(currentJob, jobCards);
+          }) as WithGameState<type.State.Root, type.Move.RemoveAndRefillJobs>,
         },
         next: 'settle',
       },

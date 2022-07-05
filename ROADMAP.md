@@ -58,7 +58,7 @@ This is the living document capture the current area of focus, and what needs to
 * [x] contribute joined projects
   * [x] basic play function
   * [ ] Contribute Joined projects value adjustment
-* [ ] Remove and refill job cards
+* [x] Remove and refill job cards
 * [ ] Clone
 
 Move interfaces:
@@ -72,8 +72,7 @@ function contributeOwnedProjects(G: G, ctx: ctx, contributions: { activeProjectI
 
 function contributeOtherProjects(G: G, ctx: ctx, contributions: { activeProjectIndex: number; jobName: JobName; value: number }[]): void
 
-// TODO: replace it with remove and refill job
-function refillJob(): void
+function refillJobremoveAndRefillJobs(): void
 ```
 
 #### Settle Stage
