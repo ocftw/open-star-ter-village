@@ -31,7 +31,7 @@ This is the living document capture the current area of focus, and what needs to
 
 * [x] Victory points
 * [x] Action points
-* [ ] Action can be executed only once (except clone action)
+* [x] Action can be executed only once (mirrored action can bypass it)
 * [ ] Player closed project may score extra victory points
 * [ ] Migrate settle phase into action stage. Projects are immediately closed when they reach the requirements. Then Remove Settle phase.
 * [ ] Activate and deactivate Event cards
@@ -59,7 +59,7 @@ This is the living document capture the current area of focus, and what needs to
   * [x] basic play function
   * [ ] Contribute Joined projects value adjustment
 * [x] Remove and refill job cards
-* [ ] Clone
+* [ ] Mirror
 
 Move interfaces:
 
@@ -72,7 +72,9 @@ function contributeOwnedProjects(G: G, ctx: ctx, contributions: { activeProjectI
 
 function contributeOtherProjects(G: G, ctx: ctx, contributions: { activeProjectIndex: number; jobName: JobName; value: number }[]): void
 
-function refillJobremoveAndRefillJobs(): void
+function refillJobremoveAndRefillJobs(G: G, ctx: ctx, jobCardIndices: number[]): void
+
+function mirror(G: G, ctx: ctx, actionName: string, ...params: any[]): void
 ```
 
 #### Settle Stage

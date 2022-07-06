@@ -245,3 +245,41 @@ export const removeAndRefillJobs: WithGameState<type.State.Root, type.Move.Remov
 
   G.table.activeMoves.removeAndRefillJobs = false;
 };
+
+export const mirror: WithGameState<type.State.Root, type.Move.Mirror> = (G, ctx, actionName, ...params) => {
+  if (!G.table.activeMoves.mirror) {
+    return INVALID_MOVE;
+  }
+
+  // TODO: add token to bypass the active moves check when its inactive
+
+  let result = null;
+  switch (actionName) {
+    case 'createProject':
+      result = createProject(G, ctx, ...(params as Parameters<type.Move.CreateProject>));
+      break;
+    case 'recruit':
+      result = recruit(G, ctx, ...(params as Parameters<type.Move.Recruit>));
+      break;
+    case 'contributeOwnedProjects':
+      result = contributeOwnedProjects(G, ctx, ...(params as Parameters<type.Move.ContributeOwnedProjects>));
+      break;
+    case 'contributeJoinedProjects':
+      result = contributeJoinedProjects(G, ctx, ...(params as Parameters<type.Move.ContributeJoinedProjects>));
+      break;
+    case 'removeAndRefillJobs':
+      result = removeAndRefillJobs(G, ctx, ...(params as Parameters<type.Move.RemoveAndRefillJobs>));
+      break;
+    default:
+      result = INVALID_MOVE;
+      break;
+  }
+
+  // TODO: remove the token
+
+  if (result === INVALID_MOVE) {
+    return INVALID_MOVE;
+  }
+
+  G.table.activeMoves.mirror = false;
+};

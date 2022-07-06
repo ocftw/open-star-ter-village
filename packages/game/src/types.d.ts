@@ -72,6 +72,7 @@ export declare namespace OpenStarTerVillageType {
       contributeOwnedProjects: ContributeOwnedProjects;
       contributeJoinedProjects: ContributeJoinedProjects;
       removeAndRefillJobs: RemoveAndRefillJobs;
+      mirror: Mirror;
     };
     export interface StageMoves {
       settle: Settle;
@@ -83,6 +84,7 @@ export declare namespace OpenStarTerVillageType {
     export type ContributeOwnedProjects = (contributions: { activeProjectIndex: number; jobName: JobName; value: number }[]) => void;
     export type ContributeJoinedProjects = (contributions: { activeProjectIndex: number; jobName: JobName; value: number }[]) => void;
     export type RemoveAndRefillJobs = (jobCardIndices: number[]) => void;
+    export type Mirror = (actionName: keyof ActionMoves, ...params: any[]) => void;
     export type Settle = () => void;
     export type RefillAndEnd = () => void;
     export type RefillProject = () => void;
