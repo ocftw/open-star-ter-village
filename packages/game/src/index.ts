@@ -9,7 +9,7 @@ import forceCards from './data/card/forces.json';
 import eventCards from './data/card/events.json';
 import { isInRange } from './utils';
 import { ActiveProject, ActiveProjects } from './activeProjects';
-import { createProject } from './moves/actionMoves';
+import { createProject, recruit } from './moves/actionMoves';
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 type WithGameState<G extends any, F extends (...args: any) => void> = (G: State<G>['G'], ctx: State<G>['ctx'], ...args: Parameters<F>) => any;
@@ -123,58 +123,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
           recruit: {
             // client cannot see decks, discard job card should evaluated on server side
             client: false,
-            move: ((G, ctx, jobCardIndex, activeProjectIndex) => {
-              if (!G.table.activeMoves.recruit) {
-                return INVALID_MOVE;
-              }
-
-              const currentPlayer = ctx.playerID!;
-              const currentPlayerToken = G.players[currentPlayer].token;
-              const recruitActionCosts = 1;
-              if (currentPlayerToken.actions < recruitActionCosts) {
-                return INVALID_MOVE;
-              }
-              const recruitWorkerCosts = 1;
-              if (currentPlayerToken.workers < recruitWorkerCosts) {
-                return INVALID_MOVE;
-              }
-
-              const currentJob = G.table.activeJobs;
-              if (!isInRange(jobCardIndex, currentJob.length)) {
-                return INVALID_MOVE;
-              }
-
-              const activeProjects = G.table.activeProjects
-              if (!isInRange(activeProjectIndex, activeProjects.length)) {
-                return INVALID_MOVE;
-              }
-              const jobCard = Cards.GetById(currentJob, jobCardIndex);
-              const activeProject = ActiveProjects.GetById(G.table.activeProjects, activeProjectIndex);
-              const jobContribution = ActiveProject.GetJobContribution(activeProject, jobCard.name);
-              // Check job requirment is not fulfilled yet
-              if (!(jobContribution < activeProject.card.requirements[jobCard.name])) {
-                return INVALID_MOVE;
-              }
-              // User cannot place more than one worker in same job
-              if (ActiveProject.HasWorker(activeProject, jobCard.name, currentPlayer)) {
-                return INVALID_MOVE;
-              }
-
-              // reduce action
-              currentPlayerToken.actions -= recruitActionCosts;
-              Cards.RemoveOne(currentJob, jobCard);
-
-              // reduce worker tokens
-              currentPlayerToken.workers -= recruitWorkerCosts;
-              // assign worker token
-              const jobInitPoints = 1;
-              ActiveProject.AssignWorker(activeProject, jobCard.name, currentPlayer, jobInitPoints);
-
-              // discard job card
-              Deck.Discard(G.decks.jobs, [jobCard]);
-
-              G.table.activeMoves.recruit = false;
-            }) as WithGameState<type.State.Root, type.Move.Recruit>,
+            move: recruit,
           },
           contributeOwnedProjects: ((G, ctx, contributions) => {
             if (!G.table.activeMoves.contributeOwnedProjects) {
