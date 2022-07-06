@@ -210,3 +210,26 @@ export const contributeJoinedProjects: WithGameState<type.State.Root, type.Move.
 
   G.table.activeMoves.contributeJoinedProjects = false;
 };
+
+export const removeAndRefillJobs: WithGameState<type.State.Root, type.Move.RemoveAndRefillJobs> = (G, ctx, jobCardIndices) => {
+  if (!G.table.activeMoves.removeAndRefillJobs) {
+    return INVALID_MOVE;
+  }
+
+  const currentJob = G.table.activeJobs;
+  const jobDeck = G.decks.jobs;
+  const isInvalid = jobCardIndices.map(index => !isInRange(index, currentJob.length)).some(x => x);
+  if (isInvalid) {
+    return INVALID_MOVE;
+  }
+  const removedJobCards = jobCardIndices.map(index => currentJob[index]);
+  Cards.Remove(currentJob, removedJobCards);
+  Deck.Discard(jobDeck, removedJobCards);
+
+  const maxJobCards = 5;
+  const refillCardNumber = maxJobCards - currentJob.length;
+  const jobCards = Deck.Draw(jobDeck, refillCardNumber);
+  Cards.Add(currentJob, jobCards);
+
+  G.table.activeMoves.removeAndRefillJobs = false;
+};

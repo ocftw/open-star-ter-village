@@ -7,9 +7,8 @@ import projectCards from './data/card/projects.json';
 import jobCards from './data/card/jobs.json';
 import forceCards from './data/card/forces.json';
 import eventCards from './data/card/events.json';
-import { isInRange } from './utils';
 import { ActiveProject, ActiveProjects } from './activeProjects';
-import { contributeJoinedProjects, contributeOwnedProjects, createProject, recruit } from './moves/actionMoves';
+import { contributeJoinedProjects, contributeOwnedProjects, createProject, recruit, removeAndRefillJobs } from './moves/actionMoves';
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 type WithGameState<G extends any, F extends (...args: any) => void> = (G: State<G>['G'], ctx: State<G>['ctx'], ...args: Parameters<F>) => any;
@@ -133,28 +132,10 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
             client: false,
             move: contributeJoinedProjects,
           },
-          removeAndRefillJobs: ((G, ctx, jobCardIndices) => {
-            if (!G.table.activeMoves.removeAndRefillJobs) {
-              return INVALID_MOVE;
-            }
-
-            const currentJob = G.table.activeJobs;
-            const jobDeck = G.decks.jobs;
-            const isInvalid = jobCardIndices.map(index => !isInRange(index, currentJob.length)).some(x => x);
-            if (isInvalid) {
-              return INVALID_MOVE;
-            }
-            const removedJobCards = jobCardIndices.map(index => currentJob[index]);
-            Cards.Remove(currentJob, removedJobCards);
-            Deck.Discard(jobDeck, removedJobCards);
-
-            const maxJobCards = 5;
-            const refillCardNumber = maxJobCards - currentJob.length;
-            const jobCards = Deck.Draw(jobDeck, refillCardNumber);
-            Cards.Add(currentJob, jobCards);
-
-            G.table.activeMoves.removeAndRefillJobs = false;
-          }) as WithGameState<type.State.Root, type.Move.RemoveAndRefillJobs>,
+          removeAndRefillJobs: {
+            client: false,
+            move: removeAndRefillJobs,
+          },
         },
         next: 'settle',
       },
