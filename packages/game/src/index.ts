@@ -9,7 +9,7 @@ import forceCards from './data/card/forces.json';
 import eventCards from './data/card/events.json';
 import { isInRange } from './utils';
 import { ActiveProject, ActiveProjects } from './activeProjects';
-import { contributeOwnedProjects, createProject, recruit } from './moves/actionMoves';
+import { contributeJoinedProjects, contributeOwnedProjects, createProject, recruit } from './moves/actionMoves';
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 type WithGameState<G extends any, F extends (...args: any) => void> = (G: State<G>['G'], ctx: State<G>['ctx'], ...args: Parameters<F>) => any;
@@ -129,50 +129,10 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
             client: false,
             move: contributeOwnedProjects,
           },
-          contributeJoinedProjects: ((G, ctx, contributions) => {
-            if (!G.table.activeMoves.contributeJoinedProjects) {
-              return INVALID_MOVE;
-            }
-
-            const currentPlayer = ctx.playerID!;
-            const currentPlayerToken = G.players[currentPlayer].token;
-            const contributeActionCosts = 1;
-            if (currentPlayerToken.actions < contributeActionCosts) {
-              return INVALID_MOVE;
-            }
-            const activeProjects = G.table.activeProjects
-            const isInvalid = contributions.map(({ activeProjectIndex, jobName }) => {
-              if (!isInRange(activeProjectIndex, activeProjects.length)) {
-                return true;
-              }
-              const activeProject = ActiveProjects.GetById(activeProjects, activeProjectIndex);
-              if (activeProject.owner === currentPlayer) {
-                return true;
-              }
-
-              if (!ActiveProject.HasWorker(activeProject, jobName, currentPlayer)) {
-                return true;
-              }
-            }).some(x => x);
-            if (isInvalid) {
-              return INVALID_MOVE;
-            }
-            const totalContributions = contributions.map(({ value }) => value).reduce((a, b) => a + b, 0);
-            const maxJoinedContributions = 3;
-            if (!(totalContributions <= maxJoinedContributions)) {
-              return INVALID_MOVE;
-            }
-
-            // deduct action tokens
-            currentPlayerToken.actions -= contributeActionCosts;
-            contributions.forEach(({ activeProjectIndex, jobName, value }) => {
-              // update contributions to given contribution points
-              const activeProject = ActiveProjects.GetById(G.table.activeProjects, activeProjectIndex);
-              ActiveProject.PushWorker(activeProject, jobName, currentPlayer, value);
-            });
-
-            G.table.activeMoves.contributeJoinedProjects = false;
-          }) as WithGameState<type.State.Root, type.Move.ContributeJoinedProjects>,
+          contributeJoinedProjects: {
+            client: false,
+            move: contributeJoinedProjects,
+          },
           removeAndRefillJobs: ((G, ctx, jobCardIndices) => {
             if (!G.table.activeMoves.removeAndRefillJobs) {
               return INVALID_MOVE;

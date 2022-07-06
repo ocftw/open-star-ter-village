@@ -165,3 +165,48 @@ export const contributeOwnedProjects: WithGameState<type.State.Root, type.Move.C
 
   G.table.activeMoves.contributeOwnedProjects = false;
 };
+
+export const contributeJoinedProjects: WithGameState<type.State.Root, type.Move.ContributeJoinedProjects> = (G, ctx, contributions) => {
+  if (!G.table.activeMoves.contributeJoinedProjects) {
+    return INVALID_MOVE;
+  }
+
+  const currentPlayer = ctx.playerID!;
+  const currentPlayerToken = G.players[currentPlayer].token;
+  const contributeActionCosts = 1;
+  if (currentPlayerToken.actions < contributeActionCosts) {
+    return INVALID_MOVE;
+  }
+  const activeProjects = G.table.activeProjects
+  const isInvalid = contributions.map(({ activeProjectIndex, jobName }) => {
+    if (!isInRange(activeProjectIndex, activeProjects.length)) {
+      return true;
+    }
+    const activeProject = ActiveProjects.GetById(activeProjects, activeProjectIndex);
+    if (activeProject.owner === currentPlayer) {
+      return true;
+    }
+
+    if (!ActiveProject.HasWorker(activeProject, jobName, currentPlayer)) {
+      return true;
+    }
+  }).some(x => x);
+  if (isInvalid) {
+    return INVALID_MOVE;
+  }
+  const totalContributions = contributions.map(({ value }) => value).reduce((a, b) => a + b, 0);
+  const maxJoinedContributions = 3;
+  if (!(totalContributions <= maxJoinedContributions)) {
+    return INVALID_MOVE;
+  }
+
+  // deduct action tokens
+  currentPlayerToken.actions -= contributeActionCosts;
+  contributions.forEach(({ activeProjectIndex, jobName, value }) => {
+    // update contributions to given contribution points
+    const activeProject = ActiveProjects.GetById(G.table.activeProjects, activeProjectIndex);
+    ActiveProject.PushWorker(activeProject, jobName, currentPlayer, value);
+  });
+
+  G.table.activeMoves.contributeJoinedProjects = false;
+};
