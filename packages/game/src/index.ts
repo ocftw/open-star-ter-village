@@ -190,37 +190,40 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
       },
       refill: {
         moves: {
-          refillAndEnd: ((G, ctx) => {
-            const refillProject = ((G, ctx) => {
-              const maxProjectCards = 2;
-              const refillCardNumber = maxProjectCards - G.players[ctx.currentPlayer].hand.projects.length;
-              const projectCards = Deck.Draw(G.decks.projects, refillCardNumber);
-              Cards.Add(G.players[ctx.currentPlayer].hand.projects, projectCards);
-            }) as WithGameState<type.State.Root, type.Move.RefillProject>;
+          refillAndEnd: {
+            client: false,
+            move: ((G, ctx) => {
+              const refillProject = ((G, ctx) => {
+                const maxProjectCards = 2;
+                const refillCardNumber = maxProjectCards - G.players[ctx.currentPlayer].hand.projects.length;
+                const projectCards = Deck.Draw(G.decks.projects, refillCardNumber);
+                Cards.Add(G.players[ctx.currentPlayer].hand.projects, projectCards);
+              }) as WithGameState<type.State.Root, type.Move.RefillProject>;
 
-            const refillForce = ((G, ctx) => {
-              const maxForceCards = 2;
-              const refillCardNumber = maxForceCards - G.players[ctx.currentPlayer].hand.forces.length;
-              const forceCards = Deck.Draw(G.decks.forces, refillCardNumber);
-              Cards.Add(G.players[ctx.currentPlayer].hand.forces, forceCards);
-            }) as WithGameState<type.State.Root, type.Move.RefillForce>;
+              const refillForce = ((G, ctx) => {
+                const maxForceCards = 2;
+                const refillCardNumber = maxForceCards - G.players[ctx.currentPlayer].hand.forces.length;
+                const forceCards = Deck.Draw(G.decks.forces, refillCardNumber);
+                Cards.Add(G.players[ctx.currentPlayer].hand.forces, forceCards);
+              }) as WithGameState<type.State.Root, type.Move.RefillForce>;
 
-            // refill cards
-            refillProject(G, ctx);
-            const isForceCardsEnabled = false;
-            if (isForceCardsEnabled) {
-              refillForce(G, ctx);
-            }
+              // refill cards
+              refillProject(G, ctx);
+              const isForceCardsEnabled = false;
+              if (isForceCardsEnabled) {
+                refillForce(G, ctx);
+              }
 
-            // refill action points
-            G.players[ctx.currentPlayer].token.actions = 3;
+              // refill action points
+              G.players[ctx.currentPlayer].token.actions = 3;
 
-            // reset active moves
-            Object.keys(G.table.activeMoves).forEach(move => {
-              G.table.activeMoves[move as keyof type.Move.ActionMoves] = true;
-            });
-            ctx.events?.endTurn()
-          }) as WithGameState<type.State.Root, type.Move.RefillAndEnd>,
+              // reset active moves
+              Object.keys(G.table.activeMoves).forEach(move => {
+                G.table.activeMoves[move as keyof type.Move.ActionMoves] = true;
+              });
+              ctx.events?.endTurn()
+            }) as WithGameState<type.State.Root, type.Move.RefillAndEnd>,
+          }
         },
       },
     },
