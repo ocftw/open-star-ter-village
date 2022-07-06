@@ -8,7 +8,7 @@ import jobCards from './data/card/jobs.json';
 import forceCards from './data/card/forces.json';
 import eventCards from './data/card/events.json';
 import { ActiveProject, ActiveProjects } from './activeProjects';
-import { contributeJoinedProjects, contributeOwnedProjects, createProject, recruit, removeAndRefillJobs } from './moves/actionMoves';
+import { contributeJoinedProjects, contributeOwnedProjects, createProject, mirror, recruit, removeAndRefillJobs } from './moves/actionMoves';
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 type WithGameState<G extends any, F extends (...args: any) => void> = (G: State<G>['G'], ctx: State<G>['ctx'], ...args: Parameters<F>) => any;
@@ -45,6 +45,7 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
         createProject: true,
         recruit: true,
         removeAndRefillJobs: true,
+        mirror: true,
       },
     };
 
@@ -135,6 +136,10 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
           removeAndRefillJobs: {
             client: false,
             move: removeAndRefillJobs,
+          },
+          mirror: {
+            client: false,
+            move: mirror,
           },
         },
         next: 'settle',
