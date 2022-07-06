@@ -2,15 +2,15 @@ import { Box } from '@chakra-ui/react';
 import Boardgame from './BoardGame';
 import './App.css';
 import Header from './features/Header/Header';
-import { useState } from 'react';
+import { useAppSelector } from './app/hooks'
 
 
 function App() {
-  const [playerId, setPlayerId] = useState<string | undefined>();
+  const playerId = useAppSelector(state => state.header.playerId);
 
   return (
     <>
-      <Header playerId={playerId} onPlayerIdChange={setPlayerId} />
+      <Header />
       <Box my="5">
         <Boardgame playerID={playerId} />
       </Box>

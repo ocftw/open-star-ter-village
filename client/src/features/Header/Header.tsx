@@ -1,6 +1,8 @@
 import { HStack, Box, Text, Link, Image, Button, ButtonGroup } from '@chakra-ui/react';
 import logo from './logo.svg';
 import { useMemo, useCallback } from 'react';
+import { useAppSelector, useAppDispatch } from '../../app/hooks'
+import { setPlayerId } from './headerSlice';
 
 const BOARDS = [
   { id: 'overview', playerId: undefined, title: 'Overview' },
@@ -9,19 +11,20 @@ const BOARDS = [
 ];
 
 interface IHeaderProps {
-  playerId?: string;
-  onPlayerIdChange: (playerId: IHeaderProps['playerId']) => void;
 }
 
-const Header: React.FunctionComponent<IHeaderProps> = ({ playerId, onPlayerIdChange }) => {
+const Header: React.FunctionComponent<IHeaderProps> = () => {
+  const playerId = useAppSelector((state) => state.header.playerId);
+  const dispatch = useAppDispatch();
+
   const currentBoard = useMemo(() => {
     return BOARDS.find(b => b.playerId === playerId);
   }, [playerId]);
 
   const handleBoardButtonClick: React.MouseEventHandler<HTMLButtonElement> = useCallback((e) => {
     const playerId = e.currentTarget.getAttribute('data-player-id') || undefined;
-    onPlayerIdChange(playerId);
-  }, [onPlayerIdChange]);
+    dispatch(setPlayerId(playerId));
+  }, [dispatch]);
 
   return (
     <HStack bg="blue.900" align="center">
