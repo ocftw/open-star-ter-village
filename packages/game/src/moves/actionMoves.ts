@@ -65,6 +65,12 @@ export const createProject: WithGameState<type.State.Root, type.Move.CreateProje
   // discard job card
   Deck.Discard(G.decks.jobs, [jobCard]);
 
+  // Refill job card
+  const maxJobCards = 5;
+  const refillCardNumber = maxJobCards - currentJobs.length;
+  const jobCards = Deck.Draw(G.decks.jobs, refillCardNumber);
+  Cards.Add(currentJobs, jobCards);
+
   G.table.activeMoves.createProject = false;
 }
 
@@ -84,8 +90,8 @@ export const recruit: WithGameState<type.State.Root, type.Move.Recruit> = (G, ct
     return INVALID_MOVE;
   }
 
-  const currentJob = G.table.activeJobs;
-  if (!isInRange(jobCardIndex, currentJob.length)) {
+  const currentJobs = G.table.activeJobs;
+  if (!isInRange(jobCardIndex, currentJobs.length)) {
     return INVALID_MOVE;
   }
 
@@ -93,7 +99,7 @@ export const recruit: WithGameState<type.State.Root, type.Move.Recruit> = (G, ct
   if (!isInRange(activeProjectIndex, activeProjects.length)) {
     return INVALID_MOVE;
   }
-  const jobCard = Cards.GetById(currentJob, jobCardIndex);
+  const jobCard = Cards.GetById(currentJobs, jobCardIndex);
   const activeProject = ActiveProjects.GetById(G.table.activeProjects, activeProjectIndex);
   const jobContribution = ActiveProject.GetJobContribution(activeProject, jobCard.name);
   // Check job requirment is not fulfilled yet
@@ -107,7 +113,7 @@ export const recruit: WithGameState<type.State.Root, type.Move.Recruit> = (G, ct
 
   // reduce action
   currentPlayerToken.actions -= recruitActionCosts;
-  Cards.RemoveOne(currentJob, jobCard);
+  Cards.RemoveOne(currentJobs, jobCard);
 
   // reduce worker tokens
   currentPlayerToken.workers -= recruitWorkerCosts;
@@ -117,6 +123,12 @@ export const recruit: WithGameState<type.State.Root, type.Move.Recruit> = (G, ct
 
   // discard job card
   Deck.Discard(G.decks.jobs, [jobCard]);
+
+  // Refill job card
+  const maxJobCards = 5;
+  const refillCardNumber = maxJobCards - currentJobs.length;
+  const jobCards = Deck.Draw(G.decks.jobs, refillCardNumber);
+  Cards.Add(currentJobs, jobCards);
 
   G.table.activeMoves.recruit = false;
 };
