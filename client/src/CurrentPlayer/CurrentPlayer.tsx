@@ -1,182 +1,215 @@
 import { useCallback, useState } from 'react';
 import { BoardProps } from 'boardgame.io/react';
 import { OpenStarTerVillageType as Type } from 'packages/game/src/types';
-import { FormLabel, Input, Stack, HStack, Button, Box, UnorderedList, ListItem } from '@chakra-ui/react'
+import {
+  Stack,
+  HStack,
+  Button,
+  Box,
+  RadioGroup,
+  Radio,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
+  Tabs,
+  TabList,
+  Tab,
+  TabPanel,
+  TabPanels,
+} from '@chakra-ui/react'
 
 const CurrentPlayer: React.FC<BoardProps<Type.State.Root>> = (props) => {
   const { G, playerID, moves: nonTypeMoves, events, ctx } = props;
-  const moves = nonTypeMoves as unknown as Type.Move.Moves;
+  const moves = nonTypeMoves as unknown as Type.Move.AllMoves;
 
-  // TODO: replace indices with selected states
-  const [projectCardIndex, setProjectCardIndex] = useState(-1);
-  const onProjectCardIndexChange: React.ChangeEventHandler<HTMLInputElement> = (event) =>
-    setProjectCardIndex(parseInt(event.target.value, 10));
-  const [resourceCardIndex, setResourceCardIndex] = useState(-1);
-  const onResourceCardIndexChange: React.ChangeEventHandler<HTMLInputElement> = (event) =>
-    setResourceCardIndex(parseInt(event.target.value, 10));
-  const [activeProjectIndex, setActiveProjectIndex] = useState(-1);
-  const onActiveProjectIndexChange: React.ChangeEventHandler<HTMLInputElement> = (event) =>
-    setActiveProjectIndex(parseInt(event.target.value, 10));
-  const [slotIndex, setSlotIndex] = useState(-1);
-  const onSlotIndexChange: React.ChangeEventHandler<HTMLInputElement> = (event) =>
-    setSlotIndex(parseInt(event.target.value, 10));
-  const [value, setValue] = useState(-1);
-  const onValueChange: React.ChangeEventHandler<HTMLInputElement> = (event) =>
-    setValue(parseInt(event.target.value, 10));
-  const [contributions, setContributions] = useState<{ activeProjectIndex: number; slotIndex: number; value: number }[]>([]);
+  const [projectCardIndex, setProjectCardIndex] = useState(0);
+  const [activeJobCardIndex, setActiveJobCardIndex] = useState(0);
+  const [activeProjectIndex, setActiveProjectIndex] = useState(0);
+  const [jobName, setJobName] = useState('');
+  const [value, setValue] = useState(0);
+  const [contributions, setContributions] = useState<{ activeProjectIndex: number; jobName: string; value: number }[]>([]);
   const onAddContribution = useCallback(() => {
-    if (activeProjectIndex >= 0 && slotIndex >= 0 && value > 0) {
+    if (activeProjectIndex >= 0 && jobName !== '' && value > 0) {
       setContributions(cons => {
-        return [...cons, { activeProjectIndex, slotIndex, value }];
+        return [...cons, { activeProjectIndex, jobName, value }];
       });
     }
-  }, [activeProjectIndex, slotIndex, value]);
+  }, [activeProjectIndex, jobName, value]);
 
   if (playerID === null) {
     return null;
   }
 
-  const onCreateProject = () => moves.createProject(projectCardIndex, resourceCardIndex);
-  const onRecruit = () => moves.recruit(resourceCardIndex, activeProjectIndex);
-  const onContribute = () => {
-    moves.contribute(contributions);
+  const onCreateProject = () => moves.createProject(projectCardIndex, activeJobCardIndex);
+  const onRecruit = () => moves.recruit(activeJobCardIndex, activeProjectIndex);
+  const onContributeJoinedProjects = () => {
+    moves.contributeJoinedProjects(contributions);
+    setContributions([]);
+  };
+  const onContributeOwnedProjects = () => {
+    moves.contributeOwnedProjects(contributions);
     setContributions([]);
   };
   const onEndAction = () => events.endStage!();
-  const onSettle = () => moves.settle();
   const onEndSettle = () => events.endStage!();
   const onRefillAndEnd = () => moves.refillAndEnd();
   const myCurrentStage = ctx.activePlayers ? ctx.activePlayers[playerID] : ''
+
+  const renderHandProjectCards = () => (
+    <HStack w={['100%', '100%', '20%']}>
+      <Box as='label'>Hand project cards</Box>
+      <RadioGroup onChange={val => setProjectCardIndex(parseInt(val))} value={projectCardIndex}>
+        {
+          G.players[playerID].hand.projects.map((project, index) =>
+            <Radio key={`${project.name}-${index}`} value={index}>{project.name} <br /> {JSON.stringify(project.requirements)}</Radio>)
+        }
+      </RadioGroup>
+    </HStack>
+  );
+
+  const renderActiveJobCards = () => (
+    <HStack w={['100%', '100%', '20%']}>
+      <Box as='label'>Active job cards</Box>
+      <RadioGroup onChange={val => setActiveJobCardIndex(parseInt(val))} value={activeJobCardIndex}>
+        {
+          G.table.activeJobs.map((job, index) =>
+            <Radio key={`${job.name}-${index}`} value={index}>{job.name}</Radio>)
+        }
+      </RadioGroup>
+    </HStack>
+  );
+
+  const renderActiveProjectCards = () => (
+    <HStack w={['100%', '100%', '20%']}>
+      <Box as='label'>Active project cards</Box>
+      <RadioGroup onChange={val => setActiveProjectIndex(parseInt(val))} value={activeProjectIndex}>
+        {
+          G.table.activeProjects.map(activeProject => activeProject.card).map((project, index) =>
+            <Radio key={`${project.name}-${index}`} value={index}>{project.name} <br /> {JSON.stringify(project.requirements)}</Radio>)
+        }
+      </RadioGroup>
+    </HStack>
+  );
+
+  const renderActiveProjectJobName = () => (
+    <HStack w={['100%', '100%', '20%']}>
+      <Box as='label'>Job name</Box>
+      <RadioGroup onChange={setJobName} value={jobName}>
+        {
+          Object.keys(G.table.activeProjects[activeProjectIndex]?.card.requirements ?? []).map((jobName) =>
+            <Radio key={`${activeProjectIndex}-${jobName}`} value={jobName}>{jobName}</Radio>)
+        }
+      </RadioGroup>
+    </HStack>
+  );
+
+  const renderValueInputBox = () => (
+    <HStack w={['100%', '100%', '20%']}>
+      <Box as='label'>Value</Box>
+      <NumberInput min={0} max={5} value={value} onChange={(_, val) => setValue(val)}>
+        <NumberInputField />
+        <NumberInputStepper>
+          <NumberIncrementStepper />
+          <NumberDecrementStepper />
+        </NumberInputStepper>
+      </NumberInput>
+    </HStack>
+  );
+
   return (
     <div className='CurrentPlayer'>
-      <div>I am Player {playerID}</div>
       {myCurrentStage ? <div>my current stage: {myCurrentStage}</div> : null}
-      <Stack direction={['column', 'row']} mt={2}>
-        <HStack w={['100%', '100%', '20%']}>
-          <Box>
-            <FormLabel>project card index:</FormLabel>
-          </Box>
-          <Box>
-            <Input
-              size="xs"
-              type="number"
-              min={-1}
-              max={G.players[playerID].hand.projects.length - 1}
-              value={projectCardIndex}
-              onChange={onProjectCardIndexChange}
-            />
-          </Box>
-        </HStack>
-        <HStack w={['100%', '100%', '20%']}>
-          <Box>
-            <FormLabel>resource card index:</FormLabel>
-          </Box>
-          <Box>
-            <Input
-              size="xs"
-              type="number"
-              min={-1}
-              max={G.players[playerID].hand.resources.length - 1}
-              value={resourceCardIndex}
-              onChange={onResourceCardIndexChange}
-            />
-          </Box>
-        </HStack>
-        <HStack w={['100%', '100%', '20%']}>
-          <Box>
-            <FormLabel>active project index:</FormLabel>
-          </Box>
-          <Box>
-            <Input
-              size="xs"
-              type="number"
-              min={-1}
-              max={G.table.activeProjects.length - 1}
-              value={activeProjectIndex}
-              onChange={onActiveProjectIndexChange}
-            />
-          </Box>
-        </HStack>
-        <HStack w={['100%', '100%', '20%']}>
-          <Box>
-            <FormLabel>slot index:</FormLabel>
-          </Box>
-          <Box>
-            <Input
-              size="xs"
-              type="number"
-              min={-1}
-              max={5}
-              value={slotIndex}
-              onChange={onSlotIndexChange}
-            />
-          </Box>
-        </HStack>
-        <HStack w={['100%', '100%', '20%']}>
-          <Box>
-            <FormLabel>value:</FormLabel>
-          </Box>
-          <Box>
-            <Input
-              size="xs"
-              type="number"
-              min={-1}
-              max={3}
-              value={value}
-              onChange={onValueChange}
-            />
-          </Box>
-        </HStack>
-      </Stack>
-      <Stack direction={['column', 'row']} mt={1}>
-        <Button size='xs' onClick={onCreateProject}>Create Project</Button>
-        <Button size='xs' onClick={onRecruit}>Recruit</Button>
-        <Button size='xs' onClick={onAddContribution}>add contribution entity</Button>
-      </Stack>
-      <Stack direction={['column', 'row']} mt={1}>
-        <div>current contribution entities: {JSON.stringify(contributions)}</div>
-      </Stack>
-      <Stack direction={['column', 'row']} mt={1}>
-        <Button size='xs' onClick={onContribute}>Contribute</Button>
-        <Button size='xs' onClick={onEndAction}>End Action</Button>
-      </Stack>
-      <Stack direction={['column', 'row']} mt={1}>
-        <div className='group settles'>
-          <Button size='xs' onClick={onSettle}>Settle</Button>
-          <Button size='xs' onClick={onEndSettle}>End Settle</Button>
-        </div>
-      </Stack>
-      <Stack direction={['column', 'row']} mt={1}>
-        <div className='group discards'>
-          <Button size='xs' onClick={() => events.endStage!()}>End Discard</Button>
-        </div>
-      </Stack>
-      <Stack direction={['column', 'row']} mt={1}>
-        <Button size='xs' onClick={onRefillAndEnd}>Refill and End turn</Button>
-      </Stack>
-      <Stack direction={['column', 'row']} mt={1}>
-        <Box>Project Cards:</Box>
-        <UnorderedList>
-          {
-            G.players[playerID].hand.projects.map((p, i) => (
-              <ListItem key={`project-card-${i}`}>
-                <span>title: {p.name}</span>
-                <span>jobs: {JSON.stringify(p.jobs)}</span>
-              </ListItem>))
-          }
-        </UnorderedList>
-      </Stack>
-      <Stack direction={['column', 'row']} mt={1}>
-        <Box>Resource Cards:</Box>
-        <UnorderedList>
-          {
-            G.players[playerID].hand.resources.map((r, i) => (
-              <ListItem key={`resource-card-${i}`}>
-                <span>{r.name}</span>
-              </ListItem>))
-          }
-        </UnorderedList>
-      </Stack>
+      {
+        myCurrentStage === 'action' &&
+        <>
+          <Tabs>
+            <TabList>
+              <Tab>Create Project</Tab>
+              <Tab>Recruit</Tab>
+              <Tab>Contribute Owned Projects</Tab>
+              <Tab>Contribute Joined Projects</Tab>
+              <Tab>Remove and Refill Jobs</Tab>
+              <Tab>Mirror</Tab>
+              <Button color='red' onClick={onEndAction}>End Action</Button>
+            </TabList>
+            <TabPanels>
+              <TabPanel>
+                <Stack direction={['column', 'row']} mt={2}>
+                  {renderHandProjectCards()}
+                  {renderActiveJobCards()}
+                </Stack>
+                <Button onClick={onCreateProject}>Create Project</Button>
+              </TabPanel>
+              <TabPanel>
+                <Stack direction={['column', 'row']} mt={2}>
+                  {renderActiveProjectCards()}
+                  {renderActiveJobCards()}
+                </Stack>
+                <Button onClick={onRecruit}>Recruit</Button>
+              </TabPanel>
+              <TabPanel>
+                <Stack direction={['column', 'row']} mt={2}>
+                  {renderActiveProjectCards()}
+                  {renderActiveProjectJobName()}
+                  {renderValueInputBox()}
+                  <Button size='xs' onClick={onAddContribution}>add contribution entity</Button>
+                  <Box>current contribution entities: {JSON.stringify(contributions)}</Box>
+                </Stack>
+                <Button onClick={onContributeOwnedProjects}>ContributeOwnedProjects</Button>
+              </TabPanel>
+              <TabPanel>
+                <Stack direction={['column', 'row']} mt={2}>
+                  {renderActiveProjectCards()}
+                  {renderActiveProjectJobName()}
+                  {renderValueInputBox()}
+                  <Button size='xs' onClick={onAddContribution}>add contribution entity</Button>
+                  <Box>current contribution entities: {JSON.stringify(contributions)}</Box>
+                </Stack>
+                <Button onClick={onContributeJoinedProjects}>ContributeJoinedProjects</Button>
+              </TabPanel>
+              <TabPanel>
+                <Stack direction={['column', 'row']} mt={2}>
+                  {renderActiveJobCards()}
+                </Stack>
+                <Button >Remove and Refill Jobs</Button>
+              </TabPanel>
+              <TabPanel>
+                <Button >Mirror</Button>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        </>
+      }
+      {
+        myCurrentStage === 'settle' &&
+        <>
+          <Stack direction={['column', 'row']} mt={1}>
+            <div className='group settles'>
+              <Button color='red' onClick={onEndSettle}>End Settle</Button>
+            </div>
+          </Stack>
+        </>
+      }
+      {
+        myCurrentStage === 'discard' &&
+        <>
+          <Stack direction={['column', 'row']} mt={1}>
+            <div className='group discards'>
+              <Button color='red' onClick={() => events.endStage!()}>End Discard</Button>
+            </div>
+          </Stack>
+        </>
+      }
+      {
+        myCurrentStage === 'refill' &&
+        <>
+          <Stack direction={['column', 'row']} mt={1}>
+            <Button color='red' onClick={onRefillAndEnd}>Refill and End turn</Button>
+          </Stack>
+        </>
+      }
     </div>
   );
 }

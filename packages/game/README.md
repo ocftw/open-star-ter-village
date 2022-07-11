@@ -29,7 +29,8 @@ namespace State
 |  |- rules: State.Rule
 |  |- decks
 |  |  |- projects: State.Deck<Card.Project>
-|  |  |- resources: State.Deck<Card.Resource>
+|  |  |- jobs: State.Deck<Card.Job>
+|  |  |- forces: State.Deck<Card.Force>
 |  |  |- events: State.Deck<Card.Event>
 |  |- table: State.Table
 |  |- players
@@ -44,26 +45,25 @@ namespace State
 |- Table
 |  |- activeEvent: Card.Event | null
 |  |- activeProjects: Project[]
+|  |- activeJobs: Card.Job[]
 |
 |- Player
 |  |- hand (hidden to observer)
 |  |  |- projects: Card.Project[]
-|  |  |- resources: Card.Resource[]
+|  |  |- forces: Card.Force[]
 |  |
 |  |- token
 |  |  |- workers: number
 |  |  |- actions: number
 |  |
 |  |- completed
-|     |- projects: Card.Project[]
+|  |  |- projects: Card.Project[]
+|  |- victoryPoints: number
 |
 |- Project
 |  |- card: Card.Project
 |  |- owner: playerId
-|  |- workers: (playerId | null)[]
-|  |- contribution
-|  |  |- bySlot: number[] # is 0 when slot is inactive, is 1-6 (positive number) when slot is active
-|  |  |- byJob: { [job name]: number } # accumulated contribution points by
+|  |- contributions: { jobName: JobName, worker: playerId, value: number }
 |
 |- Tree
    |- [treeTypes]: number

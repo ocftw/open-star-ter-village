@@ -20,9 +20,22 @@ This is the living document capture the current area of focus, and what needs to
 
 #### implementation
 
-* [ ] heroku single application deployment TBD *[T]*
+* [x] heroku single application deployment
+
+#### End A Game
+
+* [ ] Assume first player is Game Master who can end the current game *[T]*
+* [x] Replace Local game with Server game
 
 ### Basic game logics
+
+* [x] Victory points
+* [x] Action points
+* [x] Action can be executed only once (mirrored action can bypass it)
+* [ ] Player closed project may score extra victory points
+* [ ] Migrate settle phase into action stage. Projects are immediately closed when they reach the requirements. Then Remove Settle phase.
+* [ ] Activate and deactivate Event cards
+* [ ] End game
 
 #### Action Stage
 
@@ -32,63 +45,69 @@ This is the living document capture the current area of focus, and what needs to
   * [x] Play Job card with Project card (validate, check eligible included)
   * [x] Reduce player action point (validate, check eligible included)
   * [x] Reduce player worker token (validate, check eligible included)
+  * [ ] Player play project card may score victory points
 * [x] Play Job cards
   * [x] basic play function
   * [x] Play Job card on an Active project (includes validation and eligibility check)
   * [x] Deduct player action point (includes validation and eligibility check)
   * [x] Deduct player worker token (includes validation and eligibility check)
-* [x] Contribute the projects
+  * [ ] Recruit two ppl once (in the basic rule)
+* [x] contribute owned projects
   * [x] basic play function
-* [ ] Goal cards
+  * [ ] Contribute Owned projects value adjustment
+* [x] contribute joined projects
+  * [x] basic play function
+  * [ ] Contribute Joined projects value adjustment
+* [x] Remove and refill job cards
+* [ ] Mirror
 
 Move interfaces:
 
 ```ts
-function createProject(G: G, ctx: ctx, projectCardIndex: number, resourceCardIndex: number): void
+function createProject(G: G, ctx: ctx, projectCardIndex: number, jobCardIndex: number): void
 
-function recruit(G: G, ctx: ctx, resourceCardIndex: number, activeProjectIndex: number): void
+function recruit(G: G, ctx: ctx, jobCardIndex: number, activeProjectIndex: number): void
 
-function contribute(G: G, ctx: ctx, contributions: Array<{ activeProjectIndex: number, slotIndex: number, value: number }>): void
+function contributeOwnedProjects(G: G, ctx: ctx, contributions: { activeProjectIndex: number; jobName: JobName; value: number }[]): void
+
+function contributeOtherProjects(G: G, ctx: ctx, contributions: { activeProjectIndex: number; jobName: JobName; value: number }[]): void
+
+function refillJobremoveAndRefillJobs(G: G, ctx: ctx, jobCardIndices: number[]): void
+
+function mirror(G: G, ctx: ctx, actionName: string, ...params: any[]): void
 ```
 
 #### Settle Stage
+
+> TODO: migrate into action stage. Projects closed immediately when fulfilled the requirements
 
 * [x] Close projects
 
 #### Discard Stage
 
-* [ ] Discard resource cards
 * [ ] Discard project cards
 
 Move interfaces:
 
 ```ts
 function discardProjectCards(G: G, ctx: ctx, projectIndices: number[]): void
-
-function discardResourceCards(G: G, ctx: ctx, resourceIndices: number[]): void
 ```
 
 #### Refill Stage
 
-* [ ] Refill and End
-  * [ ] Refill resource cards  *[T]*
-  * [ ] Refill project cards  *[T]*
+* [x] Refill and End
+  * [x] Refill project cards
   * [x] Refill action points
 
 Move interface:
 
 ```ts
 // inner function
-function refillResource(): void {}
+function refillProject(): void {}
 
 // exposed function
 function refillAndEnd(G: G, ctx: ctx): void
 ```
-
-#### End Game
-
-* [ ] Assume first player is Game Master who can end the current game *[T]*
-* [x] Replace Local game with Server game
 
 #### Unit tests
 
@@ -122,7 +141,6 @@ function refillAndEnd(G: G, ctx: ctx): void
       * ResourceCard/
         * ?styled.jsx
       * ProjectCard
-      * GoalCard
       * EventCard
     * styled/
       * CardVertical
@@ -138,7 +156,6 @@ function refillAndEnd(G: G, ctx: ctx): void
       * ProjectCard/
         * ProjectCard.jsx
         * ProjectCard.styled.jsx
-      * GoalCard/
       * EventCard/
 
   Folders should be structured by features (scenario 2) but it is viable to have common styled components such as Button, Tab, or Input collected in the common folder (styled foder in scenario 1).
@@ -150,25 +167,54 @@ function refillAndEnd(G: G, ctx: ctx): void
 * [ ] Play Job cards
 * [ ] Contribute the projects
 
+### Apply New Rules
+
+* [x] Decouple Job and Force cards in Player Hand
+* [x] Split Job and Force cards deck
+
+```ts
+// inner function
+function refillProject(): void {}
+function refillJob(): void {}
+function refillForce(): void {}
+```
+
+* [x] Move Job cards from Player Hand to Table
+* [x] Refactor project cards
+* [x] Add victory points
+* [x] Refactor worker token on project card
+* [x] Remove goal cards
+* [x] Remove force cards from main game
+
 ### Advanced game logics
 
-* [ ] Apply New rules *[T]*
-  * [ ] Decouple Job and Force cards in Player Hand
+* [ ] Apply Basic Rule and Advanced Rule
+* [ ] Build Open Star Tree
 
-  ```ts
-    function createProject(G: G, ctx: ctx, projectCardIndex: number, jobCardIndex: number): void
-  ```
+#### Action Stage
 
-  * [ ] Split Job and Force cards deck
+* [ ] Growth Open Star Tree
 
-  ```ts
-  // inner function
-  function refillJob(): void {}
-  function refillForce(): void {}
-  ```
+### Expansions
 
-  * [ ] Move Job cards from Player Hand to Table
+#### Core Logic
+
+* [ ] Build Force cards
+
+#### Action Stage
+
 * [ ] Play Force cards
-* [ ] Event cards
 
-### Expansions (TBD)
+#### Discard Stage
+
+* [ ] Discard force cards
+
+#### Refill Stage
+
+* [x] Refill force cards
+
+```ts
+function discardForceCards(G: G, ctx: ctx, forceIndices: number[]): void
+// inner function
+function refillForce(): void {}
+```

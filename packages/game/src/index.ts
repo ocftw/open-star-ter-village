@@ -1,14 +1,14 @@
 import { Game, PlayerID, State } from 'boardgame.io';
 import { INVALID_MOVE } from 'boardgame.io/core';
 import { Deck, newCardDeck } from './deck';
-import { HandCards } from './handCards';
+import { Cards } from './cards';
 import { OpenStarTerVillageType as type } from './types';
 import projectCards from './data/card/projects.json';
-import resourceCards from './data/card/resources.json';
+import jobCards from './data/card/jobs.json';
+import forceCards from './data/card/forces.json';
 import eventCards from './data/card/events.json';
-import goalCards from './data/card/goals.json';
-import { isInRange, zip } from './utils';
 import { ActiveProject, ActiveProjects } from './activeProjects';
+import { contributeJoinedProjects, contributeOwnedProjects, createProject, mirror, recruit, removeAndRefillJobs } from './moves/actionMoves';
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 type WithGameState<G extends any, F extends (...args: any) => void> = (G: State<G>['G'], ctx: State<G>['ctx'], ...args: Parameters<F>) => any;
@@ -20,23 +20,33 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
     const players: type.State.Root['players'] = ctx.playOrder
       .reduce((s: Record<PlayerID, type.State.Player>, playerId) => {
         s[playerId] = {
-          hand: { projects: [], resources: [] },
+          hand: { projects: [], forces: [] },
           token: { workers: 0, actions: 0 },
           completed: { projects: [] },
+          victoryPoints: 0,
         };
         return s;
       }, {});
 
     const decks: type.State.Root['decks'] = {
       projects: newCardDeck<type.Card.Project>(projectCards as unknown as type.Card.Project[]),
-      resources: newCardDeck<type.Card.Resource>(resourceCards),
+      jobs: newCardDeck<type.Card.Job>(jobCards),
+      forces: newCardDeck<type.Card.Force>(forceCards),
       events: newCardDeck<type.Card.Event>(eventCards),
-      goals: newCardDeck<type.Card.Goal>(goalCards),
     };
 
     const table: type.State.Root['table'] = {
       activeEvent: null,
       activeProjects: [],
+      activeJobs: [],
+      activeMoves: {
+        contributeJoinedProjects: true,
+        contributeOwnedProjects: true,
+        createProject: true,
+        recruit: true,
+        removeAndRefillJobs: true,
+        mirror: true,
+      },
     };
 
     return {
@@ -56,19 +66,28 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
         // shuffle cards
         const shuffler = ctx.random!.Shuffle;
         Deck.ShuffleDrawPile(state.decks.events, shuffler);
+
         Deck.ShuffleDrawPile(state.decks.projects, shuffler);
-        Deck.ShuffleDrawPile(state.decks.resources, shuffler);
-        Deck.ShuffleDrawPile(state.decks.goals, shuffler);
-
+        const maxProjectCards = 2;
         for (let playerId in state.players) {
-          const projectCards = Deck.Draw(state.decks.projects, 2);
-          HandCards.Add(state.players[playerId].hand.projects, projectCards);
+          const projectCards = Deck.Draw(state.decks.projects, maxProjectCards);
+          Cards.Add(state.players[playerId].hand.projects, projectCards);
         }
 
-        for (let playerId in state.players) {
-          const resourceCards = Deck.Draw(state.decks.resources, 5);
-          HandCards.Add(state.players[playerId].hand.resources, resourceCards);
+        const isForceCardsEnabled = false;
+        if (isForceCardsEnabled) {
+          Deck.ShuffleDrawPile(state.decks.forces, shuffler);
+          const maxForceCards = 2;
+          for (let playerId in state.players) {
+            const forceCards = Deck.Draw(state.decks.forces, maxForceCards);
+            Cards.Add(state.players[playerId].hand.forces, forceCards);
+          }
         }
+
+        Deck.ShuffleDrawPile(state.decks.jobs, shuffler);
+        const maxJobCards = 5;
+        const jobCards = Deck.Draw(state.decks.jobs, maxJobCards);
+        Cards.Add(state.table.activeJobs, jobCards);
 
         for (let playerId in state.players) {
           state.players[playerId].token.workers = 10;
@@ -98,152 +117,30 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
       action: {
         moves: {
           createProject: {
-            // client cannot see decks, discard resource card should evaluated on server side
             client: false,
-            move: ((G, ctx, projectCardIndex, resourceCardIndex) => {
-              const currentPlayer = ctx.playerID!;
-              const currentPlayerToken = G.players[currentPlayer].token;
-              // TODO: replace hardcoded number with dynamic rules
-              const createProjectActionCosts = 2;
-              if (currentPlayerToken.actions < createProjectActionCosts) {
-                return INVALID_MOVE;
-              }
-              const createProjectWorkerCosts = 1;
-              if (currentPlayerToken.workers < createProjectWorkerCosts) {
-                return INVALID_MOVE;
-              }
-
-              // check project card in in hand
-              const currentHandProjects = G.players[currentPlayer].hand.projects;
-              if (!isInRange(projectCardIndex, currentHandProjects.length)) {
-                return INVALID_MOVE;
-              }
-
-              // check resource card is in hand
-              const currentHandResources = G.players[currentPlayer].hand.resources;
-              if (!isInRange(resourceCardIndex, currentHandResources.length)) {
-                return INVALID_MOVE;
-              }
-
-              // check resource card is required in project
-              const projectCard = HandCards.GetById(currentHandProjects, projectCardIndex);
-              const resourceCard = HandCards.GetById(currentHandResources, resourceCardIndex);
-              if (!projectCard.jobs.includes(resourceCard.name)) {
-                return INVALID_MOVE;
-              }
-
-              // reduce action tokens
-              currentPlayerToken.actions -= createProjectActionCosts;
-              HandCards.RemoveOne(currentHandProjects, projectCard);
-              HandCards.RemoveOne(currentHandResources, resourceCard);
-
-              // initial active project
-              const activeProjectIndex = ActiveProjects.Add(G.table.activeProjects, projectCard, currentPlayer);
-              const activeProject = ActiveProjects.GetById(G.table.activeProjects, activeProjectIndex);
-
-              // update contribution to initial contribution points
-              const slotIndex = projectCard.jobs.findIndex(job => job === resourceCard.name);
-              // TODO: replace with rule of inital contributions
-              const contributionPoints = 1;
-              ActiveProject.Contribute(activeProject, slotIndex, contributionPoints);
-
-              // reduce worker token
-              currentPlayerToken.workers -= createProjectWorkerCosts;
-              // assign worker token
-              ActiveProject.AssignWorker(activeProject, slotIndex, currentPlayer);
-
-              // discard resource card
-              Deck.Discard(G.decks.resources, [resourceCard]);
-            }) as WithGameState<type.State.Root, type.Move.CreateProject>,
+            move: createProject,
           },
           recruit: {
-            // client cannot see decks, discard resource card should evaluated on server side
+            // client cannot see decks, discard job card should evaluated on server side
             client: false,
-            move: ((G, ctx, resourceCardIndex, activeProjectIndex) => {
-              const currentPlayer = ctx.playerID!;
-              const currentPlayerToken = G.players[currentPlayer].token;
-              const recruitActionCosts = 1;
-              if (currentPlayerToken.actions < recruitActionCosts) {
-                return INVALID_MOVE;
-              }
-              const recruitWorkerCosts = 1;
-              if (currentPlayerToken.workers < recruitWorkerCosts) {
-                return INVALID_MOVE;
-              }
-
-              const currentPlayerResources = G.players[currentPlayer].hand.resources;
-              if (!isInRange(resourceCardIndex, currentPlayerResources.length)) {
-                return INVALID_MOVE;
-              }
-
-              const activeProjects = G.table.activeProjects
-              if (!isInRange(activeProjectIndex, activeProjects.length)) {
-                return INVALID_MOVE;
-              }
-              const resourceCard = HandCards.GetById(currentPlayerResources, resourceCardIndex);
-              const activeProject = ActiveProjects.GetById(G.table.activeProjects, activeProjectIndex);
-              const jobAndSlots = zip(activeProject.card.jobs, activeProject.contribution.bySlot);
-              const slotIndex = jobAndSlots.findIndex(([job, slot]) =>
-                job === resourceCard.name && slot === 0);
-              if (slotIndex < 0) {
-                return INVALID_MOVE;
-              }
-
-              // reduce action
-              currentPlayerToken.actions -= recruitActionCosts;
-              HandCards.RemoveOne(currentPlayerResources, resourceCard);
-
-              // update contribution to recruit contribution points
-              // TODO: replace with rule of recruit contributions
-              const contributionPoints = 1;
-              ActiveProject.Contribute(activeProject, slotIndex, contributionPoints);
-
-              // reduce worker tokens
-              currentPlayerToken.workers -= recruitWorkerCosts;
-              // assign worker token
-              ActiveProject.AssignWorker(activeProject, slotIndex, currentPlayer);
-
-              // discard resource card
-              Deck.Discard(G.decks.resources, [resourceCard]);
-            }) as WithGameState<type.State.Root, type.Move.Recruit>,
+            move: recruit,
           },
-          contribute: ((G, ctx, contributions) => {
-            const currentPlayer = ctx.playerID!;
-            const currentPlayerToken = G.players[currentPlayer].token;
-            const contributeActionCosts = 1;
-            if (currentPlayerToken.actions < contributeActionCosts) {
-              return INVALID_MOVE;
-            }
-            const activeProjects = G.table.activeProjects
-            const isInvalid = contributions.map(({ activeProjectIndex, slotIndex }) => {
-              if (!isInRange(activeProjectIndex, activeProjects.length)) {
-                return true;
-              }
-              const activeProject = ActiveProjects.GetById(activeProjects, activeProjectIndex);
-              if (activeProject.contribution.bySlot[slotIndex] === 0) {
-                return true;
-              }
-              if (activeProject.owner !== currentPlayer && activeProject.workers[slotIndex] !== currentPlayer) {
-                return true;
-              }
-            }).some(x => x);
-            if (isInvalid) {
-              return INVALID_MOVE;
-            }
-            const totalContributions = contributions.map(({ value }) => value).reduce((a, b) => a + b, 0);
-            const maxContributions = 3;
-            if (!(totalContributions <= maxContributions)) {
-              return INVALID_MOVE;
-            }
-
-            // deduct action tokens
-            currentPlayerToken.actions -= contributeActionCosts;
-            contributions.forEach(({ activeProjectIndex, slotIndex, value }) => {
-              // update contributions to given contribution points
-              const activeProject = ActiveProjects.GetById(G.table.activeProjects, activeProjectIndex);
-              ActiveProject.Contribute(activeProject, slotIndex, value);
-            });
-          }) as WithGameState<type.State.Root, type.Move.Contribute>,
+          contributeOwnedProjects: {
+            client: false,
+            move: contributeOwnedProjects,
+          },
+          contributeJoinedProjects: {
+            client: false,
+            move: contributeJoinedProjects,
+          },
+          removeAndRefillJobs: {
+            client: false,
+            move: removeAndRefillJobs,
+          },
+          mirror: {
+            client: false,
+            move: mirror,
+          },
         },
         next: 'settle',
       },
@@ -258,21 +155,17 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
               if (fulfilledProjects.length === 0) {
                 return;
               }
-              // Update Score / Goals
-              // Return Tokens
-              const returnTokens = fulfilledProjects.map(project =>
-                project.workers.reduce<Record<PlayerID, number>>((result, worker) => {
-                  if (worker) {
-                    const prev = result[worker] ?? 0;
-                    result[worker] = prev + 1;
-                  }
-                  return result;
-                }, {}));
-
-              returnTokens.forEach(returnTokenMap => {
-                for (let playerId in returnTokenMap) {
-                  G.players[playerId].token.workers += returnTokenMap[playerId];
-                }
+              fulfilledProjects.forEach(project => {
+                // Update Score
+                Object.keys(G.players).forEach(playerId => {
+                  const victoryPoints = ActiveProject.GetPlayerContribution(project, playerId);
+                  G.players[playerId].victoryPoints += victoryPoints;
+                });
+                // Return Tokens
+                Object.keys(G.players).forEach(playerId => {
+                  const workerTokens = ActiveProject.GetPlayerWorkerTokens(project, playerId);
+                  G.players[playerId].token.workers += workerTokens;
+                });
               });
               // Update OpenSourceTree
               // Remove from table
@@ -291,20 +184,51 @@ export const OpenStarTerVillage: Game<type.State.Root> = {
             noLimit: true,
             move: () => { },
           },
-          discardResources: {
-            noLimit: true,
-            move: () => { },
+          discardForces: () => {
+            const isForceCardsEnabled = false;
+            if (!isForceCardsEnabled) {
+              return INVALID_MOVE;
+            }
           },
         },
         next: 'refill',
       },
       refill: {
         moves: {
-          refillAndEnd: ((G, ctx) => {
-            // refill action points
-            G.players[ctx.currentPlayer].token.actions = 3;
-            ctx.events?.endTurn()
-          }) as WithGameState<type.State.Root, type.Move.RefillAndEnd>,
+          refillAndEnd: {
+            client: false,
+            move: ((G, ctx) => {
+              const refillProject = ((G, ctx) => {
+                const maxProjectCards = 2;
+                const refillCardNumber = maxProjectCards - G.players[ctx.currentPlayer].hand.projects.length;
+                const projectCards = Deck.Draw(G.decks.projects, refillCardNumber);
+                Cards.Add(G.players[ctx.currentPlayer].hand.projects, projectCards);
+              }) as WithGameState<type.State.Root, type.Move.RefillProject>;
+
+              const refillForce = ((G, ctx) => {
+                const maxForceCards = 2;
+                const refillCardNumber = maxForceCards - G.players[ctx.currentPlayer].hand.forces.length;
+                const forceCards = Deck.Draw(G.decks.forces, refillCardNumber);
+                Cards.Add(G.players[ctx.currentPlayer].hand.forces, forceCards);
+              }) as WithGameState<type.State.Root, type.Move.RefillForce>;
+
+              // refill cards
+              refillProject(G, ctx);
+              const isForceCardsEnabled = false;
+              if (isForceCardsEnabled) {
+                refillForce(G, ctx);
+              }
+
+              // refill action points
+              G.players[ctx.currentPlayer].token.actions = 3;
+
+              // reset active moves
+              Object.keys(G.table.activeMoves).forEach(move => {
+                G.table.activeMoves[move as keyof type.Move.ActionMoves] = true;
+              });
+              ctx.events?.endTurn()
+            }) as WithGameState<type.State.Root, type.Move.RefillAndEnd>,
+          }
         },
       },
     },
