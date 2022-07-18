@@ -1,3 +1,19 @@
+# OpenStarTerVillage Homepage
+
+## Repo structure
+
+branches
+
+- main (board game)
+- homepage (homepage)
+- gh-pages (public site)
+
+pipelines
+
+main -> github action -> heroku
+homepage -> netlify -> github pages
+gh-pages serves the public website traffic
+
   <!-- AUTO-GENERATED-CONTENT:START (STARTER) -->
   <p align="center">
     <a href="https://rg-portfolio.netlify.com/">
