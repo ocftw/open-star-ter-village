@@ -6,13 +6,11 @@ branches
 
 - main (board game)
 - homepage (homepage)
-- gh-pages (public site)
 
 pipelines
 
 main -> github action -> heroku
-homepage -> netlify -> github pages
-gh-pages serves the public website traffic
+homepage -> netlify
 
   <!-- AUTO-GENERATED-CONTENT:START (STARTER) -->
   <p align="center">
