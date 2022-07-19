@@ -194,232 +194,6 @@
             "id": "7bjk35noegpy"
           }
         },
-        "id": "aboutMe",
-        "type": "ContentType",
-        "createdAt": "2022-07-16T16:32:17.862Z",
-        "updatedAt": "2022-07-17T18:10:10.159Z",
-        "environment": {
-          "sys": {
-            "id": "master",
-            "type": "Link",
-            "linkType": "Environment"
-          }
-        },
-        "publishedVersion": 3,
-        "publishedAt": "2022-07-17T18:10:10.159Z",
-        "firstPublishedAt": "2022-07-16T16:32:19.182Z",
-        "createdBy": {
-          "sys": {
-            "type": "Link",
-            "linkType": "User",
-            "id": "1BsXoxJHad5nf7rcKtLlC5"
-          }
-        },
-        "updatedBy": {
-          "sys": {
-            "type": "Link",
-            "linkType": "User",
-            "id": "1BsXoxJHad5nf7rcKtLlC5"
-          }
-        },
-        "publishedCounter": 2,
-        "version": 4,
-        "publishedBy": {
-          "sys": {
-            "type": "Link",
-            "linkType": "User",
-            "id": "1BsXoxJHad5nf7rcKtLlC5"
-          }
-        }
-      },
-      "displayField": "name",
-      "name": "About Me",
-      "description": "About me Details",
-      "fields": [
-        {
-          "id": "name",
-          "name": "Name",
-          "type": "Symbol",
-          "localized": false,
-          "required": true,
-          "validations": [
-          ],
-          "disabled": false,
-          "omitted": false
-        },
-        {
-          "id": "designation",
-          "name": "Designation",
-          "type": "Symbol",
-          "localized": false,
-          "required": false,
-          "validations": [
-          ],
-          "disabled": false,
-          "omitted": false
-        },
-        {
-          "id": "photo",
-          "name": "Photo",
-          "type": "Link",
-          "localized": false,
-          "required": true,
-          "validations": [
-          ],
-          "disabled": false,
-          "omitted": false,
-          "linkType": "Asset"
-        },
-        {
-          "id": "avatarImage",
-          "name": "Avatar Image",
-          "type": "Link",
-          "localized": false,
-          "required": false,
-          "validations": [
-          ],
-          "disabled": false,
-          "omitted": false,
-          "linkType": "Asset"
-        },
-        {
-          "id": "description",
-          "name": "Description",
-          "type": "Text",
-          "localized": false,
-          "required": false,
-          "validations": [
-          ],
-          "disabled": false,
-          "omitted": false
-        },
-        {
-          "id": "age",
-          "name": "Age",
-          "type": "Symbol",
-          "localized": false,
-          "required": false,
-          "validations": [
-          ],
-          "disabled": false,
-          "omitted": false
-        },
-        {
-          "id": "bannerImage",
-          "name": "Banner Image",
-          "type": "Link",
-          "localized": false,
-          "required": false,
-          "validations": [
-          ],
-          "disabled": false,
-          "omitted": false,
-          "linkType": "Asset"
-        },
-        {
-          "id": "bannerList",
-          "name": "Banner List",
-          "type": "Array",
-          "localized": false,
-          "required": false,
-          "validations": [
-          ],
-          "disabled": false,
-          "omitted": false,
-          "items": {
-            "type": "Symbol",
-            "validations": [
-            ]
-          }
-        },
-        {
-          "id": "location",
-          "name": "Location",
-          "type": "Symbol",
-          "localized": false,
-          "required": false,
-          "validations": [
-          ],
-          "disabled": false,
-          "omitted": false
-        },
-        {
-          "id": "gmail",
-          "name": "Gmail",
-          "type": "Symbol",
-          "localized": false,
-          "required": false,
-          "validations": [
-          ],
-          "disabled": false,
-          "omitted": false
-        },
-        {
-          "id": "facebook",
-          "name": "Facebook",
-          "type": "Symbol",
-          "localized": false,
-          "required": false,
-          "validations": [
-          ],
-          "disabled": false,
-          "omitted": false
-        },
-        {
-          "id": "twitter",
-          "name": "Twitter",
-          "type": "Symbol",
-          "localized": false,
-          "required": false,
-          "validations": [
-          ],
-          "disabled": false,
-          "omitted": false
-        },
-        {
-          "id": "instagram",
-          "name": "Instagram",
-          "type": "Symbol",
-          "localized": false,
-          "required": false,
-          "validations": [
-          ],
-          "disabled": false,
-          "omitted": false
-        },
-        {
-          "id": "linkedin",
-          "name": "Linkedin",
-          "type": "Symbol",
-          "localized": false,
-          "required": false,
-          "validations": [
-          ],
-          "disabled": false,
-          "omitted": false
-        },
-        {
-          "id": "github",
-          "name": "Github",
-          "type": "Symbol",
-          "localized": false,
-          "required": false,
-          "validations": [
-          ],
-          "disabled": false,
-          "omitted": false
-        }
-      ]
-    },
-    {
-      "sys": {
-        "space": {
-          "sys": {
-            "type": "Link",
-            "linkType": "Space",
-            "id": "7bjk35noegpy"
-          }
-        },
         "id": "photos",
         "type": "ContentType",
         "createdAt": "2022-07-16T16:32:17.867Z",
@@ -677,7 +451,7 @@
         "id": "siteInformation",
         "type": "ContentType",
         "createdAt": "2022-07-16T16:32:18.208Z",
-        "updatedAt": "2022-07-16T16:32:22.667Z",
+        "updatedAt": "2022-07-19T02:15:43.433Z",
         "environment": {
           "sys": {
             "id": "master",
@@ -685,8 +459,8 @@
             "linkType": "Environment"
           }
         },
-        "publishedVersion": 1,
-        "publishedAt": "2022-07-16T16:32:22.667Z",
+        "publishedVersion": 5,
+        "publishedAt": "2022-07-19T02:15:43.433Z",
         "firstPublishedAt": "2022-07-16T16:32:22.667Z",
         "createdBy": {
           "sys": {
@@ -702,8 +476,8 @@
             "id": "1BsXoxJHad5nf7rcKtLlC5"
           }
         },
-        "publishedCounter": 1,
-        "version": 2,
+        "publishedCounter": 3,
+        "version": 6,
         "publishedBy": {
           "sys": {
             "type": "Link",
@@ -728,6 +502,18 @@
           "omitted": false
         },
         {
+          "id": "heroImage",
+          "name": "Hero Image",
+          "type": "Link",
+          "localized": false,
+          "required": true,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false,
+          "linkType": "Asset"
+        },
+        {
           "id": "siteUrl",
           "name": "Site URL",
           "type": "Symbol",
@@ -749,28 +535,6 @@
           "disabled": false,
           "omitted": false,
           "linkType": "Asset"
-        },
-        {
-          "id": "twitterHandle",
-          "name": "Twitter Handle",
-          "type": "Symbol",
-          "localized": false,
-          "required": false,
-          "validations": [
-          ],
-          "disabled": false,
-          "omitted": false
-        },
-        {
-          "id": "siteDescription",
-          "name": "Site Description",
-          "type": "Symbol",
-          "localized": false,
-          "required": false,
-          "validations": [
-          ],
-          "disabled": false,
-          "omitted": false
         },
         {
           "id": "menus",
@@ -798,6 +562,275 @@
               }
             ]
           }
+        },
+        {
+          "id": "twitterHandle",
+          "name": "Twitter Handle",
+          "type": "Symbol",
+          "localized": false,
+          "required": false,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "siteDescription",
+          "name": "Site Description",
+          "type": "Symbol",
+          "localized": false,
+          "required": false,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "instagram",
+          "name": "Instagram",
+          "type": "Symbol",
+          "localized": false,
+          "required": false,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "facebook",
+          "name": "Facebook",
+          "type": "Symbol",
+          "localized": false,
+          "required": false,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "github",
+          "name": "Github",
+          "type": "Symbol",
+          "localized": false,
+          "required": false,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false
+        }
+      ]
+    },
+    {
+      "sys": {
+        "space": {
+          "sys": {
+            "type": "Link",
+            "linkType": "Space",
+            "id": "7bjk35noegpy"
+          }
+        },
+        "id": "about",
+        "type": "ContentType",
+        "createdAt": "2022-07-19T01:51:45.533Z",
+        "updatedAt": "2022-07-19T02:02:36.730Z",
+        "environment": {
+          "sys": {
+            "id": "master",
+            "type": "Link",
+            "linkType": "Environment"
+          }
+        },
+        "publishedVersion": 3,
+        "publishedAt": "2022-07-19T02:02:36.730Z",
+        "firstPublishedAt": "2022-07-19T01:51:46.151Z",
+        "createdBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "1BsXoxJHad5nf7rcKtLlC5"
+          }
+        },
+        "updatedBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "1BsXoxJHad5nf7rcKtLlC5"
+          }
+        },
+        "publishedCounter": 2,
+        "version": 4,
+        "publishedBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "1BsXoxJHad5nf7rcKtLlC5"
+          }
+        }
+      },
+      "displayField": "name",
+      "name": "About",
+      "description": "About Character Details",
+      "fields": [
+        {
+          "id": "name",
+          "name": "Name",
+          "type": "Symbol",
+          "localized": false,
+          "required": true,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "designation",
+          "name": "Designation",
+          "type": "Symbol",
+          "localized": false,
+          "required": false,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "photo",
+          "name": "Photo",
+          "type": "Link",
+          "localized": false,
+          "required": true,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false,
+          "linkType": "Asset"
+        },
+        {
+          "id": "avatarImage",
+          "name": "Avatar Image",
+          "type": "Link",
+          "localized": false,
+          "required": false,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false,
+          "linkType": "Asset"
+        },
+        {
+          "id": "description",
+          "name": "Description",
+          "type": "Text",
+          "localized": false,
+          "required": false,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "age",
+          "name": "Age",
+          "type": "Symbol",
+          "localized": false,
+          "required": false,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "bannerList",
+          "name": "Banner List",
+          "type": "Array",
+          "localized": false,
+          "required": false,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false,
+          "items": {
+            "type": "Symbol",
+            "validations": [
+            ]
+          }
+        },
+        {
+          "id": "location",
+          "name": "Location",
+          "type": "Symbol",
+          "localized": false,
+          "required": false,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "gmail",
+          "name": "Gmail",
+          "type": "Symbol",
+          "localized": false,
+          "required": false,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "facebook",
+          "name": "Facebook",
+          "type": "Symbol",
+          "localized": false,
+          "required": false,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "twitter",
+          "name": "Twitter",
+          "type": "Symbol",
+          "localized": false,
+          "required": false,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "instagram",
+          "name": "Instagram",
+          "type": "Symbol",
+          "localized": false,
+          "required": false,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "linkedin",
+          "name": "Linkedin",
+          "type": "Symbol",
+          "localized": false,
+          "required": false,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false
+        },
+        {
+          "id": "github",
+          "name": "Github",
+          "type": "Symbol",
+          "localized": false,
+          "required": false,
+          "validations": [
+          ],
+          "disabled": false,
+          "omitted": false
         }
       ]
     }
@@ -928,127 +961,6 @@
         {
           "fieldId": "description",
           "widgetId": "markdown",
-          "widgetNamespace": "builtin"
-        }
-      ]
-    },
-    {
-      "sys": {
-        "id": "default",
-        "type": "EditorInterface",
-        "space": {
-          "sys": {
-            "id": "7bjk35noegpy",
-            "type": "Link",
-            "linkType": "Space"
-          }
-        },
-        "version": 4,
-        "createdAt": "2022-07-16T16:32:19.295Z",
-        "createdBy": {
-          "sys": {
-            "id": "1BsXoxJHad5nf7rcKtLlC5",
-            "type": "Link",
-            "linkType": "User"
-          }
-        },
-        "updatedAt": "2022-07-17T18:10:11.346Z",
-        "updatedBy": {
-          "sys": {
-            "id": "1BsXoxJHad5nf7rcKtLlC5",
-            "type": "Link",
-            "linkType": "User"
-          }
-        },
-        "contentType": {
-          "sys": {
-            "id": "aboutMe",
-            "type": "Link",
-            "linkType": "ContentType"
-          }
-        },
-        "environment": {
-          "sys": {
-            "id": "master",
-            "type": "Link",
-            "linkType": "Environment"
-          }
-        }
-      },
-      "controls": [
-        {
-          "fieldId": "name",
-          "widgetId": "singleLine",
-          "widgetNamespace": "builtin"
-        },
-        {
-          "fieldId": "designation",
-          "widgetId": "singleLine",
-          "widgetNamespace": "builtin"
-        },
-        {
-          "fieldId": "photo",
-          "widgetId": "assetLinkEditor",
-          "widgetNamespace": "builtin"
-        },
-        {
-          "fieldId": "avatarImage",
-          "widgetId": "assetLinkEditor",
-          "widgetNamespace": "builtin"
-        },
-        {
-          "fieldId": "description",
-          "widgetId": "markdown",
-          "widgetNamespace": "builtin"
-        },
-        {
-          "fieldId": "age",
-          "widgetId": "singleLine",
-          "widgetNamespace": "builtin"
-        },
-        {
-          "fieldId": "bannerImage",
-          "widgetId": "assetLinkEditor",
-          "widgetNamespace": "builtin"
-        },
-        {
-          "fieldId": "bannerList",
-          "widgetId": "tagEditor",
-          "widgetNamespace": "builtin"
-        },
-        {
-          "fieldId": "location",
-          "widgetId": "singleLine",
-          "widgetNamespace": "builtin"
-        },
-        {
-          "fieldId": "gmail",
-          "widgetId": "urlEditor",
-          "widgetNamespace": "builtin"
-        },
-        {
-          "fieldId": "facebook",
-          "widgetId": "urlEditor",
-          "widgetNamespace": "builtin"
-        },
-        {
-          "fieldId": "twitter",
-          "widgetId": "urlEditor",
-          "widgetNamespace": "builtin"
-        },
-        {
-          "fieldId": "instagram",
-          "widgetId": "urlEditor",
-          "widgetNamespace": "builtin"
-        },
-        {
-          "fieldId": "linkedin",
-          "widgetId": "urlEditor",
-          "widgetNamespace": "builtin"
-        },
-        {
-          "fieldId": "github",
-          "widgetId": "urlEditor",
           "widgetNamespace": "builtin"
         }
       ]
@@ -1242,7 +1154,7 @@
             "linkType": "Space"
           }
         },
-        "version": 2,
+        "version": 6,
         "createdAt": "2022-07-16T16:32:22.761Z",
         "createdBy": {
           "sys": {
@@ -1251,7 +1163,7 @@
             "linkType": "User"
           }
         },
-        "updatedAt": "2022-07-16T16:32:25.180Z",
+        "updatedAt": "2022-07-19T02:15:44.434Z",
         "updatedBy": {
           "sys": {
             "id": "1BsXoxJHad5nf7rcKtLlC5",
@@ -1281,6 +1193,11 @@
           "widgetNamespace": "builtin"
         },
         {
+          "fieldId": "heroImage",
+          "widgetId": "assetLinkEditor",
+          "widgetNamespace": "builtin"
+        },
+        {
           "fieldId": "siteUrl",
           "widgetId": "urlEditor",
           "widgetNamespace": "builtin"
@@ -1288,6 +1205,11 @@
         {
           "fieldId": "logo",
           "widgetId": "assetLinkEditor",
+          "widgetNamespace": "builtin"
+        },
+        {
+          "fieldId": "menus",
+          "widgetId": "checkbox",
           "widgetNamespace": "builtin"
         },
         {
@@ -1301,8 +1223,134 @@
           "widgetNamespace": "builtin"
         },
         {
-          "fieldId": "menus",
-          "widgetId": "checkbox",
+          "fieldId": "instagram",
+          "widgetId": "singleLine",
+          "widgetNamespace": "builtin"
+        },
+        {
+          "fieldId": "facebook",
+          "widgetId": "singleLine",
+          "widgetNamespace": "builtin"
+        },
+        {
+          "fieldId": "github",
+          "widgetId": "singleLine",
+          "widgetNamespace": "builtin"
+        }
+      ]
+    },
+    {
+      "sys": {
+        "id": "default",
+        "type": "EditorInterface",
+        "space": {
+          "sys": {
+            "id": "7bjk35noegpy",
+            "type": "Link",
+            "linkType": "Space"
+          }
+        },
+        "version": 4,
+        "createdAt": "2022-07-19T01:51:46.265Z",
+        "createdBy": {
+          "sys": {
+            "id": "1BsXoxJHad5nf7rcKtLlC5",
+            "type": "Link",
+            "linkType": "User"
+          }
+        },
+        "updatedAt": "2022-07-19T02:02:37.558Z",
+        "updatedBy": {
+          "sys": {
+            "id": "1BsXoxJHad5nf7rcKtLlC5",
+            "type": "Link",
+            "linkType": "User"
+          }
+        },
+        "contentType": {
+          "sys": {
+            "id": "about",
+            "type": "Link",
+            "linkType": "ContentType"
+          }
+        },
+        "environment": {
+          "sys": {
+            "id": "master",
+            "type": "Link",
+            "linkType": "Environment"
+          }
+        }
+      },
+      "controls": [
+        {
+          "fieldId": "name",
+          "widgetId": "singleLine",
+          "widgetNamespace": "builtin"
+        },
+        {
+          "fieldId": "designation",
+          "widgetId": "singleLine",
+          "widgetNamespace": "builtin"
+        },
+        {
+          "fieldId": "photo",
+          "widgetId": "assetLinkEditor",
+          "widgetNamespace": "builtin"
+        },
+        {
+          "fieldId": "avatarImage",
+          "widgetId": "assetLinkEditor",
+          "widgetNamespace": "builtin"
+        },
+        {
+          "fieldId": "description",
+          "widgetId": "markdown",
+          "widgetNamespace": "builtin"
+        },
+        {
+          "fieldId": "age",
+          "widgetId": "singleLine",
+          "widgetNamespace": "builtin"
+        },
+        {
+          "fieldId": "bannerList",
+          "widgetId": "tagEditor",
+          "widgetNamespace": "builtin"
+        },
+        {
+          "fieldId": "location",
+          "widgetId": "singleLine",
+          "widgetNamespace": "builtin"
+        },
+        {
+          "fieldId": "gmail",
+          "widgetId": "urlEditor",
+          "widgetNamespace": "builtin"
+        },
+        {
+          "fieldId": "facebook",
+          "widgetId": "urlEditor",
+          "widgetNamespace": "builtin"
+        },
+        {
+          "fieldId": "twitter",
+          "widgetId": "urlEditor",
+          "widgetNamespace": "builtin"
+        },
+        {
+          "fieldId": "instagram",
+          "widgetId": "urlEditor",
+          "widgetNamespace": "builtin"
+        },
+        {
+          "fieldId": "linkedin",
+          "widgetId": "urlEditor",
+          "widgetNamespace": "builtin"
+        },
+        {
+          "fieldId": "github",
+          "widgetId": "urlEditor",
           "widgetNamespace": "builtin"
         }
       ]
@@ -1957,7 +2005,7 @@
         "id": "1vaZauN3G1LbRsJutH3AU9",
         "type": "Entry",
         "createdAt": "2022-07-16T16:33:27.232Z",
-        "updatedAt": "2022-07-16T16:33:34.057Z",
+        "updatedAt": "2022-07-19T15:59:19.743Z",
         "environment": {
           "sys": {
             "id": "master",
@@ -1965,8 +2013,8 @@
             "linkType": "Environment"
           }
         },
-        "publishedVersion": 1,
-        "publishedAt": "2022-07-16T16:33:34.057Z",
+        "publishedVersion": 9,
+        "publishedAt": "2022-07-19T15:59:19.743Z",
         "firstPublishedAt": "2022-07-16T16:33:34.057Z",
         "createdBy": {
           "sys": {
@@ -1982,8 +2030,8 @@
             "id": "1BsXoxJHad5nf7rcKtLlC5"
           }
         },
-        "publishedCounter": 1,
-        "version": 2,
+        "publishedCounter": 4,
+        "version": 10,
         "publishedBy": {
           "sys": {
             "type": "Link",
@@ -2001,10 +2049,19 @@
       },
       "fields": {
         "siteName": {
-          "zh-Hant-TW": "Rohit Gupta"
+          "zh-Hant-TW": "Open Star Ter Village"
+        },
+        "heroImage": {
+          "zh-Hant-TW": {
+            "sys": {
+              "type": "Link",
+              "linkType": "Asset",
+              "id": "4CiYdN0kitSfSWWOmpEe92"
+            }
+          }
         },
         "siteUrl": {
-          "zh-Hant-TW": "https://rg-portfolio.netlify.com"
+          "zh-Hant-TW": "https://openstartervillage.netlify.com"
         },
         "logo": {
           "zh-Hant-TW": {
@@ -2014,12 +2071,6 @@
               "id": "7yHuAa09NVOcZ25POk7cbM"
             }
           }
-        },
-        "twitterHandle": {
-          "zh-Hant-TW": "@rohitguptab"
-        },
-        "siteDescription": {
-          "zh-Hant-TW": "Personal Site"
         },
         "menus": {
           "zh-Hant-TW": [
@@ -2031,6 +2082,12 @@
             "Work",
             "Testimonials"
           ]
+        },
+        "twitterHandle": {
+          "zh-Hant-TW": "@rohitguptab"
+        },
+        "siteDescription": {
+          "zh-Hant-TW": "Personal Site"
         }
       }
     },
@@ -3056,10 +3113,10 @@
             "id": "7bjk35noegpy"
           }
         },
-        "id": "6caZg1KgLxQN4VE2QOJbCk",
+        "id": "5D2Lip2SmkTfoiH7VXEt7Z",
         "type": "Entry",
-        "createdAt": "2022-07-16T16:33:29.236Z",
-        "updatedAt": "2022-07-16T16:33:42.885Z",
+        "createdAt": "2022-07-19T01:54:37.611Z",
+        "updatedAt": "2022-07-19T02:06:29.620Z",
         "environment": {
           "sys": {
             "id": "master",
@@ -3067,9 +3124,9 @@
             "linkType": "Environment"
           }
         },
-        "publishedVersion": 1,
-        "publishedAt": "2022-07-16T16:33:42.885Z",
-        "firstPublishedAt": "2022-07-16T16:33:42.885Z",
+        "publishedVersion": 5,
+        "publishedAt": "2022-07-19T02:06:29.620Z",
+        "firstPublishedAt": "2022-07-19T02:06:29.620Z",
         "createdBy": {
           "sys": {
             "type": "Link",
@@ -3085,7 +3142,7 @@
           }
         },
         "publishedCounter": 1,
-        "version": 2,
+        "version": 6,
         "publishedBy": {
           "sys": {
             "type": "Link",
@@ -3097,141 +3154,16 @@
           "sys": {
             "type": "Link",
             "linkType": "ContentType",
-            "id": "aboutMe"
+            "id": "about"
           }
         }
       },
       "fields": {
         "name": {
-          "zh-Hant-TW": "Rohit Gupta"
+          "zh-Hant-TW": "蛙太"
         },
         "designation": {
-          "zh-Hant-TW": "Front-end Developer"
-        },
-        "photo": {
-          "zh-Hant-TW": {
-            "sys": {
-              "type": "Link",
-              "linkType": "Asset",
-              "id": "5053xqiD6rGY5Z3xDASnAo"
-            }
-          }
-        },
-        "avatarImage": {
-          "zh-Hant-TW": {
-            "sys": {
-              "type": "Link",
-              "linkType": "Asset",
-              "id": "4yXZnfglqynUp9M1BwYzGy"
-            }
-          }
-        },
-        "description": {
-          "zh-Hant-TW": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
-        },
-        "age": {
-          "zh-Hant-TW": "24"
-        },
-        "bannerImage": {
-          "zh-Hant-TW": {
-            "sys": {
-              "type": "Link",
-              "linkType": "Asset",
-              "id": "3jZ2ne8tOyoN7s3Yem2Hqm"
-            }
-          }
-        },
-        "bannerList": {
-          "zh-Hant-TW": [
-            "Designer",
-            "Developer",
-            "Gamer"
-          ]
-        },
-        "location": {
-          "zh-Hant-TW": "Gujarat, India"
-        },
-        "gmail": {
-          "zh-Hant-TW": "#"
-        },
-        "facebook": {
-          "zh-Hant-TW": "#"
-        },
-        "twitter": {
-          "zh-Hant-TW": "#"
-        },
-        "instagram": {
-          "zh-Hant-TW": "#"
-        },
-        "linkedin": {
-          "zh-Hant-TW": "#"
-        },
-        "github": {
-          "zh-Hant-TW": "#"
-        }
-      }
-    },
-    {
-      "metadata": {
-        "tags": [
-        ]
-      },
-      "sys": {
-        "space": {
-          "sys": {
-            "type": "Link",
-            "linkType": "Space",
-            "id": "7bjk35noegpy"
-          }
-        },
-        "id": "4kpqg6LCYVceyH9WNtmTPK",
-        "type": "Entry",
-        "createdAt": "2022-07-16T17:38:28.115Z",
-        "updatedAt": "2022-07-17T18:05:15.519Z",
-        "environment": {
-          "sys": {
-            "id": "master",
-            "type": "Link",
-            "linkType": "Environment"
-          }
-        },
-        "publishedVersion": 10,
-        "publishedAt": "2022-07-17T18:05:04.886Z",
-        "firstPublishedAt": "2022-07-16T17:43:33.953Z",
-        "createdBy": {
-          "sys": {
-            "type": "Link",
-            "linkType": "User",
-            "id": "1BsXoxJHad5nf7rcKtLlC5"
-          }
-        },
-        "updatedBy": {
-          "sys": {
-            "type": "Link",
-            "linkType": "User",
-            "id": "1BsXoxJHad5nf7rcKtLlC5"
-          }
-        },
-        "publishedCounter": 2,
-        "version": 12,
-        "publishedBy": {
-          "sys": {
-            "type": "Link",
-            "linkType": "User",
-            "id": "1BsXoxJHad5nf7rcKtLlC5"
-          }
-        },
-        "contentType": {
-          "sys": {
-            "type": "Link",
-            "linkType": "ContentType",
-            "id": "aboutMe"
-          }
-        }
-      },
-      "fields": {
-        "name": {
-          "zh-Hant-TW": "開源星手村"
+          "zh-Hant-TW": "公關"
         },
         "photo": {
           "zh-Hant-TW": {
@@ -3239,15 +3171,6 @@
               "type": "Link",
               "linkType": "Asset",
               "id": "4cjh4Vc9TO8zFouxuSCff0"
-            }
-          }
-        },
-        "bannerImage": {
-          "zh-Hant-TW": {
-            "sys": {
-              "type": "Link",
-              "linkType": "Asset",
-              "id": "4Lvl0PMYqYj3thmGoubx6T"
             }
           }
         }
@@ -4964,6 +4887,80 @@
           }
         }
       }
+    },
+    {
+      "metadata": {
+        "tags": [
+        ]
+      },
+      "sys": {
+        "space": {
+          "sys": {
+            "type": "Link",
+            "linkType": "Space",
+            "id": "7bjk35noegpy"
+          }
+        },
+        "id": "4CiYdN0kitSfSWWOmpEe92",
+        "type": "Asset",
+        "createdAt": "2022-07-19T15:56:51.483Z",
+        "updatedAt": "2022-07-19T15:59:06.760Z",
+        "environment": {
+          "sys": {
+            "id": "master",
+            "type": "Link",
+            "linkType": "Environment"
+          }
+        },
+        "publishedVersion": 6,
+        "publishedAt": "2022-07-19T15:59:06.760Z",
+        "firstPublishedAt": "2022-07-19T15:59:06.760Z",
+        "createdBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "1BsXoxJHad5nf7rcKtLlC5"
+          }
+        },
+        "updatedBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "1BsXoxJHad5nf7rcKtLlC5"
+          }
+        },
+        "publishedCounter": 1,
+        "version": 7,
+        "publishedBy": {
+          "sys": {
+            "type": "Link",
+            "linkType": "User",
+            "id": "1BsXoxJHad5nf7rcKtLlC5"
+          }
+        }
+      },
+      "fields": {
+        "title": {
+          "zh-Hant-TW": "主視覺-無標題"
+        },
+        "description": {
+          "zh-Hant-TW": ""
+        },
+        "file": {
+          "zh-Hant-TW": {
+            "url": "//images.ctfassets.net/7bjk35noegpy/4CiYdN0kitSfSWWOmpEe92/19b71b033fce80f8b3416ee7217446a4/IMG_5375.JPG",
+            "details": {
+              "size": 3434706,
+              "image": {
+                "width": 4961,
+                "height": 3508
+              }
+            },
+            "fileName": "IMG_5375.JPG",
+            "contentType": "image/jpeg"
+          }
+        }
+      }
     }
   ],
   "locales": [
@@ -5061,7 +5058,7 @@
   "webhooks": [
     {
       "name": "Netlify - Deploy a site",
-      "url": "https://api.netlify.com/build_hooks/5e4cb921f6529c16de2419c4",
+      "url": "https://api.netlify.com/build_hooks/62d4e4944624d465b215418e?trigger_branch=homepage",
       "httpBasicUsername": null,
       "topics": [
         "Entry.publish",
@@ -5085,8 +5082,8 @@
       "active": true,
       "sys": {
         "type": "WebhookDefinition",
-        "id": "0rDzRMk7qqJVfuU08sqQFx",
-        "version": 0,
+        "id": "7EgjJtUp7SRNFcfQatdfbr",
+        "version": 1,
         "space": {
           "sys": {
             "type": "Link",
@@ -5101,7 +5098,7 @@
             "id": "1BsXoxJHad5nf7rcKtLlC5"
           }
         },
-        "createdAt": "2022-07-16T16:33:43Z",
+        "createdAt": "2022-07-18T04:42:41Z",
         "updatedBy": {
           "sys": {
             "type": "Link",
@@ -5109,7 +5106,7 @@
             "id": "1BsXoxJHad5nf7rcKtLlC5"
           }
         },
-        "updatedAt": "2022-07-16T16:33:43Z"
+        "updatedAt": "2022-07-18T04:46:47Z"
       },
       "headers": [
       ]
