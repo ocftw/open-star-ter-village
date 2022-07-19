@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import Img from "gatsby-image";
+import { GatsbyImage, getImage } from "gatsby-plugin-image";
 import { graphql } from "gatsby";
 
 import Layout from "../components/layout";
@@ -42,8 +42,8 @@ export default class PhotosPage extends Component {
                         });
                       }}
                     >
-                      <Img
-                        fluid={item.fluid}
+                      <GatsbyImage
+                        image={getImage(item.gatsbyImageData)}
                         objectFit="cover"
                         objectPosition="50% 50%"
                       />
@@ -89,20 +89,9 @@ export default class PhotosPage extends Component {
 }
 export const pageQuery = graphql`
   query PhotosPageQuery {
-    contentfulPhotos {
+    contentfulPhotos(node_locale: { eq: "zh-Hant-TW" }) {
       photos {
-        file {
-          url
-        }
-        fluid(maxWidth: 600) {
-          base64
-          aspectRatio
-          src
-          srcSet
-          srcWebp
-          srcSetWebp
-          sizes
-        }
+        gatsbyImageData(width: 600, aspectRatio: 1.78)
       }
     }
   }

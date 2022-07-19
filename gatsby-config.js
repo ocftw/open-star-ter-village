@@ -13,6 +13,7 @@ module.exports = {
     author: `@ocftw`
   },
   plugins: [
+    `gatsby-plugin-postcss`,
     `gatsby-plugin-react-helmet`,
     {
       resolve: `gatsby-source-filesystem`,
@@ -28,8 +29,9 @@ module.exports = {
         accessToken
       }
     },
-    `gatsby-transformer-sharp`,
     `gatsby-plugin-sharp`,
+    `gatsby-transformer-sharp`,
+    `gatsby-plugin-image`,
     `gatsby-transformer-remark`,
     {
       resolve: `gatsby-plugin-manifest`,

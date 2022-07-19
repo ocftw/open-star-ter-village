@@ -1,31 +1,32 @@
 import React, { Component } from "react";
-import Img from "gatsby-image";
+import { GatsbyImage, getImage } from "gatsby-plugin-image";
 
 export default class Banner extends Component {
   render() {
     const { data } = this.props;
     return (
       <div className="banner">
-        <Img
-          fluid={data.bannerImage.fluid}
-          objectFit="cover"
-          objectPosition="50% 50%"
-        />
+        {
+          data.heroImage &&
+          <GatsbyImage
+            image={getImage(data.heroImage.gatsbyImageData)}
+            objectFit="cover"
+            objectPosition="50% 50%"
+          />
+        }
         <div className="container">
           <div className="banner-details">
             <span>{data.designation}</span>
             <h1>{data.name}</h1>
-            {
-              data.bannerList &&
+            {data.bannerList && (
               <ul className="sub-data">
                 {data.bannerList.map((item, index) => {
                   return <li key={index}>{item}</li>;
                 })}
               </ul>
-            }
+            )}
             <ul className="social">
-              {
-                data.facebook &&
+              {data.facebook && (
                 <li>
                   <a
                     className="fab fa-facebook-f"
@@ -34,9 +35,8 @@ export default class Banner extends Component {
                     rel="noopener noreferrer"
                   ></a>
                 </li>
-              }
-              {
-                data.twitter &&
+              )}
+              {data.twitter && (
                 <li>
                   <a
                     className="fab fa-twitter"
@@ -45,9 +45,8 @@ export default class Banner extends Component {
                     rel="noopener noreferrer"
                   ></a>
                 </li>
-              }
-              {
-                data.instagram &&
+              )}
+              {data.instagram && (
                 <li>
                   <a
                     className="fab fa-instagram"
@@ -56,9 +55,8 @@ export default class Banner extends Component {
                     rel="noopener noreferrer"
                   ></a>
                 </li>
-              }
-              {
-                data.linkedin &&
+              )}
+              {data.linkedin && (
                 <li>
                   <a
                     className="fab fa-linkedin-in"
@@ -67,9 +65,8 @@ export default class Banner extends Component {
                     rel="noopener noreferrer"
                   ></a>
                 </li>
-              }
-              {
-                data.github &&
+              )}
+              {data.github && (
                 <li>
                   <a
                     className="fab fa-github"
@@ -78,7 +75,7 @@ export default class Banner extends Component {
                     rel="noopener noreferrer"
                   ></a>
                 </li>
-              }
+              )}
             </ul>
           </div>
         </div>

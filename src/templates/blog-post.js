@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { graphql } from "gatsby";
-import Img from "gatsby-image";
+import { GatsbyImage, getImage } from "gatsby-plugin-image";
 import moment from "moment";
 import { DiscussionEmbed } from "disqus-react";
 
@@ -42,9 +42,9 @@ export default class blogPost extends Component {
         <div className="site-container blog-post">
           <div className="container">
             {data.featureImage ? (
-              <Img
+              <GatsbyImage
                 className="feature-img"
-                fluid={data.featureImage.fluid}
+                image={data.featureImage.gatsbyImageData}
                 objectFit="cover"
                 objectPosition="50% 50%"
               />
@@ -86,20 +86,12 @@ export default class blogPost extends Component {
 
 export const pageQuery = graphql`
   query SinglePostQuery($slug: String!) {
-    contentfulBlogs(slug: { eq: $slug }) {
+    contentfulBlogs(node_locale: { eq: "zh-Hant-TW" }, slug: { eq: $slug }) {
       id
       title
       slug
       featureImage {
-        fluid(maxWidth: 1500) {
-          base64
-          aspectRatio
-          src
-          srcSet
-          srcWebp
-          srcSetWebp
-          sizes
-        }
+        gatsbyImageData(width: 1500, aspectRatio: 1.78)
       }
       description {
         childMarkdownRemark {
@@ -108,7 +100,7 @@ export const pageQuery = graphql`
       }
       createdAt
     }
-    contentfulSiteInformation {
+    contentfulSiteInformation(node_locale: { eq: "zh-Hant-TW" }) {
       siteUrl
       twitterHandle
     }

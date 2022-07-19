@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import Img from "gatsby-image";
+import { GatsbyImage, getImage } from "gatsby-plugin-image";
 
 export default class work extends Component {
   render() {
@@ -16,8 +16,8 @@ export default class work extends Component {
                 <li key={index} className="item">
                   <div className="inner">
                     <a href={item.node.url}>
-                      <Img
-                        fluid={item.node.image.fluid}
+                      <GatsbyImage
+                        image={getImage(item.node.image)}
                         objectFit="cover"
                         objectPosition="50% 50%"
                       />

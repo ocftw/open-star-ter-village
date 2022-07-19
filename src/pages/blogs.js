@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { graphql } from "gatsby";
-import Img from "gatsby-image";
+import { GatsbyImage, getImage } from "gatsby-plugin-image";
 import { Link } from "gatsby";
 import moment from "moment";
 
@@ -22,9 +22,8 @@ export default class Blogs extends Component {
               <h1 className="line-heading h2">Blogs</h1>
             </div>
             <ul
-              className={`blogs-list ${
-                data.allContentfulBlogs.edges.length < 5 ? "few-blogs" : ""
-              }`}
+              className={`blogs-list ${data.allContentfulBlogs.edges.length < 5 ? "few-blogs" : ""
+                }`}
             >
               {data.allContentfulBlogs.edges.map((item, index) => {
                 return (
@@ -32,8 +31,8 @@ export default class Blogs extends Component {
                     <div className="inner">
                       <Link className="link" to={`/${item.node.slug}`} />
                       {item.node.featureImage ? (
-                        <Img
-                          fluid={item.node.featureImage.fluid}
+                        <GatsbyImage
+                          image={getImage(item.node.featureImage.gatsbyImageData)}
                           objectFit="cover"
                           objectPosition="50% 50%"
                         />
@@ -61,21 +60,13 @@ export default class Blogs extends Component {
 
 export const pageQuery = graphql`
   query BlogsQuery {
-    allContentfulBlogs(sort: {fields: createdAt, order: DESC}) {
+    allContentfulBlogs(filter: { node_locale: { eq: "zh-Hant-TW" } }, sort: { fields: createdAt, order: DESC }) {
       edges {
         node {
           title
           slug
           featureImage {
-            fluid(maxWidth: 1500) {
-              base64
-              aspectRatio
-              src
-              srcSet
-              srcWebp
-              srcSetWebp
-              sizes
-            }
+            gatsbyImageData(width: 1500, aspectRatio: 1.78)
           }
           createdAt
         }

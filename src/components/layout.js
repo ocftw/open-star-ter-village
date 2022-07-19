@@ -17,19 +17,16 @@ const Layout = ({ children, header }) => (
   <StaticQuery
     query={graphql`
       query SiteTitleQuery {
-        contentfulSiteInformation {
+        contentfulSiteInformation(node_locale: { eq: "zh-Hant-TW" }) {
           siteName
           siteDescription
           logo {
-            file {
-              url
-            }
+            gatsbyImageData
           }
           menus
         }
       }
     `}
-    
     render={data => (
       <>
         <Header

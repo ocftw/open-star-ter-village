@@ -8,23 +8,25 @@
     "bootstrap": "^4.4.1",
     "disqus-react": "^1.0.7",
     "dotenv": "^8.2.0",
-    "gatsby": "^2.19.7",
-    "gatsby-image": "^2.2.39",
-    "gatsby-plugin-manifest": "^2.2.39",
-    "gatsby-plugin-offline": "^3.0.32",
-    "gatsby-plugin-react-helmet": "^3.1.21",
-    "gatsby-plugin-sharp": "^2.4.3",
-    "gatsby-source-contentful": "^2.1.86",
-    "gatsby-source-filesystem": "^2.1.46",
-    "gatsby-transformer-remark": "^2.6.52",
-    "gatsby-transformer-sharp": "^2.3.13",
+    "gatsby": "^4.18.1",
+    "gatsby-plugin-image": "^2.18.1",
+    "gatsby-plugin-manifest": "^4.18.1",
+    "gatsby-plugin-offline": "^5.18.1",
+    "gatsby-plugin-postcss": "^5.18.0",
+    "gatsby-plugin-react-helmet": "^5.0.0",
+    "gatsby-plugin-sharp": "^4.18.1",
+    "gatsby-source-contentful": "^7.16.1",
+    "gatsby-source-filesystem": "^4.18.1",
+    "gatsby-transformer-remark": "^5.18.1",
+    "gatsby-transformer-sharp": "^4.18.1",
     "moment": "^2.24.0",
+    "postcss": "^8.4.14",
     "prop-types": "^15.7.2",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
-    "react-helmet": "^5.2.1",
-    "react-share": "^4.0.1",
-    "react-slick": "^0.25.2",
+    "react-helmet": "^6.1.0",
+    "react-share": "^4.4.0",
+    "react-slick": "^0.29.0",
     "smooth-scroll": "^16.1.2"
   },
   "devDependencies": {
@@ -48,7 +50,7 @@
     "url": "https://github.com/ocftw/open-star-ter-village"
   },
   "engines": {
-    "node": ">= 14 < 15"
+    "node": ">= 14"
   },
   "bugs": {
     "url": "https://github.com/ocftw/open-star-ter-village/issues"

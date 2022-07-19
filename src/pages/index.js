@@ -16,21 +16,23 @@ import Photos from "../components/photos";
 const IndexPage = ({ data }) => (
   <Layout header="home">
     <SEO
-      title={data.contentfulAboutMe.designation}
+      title={data.contentfulSiteInformation.name}
       keywords={[`Rohit Gupta`, `Frontend Developer`, `Developer`]}
     />
-    <Banner data={data.contentfulAboutMe}></Banner>
+    <Banner data={data.contentfulSiteInformation}></Banner>
 
     {data.contentfulSiteInformation.menus
       .filter(item => item === "About")
       .map(t => {
-        return <About key="About" data={data.contentfulAboutMe}></About>;
+        return <About key="About" data={data.allContentfulAbout}></About>;
       })}
 
     {data.contentfulSiteInformation.menus
       .filter(item => item === "Service")
       .map(t => {
-        return <Service key="Service" data={data.allContentfulService}></Service>;
+        return (
+          <Service key="Service" data={data.allContentfulService}></Service>
+        );
       })}
 
     {data.contentfulSiteInformation.menus
@@ -49,7 +51,10 @@ const IndexPage = ({ data }) => (
       .filter(item => item === "Testimonials")
       .map(t => {
         return (
-          <Testimonial key="Testimonial" data={data.allContentfulTestimonials}></Testimonial>
+          <Testimonial
+            key="Testimonial"
+            data={data.allContentfulTestimonials}
+          ></Testimonial>
         );
       })}
 
@@ -62,7 +67,9 @@ const IndexPage = ({ data }) => (
     {data.contentfulSiteInformation.menus
       .filter(item => item === "Contact")
       .map(t => {
-        return <Contact key="Contact" data={data.contentfulAboutMe.gmail}></Contact>;
+        return (
+          <Contact key="Contact" data={data.contentfulSiteInformation.siteName}></Contact>
+        );
       })}
   </Layout>
 );
@@ -71,51 +78,27 @@ export default IndexPage;
 
 export const pageQuery = graphql`
   query AboutQuery {
-    contentfulAboutMe {
-      name
-      photo {
-        file {
-          url
-        }
-        fluid {
-          base64
-          aspectRatio
-          src
-          srcSet
-          srcWebp
-          srcSetWebp
-          sizes
-        }
-      }
-      designation
-      age
-      facebook
-      github
-      gmail
-      id
-      instagram
-      linkedin
-      twitter
-      location
-      description {
-        childMarkdownRemark {
-          html
+    allContentfulAbout(filter: { node_locale: { eq: "zh-Hant-TW" } }) {
+      edges {
+        node {
+          name
+          photo {
+            gatsbyImageData
+          }
+          designation
+          # age
+          id
+          # location
+          # description {
+          #   childMarkdownRemark {
+          #     html
+          #   }
+          # }
+          # bannerList
         }
       }
-      bannerImage {
-        fluid(maxWidth: 1500) {
-          base64
-          aspectRatio
-          src
-          srcSet
-          srcWebp
-          srcSetWebp
-          sizes
-        }
-      }
-      bannerList
     }
-    allContentfulService {
+    allContentfulService(filter: { node_locale: { eq: "zh-Hant-TW" } }) {
       edges {
         node {
           title
@@ -127,27 +110,19 @@ export const pageQuery = graphql`
         }
       }
     }
-    allContentfulBlogs(limit: 5, sort: {fields: createdAt, order: DESC}) {
+    allContentfulBlogs(filter: { node_locale: { eq: "zh-Hant-TW" } }, limit: 5, sort: { fields: createdAt, order: DESC }) {
       edges {
         node {
           title
           slug
           featureImage {
-            fluid(maxWidth: 600) {
-              base64
-              aspectRatio
-              src
-              srcSet
-              srcWebp
-              srcSetWebp
-              sizes
-            }
+            gatsbyImageData(width: 600, aspectRatio: 1.78)
           }
           createdAt
         }
       }
     }
-    allContentfulTestimonials {
+    allContentfulTestimonials(filter: { node_locale: { eq: "zh-Hant-TW" } }) {
       edges {
         node {
           name
@@ -158,52 +133,32 @@ export const pageQuery = graphql`
             }
           }
           avatarImage {
-            fluid(maxWidth: 200) {
-              base64
-              aspectRatio
-              src
-              srcSet
-              srcWebp
-              srcSetWebp
-              sizes
-            }
+            gatsbyImageData(width: 200, aspectRatio: 1)
           }
         }
       }
     }
-    allContentfulWorks {
+    allContentfulWorks(filter: { node_locale: { eq: "zh-Hant-TW" } }) {
       edges {
         node {
           siteName
           url
           image {
-            fluid(maxWidth: 600) {
-              base64
-              aspectRatio
-              src
-              srcSet
-              srcWebp
-              srcSetWebp
-              sizes
-            }
+            gatsbyImageData(width: 600, aspectRatio: 1.78)
           }
         }
       }
     }
-    contentfulPhotos {
+    contentfulPhotos(node_locale: { eq: "zh-Hant-TW" }) {
       photos {
-        fluid(maxWidth: 600) {
-          base64
-          aspectRatio
-          src
-          srcSet
-          srcWebp
-          srcSetWebp
-          sizes
-        }
+        gatsbyImageData(width: 600, aspectRatio: 1.78)
       }
     }
-    contentfulSiteInformation {
+    contentfulSiteInformation(node_locale: { eq: "zh-Hant-TW" }) {
+      siteName
+      heroImage {
+        gatsbyImageData(layout: FULL_WIDTH, aspectRatio: 1.78)
+      }
       menus
     }
   }
