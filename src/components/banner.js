@@ -17,7 +17,7 @@ export default class Banner extends Component {
         <div className="container">
           <div className="banner-details">
             <span>{data.designation}</span>
-            <h1>{data.name}</h1>
+            <h1>{data.siteName}</h1>
             {data.bannerList && (
               <ul className="sub-data">
                 {data.bannerList.map((item, index) => {
