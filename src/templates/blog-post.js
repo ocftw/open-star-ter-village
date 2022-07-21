@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import { graphql } from "gatsby";
 import { GatsbyImage, getImage } from "gatsby-plugin-image";
 import moment from "moment";
@@ -8,80 +8,77 @@ import Layout from "../components/layout";
 import SEO from "../components/seo";
 import Share from "../components/share";
 
-export default class blogPost extends Component {
-  render() {
-    const data = this.props.data.contentfulBlogs;
-    const disqusShortname = "RohitGupta";
-    const disqusConfig = {
-      identifier: data.id,
-      title: data.title
-    };
+const BlogPost = ({ data }) => {
+  const blog = data.contentfulBlogs;
+  const disqusShortname = "RohitGupta";
+  const disqusConfig = {
+    identifier: blog.id,
+    title: blog.title
+  };
 
-    const siteurl = this.props.data.contentfulSiteInformation.siteUrl + "/";
-    const twitterhandle = this.props.data.contentfulSiteInformation
-      .twitterHandle;
-    const socialConfigss = {
-      site: {
-        siteMetadata: { siteurl, twitterhandle }
-      },
-      title: data.title,
-      slug: data.slug
-    };
+  const siteurl = data.contentfulSiteInformation.siteUrl + "/";
+  const twitterhandle = data.contentfulSiteInformation.twitterHandle;
+  const socialConfigss = {
+    site: {
+      siteMetadata: { siteurl, twitterhandle }
+    },
+    title: blog.title,
+    slug: blog.slug
+  };
 
-    return (
-      <Layout>
-        <SEO
-          title={data.title}
-          keywords={[
-            `Rohit Gupta`,
-            `Frontend Developer`,
-            `Developer`,
-            `${data.title}`
-          ]}
-        />
-        <div className="site-container blog-post">
-          <div className="container">
-            {data.featureImage ? (
-              <GatsbyImage
-                className="feature-img"
-                image={data.featureImage.gatsbyImageData}
-                objectFit="cover"
-                objectPosition="50% 50%"
-              />
-            ) : (
-              <div className="no-image"></div>
-            )}
+  return (
+    <Layout>
+      <SEO
+        title={blog.title}
+        keywords={[
+          `Rohit Gupta`,
+          `Frontend Developer`,
+          `Developer`,
+          `${blog.title}`
+        ]}
+      />
+      <div className="site-container blog-post">
+        <div className="container">
+          {blog.featureImage ? (
+            <GatsbyImage
+              className="feature-img"
+              image={getImage(blog.featureImage.gatsbyImageData)}
+              objectFit="cover"
+              objectPosition="50% 50%"
+            />
+          ) : (
+            <div className="no-image"></div>
+          )}
 
-            <div className="details">
-              <h1 className="title">{data.title}</h1>
-              <span className="date">
-                <i className="fas fa-calendar-alt"></i>{" "}
-                {moment(data.createdAt).format("LL")}
-              </span>
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: data.description.childMarkdownRemark.html
-                }}
-              />
-            </div>
-            <Share
-              socialConfig={{
-                ...socialConfigss.site.siteMetadata.twitterhandletitle,
-                config: {
-                  url: `${siteurl}${socialConfigss.slug}`,
-                  title: `${socialConfigss.title}`
-                }
+          <div className="details">
+            <h1 className="title">{blog.title}</h1>
+            <span className="date">
+              <i className="fas fa-calendar-alt"></i>{" "}
+              {moment(blog.createdAt).format("LL")}
+            </span>
+            <div
+              dangerouslySetInnerHTML={{
+                __html: blog.description.childMarkdownRemark.html
               }}
             />
-            <DiscussionEmbed
-              shortname={disqusShortname}
-              config={disqusConfig}
-            />
           </div>
+          <Share
+            socialConfig={{
+              ...socialConfigss.site.siteMetadata.twitterhandletitle,
+              config: {
+                url: `${siteurl}${socialConfigss.slug}`,
+                title: `${socialConfigss.title}`
+              }
+            }}
+          />
+          <DiscussionEmbed
+            shortname={disqusShortname}
+            config={disqusConfig}
+          />
         </div>
-      </Layout>
-    );
-  }
+      </div>
+    </Layout>
+  );
 }
 
 export const pageQuery = graphql`
@@ -106,3 +103,5 @@ export const pageQuery = graphql`
     }
   }
 `;
+
+export default BlogPost;

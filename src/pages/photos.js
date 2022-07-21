@@ -72,8 +72,8 @@ export default class PhotosPage extends Component {
                       });
                     }}
                   ></i>
-                  <img
-                    src={data.contentfulPhotos.photos[selectedItem].file.url}
+                  <GatsbyImage
+                    image={getImage(data.contentfulPhotos.photos[selectedItem].gatsbyImageData)}
                     alt="popup-img"
                   />
                 </div>
