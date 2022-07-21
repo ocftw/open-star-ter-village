@@ -74,6 +74,8 @@ export default class PhotosPage extends Component {
                   ></i>
                   <GatsbyImage
                     image={getImage(data.contentfulPhotos.photos[selectedItem].gatsbyImageData)}
+                    objectFit="cover"
+                    objectPosition="50% 50%"
                     alt="popup-img"
                   />
                 </div>
@@ -91,7 +93,7 @@ export const pageQuery = graphql`
   query PhotosPageQuery {
     contentfulPhotos(node_locale: { eq: "zh-Hant-TW" }) {
       photos {
-        gatsbyImageData(width: 600, aspectRatio: 1.78)
+        gatsbyImageData(width: 600)
       }
     }
   }

@@ -157,8 +157,8 @@ pre{margin-bottom:0}
 .rg-popup{position:fixed;top:0;bottom:0;left:0;right:0;z-index:99999;display:flex;align-items:center;justify-content:center}
 .rg-popup .popup-inner{width:900px;position:relative;max-height:90%;max-width:90%;background:#fff;-webkit-animation-name:zoomIn;animation-name:zoomIn;-webkit-animation-duration:0.5s;animation-duration:0.5s;-webkit-animation-fill-mode:both;animation-fill-mode:both}
 .rg-popup .popup-layer{position:fixed;top:0;bottom:0;left:0;right:0;height:100%;width:100%;background:#000000c9;cursor:pointer}
-.rg-popup .popup-inner img{width:100%;height:auto;max-width:100%}
-.rg-popup i.fas{position:absolute;top:10px;right:10px;background:#333333bd;color:#fff;padding:5px 7px;cursor:pointer}
+.rg-popup .popup-inner .gatsby-image-wrapper{width:100%;height:auto;max-width:100%}
+.rg-popup i.fas{position:absolute;top:10px;right:10px;background:#333333bd;color:#fff;padding:5px 7px;cursor:pointer;z-index: 99;}
 @-webkit-keyframes zoomIn{
     0%{opacity:0;-webkit-transform:scale3d(0.3,0.3,0.3);transform:scale3d(0.3,0.3,0.3)}
     50%{opacity:1}
