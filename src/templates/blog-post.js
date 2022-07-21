@@ -2,7 +2,6 @@ import React from "react";
 import { graphql } from "gatsby";
 import { GatsbyImage, getImage } from "gatsby-plugin-image";
 import moment from "moment";
-import { DiscussionEmbed } from "disqus-react";
 
 import Layout from "../components/layout";
 import SEO from "../components/seo";
@@ -10,11 +9,6 @@ import Share from "../components/share";
 
 const BlogPost = ({ data }) => {
   const blog = data.contentfulBlogs;
-  const disqusShortname = "RohitGupta";
-  const disqusConfig = {
-    identifier: blog.id,
-    title: blog.title
-  };
 
   const siteurl = data.contentfulSiteInformation.siteUrl + "/";
   const twitterhandle = data.contentfulSiteInformation.twitterHandle;
@@ -70,10 +64,6 @@ const BlogPost = ({ data }) => {
                 title: `${socialConfigss.title}`
               }
             }}
-          />
-          <DiscussionEmbed
-            shortname={disqusShortname}
-            config={disqusConfig}
           />
         </div>
       </div>

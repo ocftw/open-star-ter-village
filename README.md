@@ -39,7 +39,7 @@ homepage 是以 [RG-Portfolio gatsby starter](https://github.com/Rohitguptab/rg-
 - Photos and Blogs page listing.
 - Different types of sections like About, Service, Blogs, Work, Testimonials, Photos, and contact.
 - All settings manage from contentful for example Header Menu, Homepage sections, blogs, and photos, etc.
-- Social share in blog details pages with comment ( Disqus ).
+- Social share in blog details pages.
 - PWA
 
 ## 🚀 Quick start

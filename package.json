@@ -6,7 +6,6 @@
   "author": "Ben Liu <ben196888@gmail.com>",
   "dependencies": {
     "bootstrap": "^4.4.1",
-    "disqus-react": "^1.0.7",
     "dotenv": "^8.2.0",
     "gatsby": "^4.18.1",
     "gatsby-plugin-image": "^2.18.1",
