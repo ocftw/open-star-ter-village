@@ -21,6 +21,11 @@ homepage 是以 [RG-Portfolio gatsby starter](https://github.com/Rohitguptab/rg-
 
 > contentful對於社群使用者的上限為5人，如果沒有權限請到 Discord 中的村長辦公室或基礎建設部找內容管理員取得權限。
 
+#### 各種有用的連結
+
+- [開源新手村★入村總綱領](https://hackmd.io/1B3eCm8sSbqDTdcMI7o85g)
+- [共用資料夾區](https://drive.google.com/drive/folders/1d2rlxRLQ_iUVhq9-ZO7BGCjTl1ES2zf6)
+
 ### 開發前須知
 
 #### 系統需求
