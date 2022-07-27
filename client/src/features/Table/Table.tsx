@@ -5,7 +5,7 @@ import { Box, Stack } from '@chakra-ui/react';
 import ActiveProject from '../Project/ActiveProject';
 import ActiveJob from '../Job/ActiveJob';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import { tableJobsToggled } from '../ActionBoard/actionBoardSlice';
+import ActionBoardSlice from '../ActionBoard/actionBoardSlice';
 
 type Props = BoardProps<Type.State.Root>;
 
@@ -27,7 +27,7 @@ const Table: React.FC<Props> = (props) => {
       return;
     }
 
-    dispatch(tableJobsToggled({ moveIndex: currentMoveIndex, tableJobsIndex: jobIndex }));
+    dispatch(ActionBoardSlice.actions.tableJobsToggled({ moveIndex: currentMoveIndex, tableJobsIndex: jobIndex }));
   }, [isCurrentPlayer, currentMoveIndex, dispatch])
 
   return (

@@ -3,7 +3,7 @@ import { BoardProps } from 'boardgame.io/react';
 import { OpenStarTerVillageType as Type } from 'packages/game/src/types';
 import { Box, Heading, ButtonGroup, Button } from '@chakra-ui/react'
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { playerTurnInited, moveInited } from './actionBoardSlice';
+import ActionBoardSlice from './actionBoardSlice';
 
 const ActionBoard: React.FC<BoardProps<Type.State.Root>> = (props) => {
   const dispatch = useAppDispatch();
@@ -18,7 +18,7 @@ const ActionBoard: React.FC<BoardProps<Type.State.Root>> = (props) => {
 
   useEffect(() => {
     if (playerID === currentPlayer) {
-      dispatch(playerTurnInited(currentPlayer));
+      dispatch(ActionBoardSlice.actions.playerTurnInited(currentPlayer));
     }
   }, [playerID, currentPlayer, dispatch]);
 
@@ -27,7 +27,7 @@ const ActionBoard: React.FC<BoardProps<Type.State.Root>> = (props) => {
       return;
     }
 
-    dispatch(moveInited({ moveType: 'createProject' }));
+    dispatch(ActionBoardSlice.actions.moveInited({ moveType: 'createProject' }));
   }, [isCreateProjectMoveActive, dispatch]);
 
   return (

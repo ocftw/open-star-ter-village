@@ -66,12 +66,4 @@ export const ActionBoardSlice = createSlice({
   }
 })
 
-export const {
-  playerTurnInited,
-  moveInited,
-  tableProjectToggled,
-  tableJobsToggled,
-  handForcesToggled,
-} = ActionBoardSlice.actions
-
-export default ActionBoardSlice.reducer
+export default ActionBoardSlice
