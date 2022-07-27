@@ -1,9 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit'
-import actionBoardReducer from '../features/ActionBoard/actionBoardSlice';
+import actionBoardSlice from '../features/ActionBoard/actionBoardSlice';
 
 export const store = configureStore({
   reducer: {
-    actionBoard: actionBoardReducer
+    actionBoard: actionBoardSlice.reducer
   },
 })
 
