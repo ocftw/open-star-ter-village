@@ -5,7 +5,6 @@ import { Box, Stack } from '@chakra-ui/react';
 import ActiveProject from '../Project/ActiveProject';
 import ActiveJob from '../Job/ActiveJob';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import { MoveStatus } from '../ActionBoard/ActionBoard.types';
 import { tableJobsToggled } from '../ActionBoard/actionBoardSlice';
 
 type Props = BoardProps<Type.State.Root>;
@@ -16,10 +15,12 @@ const Table: React.FC<Props> = (props) => {
   const activeJobs = props.G.table.activeJobs;
   const isCurrentPlayer = props.playerID === props.ctx.currentPlayer;
   const currentMoveIndex = useAppSelector(state =>
-    state.actionBoard.moves.findIndex(move => move.status === MoveStatus.editing)
+    state.actionBoard.moves.length - 1
   );
   const currentMove = useAppSelector(state =>
-    state.actionBoard.moves.find(move => move.status === MoveStatus.editing)
+    state.actionBoard.moves.length
+      ? state.actionBoard.moves[state.actionBoard.moves.length - 1]
+      : null
   );
   const handleActiveJobClick = useCallback(({ jobIndex }) => {
     if (!isCurrentPlayer) {

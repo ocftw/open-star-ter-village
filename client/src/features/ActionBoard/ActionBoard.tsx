@@ -4,14 +4,17 @@ import { OpenStarTerVillageType as Type } from 'packages/game/src/types';
 import { Box, Heading, ButtonGroup, Button } from '@chakra-ui/react'
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { playerTurnInited, moveInited } from './actionBoardSlice';
-import { MoveStatus } from './ActionBoard.types';
 
 const ActionBoard: React.FC<BoardProps<Type.State.Root>> = (props) => {
   const dispatch = useAppDispatch();
   const playerID = props.playerID;
   const currentPlayer = props.ctx.currentPlayer;
-  const createProjectMove = useAppSelector(state => state.actionBoard.moves.find(move => move.move === 'createProject'));
-  const isCreateProjectMoveActive = createProjectMove?.status === MoveStatus.editing;
+  const currentMove = useAppSelector(state =>
+    state.actionBoard.moves.length
+      ? state.actionBoard.moves[state.actionBoard.moves.length - 1]
+      : null
+  );
+  const isCreateProjectMoveActive = currentMove?.move === 'createProject';
 
   useEffect(() => {
     if (playerID === currentPlayer) {
