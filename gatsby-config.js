@@ -25,6 +25,7 @@ module.exports = {
       options: {
         spaceId: process.env.CONTENTFUL_SPACE_ID || process.env.spaceId,
         accessToken: process.env.CONTENTFUL_ACCESS_TOKEN || process.env.accessToken,
+        host: process.env.CONTENTFUL_HOST,
       }
     },
     `gatsby-plugin-sharp`,
