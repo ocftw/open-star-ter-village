@@ -37,6 +37,28 @@ homepage 是以 [RG-Portfolio gatsby starter](https://github.com/Rohitguptab/rg-
 
 如果沒有node，可以到[這裡](https://nodejs.org/en/)安裝
 
+### 開發建議流程
+
+#### clone 專案
+
+```shell
+git clone -b homepage --single-branch https://github.com/ocftw/open-star-ter-village.git
+cd open-star-ter-village
+```
+
+#### 環境設定
+
+首頁的建制需要`contentful`的 `CONTENTFUL_SPACE_ID` 與 `CONTENTFUL_ACCESS_TOKEN` 設置於環境變數中，也可以在專案根目錄中加入`.env`檔案。我們推薦使用`.env`檔案較為方便也簡單管理。
+
+> 如果使用舊版的程式碼，環境變數`spaceId`與`accessToken`將會由`CONTENTFUL_SPACE_ID`與`CONTENTFUL_ACCESS_TOKEN`取代，在未來版本中`spaceId`與`accessToken`將不會被使用
+
+以下為`.env`檔案的範例：
+
+```.env
+CONTENTFUL_SPACE_ID="xxxxxxxxxx"
+CONTENTFUL_ACCESS_TOKEN="xxxxxxxxxxxXXXXXxxxxXXxxXXXXxxxxXxXXXXxxxxx"
+```
+
 ### Feature
 
 - Blogs listing with each blog post.

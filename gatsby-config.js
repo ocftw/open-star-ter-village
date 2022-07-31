@@ -4,8 +4,6 @@ if (process.env.ENVIRONMENT !== "production") {
   dotenv.config();
 }
 
-const { spaceId, accessToken } = process.env;
-
 module.exports = {
   siteMetadata: {
     title: `Open Star Ter Village`,
@@ -25,8 +23,8 @@ module.exports = {
     {
       resolve: "gatsby-source-contentful",
       options: {
-        spaceId,
-        accessToken
+        spaceId: process.env.CONTENTFUL_SPACE_ID || process.env.spaceId,
+        accessToken: process.env.CONTENTFUL_ACCESS_TOKEN || process.env.accessToken,
       }
     },
     `gatsby-plugin-sharp`,
