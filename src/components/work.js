@@ -6,7 +6,7 @@ const Work = ({ data }) => {
     <div className="work section" id="Work">
       <div className="container">
         <div className="section-head">
-          <h2 className="text-center">Work</h2>
+          <h2 className="text-center">贊助者</h2>
         </div>
         <ul className="work-list">
           {data.edges.map((item, index) => {

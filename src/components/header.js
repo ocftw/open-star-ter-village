@@ -80,7 +80,7 @@ export default class Header extends Component {
                     .map(t => {
                       return (
                         <li key="Work">
-                          <Link to={`/#Work`}>Work</Link>
+                          <Link to={`/#Work`}>贊助者</Link>
                         </li>
                       );
                     })}
