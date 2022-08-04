@@ -37,6 +37,36 @@ homepage 是以 [RG-Portfolio gatsby starter](https://github.com/Rohitguptab/rg-
 
 如果沒有node，可以到[這裡](https://nodejs.org/en/)安裝
 
+### 開發建議流程
+
+#### clone 專案
+
+```shell
+git clone -b homepage --single-branch https://github.com/ocftw/open-star-ter-village.git
+cd open-star-ter-village
+```
+
+#### 環境設定
+
+首頁的建制需要`contentful`的 `CONTENTFUL_SPACE_ID` 與 `CONTENTFUL_ACCESS_TOKEN` 設置於環境變數中，也可以在專案根目錄中加入`.env`檔案。我們推薦使用`.env`檔案較為方便也簡單管理。如何取得Token請參考[Personal Access Tokens](https://www.contentful.com/help/personal-access-tokens/)
+
+> 如果使用舊版的程式碼，環境變數`spaceId`與`accessToken`將會由`CONTENTFUL_SPACE_ID`與`CONTENTFUL_ACCESS_TOKEN`取代，在未來版本中`spaceId`與`accessToken`將不會被使用
+
+以下為`.env`檔案的範例：
+
+```.env
+CONTENTFUL_SPACE_ID="xxxxxxxxxx"
+CONTENTFUL_ACCESS_TOKEN="xxxxxxxxxxxXXXXXxxxxXXxxXXXXxxxxXxXXXXxxxxx"
+```
+
+預覽內容的環境設定
+
+請加入 `CONTENTFUL_HOST` 這個欄位，並設定為 `preview.contentful.com`，如果沒有提供此欄位，預設值為 `cdn.contentful.com`。詳細內容請參考 [Preview API](https://www.contentful.com/developers/docs/references/content-preview-api/) 與 [gatsby-source-contentful plugin](https://www.gatsbyjs.com/plugins/gatsby-source-contentful/)
+
+```.env
+CONTENTFUL_HOST="preview.contentful.com"
+```
+
 ### Feature
 
 - Blogs listing with each blog post.

@@ -11,10 +11,9 @@ const BlogPost = ({ data }) => {
   const blog = data.contentfulBlogs;
 
   const siteurl = data.contentfulSiteInformation.siteUrl + "/";
-  const twitterhandle = data.contentfulSiteInformation.twitterHandle;
   const socialConfigss = {
     site: {
-      siteMetadata: { siteurl, twitterhandle }
+      siteMetadata: { siteurl }
     },
     title: blog.title,
     slug: blog.slug
@@ -58,7 +57,6 @@ const BlogPost = ({ data }) => {
           </div>
           <Share
             socialConfig={{
-              ...socialConfigss.site.siteMetadata.twitterhandletitle,
               config: {
                 url: `${siteurl}${socialConfigss.slug}`,
                 title: `${socialConfigss.title}`
@@ -89,7 +87,6 @@ export const pageQuery = graphql`
     }
     contentfulSiteInformation(node_locale: { eq: "zh-Hant-TW" }) {
       siteUrl
-      twitterHandle
     }
   }
 `;

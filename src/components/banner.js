@@ -14,8 +14,8 @@ const Banner = ({ data }) => {
       }
       <div className="container">
         <div className="banner-details">
-          <span>{data.designation}</span>
           <h1>{data.siteName}</h1>
+          <span>{data.designation}</span>
           {data.bannerList && (
             <ul className="sub-data">
               {data.bannerList.map((item, index) => {
