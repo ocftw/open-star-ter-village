@@ -1,11 +1,11 @@
-const Header = () => (
+const Header = ({ data }) => (
   <header className="site-header">
     <div className="container">
       <div className="header-main">
         <div className="logo">
           <a href="/">
             <img src={`images/logo.png`} alt="logo" />
-            <span>{`開源新手村`}</span>
+            <span>{data.siteName}</span>
           </a>
         </div>
         <div className="responsive-menu">

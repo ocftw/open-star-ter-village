@@ -1,11 +1,11 @@
 import Footer from './footer'
 import Header from './header'
 
-const Base = ({ children }) => (
+const Base = ({ children, data }) => (
   <>
-    <Header />
+    <Header data={data} />
     <main>{children}</main>
-    <Footer />
+    <Footer data={data} />
   </>
 )
 
