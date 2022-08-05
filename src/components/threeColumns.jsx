@@ -1,36 +1,36 @@
-const ThreeColumns = () => (
-  <div className="section" id="game-feature">
+const ThreeColumns = ({ data }) => (
+  <div className="section" id={data.id}>
     <div className="container">
       <div className="section-head">
-        <h2>{`遊戲特色`}</h2>
+        <h2>{data.title}</h2>
       </div>
       <div className="row">
-        <div key={`feature 1`} className="col-md-4 mb-3">
+        <div className="col-md-4 mb-3">
           <div className="section-main">
-            <h3>{`特色一`}</h3>
+            <h3>{data.columns[0][0]}</h3>
             <div
               dangerouslySetInnerHTML={{
-                __html: `特色一`
+                __html: data.columns[0][1]
               }}
             />
           </div>
         </div>
-        <div key={`feature 2`} className="col-md-4 mb-3">
+        <div className="col-md-4 mb-3">
           <div className="section-main">
-            <h3>{`特色二`}</h3>
+            <h3>{data.columns[1][0]}</h3>
             <div
               dangerouslySetInnerHTML={{
-                __html: `特色二`
+                __html: data.columns[1][1]
               }}
             />
           </div>
         </div>
-        <div key={`feature 3`} className="col-md-4 mb-3">
+        <div className="col-md-4 mb-3">
           <div className="section-main">
-            <h3>{`特色三`}</h3>
+            <h3>{data.columns[2][0]}</h3>
             <div
               dangerouslySetInnerHTML={{
-                __html: `特色三`
+                __html: data.columns[2][1]
               }}
             />
           </div>
