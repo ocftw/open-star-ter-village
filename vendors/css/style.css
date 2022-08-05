@@ -37,6 +37,9 @@ body{margin:0;background:#fafafe}
 .site-header .header-main .menu ul li a:hover:after{width:100%;transition:0.5s all}
 .section{padding:50px 0}
 .section:nth-child(even){background:#fff}
+.section-main{text-align:center;box-shadow:3px 3px 8px 2px #0000000a;padding:30px 30px;transition:0.5s all;background:#fff}
+.section:nth-child(even) .section-main{background:#fafafe}
+.section-main:hover{box-shadow:3px 3px 8px 2px #0000002b;transition:0.5s all}
 .image-and-text-details .name{margin-bottom:10px;display:block}
 .image-and-text-details .sub-position{margin-bottom:10px;display:block}
 .image-and-text-details .details{padding:0;list-style:none;border-top:1px solid #000;padding-top:30px;margin-bottom:30px}
@@ -50,9 +53,6 @@ body{margin:0;background:#fafafe}
 .image-and-text-details .socials ul li a:after{content:"";background:#333;position:absolute;top:-100%;left:0;-webkit-transition:0.3s all;transition:0.3s all;height:100%;width:100%}
 .image-and-text-details .socials ul li a:hover:after{top:0}
 .image-and-text-details .socials ul li a:hover{color:#fff}
-.service-main{text-align:center;box-shadow:3px 3px 8px 2px #0000000a;padding:30px 30px;transition:0.5s all;background:#fff}
-.section:nth-child(even) .service-main{background:#fafafe}
-.service-main:hover{box-shadow:3px 3px 8px 2px #0000002b;transition:0.5s all}
 .slick-slider .slick-list div{display:flex;width:100%;text-align:center}
 .slick-slider .slick-arrow{display:none!important}
 .slick-dots{padding:0;text-align:center;position:absolute;bottom:0;left:50%;-webkit-transform:translate(-50%,0);-moz-transform:translate(-50%,0);-ms-transform:translate(-50%,0)}
