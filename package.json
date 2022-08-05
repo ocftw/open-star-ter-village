@@ -6,7 +6,10 @@
   "author": "Ben Liu <ben196888@gmail.com>",
   "keywords": [],
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "build": "node scripts/build.js && cp -r vendors/css dist/",
+    "serve": "npx serve -s dist"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/ocftw/open-star-ter-village"
@@ -16,5 +19,14 @@
   },
   "bugs": {
     "url": "https://github.com/ocftw/open-star-ter-village/issues"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.18.10",
+    "@babel/preset-env": "^7.18.10",
+    "@babel/preset-react": "^7.18.6",
+    "@babel/register": "^7.18.9",
+    "process": "^0.11.10",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   }
 }
