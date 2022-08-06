@@ -38,10 +38,11 @@ exports.buildPage = async function (page, content, options) {
 
 require('./pages.js')
 
-const vendorsFolder = path.resolve(__dirname, '..', 'vendors')
+const assetsFolder = path.resolve(__dirname, '..', 'assets')
 async function copyVendors() {
   try {
-    await fs.cp(vendorsFolder, outputFolder, { recursive: true })
+    await fs.cp(assetsFolder, outputFolder, { recursive: true })
+    console.log('Copy assets folder successful')
   } catch (err) {
     if (err) {
       console.error(err)
