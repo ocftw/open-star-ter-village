@@ -1,6 +1,6 @@
 const Banner = ({ data }) => (
   <div className="banner">
-    <img src={`url-to-hero-image`} />
+    <img src={data.heroImage} />
     <div className="container">
       <div className="banner-details">
         <h1>{data.siteName}</h1>
