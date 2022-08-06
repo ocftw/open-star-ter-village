@@ -54,4 +54,12 @@ npm install
 
 [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/ocftw/open-star-ter-village/tree/homepage)
 
-  <!-- AUTO-GENERATED-CONTENT:END -->
+## Inspired
+
+- [RG-Portfolio gatsby starter](https://github.com/Rohitguptab/rg-portfolio.git)
+- [Creating a static website with ReactJS and renderToStaticMarkup()](https://www.codemzy.com/blog/static-website-react-rendertostaticmarkup)
+- [亂數假文產生器 Chinese Lorem Ipsum](http://www.richyli.com/tool/loremipsum/)
+
+## 特別感謝
+
+@binaryluke
