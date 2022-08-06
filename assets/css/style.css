@@ -28,7 +28,7 @@ body{margin:0;background:#fafafe}
 .social li a:after{content:"";background:#ef5826;position:absolute;top:-100%;left:0;-webkit-transition:0.3s all;transition:0.3s all;height:100%;width:100%}
 .social li a:before{position:relative;z-index:1}
 .social li a:hover:after{top:0}
-.section{padding:50px 0}
+.section{padding:50px 0;scroll-margin-top:40px;}
 .section:nth-child(even){background:#fff}
 .section-main{text-align:center;box-shadow:3px 3px 8px 2px #0000000a;padding:30px 30px;transition:0.5s all;background:#fff}
 .section:nth-child(even) .section-main{background:#fafafe}
