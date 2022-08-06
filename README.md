@@ -9,6 +9,8 @@
 
 homepage 是以 [RG-Portfolio gatsby starter](https://github.com/Rohitguptab/rg-portfolio.git) 為基礎建制，移除了Gatsby並改用純粹的React JS static site generating以降低入門門檻，並移除Contentful CMS部分以減少團隊花費。
 
+模版設計上目前以[首頁 wireframe](https://drive.google.com/file/d/1mHfiHLZPNvAGKtlY788Ojkmap9SXupH-/view?usp=sharing)為開發方向，CSS延續之前的樣板繼續使用 [Bootstrap v4.6.x](https://getbootstrap.com/docs/4.6/getting-started/introduction/), [Font Awesome v5.15.4](https://fontawesome.com/v5/docs)
+
 目前部屬在 Netlify 上，並有[預覽網頁](https://openstartervillage-preview.netlify.app/activity-test-page)與[正式網頁](https://openstartervillage.netlify.app/)
 
 ### 線上展示
