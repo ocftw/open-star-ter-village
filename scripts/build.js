@@ -3,10 +3,10 @@ const path = require('path')
 
 require('@babel/register') // to compile React
 
-const templateFile = path.resolve(__dirname, '..', 'public', 'index.html')
-const outputFolder = path.resolve(__dirname, '..', 'dist')
+const templateFile = path.resolve(__dirname, '..', 'index.html')
+const outputFolder = path.resolve(__dirname, '..', 'public')
 
-// build function writes the static html to a file in the dist directory
+// build function writes the static html to a file in the public directory
 exports.buildPage = async function (page, content, options) {
   const pagename = `${page}.html`
   const outputFile = path.join(outputFolder, pagename)
