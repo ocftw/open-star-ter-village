@@ -4,8 +4,7 @@ const Header = ({ data }) => (
       <div className="header-main">
         <div className="logo">
           <a href="/">
-            <img src={`images/logo.png`} alt="logo" />
-            <span>{data.siteName}</span>
+            <img src={data.logo} alt="logo" />
           </a>
         </div>
         <div className="responsive-menu">

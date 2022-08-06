@@ -7,6 +7,7 @@ import ImageAndText from '../components/imageAndText'
 const data = {
   siteName: `開源星手村`,
   subtitle: ``,
+  logo: `images/logo.png`,
   heroImage: `images/heroimage.jpg`,
   instagram: `https://instagram.com/openstartervillage/`,
   discord: `https://discord.gg/JnTHGnxwYS`,

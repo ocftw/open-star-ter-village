@@ -30,6 +30,7 @@ body{margin:0;background:#fafafe}
 .banner .banner-details .social li a:hover:after{top:0}
 .site-header .header-main{display:flex;justify-content:center;align-items:center}
 .site-header .header-main .logo{width:10%}
+.site-header .header-main .logo img{max-height: 48px;}
 .site-header .header-main .menu{width:90%;display:flex;align-items:center;justify-content:flex-end}
 .site-header .header-main .menu ul{padding:0;display:flex;margin:0;justify-content:flex-end;list-style:none}
 .site-header .header-main .menu ul li{margin:0 10px}
