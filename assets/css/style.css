@@ -22,12 +22,12 @@ body{margin:0;background:#fafafe}
 .banner .banner-details .sub-data li{padding:0 15px;position:relative;font-size:18px;text-shadow:1px 1px 4px #333}
 .banner .banner-details .sub-data li:after{content:"";width:6px;height:6px;display:inline-block;background:#fff;position:absolute;top:50%;margin-top:-3px;right:-3px;border-radius:50%}
 .banner .banner-details .sub-data li:last-child:after{display:none}
-.banner .banner-details .social{display:flex;margin:0;padding:0;list-style:none}
-.banner .banner-details .social li{margin:0 10px}
-.banner .banner-details .social li a{text-decoration:none;width:40px;height:40px;display:flex;justify-content:center;align-items:center;border:2px solid #fff;color:#fff;position:relative;overflow:hidden}
-.banner .banner-details .social li a:after{content:"";background:#ef5826;position:absolute;top:-100%;left:0;-webkit-transition:0.3s all;transition:0.3s all;height:100%;width:100%}
-.banner .banner-details .social li a:before{position:relative;z-index:1}
-.banner .banner-details .social li a:hover:after{top:0}
+.social{display:flex;margin:0;padding:0;list-style:none}
+.social li{margin:0 10px}
+.social li a{text-decoration:none;width:40px;height:40px;display:flex;justify-content:center;align-items:center;border:2px solid #fff;color:#fff;position:relative;overflow:hidden}
+.social li a:after{content:"";background:#ef5826;position:absolute;top:-100%;left:0;-webkit-transition:0.3s all;transition:0.3s all;height:100%;width:100%}
+.social li a:before{position:relative;z-index:1}
+.social li a:hover:after{top:0}
 .site-header .header-main{display:flex;justify-content:center;align-items:center}
 .site-header .header-main .logo{width:10%}
 .site-header .header-main .logo img{max-height: 48px;}
@@ -109,6 +109,7 @@ h2:after,
 .work-list .item{width:33.33%;padding:0 5px;margin-bottom:10px}
 .testimonials .slick-list *{outline:none!important}
 .site-footer{padding:20px;background:#333;text-align:center;color:#fff}
+.site-footer .footer-main{display:flex;flex-direction:column;align-items:center;}
 .slick-list{overflow:hidden}
 .blogs-list .item .inner img{width:100%;height:250px}
 .blogs-list .item:nth-child(1) .inner img,

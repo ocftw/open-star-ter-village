@@ -74,7 +74,7 @@ const gameUseCaseData = {
 }
 
 const Index = () => (
-  <Base data={data}>
+  <Base data={{ ...data, social: socialData }}>
     <Banner data={{ ...data, social: socialData }} />
     <TwoColumns data={projectIntroData} />
     <ImageAndText />
