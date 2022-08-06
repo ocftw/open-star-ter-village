@@ -6,10 +6,10 @@ import { buildPage } from './build'
 import Home from '../src/pages/index'
 
 const pages = [
-  ['index', <Home />, { title: "My Website", description: "Welcome to my website, it's static and splendid!" }]
+  ['index', Home]
 ]
 
 // build the page
-pages.forEach(([page, Component, options]) => {
-  buildPage(page, ReactDOMServer.renderToStaticMarkup(Component), options)
+pages.forEach(([page, Component]) => {
+  buildPage(page, ReactDOMServer.renderToStaticMarkup(React.createElement(Component)), Component.__staticPageOptions)
 })

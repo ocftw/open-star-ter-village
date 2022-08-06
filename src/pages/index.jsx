@@ -79,4 +79,9 @@ const Index = () => (
   </Base>
 )
 
+Index.__staticPageOptions = {
+  title: data.siteName,
+  description: data.subtitle,
+}
+
 export default Index
