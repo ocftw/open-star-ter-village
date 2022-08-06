@@ -9,6 +9,9 @@ const data = {
   subtitle: ``,
   logo: `images/logo.png`,
   heroImage: `images/heroimage.jpg`,
+}
+
+const socialData = {
   instagram: `https://instagram.com/openstartervillage/`,
   discord: `https://discord.gg/JnTHGnxwYS`,
   github: `https://github.com/ocftw/open-star-ter-village`,
@@ -72,7 +75,7 @@ const gameUseCaseData = {
 
 const Index = () => (
   <Base data={data}>
-    <Banner data={data} />
+    <Banner data={{ ...data, social: socialData }} />
     <TwoColumns data={projectIntroData} />
     <ImageAndText />
     <ThreeColumns data={gameFeatureData} />
