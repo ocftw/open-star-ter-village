@@ -31,8 +31,23 @@ exports.buildPage = async function (page, content, options) {
   } catch (err) {
     if (err) {
       console.error(err)
+      throw err
     }
   }
 }
 
 require('./pages.js')
+
+const vendorsFolder = path.resolve(__dirname, '..', 'vendors')
+async function copyVendors() {
+  try {
+    await fs.cp(vendorsFolder, outputFolder, { recursive: true })
+  } catch (err) {
+    if (err) {
+      console.error(err)
+      throw err
+    }
+  }
+}
+
+copyVendors()
