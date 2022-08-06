@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Josefin+Sans:300,400,400i,600,700,700i&display=swap');
 *{font-family:'Josefin Sans',sans-serif}
+html {scroll-behavior: smooth;}
 img{max-width:100%}
 .site-header{background:#333333b8;position:fixed;top:0;left:0;right:0;z-index:999;padding:20px 0}
 .site-header *{color:#fff}
