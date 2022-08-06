@@ -24,6 +24,7 @@ exports.buildPage = async function (page, content, options) {
       .replace('{{description}}', description)
       .replace('{{content}}', content)
 
+    await fs.mkdir(outputFolder, { recursive: true })
     await fs.writeFile(outputFile, outputData)
 
     console.log('Build of ' + pagename + ' successful')
