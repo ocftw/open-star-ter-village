@@ -22,6 +22,12 @@ homepage 是以 [RG-Portfolio gatsby starter](https://github.com/Rohitguptab/rg-
 
 [https://openstartervillage.netlify.app/](https://openstartervillage.netlify.app/)
 
+### 如何參與合作/貢獻
+
+你可以在[試算表中的Story mapping](https://docs.google.com/spreadsheets/d/1QBjG9JozOvP1TOwg33h0Gs6yIdifd1sJ6CJTZZHZr7I/edit?usp=sharing)找到我們目前需要幫忙的內容。
+
+也歡迎加入[discord](https://discord.gg/JnTHGnxwYS)與大家一起討論，你可以在 #村長辦公室 與 #基礎建設部 提出各種見解與參與討論喔！
+
 #### 各種有用的連結
 
 - [開源新手村 ★ 入村總綱領](https://hackmd.io/1B3eCm8sSbqDTdcMI7o85g)
