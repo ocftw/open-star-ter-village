@@ -4,17 +4,22 @@ import TwoColumns from '../components/twoColumns'
 import ThreeColumns from '../components/threeColumns'
 import ImageAndText from '../components/imageAndText'
 
-const data = {
+const siteData = {
   siteName: `開源星手村`,
   subtitle: ``,
   logo: `images/logo.png`,
-  heroImage: `images/heroimage.jpg`,
 }
 
 const socialData = {
   instagram: `https://instagram.com/openstartervillage/`,
   discord: `https://discord.gg/JnTHGnxwYS`,
   github: `https://github.com/ocftw/open-star-ter-village`,
+}
+
+const bannerData = {
+  title: siteData.siteName,
+  subtitle: `副標題`,
+  heroImage: `images/heroimage.jpg`,
 }
 
 const projectIntroData = {
@@ -80,8 +85,8 @@ const navigationList = [
 ]
 
 const Index = () => (
-  <Base data={{ ...data, social: socialData, nav: navigationList }}>
-    <Banner data={{ ...data, social: socialData }} />
+  <Base data={{ ...siteData, social: socialData, nav: navigationList }}>
+    <Banner data={{ ...bannerData, social: socialData }} />
     <TwoColumns data={projectIntroData} />
     <ImageAndText />
     <ThreeColumns data={gameFeatureData} />
@@ -90,8 +95,8 @@ const Index = () => (
 )
 
 Index.__staticPageOptions = {
-  title: data.siteName,
-  description: data.subtitle,
+  title: siteData.siteName,
+  description: siteData.subtitle,
 }
 
 export default Index

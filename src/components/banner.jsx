@@ -5,7 +5,7 @@ const Banner = ({ data }) => (
     <img src={data.heroImage} />
     <div className="container">
       <div className="banner-details">
-        <h1>{data.siteName}</h1>
+        <h1>{data.title}</h1>
         <span>{data.subtitle}</span>
         <ul className="sub-data">
           <li key={`sub-data`}>{`item 1`}</li>
