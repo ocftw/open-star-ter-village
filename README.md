@@ -7,7 +7,7 @@
 - 分支一 `main` 為桌遊網頁版開發主幹，以 heroku 為部屬環境
 - 分支二 `homepage` 為首頁開發主幹，以 netlify 為部屬環境
 
-homepage 是以 [RG-Portfolio gatsby starter](https://github.com/Rohitguptab/rg-portfolio.git) 為基礎建制，移除了Gatsby並改用純粹的React JS static site generating以降低入門門檻，並移除Contentful CMS部分以減少團隊花費。
+homepage 是以 [RG-Portfolio gatsby starter](https://github.com/Rohitguptab/rg-portfolio.git) 為基礎建置，移除了Gatsby並改用純粹的React JS static site generating以降低入門門檻，並移除Contentful CMS部分以減少團隊花費。
 
 模版設計上目前以[首頁 wireframe](https://drive.google.com/file/d/1mHfiHLZPNvAGKtlY788Ojkmap9SXupH-/view?usp=sharing)為開發方向，CSS延續之前的樣板繼續使用 [Bootstrap v4.6.x](https://getbootstrap.com/docs/4.6/getting-started/introduction/), [Font Awesome v5.15.4](https://fontawesome.com/v5/docs)
 
@@ -48,6 +48,28 @@ cd open-star-ter-village
 
 ```shell
 npm install
+```
+
+#### 開發專案
+
+我們以建置靜態網站為主要目的，如果要知道如何建置靜態網站請參考[連結](#建置專案)。
+
+下面的指令提供了即時監看 `index.html`, `src/`, 與 `assets/` 底下的檔案。監聽的內容目前只包括以如下幾種為副檔名的檔案，`.js`, `.jsx`, `.json`, `.css` 與 `.html`
+
+```shell
+npm run dev
+```
+
+與此同時用下面的指令開啟一個本機的網頁伺服器用來測試與瀏覽建置的結果。開啟後，預設的port為3000。<http://localhost:3000>
+
+```shell
+npm run serve
+```
+
+#### 建置專案
+
+```shell
+npm run build
 ```
 
 ## 💫 Deploy
