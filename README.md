@@ -24,7 +24,9 @@ homepage 是以 [RG-Portfolio gatsby starter](https://github.com/Rohitguptab/rg-
 
 ### 如何參與合作/貢獻
 
-你可以在[試算表中的Story mapping](https://docs.google.com/spreadsheets/d/1QBjG9JozOvP1TOwg33h0Gs6yIdifd1sJ6CJTZZHZr7I/edit?usp=sharing)找到我們目前需要幫忙的內容。
+你可以在[共用資料夾的坑區](https://drive.google.com/drive/folders/1JgqEh5gkf9nzqwznLLAo1vtgHWi3o7gw)以及[試算表中的Story mapping](https://docs.google.com/spreadsheets/d/1QBjG9JozOvP1TOwg33h0Gs6yIdifd1sJ6CJTZZHZr7I/edit?usp=sharing)找到我們目前需要幫忙的內容。
+
+> 公用資料夾的坑主要為網頁內容或需要與工程師進一步確認的事項；試算表中的Story mapping主要是以工程師的任務為主
 
 也歡迎加入[discord](https://discord.gg/JnTHGnxwYS)與大家一起討論，你可以在 #村長辦公室 與 #基礎建設部 提出各種見解與參與討論喔！
 
