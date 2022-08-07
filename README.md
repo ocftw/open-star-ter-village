@@ -7,6 +7,9 @@
 - 分支一 `main` 為桌遊網頁版開發主幹，以 heroku 為部屬環境
 - 分支二 `homepage` 為首頁開發主幹，以 netlify 為部屬環境
 
+前往[桌遊網頁版專案](https://github.com/ocftw/open-star-ter-village/tree/main)
+前往[官網首頁專案](https://github.com/ocftw/open-star-ter-village/tree/homepage)
+
 homepage 是以 [RG-Portfolio gatsby starter](https://github.com/Rohitguptab/rg-portfolio.git) 為基礎建置，移除了Gatsby並改用純粹的React JS static site generating以降低入門門檻，並移除Contentful CMS部分以減少團隊花費。
 
 模版設計上目前以[首頁 wireframe](https://drive.google.com/file/d/1mHfiHLZPNvAGKtlY788Ojkmap9SXupH-/view?usp=sharing)為開發方向，CSS延續之前的樣板繼續使用 [Bootstrap v4.6.x](https://getbootstrap.com/docs/4.6/getting-started/introduction/), [Font Awesome v5.15.4](https://fontawesome.com/v5/docs)
