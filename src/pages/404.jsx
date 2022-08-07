@@ -2,6 +2,7 @@ import Base from '../layouts/base';
 
 const siteData = {
   siteName: `開源星手村`,
+  description: ``,
   logo: `images/logo.png`,
 }
 
@@ -28,7 +29,7 @@ const NotFoundPage = () => (
 
 NotFoundPage.__staticPageOptions = {
   title: siteData.siteName,
-  description: siteData.subtitle,
+  description: siteData.description,
 }
 
 export default NotFoundPage

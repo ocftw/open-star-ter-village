@@ -6,7 +6,7 @@ import ImageAndText from '../components/imageAndText'
 
 const siteData = {
   siteName: `開源星手村`,
-  subtitle: ``,
+  description: ``,
   logo: `images/logo.png`,
 }
 
@@ -96,7 +96,7 @@ const Index = () => (
 
 Index.__staticPageOptions = {
   title: siteData.siteName,
-  description: siteData.subtitle,
+  description: siteData.description,
 }
 
 export default Index
