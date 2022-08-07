@@ -73,8 +73,14 @@ const gameUseCaseData = {
   ],
 }
 
+const navigationList = [
+  { link: `#page-top`, text: `回到頁首` },
+  { link: `#project-intro`, text: `專案介紹` },
+  { link: `#game-intro`, text: `遊戲介紹` },
+]
+
 const Index = () => (
-  <Base data={{ ...data, social: socialData }}>
+  <Base data={{ ...data, social: socialData, nav: navigationList }}>
     <Banner data={{ ...data, social: socialData }} />
     <TwoColumns data={projectIntroData} />
     <ImageAndText />

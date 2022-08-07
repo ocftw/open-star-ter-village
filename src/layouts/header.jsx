@@ -12,15 +12,13 @@ const Header = ({ data }) => (
         </button>
         <div className="collapse navbar-collapse justify-content-end align-items-end" id="navbarItems">
           <ul className="navbar-nav">
-            <li className="nav-item">
-              <a className="nav-link" href={`#page-top`}>{`回到頁首`}</a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link" href={`#project-intro`}>{`專案介紹`}</a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link" href={`#game-intro`}>{`遊戲介紹`}</a>
-            </li>
+            {
+              data.nav.map(menuItem => (
+                <li key={`nav-item-${menuItem.text}`} className="nav-item">
+                  <a className="nav-link" href={menuItem.link}>{menuItem.text}</a>
+                </li>
+              ))
+            }
           </ul>
         </div>
       </nav>
