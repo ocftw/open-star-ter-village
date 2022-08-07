@@ -9,7 +9,7 @@
   "scripts": {
     "build": "node scripts/build.js",
     "dev": "nodemon --watch index.html --watch src --watch assets -e html,js,jsx,json,css scripts/build.js",
-    "serve": "npx serve -s public"
+    "serve": "npx serve public"
   },
   "repository": {
     "type": "git",
