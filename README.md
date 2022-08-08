@@ -30,6 +30,28 @@ homepage 是以 [RG-Portfolio gatsby starter](https://github.com/Rohitguptab/rg-
 
 也歡迎加入[discord](https://discord.gg/JnTHGnxwYS)與大家一起討論，你可以在 #村長辦公室 與 #基礎建設部 提出各種見解與參與討論喔！
 
+#### 語法練習
+
+- Markdown
+
+  可以到這兩個網頁知道如何撰寫markdown語法，以及我們的 [markdown playground](https://hackmd.io/2OBWFw_FSiazt4JxoINNlQ?both) 進行練習。
+  - <https://markdown.tw/> （網頁排版不支援手機/小螢幕裝置）
+  - <https://www.casper.tw/development/2019/11/23/ten-mins-learn-markdown/>
+
+- 將Markdown轉為html
+
+  可以直接藉由這兩個網站輸入markdown得到html語法，也可以在 [markdown playground](https://hackmd.io/2OBWFw_FSiazt4JxoINNlQ?both) 找到簡易的對照表。
+  - <https://codebeautify.org/markdown-to-html>
+  - <https://markdowntohtml.com/>
+
+- 增加html的attributes
+
+- 在jsx中使用html
+
+- 在jsx中使用React component
+
+- 在jsx中使用expression
+
 #### 各種有用的連結
 
 - [開源新手村 ★ 入村總綱領](https://hackmd.io/1B3eCm8sSbqDTdcMI7o85g)
