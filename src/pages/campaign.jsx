@@ -97,9 +97,13 @@ const twoColumnsData = {
   ],
 }
 
+const navigationList = [
+  { link: `/`, text: `首頁` },
+  { link: `/campaign`, text: `活動頁` },
+]
 
 const Campaign = () => (
-  <Base data={{ ...siteData, social: socialData, nav: [] }}>
+  <Base data={{ ...siteData, social: socialData, nav: navigationList }}>
     <Banner data={{ ...bannerData, social: {} }} />
     <Section data={sectionOneData} />
     <Section data={sectionTwoData} />
