@@ -3,7 +3,7 @@ const ImageAndText = () => (
     <div className="container">
       <div className="image-and-text-main row">
         <div className="left col-md-5 col-lg-4 mb-3">
-          <img src="image/boardgame.png" alt="boardgame-image" />
+          <img src="images/boardgame.jpg" alt="boardgame" />
         </div>
         <div className="left col-md-7 col-lg-8">
           <div className="image-and-text-details">
