@@ -2,6 +2,16 @@
 
 我們希望能有更多人加入開源社群的行列，因此設計了這款桌上遊戲，希望讓初次接觸開源的人能快速了解開源社群；理解開源專案是如何在社群間協作，與認識開源所帶來的好處等。整個遊戲不論是出版品或是網路版，皆會釋出給每一個人自由使用。
 
+## 專案架構
+
+目前此專案與網頁版共用專案，暫時以不同分支作為不同 pipeline 的切分依據。
+
+- 分支一 `main` 為桌遊網頁版開發主幹，以 heroku 為部屬環境
+- 分支二 `homepage` 為首頁開發主幹，以 netlify 為部屬環境
+
+前往[桌遊網頁版專案](https://github.com/ocftw/open-star-ter-village/tree/main)
+前往[官網首頁專案](https://github.com/ocftw/open-star-ter-village/tree/homepage)
+
 ## 桌遊說明
 
 ### 桌遊目的
