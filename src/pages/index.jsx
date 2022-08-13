@@ -21,6 +21,12 @@ const projectIntroDataColumns = [
   [`why this is the solution`, `我們希望能透過有趣的遊戲引發大眾對開源文化的興趣，並透過好玩的方式更了解開源專案，因此彙集了開源人們實際參與的經驗，並參考海內外實際執行過的專案內容與人力配置方式，讓參與者成為一日開源人。`],
 ]
 
+const gameIntroHighlights = [
+  [`時間`, `60-90分`],
+  [`人數`, `2-4人`],
+  [`類型`, `策略、工人放置`],
+]
+
 const gameFeatureDataColumns = [
   [``, `
       <img src="images/feature_example1.jpg" alt="feature1">
@@ -70,7 +76,14 @@ const Index = () => (
   <Base data={{ ...siteData, social: socialData, nav: navigationList }}>
     <Banner title={siteData.siteName} subtitle={`副標題`} heroImage={`images/heroimage.jpg`} social={socialData} />
     <TwoColumns id={`project-intro`} title={`專案介紹`} columns={projectIntroDataColumns} />
-    <ImageAndText />
+    <ImageAndText
+      id={`game-intro`}
+      title={`基本遊戲介紹`}
+      subtitle={`?????`}
+      image={`images/boardgame.jpg`}
+      content={`tags <br /> and content`}
+      highlights={gameIntroHighlights}
+    />
     <ThreeColumns id={`game-feature`} title={`遊戲特色`} columns={gameFeatureDataColumns} />
     <ThreeColumns id={`game-usecase`} title={`遊戲使用方式`} columns={gameUseCaseDataColumns} />
   </Base>

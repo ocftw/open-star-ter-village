@@ -1,38 +1,26 @@
-const ImageAndText = () => (
-  <div className="section" id={"game-intro"}>
+const ImageAndText = ({ id, image, title, subtitle, content, highlights }) => (
+  <div className="section" id={id}>
     <div className="container">
       <div className="image-and-text-main row">
         <div className="left col-md-5 col-lg-4 mb-3">
-          <img src="images/boardgame.jpg" alt="boardgame" />
+          <img src={image} alt={`${title}-${subtitle}-image`} />
         </div>
         <div className="left col-md-7 col-lg-8">
           <div className="image-and-text-details">
-            <span className="name">{`基本遊戲介紹`}</span>
-            <h2 className="sub-position">{`?????`}</h2>
+            <span className="name">{subtitle}</span>
+            <h2 className="sub-position">{title}</h2>
             <div
               dangerouslySetInnerHTML={{
-                __html: `tags <br /> and content`
+                __html: content
               }}
             />
             <ul className="details">
-              <li>
-                <strong>Full Name</strong>
-                <p>{`full name`}</p>
-              </li>
-              <li>
-                <strong>Age</strong>
-                <p>{`age`} Years</p>
-              </li>
-              <li>
-                <strong>Location</strong>
-                <p>{`what location`}</p>
-              </li>
-              <li>
-                <strong>Email</strong>
-                <p>
-                  <a href={`mailto:${`mail`}`}>{`mail`}</a>
-                </p>
-              </li>
+              {highlights?.map(highlight => (
+                <li key={`highlight-${highlight[0]}`}>
+                  <strong>{highlight[0]}</strong>
+                  <p dangerouslySetInnerHTML={{ __html: highlight[1] }} />
+                </li>
+              ))}
             </ul>
           </div>
         </div>
