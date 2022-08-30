@@ -13,7 +13,6 @@ Open Star Ter Village - Web App is a single page application project for playing
 
 ```shell
 git clone git@github.com:ocftw/open-star-ter-village.git open-star-ter-village
-cd open-star-ter-village/webapp
 ```
 
 > Note: OpenStarTerVillage requires node >= 12.0.0
