@@ -6,7 +6,7 @@ import ImageAndText from '../components/imageAndText'
 
 const siteData = {
   siteName: `開源星手村`,
-  description: ``,
+  description: `體驗如何參與改變世界的專案`,
   logo: `images/logo.png`,
 }
 
