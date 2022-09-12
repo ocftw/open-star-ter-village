@@ -21,12 +21,6 @@ const projectIntroDataColumns = [
   [`我們的方案`, `透過這款「實際體驗專案執行」的桌游，讓更多人了解社群與生態圈的運作方式，遊戲設計中參考現行開源專案與生態圈現況，除了讓遊戲者感受實際「發起/執行專案」的樂趣，也透過完成專案，了解世界變動如何與專案完成度相互影響，體驗「改變世界」的過程。`],
 ]
 
-const gameIntroHighlights = [
-  [`時間`, `60-90分`],
-  [`人數`, `2-4人`],
-  [`類型`, `策略、工人放置`],
-]
-
 const gameFeatureDataColumns = [
   [`世界面臨新的挑戰`, `
       <img src="images/feature_example1.jpg" alt="feature1">
@@ -83,10 +77,17 @@ const Index = () => (
     <ImageAndText
       id={`game-intro`}
       title={`基本遊戲介紹`}
-      subtitle={`?????`}
+      subtitle={''}
       image={`images/boardgame.jpg`}
-      content={`tags <br /> and content`}
-      highlights={gameIntroHighlights}
+      content={`
+        體驗參與開源專案的過程，一起經歷發起專案、參與專案、完成專案並增進社會的開源環境，在互相合作的過程中獲得最多影響力分數的玩家獲勝！
+        <a href="https://openstartervillage.ocf.tw/s/manual">點我看完整遊戲規則書</a>
+      `}
+      highlights={[
+        [`時間`, `60-90分`],
+        [`人數`, `2-4人`],
+        [`類型`, `策略、工人放置`],
+      ]}
     />
     <ThreeColumns id={`game-feature`} title={`遊戲特色`} columns={gameFeatureDataColumns} />
     <ThreeColumns id={`game-usecase`} title={`遊戲使用方式`} columns={gameUseCaseDataColumns} />
