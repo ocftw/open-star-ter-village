@@ -1,6 +1,6 @@
 import Social from './social'
 
-const Banner = ({ heroImage, title, subtitle, social }) => (
+const Banner = ({ heroImage, title, subtitle = '', highlights = [], social }) => (
   <div className="banner">
     <img src={heroImage} />
     <div className="container">
@@ -8,8 +8,11 @@ const Banner = ({ heroImage, title, subtitle, social }) => (
         <h1>{title}</h1>
         <span>{subtitle}</span>
         <ul className="sub-data">
-          <li key={`sub-data`}>{`item 1`}</li>
-          <li key={`sub-data`}>{`item 2`}</li>
+          {
+            highlights.map(highlight => (
+              <li key={`sub-data-${highlight}`}>{highlight}</li>
+            ))
+          }
         </ul>
         <Social data={social} />
       </div>

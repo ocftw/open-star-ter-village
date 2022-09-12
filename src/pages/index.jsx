@@ -17,8 +17,8 @@ const socialData = {
 }
 
 const projectIntroDataColumns = [
-  [`what is the problem`, `開源生態圈內最常遇到的職業是工程師和UIUX相關工作者，有時讓人誤以為工程與軟體相關人士才能貢獻專案，但其實越多不同行業的人加入，就能讓生態圈有機會用不同角度的思考並解決更多面向的問題！`],
-  [`why this is the solution`, `我們希望能透過有趣的遊戲引發大眾對開源文化的興趣，並透過好玩的方式更了解開源專案，因此彙集了開源人們實際參與的經驗，並參考海內外實際執行過的專案內容與人力配置方式，讓參與者成為一日開源人。`],
+  [`我們想解決的問題`, `增加開源人的多樣性，目前多數開源專案與社群仍以科技技術人才為核心，有時造成技術/科技人才才能貢獻專案的刻板印象，其實更多職業的加入，能讓各專案看見更廣的視野，甚至解決更多不同面向問題。`],
+  [`我們的方案`, `透過這款「實際體驗專案執行」的桌游，讓更多人了解社群與生態圈的運作方式，遊戲設計中參考現行開源專案與生態圈現況，除了讓遊戲者感受實際「發起/執行專案」的樂趣，也透過完成專案，了解世界變動如何與專案完成度相互影響，體驗「改變世界」的過程。`],
 ]
 
 const gameIntroHighlights = [
@@ -74,7 +74,13 @@ const navigationList = [
 
 const Index = () => (
   <Base data={{ ...siteData, social: socialData, nav: navigationList }}>
-    <Banner title={siteData.siteName} subtitle={`副標題`} heroImage={`images/heroimage.jpg`} social={socialData} />
+    <Banner
+      title={siteData.siteName}
+      subtitle={`體驗如何參與改變世界的專案`}
+      heroImage={`images/heroimage.jpg`}
+      highlights={[`工人放置`, `模擬真實開源情境`]}
+      social={socialData}
+    />
     <TwoColumns id={`project-intro`} title={`專案介紹`} columns={projectIntroDataColumns} />
     <ImageAndText
       id={`game-intro`}
