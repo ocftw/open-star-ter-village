@@ -3,7 +3,7 @@ import Base from '../layouts/base';
 const siteData = {
   siteName: `開源星手村`,
   description: ``,
-  logo: `images/logo.png`,
+  logo: `/images/logo.png`,
 }
 
 const socialData = {

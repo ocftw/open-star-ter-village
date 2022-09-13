@@ -7,7 +7,7 @@ import ImageAndText from '../components/imageAndText'
 const siteData = {
   siteName: `開源星手村`,
   description: `體驗如何參與改變世界的專案`,
-  logo: `images/logo.png`,
+  logo: `/images/logo.png`,
 }
 
 const socialData = {
@@ -23,17 +23,17 @@ const projectIntroDataColumns = [
 
 const gameFeatureDataColumns = [
   [`世界面臨新的挑戰`, `
-      <img src="images/feature_example1.jpg" alt="feature1">
+      <img src="/images/feature_example1.jpg" alt="feature1">
       <div>
       每個回合玩家們將會面臨世界上正在發生的事件，可能帶來新的問題新的挑戰，也可能帶給玩家在開源路上的幫助！
       </div>`],
   [`開始開源專案`, `
-      <img src="images/feature_example2.jpg" alt="feature2">
+      <img src="/images/feature_example2.jpg" alt="feature2">
       <div>
       面對新的挑戰與問題，你想到解決問題的方法了嗎？那就拿出來與大家一起討論和實作吧！
       </div>`],
   [`尋找志同道合的夥伴`, `
-      <img src="images/feature_example3.jpg" alt="feature3">
+      <img src="/images/feature_example3.jpg" alt="feature3">
       <div>
       工欲善其事，必先找對人！在面對問題的路上有不懂的地方就去找人來幫忙，找專業的人作對的事情才會事半功倍！
       </div>`],
@@ -69,7 +69,7 @@ const Index = () => (
     <Banner
       title={siteData.siteName}
       subtitle={`體驗如何參與改變世界的專案`}
-      heroImage={`images/heroimage.jpg`}
+      heroImage={`/images/heroimage.jpg`}
       highlights={[`工人放置`, `模擬真實開源情境`]}
       social={socialData}
     />
@@ -78,7 +78,7 @@ const Index = () => (
       id={`game-intro`}
       title={`基本遊戲介紹`}
       subtitle={''}
-      image={`images/boardgame.jpg`}
+      image={`/images/boardgame.jpg`}
       content={`
         體驗參與開源專案的過程，一起經歷發起專案、參與專案、完成專案並增進社會的開源環境，在互相合作的過程中獲得最多影響力分數的玩家獲勝！
         <a href="https://openstartervillage.ocf.tw/s/manual">點我看完整遊戲規則書</a>
