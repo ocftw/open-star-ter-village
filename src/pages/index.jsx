@@ -4,12 +4,6 @@ import TwoColumns from '../components/twoColumns'
 import ThreeColumns from '../components/threeColumns'
 import ImageAndText from '../components/imageAndText'
 
-const siteData = {
-  siteName: `開源星手村`,
-  description: `科技怎麼改變世界？玩桌遊、就知道！`,
-  logo: `/images/logo.png`,
-}
-
 const navigationList = [
   { link: `#page-top`, text: `回到頁首` },
   { link: `#project-intro`, text: `專案介紹` },
@@ -18,9 +12,9 @@ const navigationList = [
 ]
 
 const Index = () => (
-  <Base data={{ ...siteData, nav: navigationList }}>
+  <Base nav={navigationList}>
     <Banner
-      title={siteData.siteName}
+      title={`開源星手村`}
       subtitle={`科技怎麼改變世界？玩桌遊、就知道！`}
       heroImage={`/images/heroimage.jpg`}
       highlights={[`工人放置`, `模擬真實開源情境`]}
@@ -126,10 +120,5 @@ const Index = () => (
     />
   </Base>
 )
-
-Index.__staticPageOptions = {
-  title: siteData.siteName,
-  description: siteData.description,
-}
 
 export default Index

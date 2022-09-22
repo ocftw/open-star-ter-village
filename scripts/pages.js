@@ -7,6 +7,7 @@ import Home from '../src/pages/index'
 import RedirectManual from '../src/pages/s/manual'
 import NotFoundPage from '../src/pages/404'
 import Campaign from '../src/pages/campaign'
+import { siteData } from '../src/constants'
 
 const pages = [
   ['index', Home],
@@ -17,5 +18,9 @@ const pages = [
 
 // build the page
 pages.forEach(([page, Component]) => {
-  buildPage(page, ReactDOMServer.renderToStaticMarkup(React.createElement(Component)), Component.__staticPageOptions)
+  const mergedStaticPageOptions = {
+    ...siteData,
+    ...Component.__staticPageOptions,
+  }
+  buildPage(page, ReactDOMServer.renderToStaticMarkup(React.createElement(Component)), mergedStaticPageOptions)
 })

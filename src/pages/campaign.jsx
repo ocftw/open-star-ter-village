@@ -3,12 +3,6 @@ import Banner from '../components/banner';
 import Section from '../components/section';
 import TwoColumns from '../components/twoColumns';
 
-const siteData = {
-  siteName: `開源星手村`,
-  description: ``,
-  logo: `/images/logo.png`,
-}
-
 const bannerData = {
   title: `「開源星手村」工作坊`,
   subtitle: `用桌遊，參與台灣的未來`,
@@ -94,7 +88,7 @@ const navigationList = [
 ]
 
 const Campaign = () => (
-  <Base data={{ ...siteData, nav: navigationList }}>
+  <Base nav={navigationList}>
     <Banner
       title={bannerData.siteName}
       subtitle={bannerData.subtitle}

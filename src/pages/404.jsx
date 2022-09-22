@@ -1,17 +1,11 @@
 import Base from '../layouts/base';
 
-const siteData = {
-  siteName: `開源星手村`,
-  description: `科技怎麼改變世界？玩桌遊、就知道！`,
-  logo: `/images/logo.png`,
-}
-
 const navigationList = [
   { link: `/`, text: `首頁` },
 ]
 
 const NotFoundPage = () => (
-  <Base data={{ ...siteData, nav: navigationList }}>
+  <Base nav={navigationList}>
     <div className="site-container not-found-page">
       <div className="container text-center">
         <h1>NOT FOUND</h1>
@@ -22,8 +16,7 @@ const NotFoundPage = () => (
 );
 
 NotFoundPage.__staticPageOptions = {
-  title: siteData.siteName,
-  description: siteData.description,
+  description: `NOT FOUND`,
 }
 
 export default NotFoundPage
