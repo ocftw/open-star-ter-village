@@ -194,7 +194,7 @@ code{background-color:#333;border-radius:3px;margin-bottom:30px;display:block;pa
     .blogs-list .item .inner .details .title{font-size:20px}
 }
 @media only screen and (max-width:480px){
-    .image-and-text-main .left img{height:400px}
+    /* .image-and-text-main .left img{height:400px} */
 }
 .video-responsive {
     overflow: hidden;

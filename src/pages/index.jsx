@@ -75,7 +75,7 @@ const Index = () => (
       title={`遊戲特色`}
       columns={[
         [`世界面臨新的挑戰`, `
-          <img src="/images/feature_example1.jpg" alt="feature1">
+          <img src="/images/homepage/as_real_as_life.png" alt="as_real_as_life">
           <strong>跟你的人生一樣真實！</strong>
           <div>
           不管是鯊魚咬斷海底電纜直接斷網、莫名肺炎擴散讓人變宅；
@@ -84,14 +84,14 @@ const Index = () => (
           每個回合玩家們將會面臨開源星手村正在發生的事件，可能帶來新的問題、新的挑戰，也可能帶給玩家在開源路上的幫助！
           </div>`],
         [`開始開源專案`, `
-          <img src="/images/feature_example2.jpg" alt="feature2">
+          <img src="/images/homepage/create_new_project.png" alt="create_new_project">
           <strong>解決問題，不只嚷嚷而已！</strong>
           <div>
           小至每天的個人生活、大到保育環境政策制訂，面對小小大大的挑戰與問題，一個人想不到解決辦法、一群人總能搞定！
           藉由開源專案卡設計，從真實存在的開源專案和眾人合作成果，看見科技工具的多元性！
           </div>`],
         [`尋找志同道合的夥伴`, `
-          <img src="/images/feature_example3.jpg" alt="feature3">
+          <img src="/images/homepage/find_mates.png" alt="find_mates">
           <strong>理念一致卻各有所長！</strong>
           <div>
           工欲善其事，必先找對人！打開任何一款科技工具、軟體、網頁，都不可能只有程式碼對吧？
