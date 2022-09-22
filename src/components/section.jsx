@@ -1,15 +1,15 @@
-const Section = ({ data }) => (
-  <div className="section" id={data.id}>
+const Section = ({ id, title, subtitle, content }) => (
+  <div className="section" id={id}>
     <div className="container">
       <div className="section-head">
-        <h2>{data.title}</h2>
+        <h2>{title}</h2>
       </div>
       <div className="">
         <div className="section-main">
-          <h3>{data.subtitle}</h3>
+          <h3>{subtitle}</h3>
           <div
             dangerouslySetInnerHTML={{
-              __html: data.content
+              __html: content
             }}
           />
         </div>
@@ -17,5 +17,12 @@ const Section = ({ data }) => (
     </div>
   </div>
 )
+
+Section.defaultProps = {
+  id: '',
+  title: '',
+  subtitle: '',
+  content: '',
+}
 
 export default Section
