@@ -1,6 +1,6 @@
 const siteData = {
   siteName: `開源星手村`,
-  description: `體驗如何參與改變世界的專案`,
+  description: `科技怎麼改變世界？玩桌遊、就知道！`,
   logo: `/images/logo.png`,
 }
 

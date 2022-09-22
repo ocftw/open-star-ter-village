@@ -2,7 +2,7 @@ import Base from '../layouts/base';
 
 const siteData = {
   siteName: `開源星手村`,
-  description: ``,
+  description: `科技怎麼改變世界？玩桌遊、就知道！`,
   logo: `/images/logo.png`,
 }
 
