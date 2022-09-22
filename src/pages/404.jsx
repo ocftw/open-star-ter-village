@@ -6,18 +6,12 @@ const siteData = {
   logo: `/images/logo.png`,
 }
 
-const socialData = {
-  instagram: `https://instagram.com/openstartervillage/`,
-  discord: `https://discord.gg/JnTHGnxwYS`,
-  github: `https://github.com/ocftw/open-star-ter-village`,
-}
-
 const navigationList = [
   { link: `/`, text: `首頁` },
 ]
 
 const NotFoundPage = () => (
-  <Base data={{ ...siteData, social: socialData, nav: navigationList }}>
+  <Base data={{ ...siteData, nav: navigationList }}>
     <div className="site-container not-found-page">
       <div className="container text-center">
         <h1>NOT FOUND</h1>

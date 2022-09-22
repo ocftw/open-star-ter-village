@@ -1,6 +1,6 @@
 import Social from './social'
 
-const Banner = ({ heroImage, title, subtitle = '', highlights = [], social }) => (
+const Banner = ({ heroImage, title, subtitle = '', highlights = [] }) => (
   <div className="banner">
     <img src={heroImage} />
     <div className="container">
@@ -14,7 +14,7 @@ const Banner = ({ heroImage, title, subtitle = '', highlights = [], social }) =>
             ))
           }
         </ul>
-        <Social data={social} />
+        <Social />
       </div>
     </div>
   </div>

@@ -9,12 +9,6 @@ const siteData = {
   logo: `/images/logo.png`,
 }
 
-const socialData = {
-  instagram: `https://instagram.com/openstartervillage/`,
-  discord: `https://discord.gg/JnTHGnxwYS`,
-  github: `https://github.com/ocftw/open-star-ter-village`,
-}
-
 const bannerData = {
   title: `「開源星手村」工作坊`,
   subtitle: `用桌遊，參與台灣的未來`,
@@ -100,12 +94,11 @@ const navigationList = [
 ]
 
 const Campaign = () => (
-  <Base data={{ ...siteData, social: socialData, nav: navigationList }}>
+  <Base data={{ ...siteData, nav: navigationList }}>
     <Banner
       title={bannerData.siteName}
       subtitle={bannerData.subtitle}
       heroImage={bannerData.heroImage}
-      social={socialData}
     />
     <Section data={sectionOneData} />
     <Section data={sectionTwoData} />

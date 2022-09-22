@@ -1,65 +1,65 @@
-const Social = ({ data }) => (
+const Social = ({ facebook, twitter, instagram, linkedin, discord, github }) => (
   <ul className="social">
-    {data.facebook && (
+    {facebook && (
       <li>
         <a
           className="fab fa-facebook-f"
-          href={data.facebook}
+          href={facebook}
           target="_blank"
           rel="noopener noreferrer"
         >
         </a>
       </li>
     )}
-    {data.twitter && (
+    {twitter && (
       <li>
         <a
           className="fab fa-twitter"
-          href={data.twitter}
+          href={twitter}
           target="_blank"
           rel="noopener noreferrer"
         >
         </a>
       </li>
     )}
-    {data.instagram && (
+    {instagram && (
       <li>
         <a
           className="fab fa-instagram"
-          href={data.instagram}
+          href={instagram}
           target="_blank"
           rel="noopener noreferrer"
         >
         </a>
       </li>
     )}
-    {data.linkedin && (
+    {linkedin && (
       <li>
         <a
           className="fab fa-linkedin-in"
-          href={data.linkedin}
+          href={linkedin}
           target="_blank"
           rel="noopener noreferrer"
         >
         </a>
       </li>
     )}
-    {data.discord && (
+    {discord && (
       <li>
         <a
           className="fab fa-discord"
-          href={data.discord}
+          href={discord}
           target="_blank"
           rel="noopener noreferrer"
         >
         </a>
       </li>
     )}
-    {data.github && (
+    {github && (
       <li>
         <a
           className="fab fa-github"
-          href={data.github}
+          href={github}
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -68,5 +68,11 @@ const Social = ({ data }) => (
     )}
   </ul>
 )
+
+Social.defaultProps = {
+  instagram: `https://instagram.com/openstartervillage/`,
+  discord: `https://discord.gg/JnTHGnxwYS`,
+  github: `https://github.com/ocftw/open-star-ter-village`,
+}
 
 export default Social

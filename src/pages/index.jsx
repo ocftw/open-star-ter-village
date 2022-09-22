@@ -10,12 +10,6 @@ const siteData = {
   logo: `/images/logo.png`,
 }
 
-const socialData = {
-  instagram: `https://instagram.com/openstartervillage/`,
-  discord: `https://discord.gg/JnTHGnxwYS`,
-  github: `https://github.com/ocftw/open-star-ter-village`,
-}
-
 const navigationList = [
   { link: `#page-top`, text: `回到頁首` },
   { link: `#project-intro`, text: `專案介紹` },
@@ -24,13 +18,12 @@ const navigationList = [
 ]
 
 const Index = () => (
-  <Base data={{ ...siteData, social: socialData, nav: navigationList }}>
+  <Base data={{ ...siteData, nav: navigationList }}>
     <Banner
       title={siteData.siteName}
       subtitle={`科技怎麼改變世界？玩桌遊、就知道！`}
       heroImage={`/images/heroimage.jpg`}
       highlights={[`工人放置`, `模擬真實開源情境`]}
-      social={socialData}
     />
     <TwoColumns
       id={`project-intro`}
