@@ -33,6 +33,20 @@ body{margin:0;background:#fafafe}
 .section-main{text-align:center;box-shadow:3px 3px 8px 2px #0000000a;padding:30px 30px;transition:0.5s all;background:#fff}
 .section:nth-child(even) .section-main{background:#fafafe}
 .section-main:hover{box-shadow:3px 3px 8px 2px #0000002b;transition:0.5s all}
+.flex-row {display: flex}
+.flex-col {display: flex; flex-direction: column;}
+.flex-justify-space-between {justify-content: space-between;}
+.flex-justify-center {justify-content: center;}
+.flex-align-center {align-items: center;}
+.flex-align-between {align-items: between;}
+.margin-2-percent {margin: 2%}
+.margin-3-percent {margin: 3%}
+.btn {background: #1EA6B9 0% 0% no-repeat padding-box;border-radius: 10px;text-align: center;letter-spacing: 2.7px;color: #FFFFFF;}
+.section-main .four-items .box{background: #FEFEFE 0% 0% no-repeat padding-box;box-shadow: 3px 0.52px 10px #2B120229;letter-spacing: 1.88px;color: #3D3D3D;width: 15.7%;margin: 2%;padding: 1%;}
+.section-main .four-items .box img{width: 38%;}
+.sub-sub-title {border: 2px solid #1EA6B9;text-align: center;letter-spacing: 2.7px;color: #1EA6B9;height:1.6rem;width: 7rem;}
+.sub-sub-content {margin-left: 1rem;}
+.talker img{max-width: 70%;}
 .image-and-text-details .name{margin-bottom:10px;display:block}
 .image-and-text-details .sub-position{margin-bottom:10px;display:block}
 .image-and-text-details .details{padding:0;list-style:none;border-top:1px solid #000;padding-top:30px;margin-bottom:30px}
@@ -168,6 +182,9 @@ code{background-color:#333;border-radius:3px;margin-bottom:30px;display:block;pa
 .photos-page-list .item img{-webkit-transition:all .3s!important;transition:all .3s!important}
 .photos-item img:hover,
 .photos-page-list .item img:hover{-webkit-transform:scale(1.1)!important;transform:scale(1.1)!important}
+.logos {}
+.logo-title { border-right: 1px solid #FFFFFF; padding-right: 1rem;}
+.logo-image { margin-left: 1rem;}
 @media only screen and (max-width:991px){
     .blogs-list .item{width:50%!important}
     .blogs-list .item .inner img{height:200px!important}
@@ -181,6 +198,9 @@ code{background-color:#333;border-radius:3px;margin-bottom:30px;display:block;pa
     h1,
     .h1{font-size:32px}
     h2{font-size:24px;line-height:30px}
+    .section-main .four-items {flex-wrap: wrap;}
+    .section-main .four-items .box {width: 45%;}
+    .logos {flex-wrap: wrap;}
 }
 @media only screen and (max-width:568px){
     .photos-page-list .item{width:100%}
