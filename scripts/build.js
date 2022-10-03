@@ -18,10 +18,10 @@ exports.buildPage = async function (page, content, options) {
     const templateData = await fs.readFile(templateFile, 'utf-8')
 
     const outputData = templateData
-      .replace('{{lang}}', lang)
+      .replace('{{lang}}', JSON.stringify(lang))
       .replace('{{head}}', head)
       .replace('{{title}}', title)
-      .replace('{{description}}', description)
+      .replace('{{description}}', JSON.stringify(description))
       .replace('{{content}}', content)
 
     await fs.mkdir(path.dirname(outputFile), { recursive: true })
