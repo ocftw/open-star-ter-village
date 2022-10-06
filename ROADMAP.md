@@ -117,6 +117,8 @@ function refillAndEnd(G: G, ctx: ctx): void
 
 #### User Interface / User Experience
 
+![wireframe.png](./wireframe.png)
+
 * [x] Design UI flow scratch
   * references as follows
   * [stone age](https://boardgamearena.com/gamepanel?game=stoneage)
