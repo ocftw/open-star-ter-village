@@ -121,7 +121,7 @@ const Campaign = () => (
               <span class="sub-sub-title">議題工作坊</span>
               <div class="flex flex-col sub-sub-content">
                 <span><strong>10/29</strong>(六)10:00-17:30</span>
-                <span>地點: 市立台北大學</span>
+                <span>地點: 台北市立大學</span>
               </div>
             </div>
           </div>
