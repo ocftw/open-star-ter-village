@@ -1,4 +1,4 @@
-const url = "https://drive.google.com/file/d/15XQnYhV-X86gHjE5gIk_ny2x3C-2MDSf/view?usp=share_link"
+const url = "https://drive.google.com/file/d/1PQQfFv0QSdt3qymEEu5B_NrmKSsn34UI/view?usp=sharing"
 
 const Redirect = () => (
   <>
