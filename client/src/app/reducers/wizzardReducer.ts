@@ -181,6 +181,33 @@ export const isRequiredStepsFulfilled = (state: Page): boolean => {
  *   </Toolbar
  * </>)
  *
+ * const getPagesByActionName = (name) => {
+ *   if (name === 'create-project') {
+ *     return [
+ *       {
+ *         isCancellable: true;
+ *         requiredSteps: {
+ *           'player--hand--project': {
+ *             type: 'player--hand--project',
+ *             limit: 1,
+ *           }
+ *         };
+ *         toggledSteps: [],
+ *       },
+ *       {
+ *         isCancellable: true;
+ *         requiredSteps: {
+ *           'table--active-job': {
+ *             type: 'table--active-job',
+ *             limit: 1,
+ *           }
+ *         };
+ *         toggledSteps: [],
+ *       },
+ *     ]
+ *   }
+ * }
+ *
  *
  * // Table.tsx
  *
