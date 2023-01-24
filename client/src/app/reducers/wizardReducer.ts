@@ -1,6 +1,6 @@
 import { createReducer, createAction } from '@reduxjs/toolkit'
 
-namespace WizzardStep {
+namespace WizardStep {
   namespace Table {
     type ActiveEventType = 'table--event';
     type ActiveProjectType = 'table--active-project';
@@ -25,13 +25,13 @@ namespace WizzardStep {
 }
 
 type Step = {
-  type: WizzardStep.StepType;
+  type: WizardStep.StepType;
   value: any;
   prevValue?: any;
 }
 
 type RequiredStep = {
-  type: WizzardStep.StepType;
+  type: WizardStep.StepType;
   limit?: number; // exactly limit, default is 1
   min?: number; // minimum limit, default is 0
   max?: number; // maximum limit, default is Inf
@@ -39,36 +39,36 @@ type RequiredStep = {
 
 type Page = {
   isCancellable: boolean;
-  requiredSteps: Partial<Record<WizzardStep.StepType, RequiredStep>>;
+  requiredSteps: Partial<Record<WizardStep.StepType, RequiredStep>>;
   toggledSteps: Step[];
 }
 
-type WizzardState = {
+type WizardState = {
   pages: Page[];
   currentPage: number;
 }
 
-const initialState: WizzardState = {
+const initialState: WizardState = {
   pages: [],
   currentPage: -1,
 }
 
-const enum WizzardActionTypes {
-  INIT_WIZZARD = 'INIT_WIZZARD',
-  CLEAR_WIZZARD = 'CLEAR_WIZZARD',
+const enum WizardActionTypes {
+  INIT_WIZARD = 'INIT_WIZARD',
+  CLEAR_WIZARD = 'CLEAR_WIZARD',
   TOGGLE_ON_STEP = 'TOGGLE_ON_STEP',
   TOGGLE_OFF_STEP = 'TOGGLE_OFF_STEP',
   NEXT_PAGE = 'NEXT_PAGE',
   PREV_PAGE = 'PREV_PAGE',
 }
 
-const WizzardActions = {
-  init: createAction<Page[]>(WizzardActionTypes.INIT_WIZZARD),
-  clear: createAction(WizzardActionTypes.CLEAR_WIZZARD),
-  toggleOnStep: createAction<Step>(WizzardActionTypes.TOGGLE_ON_STEP),
-  toggleOffStep: createAction<Step>(WizzardActionTypes.TOGGLE_OFF_STEP),
-  nextPage: createAction(WizzardActionTypes.NEXT_PAGE),
-  prevPage: createAction(WizzardActionTypes.PREV_PAGE),
+const WizardActions = {
+  init: createAction<Page[]>(WizardActionTypes.INIT_WIZARD),
+  clear: createAction(WizardActionTypes.CLEAR_WIZARD),
+  toggleOnStep: createAction<Step>(WizardActionTypes.TOGGLE_ON_STEP),
+  toggleOffStep: createAction<Step>(WizardActionTypes.TOGGLE_OFF_STEP),
+  nextPage: createAction(WizardActionTypes.NEXT_PAGE),
+  prevPage: createAction(WizardActionTypes.PREV_PAGE),
 }
 
 const getRequiredLimit = (required: RequiredStep) => {
@@ -90,17 +90,17 @@ const getRequiredLimit = (required: RequiredStep) => {
   }
 }
 
-export const wizzardReducer = createReducer(initialState, (builder) => {
+export const wizardReducer = createReducer(initialState, (builder) => {
   builder
-    .addCase(WizzardActions.init, (state, action) => {
+    .addCase(WizardActions.init, (state, action) => {
       state.pages = action.payload;
       state.currentPage = 0;
     })
-    .addCase(WizzardActions.clear, () => initialState)
-    .addCase(WizzardActions.toggleOnStep, (state, action) => {
+    .addCase(WizardActions.clear, () => initialState)
+    .addCase(WizardActions.toggleOnStep, (state, action) => {
       state.pages[state.currentPage].toggledSteps.push(action.payload);
     })
-    .addCase(WizzardActions.toggleOffStep, (state, action) => {
+    .addCase(WizardActions.toggleOffStep, (state, action) => {
       const idx = state.pages[state.currentPage].toggledSteps.findIndex((step) =>
         action.payload.type === step.type
           && action.payload.value === step.value
@@ -110,31 +110,31 @@ export const wizzardReducer = createReducer(initialState, (builder) => {
         state.pages[state.currentPage].toggledSteps.splice(idx);
       }
     })
-    .addCase(WizzardActions.nextPage, (state) => {
+    .addCase(WizardActions.nextPage, (state) => {
       state.currentPage ++;
       state.currentPage = Math.min(state.currentPage, state.pages.length);
     })
-    .addCase(WizzardActions.prevPage, (state) => {
+    .addCase(WizardActions.prevPage, (state) => {
       state.currentPage --;
       state.currentPage = Math.max(0, state.currentPage);
     })
 })
 
-// Wizzard Selector
+// Wizard Selector
 
-export const isLegitPage = (state: WizzardState): boolean => state.currentPage >= 0;
+export const isLegitPage = (state: WizardState): boolean => state.currentPage >= 0;
 
-export const isPageCancellable = (state: WizzardState): boolean => isLegitPage(state) && state.pages[state.currentPage].isCancellable;
+export const isPageCancellable = (state: WizardState): boolean => isLegitPage(state) && state.pages[state.currentPage].isCancellable;
 
-export const hasNextPage = (state: WizzardState): boolean => isLegitPage(state) && state.currentPage < state.pages.length;
+export const hasNextPage = (state: WizardState): boolean => isLegitPage(state) && state.currentPage < state.pages.length;
 
-export const hasPrevPage = (state: WizzardState): boolean => state.currentPage > 1;
+export const hasPrevPage = (state: WizardState): boolean => state.currentPage > 1;
 
-export const getCurrentPage = (state: WizzardState): Page => state.pages[state.currentPage];
+export const getCurrentPage = (state: WizardState): Page => state.pages[state.currentPage];
 
 // Page Selector
 
-export const isRequiredStep = (state: Page, stepType: WizzardStep.StepType): boolean => !!state.requiredSteps[stepType];
+export const isRequiredStep = (state: Page, stepType: WizardStep.StepType): boolean => !!state.requiredSteps[stepType];
 
 export const isToggledStep = (state: Page, step: Step): boolean => {
   const idx = state.toggledSteps.findIndex(toggled => step.type === toggled.type && step.value === toggled.value && step.prevValue === toggled.prevValue);
@@ -154,24 +154,24 @@ export const isRequiredStepsFulfilled = (state: Page): boolean => {
 /**
  * // ActionBoard.tsx
  * onCreateProjectActionClick = () => {
- *   dispatch(WizzardActions.init(getPagesByActionName('create-project')));
+ *   dispatch(WizardActions.init(getPagesByActionName('create-project')));
  * }
  *
  * onConfirmBtnClick = () => {
- *   dispatch(WizzardActions.nextPage());
+ *   dispatch(WizardActions.nextPage());
  * }
  *
  * onCancelBtnClick = () => {
- *   dispatch(WizzardActions.prevPage());
+ *   dispatch(WizardActions.prevPage());
  * }
  *
  * onSubmitBtnClick = () => {
- *   dispatch(WizzardActions.clear());
+ *   dispatch(WizardActions.clear());
  * }
  *
- * const showCancelBtn = isPageCancellable(state.wizzard);
- * const showConfirmBtn = hasNextPage(state.wizzard);
- * const showSubmitBtn = !hasNextPage(state.wizzard);
+ * const showCancelBtn = isPageCancellable(state.wizard);
+ * const showConfirmBtn = hasNextPage(state.wizard);
+ * const showSubmitBtn = !hasNextPage(state.wizard);
  *
  * render (<>
  *   <Toolbar>
@@ -182,7 +182,8 @@ export const isRequiredStepsFulfilled = (state: Page): boolean => {
  * </>)
  *
  * const getPagesByActionName = (name) => {
- *   if (name === 'create-project') {
+ *   switch (name) {
+ *     case 'create-project':
  *     return [
  *       {
  *         isCancellable: true;
@@ -204,15 +205,15 @@ export const isRequiredStepsFulfilled = (state: Page): boolean => {
  *         };
  *         toggledSteps: [],
  *       },
- *     ]
+ *     ];
  *   }
  * }
  *
  *
  * // Table.tsx
  *
- * const isActiveProjectSelectable = isRequiredStep(state.wizzard, 'table--active-project');
- * const isActiveJobSelectable = isRequiredStep(state.wizzard, 'table--active-job');
+ * const isActiveProjectSelectable = isRequiredStep(state.wizard, 'table--active-project');
+ * const isActiveJobSelectable = isRequiredStep(state.wizard, 'table--active-job');
  * render(<>
  *   <ActiveProject isSelectable={isActiveProjectSelectable} />
  *   ......
@@ -221,15 +222,15 @@ export const isRequiredStepsFulfilled = (state: Page): boolean => {
  *
  * // ActiveProject.tsx
  * // TBD: alternative seletable state injection
- * const isSelectable = isRequiredStep(state.wizzard, 'table--active-project');
+ * const isSelectable = isRequiredStep(state.wizard, 'table--active-project');
  *
  * const onClick = () => {
  *   const step = { type: 'table-active-project', value: 'some-project-name' };
- *   const isToggled = isToggledStep(getCurrentPage(state.wizzard), step);
+ *   const isToggled = isToggledStep(getCurrentPage(state.wizard), step);
  *   if (isToggled) {
- *     dispatch(WizzardActions.toggleOffStep, step)
+ *     dispatch(WizardActions.toggleOffStep, step)
  *   } else {
- *     dispatch(WizzardActions.toggleOnStep, step)
+ *     dispatch(WizardActions.toggleOnStep, step)
  *   }
  * }
  * render(
