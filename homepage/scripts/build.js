@@ -52,3 +52,18 @@ async function copyVendors() {
 }
 
 copyVendors()
+
+const adminFolder = path.resolve(__dirname, '..', 'admin')
+async function copyAdmin() {
+  try {
+    await fs.cp(adminFolder, path.join(outputFolder, 'admin'), { recursive: true })
+    console.log('Copy admin folder successful')
+  } catch (err) {
+    if (err) {
+      console.error(err)
+      throw err
+    }
+  }
+}
+
+copyAdmin()

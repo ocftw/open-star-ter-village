@@ -8,7 +8,7 @@
   "license": "MIT",
   "scripts": {
     "build": "node scripts/build.js",
-    "dev": "nodemon --watch index.html --watch src --watch assets -e html,js,jsx,json,css scripts/build.js",
+    "dev": "nodemon --watch index.html --watch src --watch assets --watch admin -e html,js,jsx,json,css,yml scripts/build.js",
     "serve": "npx serve public"
   },
   "repository": {
@@ -31,5 +31,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
-  "packageManager": "yarn@3.4.1"
+  "packageManager": "yarn@3.4.1",
+  "dependencies": {
+    "netlify-cms-app": "^2.15.72"
+  }
 }
