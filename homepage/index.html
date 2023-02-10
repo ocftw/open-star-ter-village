@@ -11,6 +11,7 @@
 
     gtag('config', 'G-C556GWLRB7');
   </script>
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
   <title>{{title}}</title>
   <meta charSet="utf-8" />
   <meta name="description" content={{description}} />
@@ -30,6 +31,18 @@
   <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
   <!-- Core theme JS-->
+  <!-- netlify login token to redirect user to admin -->
+  <script>
+    if (window.netlifyIdentity) {
+      window.netlifyIdentity.on("init", user => {
+        if (!user) {
+          window.netlifyIdentity.on("login", () => {
+            document.location.href = "/admin/";
+          });
+        }
+      });
+    }
+  </script>
 </body>
 
 </html>
