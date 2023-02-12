@@ -8,6 +8,13 @@ publish_mode: editorial_workflow
 media_folder: homepage/assets/images/uploads
 pulic_folder: /images/uploads
 
+locale: zh-tw
+
+i18n:
+  structure: multiple_folders
+  locales: [en, zh-tw]
+  default_locale: zh-tw # TODO: change to en before launch
+
 collections: # A list of collections the CMS should be able to edit
   - name: 'posts' # Used in routes, ie.: /admin/collections/:slug/edit
     label: 'Posts' # Used in the UI
@@ -36,8 +43,8 @@ collections: # A list of collections the CMS should be able to edit
       - label: Drafts
         field: draft
     fields: # The fields each document in this collection have
-      - { label: 'Title', name: 'title', widget: 'string', tagname: 'h1' }
-      - { label: 'Draft', name: 'draft', widget: 'boolean', default: false }
+      - { label: 'Title', name: 'title', widget: 'string', tagname: 'h1', i18n: true }
+      - { label: 'Draft', name: 'draft', widget: 'boolean', default: false, i18n: duplicate }
       - {
           label: 'Publish Date',
           name: 'date',
@@ -45,12 +52,14 @@ collections: # A list of collections the CMS should be able to edit
           date_format: 'YYYY-MM-DD',
           time_format: 'HH:mm',
           format: 'YYYY-MM-DD HH:mm',
+          i18n: duplicate
         }
       - label: 'Cover Image'
         name: 'image'
         widget: 'image'
         required: false
         tagname: ''
+        i18n: duplicate
 
       - { label: 'Body', name: 'body', widget: 'markdown', hint: 'Main content goes here.' }
 
