@@ -5,7 +5,8 @@ backend:
 site_url: https://openstartervillage.ocf.tw
 
 publish_mode: editorial_workflow
-media_folder: assets/uploads
+media_folder: homepage/assets/images/uploads
+pulic_folder: /images/uploads
 
 collections: # A list of collections the CMS should be able to edit
   - name: 'posts' # Used in routes, ie.: /admin/collections/:slug/edit
