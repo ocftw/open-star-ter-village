@@ -1,5 +1,6 @@
 backend:
   name: git-gateway
+  branch: feature/add-netlify-cms # TODO: change to main before merge
 
 site_url: https://openstartervillage.ocf.tw
 
