@@ -16,6 +16,26 @@ i18n:
   default_locale: zh-tw # TODO: change to en before launch
 
 collections: # A list of collections the CMS should be able to edit
+  - name: 'cards'
+    label: 'Cards'
+    label_singular: 'Card'
+    description: 'Cards in the boardgame'
+    folder: 'homepage/_cards'
+    create: true
+    i18n: true
+    view_groups:
+      - label: 'Drafts'
+        field: draft
+      - label: 'Type'
+        field: type
+    fields:
+      - { label: 'Image', name: 'image', widget: 'image', required: false, tagname: '', i18n: duplicate }
+      - { label: 'Title', name: 'title', widget: 'string', tagname: '', i18n: true }
+      - { label: 'Description', name: 'description', widget: 'string', i18n: true }
+      - { label: 'Draft', name: 'draft', widget: 'boolean', default: false, i18n: duplicate }
+      - { label: 'Type', name: 'type', widget: 'select', options: ['project', 'job', 'force', 'event'], i18n: duplicate }
+      - { label: 'Content', name: 'body', widget: 'markdown', i18n: true }
+
   - name: 'posts' # Used in routes, ie.: /admin/collections/:slug/edit
     label: 'Posts' # Used in the UI
     label_singular: 'Post' # Used in the UI, ie: "New Post"
