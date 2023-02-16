@@ -220,3 +220,13 @@ function discardForceCards(G: G, ctx: ctx, forceIndices: number[]): void
 // inner function
 function refillForce(): void {}
 ```
+
+## Tech improvement
+
+### dependency upgrade
+
+1. upgrade React 18 + Chakra UI 2
+
+### Merge homepage branch to main branch
+
+Unify the tech stack
