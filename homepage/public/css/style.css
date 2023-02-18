@@ -39,6 +39,7 @@ body{margin:0;background:#fafafe}
 .flex-justify-center {justify-content: center;}
 .flex-align-center {align-items: center;}
 .flex-align-between {align-items: between;}
+.gap {gap: 1rem;}
 .margin-2-percent {margin: 2%}
 .margin-3-percent {margin: 3%}
 .btn {background: #1EA6B9 0% 0% no-repeat padding-box;border-radius: 10px;text-align: center;letter-spacing: 2.7px;color: #FFFFFF;}
