@@ -3,14 +3,14 @@
   "version": "0.0.1",
   "author": "Ben Liu <ben196888@gmail.com>, renovirtony <renovirtony@gmail.com>",
   "private": true,
-  "packageManager": "yarn@3.0.2",
+  "packageManager": "yarn@3.4.1",
   "workspaces": [
     "packages/*",
     "client",
     "server"
   ],
   "engines": {
-    "node": ">=12.0.0 <17"
+    "node": ">=14.0.0 <17"
   },
   "scripts": {
     "dev:webapp": "yarn workspaces foreach -pi run dev",
