@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { siteData } from "../constants"
 
 const Header = ({ logo, nav }) => (
@@ -5,9 +6,9 @@ const Header = ({ logo, nav }) => (
     <div className="container">
       <nav className="navbar navbar-expand-lg">
         <div className="logo navbar-brand">
-          <a href="/">
+          <Link href="/">
             <img src={logo} height="48" alt="logo" />
-          </a>
+          </Link>
         </div>
         <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarItems" aria-controls="navbarItems" aria-expanded="false" aria-label="Toggle navigation">
           <i className="fas fa-bars"></i>
@@ -17,7 +18,7 @@ const Header = ({ logo, nav }) => (
             {
               nav.map(menuItem => (
                 <li key={`nav-item-${menuItem.text}`} className="nav-item">
-                  <a className="nav-link" href={menuItem.link}>{menuItem.text}</a>
+                  <Link className="nav-link" href={menuItem.link}>{menuItem.text}</Link>
                 </li>
               ))
             }
