@@ -1,6 +1,6 @@
 ---
 title: BiangOffice.org
-description: 自由及開放原始碼的辦公軟體
+description: 一套自由及開放原始碼的辦公軟體。
 draft: false
 type: project
 ---
