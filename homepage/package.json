@@ -2,13 +2,14 @@
   "name": "@open-starter-village/homepage",
   "private": true,
   "description": "Open Star Ter Village home page",
-  "version": "0.1.0",
+  "version": "3.0.0",
   "author": "Ben Liu <ben196888@gmail.com>",
   "keywords": [],
   "license": "MIT",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "export": "next export",
     "start": "next start",
     "lint": "next lint"
   },

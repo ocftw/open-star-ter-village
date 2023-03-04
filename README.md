@@ -2,16 +2,6 @@
 
 我們希望能有更多人加入開源社群的行列，因此設計了這款桌上遊戲，希望讓初次接觸開源的人能快速了解開源社群；理解開源專案是如何在社群間協作，與認識開源所帶來的好處等。整個遊戲不論是出版品或是網路版，皆會釋出給每一個人自由使用。
 
-## 專案架構
-
-目前此專案與網頁版共用專案，暫時以不同分支作為不同 pipeline 的切分依據。
-
-- 分支一 `main` 為桌遊網頁版開發主幹，以 heroku 為部屬環境
-- 分支二 `homepage` 為首頁開發主幹，以 netlify 為部屬環境
-
-前往[桌遊網頁版專案](https://github.com/ocftw/open-star-ter-village/tree/main)
-前往[官網首頁專案](https://github.com/ocftw/open-star-ter-village/tree/homepage)
-
 ## 桌遊說明
 
 ### 桌遊目的
@@ -65,13 +55,15 @@
 
 #### 加入我們一起討論
 
-### 程式碼結構一覽
+#### 專案架構
 
-* `packages/`
-  * `game/`
-* `client/`
-* `server/`
-* `google-spreadsheet/` (obsolete)
+| 資料夾 | 說明 |
+| --- | --- |
+| `google-spreadsheet` | 桌遊線上版的prototype - 以google spreadsheet呈現 |
+| `client` | 桌遊網頁版的前端 - 遊戲介面 |
+| `server` | 桌遊網頁版的後端 - 處理遊戲房的分配、同步不同使用者間的狀態與遊戲的處理核心 |
+| `packages/game` | 桌遊網頁版的遊戲邏輯 - 處理遊戲的邏輯與規則 |
+| `homepage` | 專案首頁 |
 
 ## 授權條款
 
@@ -122,13 +114,15 @@ Any participation way is welcome. Coding is not required, just contribute your i
 
 #### Join us in discussions
 
-### Code Base Overview
+#### Project structure
 
-* `packages/`
-  * `game/`
-* `client/`
-* `server/`
-* `google-spreadsheet/` (obsolete)
+| Folder | Description |
+| --- | --- |
+| `google-spreadsheet` | Prototype of online version of the board game - using google spreadsheet |
+| `client` | Frontend of the web version of the board game - user interface |
+| `server` | Backend of the web version of the board game - handle the room allocation, sync the game state between users and the core game logic |
+| `packages/game` | Game logic of the web version of the board game - handle the game logic and rules |
+| `homepage` | Project homepage |
 
 ## License
 
