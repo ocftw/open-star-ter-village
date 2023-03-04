@@ -1,4 +1,5 @@
 import Head from 'next/head'
+import Script from 'next/script'
 import Base from '../layouts/base'
 import Banner from '../components/banner'
 import TwoColumns from '../components/twoColumns'
@@ -18,6 +19,20 @@ const Index = () => (
       <title>{`開源星手村`}</title>
       <meta name="description" content={`科技怎麼改變世界？玩桌遊、就知道！`} />
     </Head>
+    <Script id="netlify-identity-widget" src="https://identity.netlify.com/v1/netlify-identity-widget.js" />
+    <Script id="netlify-login-user" dangerouslySetInnerHTML={{
+      __html: `
+        if (window.netlifyIdentity) {
+          window.netlifyIdentity.on("init", user => {
+            if (!user) {
+              window.netlifyIdentity.on("login", () => {
+                document.location.href = "/admin/";
+              });
+            }
+          });
+        }
+      `,
+    }} />
     <Banner
       title={`開源星手村`}
       subtitle={`科技怎麼改變世界？玩桌遊、就知道！`}
