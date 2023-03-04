@@ -134,6 +134,18 @@ npx serve out
 - [RG-Portfolio gatsby starter](https://github.com/Rohitguptab/rg-portfolio.git)
 - [Creating a static website with ReactJS and renderToStaticMarkup()](https://www.codemzy.com/blog/static-website-react-rendertostaticmarkup)
 - [亂數假文產生器 Chinese Lorem Ipsum](http://www.richyli.com/tool/loremipsum/)
+- [Static Site Generation with React and Webpack](https://sking7.github.io/articles/945674580.html)
+- [Benchmarking esbuild, swc, tsc, and babel for React/JSX projects](https://datastation.multiprocess.io/blog/2021-11-13-benchmarking-esbuild-swc-typescript-babel.html)
+- [Why you should use SWC (and not Babel)](https://blog.logrocket.com/why-you-should-use-swc/)
+- [Migrating to SWC: A brief overview](https://blog.logrocket.com/migrating-swc-webpack-babel-overview/)
+- [Why Next.js switched from Babel to SWC](https://nextjs.org/blog/next-11-1#adopting-rust-based-swc)
+- [Next.js documents](https://nextjs.org/docs/getting-started)
+- [Next.js blogging template for Netlify](https://github.com/wutali/nextjs-netlify-blog-template)
+- [unified](https://github.com/unifiedjs/unified)
+- [remark](https://github.com/remarkjs/remark)
+- [rehype](https://github.com/rehypejs/rehype)
+- [How to build a blog with Next.js](https://dev.to/sagar/building-a-blog-with-next-js-253)
+- [How to Internationalize Sites with Country-Based Redirects](https://www.netlify.com/blog/2021/11/05/how-to-internationalize-sites-with-country-based-redirects/)
 
 ## 特別感謝
 
