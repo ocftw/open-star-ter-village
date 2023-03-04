@@ -2,6 +2,7 @@ import Base from '../layouts/base';
 import Banner from '../components/banner';
 import Section from '../components/section';
 import TwoColumns from '../components/twoColumns';
+import Head from 'next/head';
 
 const navigationList = [
   { link: `/`, text: `首頁` },
@@ -14,6 +15,10 @@ const navigationList = [
 
 const Campaign = () => (
   <Base nav={navigationList}>
+    <Head>
+      <title>{`開源星手村 - 工作坊`}</title>
+      <meta name="description" content={`用桌遊，參與台灣的未來`} />
+    </Head>
     <Banner
       title={`工作坊`}
       subtitle={`用桌遊，參與台灣的未來`}

@@ -1,0 +1,16 @@
+{
+  // Set this to true in monorepos where Next.js app is in a subdir
+  "root": true,
+  "extends": ["next/core-web-vitals"],
+  "overrides": [
+    {
+      // Do not apply ESLint to Next.js config files
+      "files": ["next.config.js"],
+      // This is the default parser of ESLint
+      "parser": "espree",
+      "parserOptions": {
+        "ecmaVersion": 2020
+      }
+    }
+  ]
+}

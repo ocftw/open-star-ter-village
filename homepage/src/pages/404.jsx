@@ -1,3 +1,4 @@
+import Head from 'next/head'
 import Base from '../layouts/base';
 
 const navigationList = [
@@ -6,6 +7,10 @@ const navigationList = [
 
 const NotFoundPage = () => (
   <Base nav={navigationList}>
+    <Head>
+      <title>{`開源星手村 - 找不到網頁`}</title>
+      <meta name="description" content="" />
+    </Head>
     <div className="site-container not-found-page">
       <div className="container text-center">
         <h1>NOT FOUND</h1>
@@ -14,9 +19,5 @@ const NotFoundPage = () => (
     </div>
   </Base>
 );
-
-NotFoundPage.__staticPageOptions = {
-  description: `NOT FOUND`,
-}
 
 export default NotFoundPage

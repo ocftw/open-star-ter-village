@@ -1,3 +1,4 @@
+import Head from 'next/head'
 import Base from '../layouts/base'
 import Banner from '../components/banner'
 import TwoColumns from '../components/twoColumns'
@@ -13,6 +14,10 @@ const navigationList = [
 
 const Index = () => (
   <Base nav={navigationList}>
+    <Head>
+      <title>{`開源星手村`}</title>
+      <meta name="description" content={`科技怎麼改變世界？玩桌遊、就知道！`} />
+    </Head>
     <Banner
       title={`開源星手村`}
       subtitle={`科技怎麼改變世界？玩桌遊、就知道！`}
