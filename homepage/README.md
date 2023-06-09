@@ -88,6 +88,7 @@ cd open-star-ter-village
 #### 下載開發環境所需的packages
 
 ```shell
+cd homepage
 yarn
 ```
 
