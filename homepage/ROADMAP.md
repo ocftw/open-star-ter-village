@@ -8,6 +8,30 @@
 2. Writers are able to add/update/delete project cards and their details in Mandarin
 3. Writers are able to add/update/delete project cards and their details in English
 
+#### Editor flow
+
+```mermaid
+graph LR
+    E[Editor] -->|Decaf CMS UI| ANC[Add new card] --> |Save| G[Git repo]
+```
+
+Finished by Netlify CMS integration.
+
+#### Website genration flow
+
+```mermaid
+graph LR
+    G[Git repo] --> |Read file| P[Card Parser] --> |Generate Props| CP[Card Page]
+```
+
+##### TODO
+
+1. Create Card parser to parse Markdown file to props for Card Page.
+  - team will propose at least two solutions
+  - Discuss and choose one
+2. Design Card Page and scratch wireframe. As a reference, see the original [google site](https://sites.google.com/ocf.tw/openstarter/Game-Cards/)
+3. Create Card Page and reuse most of the Component from the project.
+
 ### Stage 2
 
 1. Writers are able to add/update/delete job cards in Mandarin & English
