@@ -2,6 +2,9 @@ import fs from "fs";
 import { join } from "path";
 import matter from "gray-matter";
 
+import { remark } from "remark";
+import html from "remark-html";
+
 const cardsDirectory = join(process.cwd(), "_cards");
 
 /**
@@ -10,22 +13,27 @@ const cardsDirectory = join(process.cwd(), "_cards");
  */
 function getCardDirectoryPath(lang) {
   // return language folder path
-  return join(process.cwd(), "_cards", lang);
+  return join(cardsDirectory, lang);
 }
 
 export async function fetchCards(lang) {
   const cardsDirectory = getCardDirectoryPath(lang);
   const filesInCards = fs.readdirSync(cardsDirectory);
 
-  const cards = filesInCards.map((filename) => {
+  const cards = filesInCards.map(async (filename) => {
     const fullPath = join(cardsDirectory, filename);
     const file = fs.readFileSync(fullPath, "utf8");
-    const matterData = matter(file);
+    const matterFile = matter(file);
+    const { data, content } = matterFile;
 
-    const { data, content } = matterData;
+    const processedContent = await remark().use(html).process(content);
+    const contentHtml = processedContent.toString();
 
-    return data;
+    return {
+      frontMatter: data,
+      content: contentHtml,
+    };
   });
 
-  return cards;
+  return Promise.all(cards);
 }
