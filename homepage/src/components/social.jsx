@@ -1,4 +1,11 @@
-const Social = ({ facebook, twitter, instagram, linkedin, discord, github }) => (
+const Social = ({
+  facebook,
+  twitter,
+  instagram,
+  linkedin,
+  discord,
+  github,
+}) => (
   <ul className="social">
     {facebook && (
       <li>
@@ -7,8 +14,7 @@ const Social = ({ facebook, twitter, instagram, linkedin, discord, github }) => 
           href={facebook}
           target="_blank"
           rel="noopener noreferrer"
-        >
-        </a>
+        ></a>
       </li>
     )}
     {twitter && (
@@ -18,8 +24,7 @@ const Social = ({ facebook, twitter, instagram, linkedin, discord, github }) => 
           href={twitter}
           target="_blank"
           rel="noopener noreferrer"
-        >
-        </a>
+        ></a>
       </li>
     )}
     {instagram && (
@@ -29,8 +34,7 @@ const Social = ({ facebook, twitter, instagram, linkedin, discord, github }) => 
           href={instagram}
           target="_blank"
           rel="noopener noreferrer"
-        >
-        </a>
+        ></a>
       </li>
     )}
     {linkedin && (
@@ -40,8 +44,7 @@ const Social = ({ facebook, twitter, instagram, linkedin, discord, github }) => 
           href={linkedin}
           target="_blank"
           rel="noopener noreferrer"
-        >
-        </a>
+        ></a>
       </li>
     )}
     {discord && (
@@ -51,8 +54,7 @@ const Social = ({ facebook, twitter, instagram, linkedin, discord, github }) => 
           href={discord}
           target="_blank"
           rel="noopener noreferrer"
-        >
-        </a>
+        ></a>
       </li>
     )}
     {github && (
@@ -62,17 +64,16 @@ const Social = ({ facebook, twitter, instagram, linkedin, discord, github }) => 
           href={github}
           target="_blank"
           rel="noopener noreferrer"
-        >
-        </a>
+        ></a>
       </li>
     )}
   </ul>
-)
+);
 
 Social.defaultProps = {
   instagram: `https://instagram.com/openstartervillage/`,
   discord: `https://discord.gg/JnTHGnxwYS`,
   github: `https://github.com/ocftw/open-star-ter-village`,
-}
+};
 
-export default Social
+export default Social;

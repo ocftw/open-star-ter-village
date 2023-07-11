@@ -1,5 +1,5 @@
-import Footer from './footer'
-import Header from './header'
+import Footer from './footer';
+import Header from './header';
 
 const Base = ({ children, nav }) => (
   <>
@@ -7,6 +7,6 @@ const Base = ({ children, nav }) => (
     <main>{children}</main>
     <Footer />
   </>
-)
+);
 
-export default Base
+export default Base;

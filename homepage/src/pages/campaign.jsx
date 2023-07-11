@@ -11,7 +11,7 @@ const navigationList = [
   { link: `#join-project`, text: `活動理念` },
   { link: `#talkers`, text: `講師介紹` },
   { link: `#upcoming-events`, text: `活動資訊` },
-]
+];
 
 const Campaign = () => (
   <Base nav={navigationList}>
@@ -116,7 +116,7 @@ const Campaign = () => (
           <h3>思想激盪</h3>
           <p>在開源星手村中，由於我們彼此將扮演多種角色，可能是行銷公關，也可能是研發工程師，多方腦力激盪，能在一次次合作裡完成專案，也能讓我們在裡頭找到最適切的位置與方向。</p>
           <a class="btn" href="https://ocftw.kktix.cc/events/osv-taspaa2022" target="_blank">立即免費報名</a>
-          `
+          `,
         ],
         [
           `熱血青年培力探索場`,
@@ -137,15 +137,16 @@ const Campaign = () => (
           <h3>累積實力</h3>
           <p>開源星手村是一個專案體驗桌遊，過程中你將累積許多對專案的了解，以及自身技能的特性。在完成專案後，我們除了能得到成就感外，還可以培養協同合作的實力，一起來變強吧！</p>
           <a class="btn" href="https://ocftw.kktix.cc/events/utstudent" target="_blank">立即免費報名</a>
-          `
-        ]
+          `,
+        ],
       ]}
     />
     <TwoColumns
       id={`talkers`}
       title={`華麗講者群`}
       columns={[
-        [``,
+        [
+          ``,
           `
           <div class="flex flex-col flex-align-center talker">
             <img src="/images/campaignpage/speakers/Claire.jpg" alt="Claire" />
@@ -167,8 +168,10 @@ const Campaign = () => (
             <strong>Chewei（10/2 教師場）</strong>
             <span>Course API、零時小學校、揪松團志工</span>
           </div>
-        `],
-        [``,
+        `,
+        ],
+        [
+          ``,
           `
           <div class="flex flex-col flex-align-center talker margin-3-percent">
             <img src="/images/campaignpage/speakers/Ted.jpg" alt="Ted" />
@@ -190,10 +193,11 @@ const Campaign = () => (
             <strong>Peii（10/2 教師場＋10/29 學生場）</strong>
             <span>NGO、考古學、露營</span>
           </div>
-        `]
+        `,
+        ],
       ]}
     />
   </Base>
-)
+);
 
-export default Campaign
+export default Campaign;

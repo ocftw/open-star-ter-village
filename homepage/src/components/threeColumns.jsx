@@ -10,7 +10,7 @@ const ThreeColumns = ({ id, title, columns }) => (
             <h3>{columns[0][0]}</h3>
             <div
               dangerouslySetInnerHTML={{
-                __html: columns[0][1]
+                __html: columns[0][1],
               }}
             />
           </div>
@@ -20,7 +20,7 @@ const ThreeColumns = ({ id, title, columns }) => (
             <h3>{columns[1][0]}</h3>
             <div
               dangerouslySetInnerHTML={{
-                __html: columns[1][1]
+                __html: columns[1][1],
               }}
             />
           </div>
@@ -30,7 +30,7 @@ const ThreeColumns = ({ id, title, columns }) => (
             <h3>{columns[2][0]}</h3>
             <div
               dangerouslySetInnerHTML={{
-                __html: columns[2][1]
+                __html: columns[2][1],
               }}
             />
           </div>
@@ -38,6 +38,6 @@ const ThreeColumns = ({ id, title, columns }) => (
       </div>
     </div>
   </div>
-)
+);
 
-export default ThreeColumns
+export default ThreeColumns;

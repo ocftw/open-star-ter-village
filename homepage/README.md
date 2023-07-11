@@ -5,12 +5,12 @@
 <details>
 <summary>更新紀錄</summary>
 
-|      版本 | 更新細節                   |
-|---------:|:--------------------------|
-| `v1.0.0` | 增加網站首頁                |
-| `v2.0.0` | 移除gatsby與contentful cms |
-| `v2.1.0` | 由`homepage`分支併入`main`，套件管理由npm改用yarn  |
-| `v3.0.0` | 改用next.js架構             |
+|     版本 | 更新細節                                          |
+| -------: | :------------------------------------------------ |
+| `v1.0.0` | 增加網站首頁                                      |
+| `v2.0.0` | 移除gatsby與contentful cms                        |
+| `v2.1.0` | 由`homepage`分支併入`main`，套件管理由npm改用yarn |
+| `v3.0.0` | 改用next.js架構                                   |
 
 </details>
 
@@ -43,12 +43,14 @@ homepage 是以 [RG-Portfolio gatsby starter](https://github.com/Rohitguptab/rg-
 - Markdown
 
   可以到這兩個網頁知道如何撰寫markdown語法，以及我們的 [markdown playground](https://hackmd.io/2OBWFw_FSiazt4JxoINNlQ?both) 進行練習。
+
   - <https://markdown.tw/> （網頁排版不支援手機/小螢幕裝置）
   - <https://www.casper.tw/development/2019/11/23/ten-mins-learn-markdown/>
 
 - 將Markdown轉為html
 
   可以直接藉由這兩個網站輸入markdown得到html語法，也可以在 [markdown playground](https://hackmd.io/2OBWFw_FSiazt4JxoINNlQ?both) 找到簡易的對照表。
+
   - <https://codebeautify.org/markdown-to-html>
   - <https://markdowntohtml.com/>
 

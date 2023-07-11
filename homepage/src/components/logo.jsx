@@ -3,6 +3,6 @@ const Logo = ({ text, src }) => (
     <span className="logo-title">{text}</span>
     <img className="logo-image" src={src} />
   </div>
-)
+);
 
-export default Logo
+export default Logo;

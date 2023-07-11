@@ -1,26 +1,26 @@
-import { useEffect } from 'react'
-import Head from 'next/head'
-import Script from 'next/script'
-import { useRouter } from 'next/router'
-import { pageview, GTM_ID } from '../lib/gtm'
-import '../../public/css/style.css'
+import { useEffect } from 'react';
+import Head from 'next/head';
+import Script from 'next/script';
+import { useRouter } from 'next/router';
+import { pageview, GTM_ID } from '../lib/gtm';
+import '../../public/css/style.css';
 
 const useRouteChangeComplete = (callback) => {
-  const router = useRouter()
+  const router = useRouter();
   useEffect(() => {
-    router.events.on('routeChangeComplete', callback)
+    router.events.on('routeChangeComplete', callback);
     return () => {
-      router.events.off('routeChangeComplete', callback)
-    }
-  }, [router.events])
-}
+      router.events.off('routeChangeComplete', callback);
+    };
+  }, [router.events]);
+};
 
 export default function App({ Component, pageProps }) {
-  useRouteChangeComplete(pageview)
+  useRouteChangeComplete(pageview);
   return (
     <>
       <Head>
-        <meta name='viewport' content='initial-scale=1.0, width=device-width' />
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
       {/* <!-- Google tag (gtag.js) --> */}
       <Script
@@ -38,5 +38,5 @@ export default function App({ Component, pageProps }) {
       />
       <Component {...pageProps} />
     </>
-  )
+  );
 }
