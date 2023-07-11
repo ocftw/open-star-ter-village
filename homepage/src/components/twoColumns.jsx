@@ -28,6 +28,6 @@ const TwoColumns = ({ id, title, columns }) => (
       </div>
     </div>
   </div>
-)
+);
 
-export default TwoColumns
+export default TwoColumns;

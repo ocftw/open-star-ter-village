@@ -11,11 +11,11 @@ const ImageAndText = ({ id, image, title, subtitle, content, highlights }) => (
             <h2 className="sub-position">{title}</h2>
             <div
               dangerouslySetInnerHTML={{
-                __html: content
+                __html: content,
               }}
             />
             <ul className="details">
-              {highlights?.map(highlight => (
+              {highlights?.map((highlight) => (
                 <li key={`highlight-${highlight[0]}`}>
                   <strong>{highlight[0]}</strong>
                   <p dangerouslySetInnerHTML={{ __html: highlight[1] }} />
@@ -27,6 +27,6 @@ const ImageAndText = ({ id, image, title, subtitle, content, highlights }) => (
       </div>
     </div>
   </div>
-)
+);
 
-export default ImageAndText
+export default ImageAndText;
