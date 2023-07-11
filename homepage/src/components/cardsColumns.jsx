@@ -26,15 +26,11 @@ const CardUnit = ({ card }) => (
   <div className="col-md-4 mb-3">
     <div className="section-main">
       <h3>{card.frontMatter.title}</h3>
-      <div
-        dangerouslySetInnerHTML={{
-          __html: `
-                  <img src=${card.frontMatter.image} alt=${card.frontMatter.title}>
-                  <strong>${card.frontMatter.description}</strong>
-                  <div>${card.content}</div>
-                `,
-        }}
-      />
+      <div>
+        <img src={card.frontMatter.image} alt={card.frontMatter.title} />
+        <strong>{card.frontMatter.description}</strong>
+        <div dangerouslySetInnerHTML={{ __html: card.content }} />
+      </div>
     </div>
   </div>
 );
