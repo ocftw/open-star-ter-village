@@ -1,15 +1,16 @@
-import Head from 'next/head';
-import Script from 'next/script';
-import Base from '../layouts/base';
-import Banner from '../components/banner';
-import TwoColumns from '../components/twoColumns';
-import ThreeColumns from '../components/threeColumns';
-import ImageAndText from '../components/imageAndText';
+import Head from "next/head";
+import Script from "next/script";
+import Base from "../layouts/base";
+import Banner from "../components/banner";
+import TwoColumns from "../components/twoColumns";
+import ThreeColumns from "../components/threeColumns";
+import ImageAndText from "../components/imageAndText";
 
 const navigationList = [
   { link: `#page-top`, text: `回到頁首` },
   { link: `#project-intro`, text: `專案介紹` },
   { link: `#game-intro`, text: `遊戲介紹` },
+  { link: `/cards`, text: `卡片頁` },
   { link: `/campaign`, text: `活動頁` },
 ];
 
@@ -74,7 +75,7 @@ const Index = () => (
     <ImageAndText
       id={`game-intro`}
       title={`基本遊戲介紹`}
-      subtitle={''}
+      subtitle={""}
       image={`/images/boardgame.jpg`}
       content={`
       由玩家扮演到開源星手村取經，學習何謂開源的「新手」。
