@@ -1,4 +1,5 @@
 import Base from '../layouts/base';
+import Banner from '../components/banner';
 import CardsColumns from '../components/cardsColumns';
 
 import { fetchCards } from '../lib/fetchCards';
@@ -25,7 +26,7 @@ export const getStaticProps = async () => {
   const updatedCards = cards.map((card) => {
     const updatedImage = card.frontMatter.image
       ? card.frontMatter.image.replace('/homepage/public', '')
-      : '';
+      : '/images/uploads/初階專案卡封面-01.png';
 
     return {
       ...card,
@@ -44,6 +45,10 @@ export const getStaticProps = async () => {
 const cards = ({ cards }) => {
   return (
     <Base nav={navigationList}>
+      <Banner
+        title={`卡片介紹`}
+        heroImage={`/images/uploads/初階專案卡封面-01.png`}
+      />
       <CardsColumns
         id={`project-cards`}
         title={`專案卡`}
