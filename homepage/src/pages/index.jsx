@@ -10,6 +10,7 @@ const navigationList = [
   { link: `#page-top`, text: `回到頁首` },
   { link: `#project-intro`, text: `專案介紹` },
   { link: `#game-intro`, text: `遊戲介紹` },
+  { link: `/cards`, text: `卡片頁` },
   { link: `/campaign`, text: `活動頁` },
 ];
 
