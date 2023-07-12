@@ -41,7 +41,7 @@ p {
   height: 100vh;
 }
 .headline {
-  height: 15vh;
+  height: 9rem;
   display: flex;
   justify-content: center;
   align-items: flex-end;
