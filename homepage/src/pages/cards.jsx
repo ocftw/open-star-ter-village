@@ -1,5 +1,5 @@
 import Base from '../layouts/base';
-import Banner from '../components/banner';
+import Headline from '../components/headline';
 import CardsColumns from '../components/cardsColumns';
 
 import { fetchCards } from '../lib/fetchCards';
@@ -45,10 +45,7 @@ export const getStaticProps = async () => {
 const cards = ({ cards }) => {
   return (
     <Base nav={navigationList}>
-      <Banner
-        title={`卡片介紹`}
-        heroImage={`/images/uploads/初階專案卡封面-01.png`}
-      />
+      <Headline title={`卡片介紹`} />
       <CardsColumns
         id={`project-cards`}
         title={`專案卡`}

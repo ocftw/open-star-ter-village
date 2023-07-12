@@ -40,6 +40,15 @@ p {
   position: relative;
   height: 100vh;
 }
+.headline {
+  height: 15vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+.headline h1 {
+  border-bottom: 1px solid #ef5826;
+}
 a:hover {
   color: #d83d0a;
   text-decoration: underline;
