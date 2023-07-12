@@ -1,11 +1,11 @@
-import fs from "fs";
-import { join } from "path";
-import matter from "gray-matter";
+import fs from 'fs';
+import { join } from 'path';
+import matter from 'gray-matter';
 
-import { remark } from "remark";
-import html from "remark-html";
+import { remark } from 'remark';
+import html from 'remark-html';
 
-const cardsDirectory = join(process.cwd(), "_cards");
+const cardsDirectory = join(process.cwd(), '_cards');
 
 /**
  * lang ISO language and locale string
@@ -22,7 +22,7 @@ export async function fetchCards(lang) {
 
   const cards = filesInCards.map(async (filename) => {
     const fullPath = join(cardsDirectory, filename);
-    const file = fs.readFileSync(fullPath, "utf8");
+    const file = fs.readFileSync(fullPath, 'utf8');
     const matterFile = matter(file);
     const { data, content } = matterFile;
 

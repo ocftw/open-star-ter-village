@@ -3,7 +3,7 @@ const CardsColumns = ({ id, title, cards, type }) => {
   const groupCards = cards.filter((card) => card.frontMatter.type === type);
   // Filter cards by draft
   const filterGroupedCards = groupCards.filter(
-    (card) => !card.frontMatter.draft
+    (card) => !card.frontMatter.draft,
   );
 
   return (

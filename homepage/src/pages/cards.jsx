@@ -1,7 +1,7 @@
-import Base from "../layouts/base";
-import CardsColumns from "../components/cardsColumns";
+import Base from '../layouts/base';
+import CardsColumns from '../components/cardsColumns';
 
-import { fetchCards } from "../lib/fetchCards";
+import { fetchCards } from '../lib/fetchCards';
 
 const navigationList = [
   { link: `#page-top`, text: `回到頁首` },
@@ -14,18 +14,18 @@ const navigationList = [
 ];
 
 const getSupportLanguages = () => {
-  return ["en", "zh-tw"];
+  return ['en', 'zh-tw'];
 };
 
 export const getStaticProps = async () => {
-  const lang = "zh-tw";
+  const lang = 'zh-tw';
   const cards = await fetchCards(lang);
 
   // Get correct image path
   const updatedCards = cards.map((card) => {
     const updatedImage = card.frontMatter.image
-      ? card.frontMatter.image.replace("/homepage/public", "")
-      : "";
+      ? card.frontMatter.image.replace('/homepage/public', '')
+      : '';
 
     return {
       ...card,
