@@ -8,7 +8,6 @@ const navigationList = [
   { link: `#page-top`, text: `回到頁首` },
   { link: `#project-cards`, text: `專案卡` },
   { link: `#job-cards`, text: `人力卡` },
-  { link: `#force-cards`, text: `源力卡` },
   { link: `#event-cards`, text: `事件卡` },
   { link: `/campaign`, text: `活動頁` },
   { link: `/`, text: `首頁` },
@@ -57,12 +56,6 @@ const cards = ({ cards }) => {
         title={`人力卡`}
         cards={cards}
         type={`job`}
-      />
-      <CardsColumns
-        id={`force-cards`}
-        title={`源力卡`}
-        cards={cards}
-        type={`force`}
       />
       <CardsColumns
         id={`event-cards`}
