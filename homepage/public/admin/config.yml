@@ -35,7 +35,7 @@ collections: # A list of collections the CMS should be able to edit
           widget: 'image',
           required: false,
           tagname: '',
-          i18n: duplicate,
+          i18n: true,
         }
       - {
           label: 'Title',
