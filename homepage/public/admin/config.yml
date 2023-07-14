@@ -61,7 +61,7 @@ collections: # A list of collections the CMS should be able to edit
           label: 'Type',
           name: 'type',
           widget: 'select',
-          options: ['project', 'job', 'force', 'event'],
+          options: ['project', 'job', 'event'],
           i18n: duplicate,
         }
       - { label: 'Content', name: 'body', widget: 'markdown', i18n: true }
