@@ -64,6 +64,14 @@ collections: # A list of collections the CMS should be able to edit
           options: ['project', 'job', 'event'],
           i18n: duplicate,
         }
+      - {
+          label: 'Tags',
+          name: 'tags',
+          widget: 'select',
+          multiple: true,
+          options: ['open gov', 'open data', 'open source', 'basic', 'advance'],
+          i18n: duplicate,
+        }
       - { label: 'Content', name: 'body', widget: 'markdown', i18n: true }
 
   - name: 'posts' # Used in routes, ie.: /admin/collections/:slug/edit
