@@ -68,8 +68,22 @@ collections: # A list of collections the CMS should be able to edit
           label: 'Tags',
           name: 'tags',
           widget: 'select',
+          required: false,
           multiple: true,
-          options: ['open gov', 'open data', 'open source', 'basic', 'advance'],
+          options: [
+            'open gov',
+            'open data',
+            'open source',
+            'basic',
+            'advance',
+            'engineer',
+            'designer',
+            'writer',
+            'marketing',
+            'advocator',
+            'civil servants',
+            'legal',
+            ],
           i18n: duplicate,
         }
       - { label: 'Content', name: 'body', widget: 'markdown', i18n: true }
