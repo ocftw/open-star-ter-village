@@ -9,7 +9,6 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "export": "next export",
     "start": "next start",
     "lint": "yarn prettier --check . && next lint",
     "lint:fix": "yarn prettier --write . && next lint --fix"
