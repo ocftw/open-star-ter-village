@@ -8,7 +8,7 @@ const Header = ({ logo, nav }) => (
       <nav className="navbar navbar-expand-lg">
         <div className="logo navbar-brand">
           <Link href="/">
-            <Image src={logo} height="48" alt="logo" />
+            <Image src={logo} height="48" alt="logo" sizes="70px" />
           </Link>
         </div>
         <button
