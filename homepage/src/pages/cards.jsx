@@ -4,22 +4,12 @@ import CardsColumns from '../components/cardsColumns';
 
 import { fetchCards } from '../lib/fetchCards';
 
-const navigationList = [
-  { link: `#page-top`, text: `回到頁首` },
-  { link: `#project-cards`, text: `專案卡` },
-  { link: `#job-cards`, text: `人力卡` },
-  { link: `#event-cards`, text: `事件卡` },
-  { link: `/campaign`, text: `活動頁` },
-  { link: `/`, text: `首頁` },
-];
-
-const getSupportLanguages = () => {
-  return ['en', 'zh-tw'];
-};
-
-export const getStaticProps = async () => {
-  const lang = 'zh-tw';
-  const cards = await fetchCards(lang);
+/**
+ *
+ * @type {import('next').GetStaticProps}
+ */
+export const getStaticProps = async ({ locale }) => {
+  const cards = await fetchCards(locale);
 
   // Get correct image path
   const updatedCards = cards.map((card) => {
@@ -36,12 +26,21 @@ export const getStaticProps = async () => {
     };
   });
 
+  const navigationList = [
+    { link: `#page-top`, text: `回到頁首` },
+    { link: `#project-cards`, text: `專案卡` },
+    { link: `#job-cards`, text: `人力卡` },
+    { link: `#event-cards`, text: `事件卡` },
+    { link: `/campaign`, text: `活動頁` },
+    { link: `/`, text: `首頁` },
+  ];
+
   return {
-    props: { cards: updatedCards },
+    props: { cards: updatedCards, navigationList },
   };
 };
 
-const cards = ({ cards }) => {
+const cards = ({ cards, navigationList }) => {
   return (
     <Base nav={navigationList}>
       <Headline title={`卡片介紹`} />
