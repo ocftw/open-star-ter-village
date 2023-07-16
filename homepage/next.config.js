@@ -10,4 +10,5 @@ module.exports = {
     locales: ['zh-tw', 'en'],
     defaultLocale: 'zh-tw',
   },
+  trailingSlash: true,
 };
