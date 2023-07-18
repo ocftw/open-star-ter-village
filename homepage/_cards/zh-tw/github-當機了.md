@@ -5,4 +5,4 @@ description: 本輪不能執行發起人貢獻行動
 draft: false
 type: event
 ---
-n﻿/a
+事件卡

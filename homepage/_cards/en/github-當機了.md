@@ -5,3 +5,4 @@ description: No one can play Initiator Contribution this round.
 draft: false
 type: event
 ---
+e﻿vent card
