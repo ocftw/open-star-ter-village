@@ -1,5 +1,3 @@
-import { useRouter } from 'next/router';
-
 import Base from '../layouts/base';
 import Headline from '../components/headline';
 import CardsColumns from '../components/cardsColumns';
@@ -27,6 +25,11 @@ export const getStaticProps = async ({ locale }) => {
       },
     };
   });
+
+  const title = {
+    en: 'Card Introduction',
+    'zh-tw': '卡片介紹',
+  };
 
   const backToTop = {
     en: 'Back to top',
@@ -68,51 +71,43 @@ export const getStaticProps = async ({ locale }) => {
   ];
 
   return {
-    props: { cards: updatedCards, navigationList },
+    props: {
+      cards: updatedCards,
+      navigationList,
+      title: title[locale],
+      projectCard: projectCard[locale],
+      jobCard: jobCard[locale],
+      eventCard: eventCard[locale],
+    },
   };
 };
 
-const cards = ({ cards, navigationList }) => {
-  const { locale } = useRouter();
-
-  const title = {
-    en: 'Card Introduction',
-    'zh-tw': '卡片介紹',
-  };
-
-  const projectCard = {
-    en: 'Project Card',
-    'zh-tw': '專案卡',
-  };
-
-  const jobCard = {
-    en: 'Job Card',
-    'zh-tw': '人力卡',
-  };
-
-  const eventCard = {
-    en: 'Event Card',
-    'zh-tw': '事件卡',
-  };
-
+const cards = ({
+  cards,
+  navigationList,
+  title,
+  projectCard,
+  jobCard,
+  eventCard,
+}) => {
   return (
     <Base nav={navigationList}>
-      <Headline title={title[locale]} />
+      <Headline title={title} />
       <CardsColumns
         id={`project-cards`}
-        title={projectCard[locale]}
+        title={projectCard}
         cards={cards}
         type={`project`}
       />
       <CardsColumns
         id={`job-cards`}
-        title={jobCard[locale]}
+        title={jobCard}
         cards={cards}
         type={`job`}
       />
       <CardsColumns
         id={`event-cards`}
-        title={eventCard[locale]}
+        title={eventCard}
         cards={cards}
         type={`event`}
       />
