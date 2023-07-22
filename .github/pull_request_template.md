@@ -20,36 +20,21 @@ Please add the description of the changes here.
 
 Please attach screenshots of UI accordingly. If you don't have any UI changes, please remove this section.
 
-### Before
-
-Please attach screenshots of the before state.
-If you don't have any screenshots, please write N/A here.
-
-### After
-
-Please attach screenshots of the after state.
-If you don't have any screenshots, please write N/A here.
+| Scenarios  | Before | After |
+| ---------- | ------ | ----- |
+| Scenario 1 | img 1  | img 2 |
 
 ## Performance
 
-If you have any performance data, please attach it here.
-
 ### Build and deploy time
 
-#### Before
-
-Please attach the build and deploy time of the before state.
-
-#### After
-
-Please attach the build and deploy time of the after state.
+| item       | Before | After  |
+| ---------- | ------ | ------ |
+| w/ Cached  | 00m00s | 00m00s |
+| w/o Cached | 00m00s | 00m00s |
 
 ### LightHouse
 
-#### Before
-
-Please attach the LightHouse result of the before state.
-
-#### After
-
-Please attach the LightHouse result of the after state.
+| item       | Before | After  |
+| ---------- | ------ | ------ |
+| Lighthouse | img 1  | img 2  |
