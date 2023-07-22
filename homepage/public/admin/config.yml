@@ -61,11 +61,12 @@ collections: # A list of collections the CMS should be able to edit
           label: 'Type',
           name: 'type',
           widget: 'select',
-          options: [
-            { label: '專案', value: 'project' },
-            { label: '人力', value: 'job' },
-            { label: '事件', value: 'event' },
-          ],
+          options:
+            [
+              { label: '專案', value: 'project' },
+              { label: '人力', value: 'job' },
+              { label: '事件', value: 'event' },
+            ],
           i18n: duplicate,
         }
       - {
@@ -74,20 +75,21 @@ collections: # A list of collections the CMS should be able to edit
           widget: 'select',
           required: false,
           multiple: true,
-          options: [
-            { label: '開放政府', value: 'open gov' },
-            { label: '開放資料', value: 'open data' },
-            { label: '開放原始碼', value: 'open source' },
-            { label: '基礎', value: 'basic' },
-            { label: '進階', value: 'advance' },
-            { label: '工程師', value: 'engineer' },
-            { label: '美術設計', value: 'designer' },
-            { label: '文字工作者', value: 'writer' },
-            { label: '行銷公關', value: 'marketing' },
-            { label: '議題工作者', value: 'advocator' },
-            { label: '公務員', value: 'civil servants' },
-            { label: '法務人員', value: 'legal' },
-          ],
+          options:
+            [
+              { label: '開放政府', value: 'open gov' },
+              { label: '開放資料', value: 'open data' },
+              { label: '開放原始碼', value: 'open source' },
+              { label: '基礎', value: 'basic' },
+              { label: '進階', value: 'advance' },
+              { label: '工程師', value: 'engineer' },
+              { label: '美術設計', value: 'designer' },
+              { label: '文字工作者', value: 'writer' },
+              { label: '行銷公關', value: 'marketing' },
+              { label: '議題工作者', value: 'advocator' },
+              { label: '公務員', value: 'civil servants' },
+              { label: '法務人員', value: 'legal' },
+            ],
           i18n: duplicate,
         }
       - { label: 'Content', name: 'body', widget: 'markdown', i18n: true }
