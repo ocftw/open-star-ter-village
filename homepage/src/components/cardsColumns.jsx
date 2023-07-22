@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 const CardsColumns = ({ id, title, cards, type }) => {
   // Group cards by type
   const groupCards = cards.filter((card) => card.frontMatter.type === type);
@@ -27,7 +29,11 @@ const CardUnit = ({ card }) => (
     <div className="section-main">
       <h3>{card.frontMatter.title}</h3>
       <div>
-        <img src={card.frontMatter.image} alt={card.frontMatter.title} />
+        <Image
+          src={card.frontMatter.image}
+          alt={card.frontMatter.title}
+          sizes="(max-width: 767px) 100vw, 33vw"
+        />
         <strong>{card.frontMatter.description}</strong>
         <div dangerouslySetInnerHTML={{ __html: card.content }} />
       </div>

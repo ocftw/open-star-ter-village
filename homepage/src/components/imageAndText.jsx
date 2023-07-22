@@ -1,9 +1,15 @@
+import Image from 'next/image';
+
 const ImageAndText = ({ id, image, title, subtitle, content, highlights }) => (
   <div className="section" id={id}>
     <div className="container">
       <div className="image-and-text-main row">
         <div className="left col-md-5 col-lg-4 mb-3">
-          <img src={image} alt={`${title}-${subtitle}-image`} />
+          <Image
+            src={image}
+            alt={`${title}-${subtitle}-image`}
+            sizes="(max-width: 767px) 100vw, 33vw"
+          />
         </div>
         <div className="left col-md-7 col-lg-8">
           <div className="image-and-text-details">
