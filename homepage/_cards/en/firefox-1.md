@@ -6,9 +6,10 @@ draft: false
 type: project
 tags:
   - open source
+  - marketing
+  - designer
+  - engineer
 ---
-Mozilla Firefox, a browser with free and open source code,\
-was created and launched by the Mozilla Foundation and its\
-subsidiary in 2004. The browser’s predecessor was the independent "Phoenix Browser" also created by the Mozilla community.
+Mozilla Firefox, a browser with free and open source code, was created and launched by the Mozilla Foundation and its subsidiary in 2004. The browser’s predecessor was the independent "Phoenix Browser" also created by the Mozilla community.
 
-[Website](https://www.mozilla.org/zh-TW/firefox/)
+- [Website](https://www.mozilla.org/zh-TW/firefox/)
