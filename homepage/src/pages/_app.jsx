@@ -16,7 +16,29 @@ const useRouteChangeComplete = (callback) => {
   }, [router.events]);
 };
 
-export default function App({ Component, pageProps }) {
+const siteDataDictionary = {
+  en: {
+    title: `OpenStarTerVillage`,
+    description: `How can technology change the world? Play this board game and discover the answer for yourself!`,
+    logo: `/images/logo.png`,
+    footerLinks: [
+      { link: `/s/manual`, text: `Game Manual` },
+      { link: `/admin`, text: `Admin` },
+    ],
+  },
+  'zh-tw': {
+    title: `開源星手村`,
+    description: `科技怎麼改變世界？玩桌遊、就知道！`,
+    logo: `/images/logo.png`,
+    footerLinks: [
+      { link: `/s/manual`, text: `遊戲規則書` },
+      { link: `/admin`, text: `管理後台` },
+    ],
+  },
+};
+
+export default function App({ Component, pageProps, router }) {
+  const siteData = siteDataDictionary[router.locale];
   useRouteChangeComplete(pageview);
   return (
     <>
@@ -37,7 +59,7 @@ export default function App({ Component, pageProps }) {
         `,
         }}
       />
-      <Base nav={pageProps.navigationList}>
+      <Base nav={pageProps.navigationList} siteData={siteData}>
         <Component {...pageProps} />
       </Base>
     </>

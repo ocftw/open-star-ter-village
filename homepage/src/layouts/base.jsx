@@ -1,11 +1,11 @@
 import Footer from './footer';
 import Header from './header';
 
-const Base = ({ children, nav }) => (
+const Base = ({ children, nav, siteData }) => (
   <>
-    <Header nav={nav} />
+    <Header nav={nav} siteData={siteData} />
     <main>{children}</main>
-    <Footer />
+    <Footer siteData={siteData} />
   </>
 );
 

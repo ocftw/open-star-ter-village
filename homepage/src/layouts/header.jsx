@@ -1,13 +1,12 @@
 import Link from 'next/link';
-import { siteData } from '../constants';
 
-const Header = ({ logo, nav }) => (
+const Header = ({ nav, siteData }) => (
   <header className="site-header fixed-top">
     <div className="container">
       <nav className="navbar navbar-expand-lg">
         <div className="logo navbar-brand">
           <Link href="/">
-            <img src={logo} height="48" alt="logo" />
+            <img src={siteData.logo} height="48" alt="logo" />
           </Link>
         </div>
         <button
@@ -41,7 +40,6 @@ const Header = ({ logo, nav }) => (
 );
 
 Header.defaultProps = {
-  logo: siteData.logo,
   nav: [],
 };
 
