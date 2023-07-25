@@ -1,6 +1,6 @@
 import Base from '../layouts/base';
 import Headline from '../components/headline';
-import CardsColumns from '../components/cardsColumns';
+import CardsGrid from '../components/cardsGrid';
 
 import { fetchCards } from '../lib/fetchCards';
 
@@ -36,22 +36,22 @@ export const getStaticProps = async ({ locale }) => {
     'zh-tw': '回到頁首',
   };
 
-  const projectCard = {
+  const projectCardTitle = {
     en: 'Project Card',
     'zh-tw': '專案卡',
   };
 
-  const jobCard = {
+  const jobCardTitle = {
     en: 'Job Card',
     'zh-tw': '人力卡',
   };
 
-  const eventCard = {
+  const eventCardTitle = {
     en: 'Event Card',
     'zh-tw': '事件卡',
   };
 
-  const campaign = {
+  const campaignPage = {
     en: 'Campaign',
     'zh-tw': '活動頁',
   };
@@ -63,10 +63,10 @@ export const getStaticProps = async ({ locale }) => {
 
   const navigationList = [
     { link: `#page-top`, text: backToTop[locale] },
-    { link: `#project-cards`, text: projectCard[locale] },
-    { link: `#job-cards`, text: jobCard[locale] },
-    { link: `#event-cards`, text: eventCard[locale] },
-    { link: `/campaign`, text: campaign[locale] },
+    { link: `#project-cards`, text: projectCardTitle[locale] },
+    { link: `#job-cards`, text: jobCardTitle[locale] },
+    { link: `#event-cards`, text: eventCardTitle[locale] },
+    { link: `/campaign`, text: campaignPage[locale] },
     { link: `/`, text: homepage[locale] },
   ];
 
@@ -75,9 +75,9 @@ export const getStaticProps = async ({ locale }) => {
       cards: updatedCards,
       navigationList,
       title: title[locale],
-      projectCard: projectCard[locale],
-      jobCard: jobCard[locale],
-      eventCard: eventCard[locale],
+      projectCardTitle: projectCardTitle[locale],
+      jobCardTitle: jobCardTitle[locale],
+      eventCardTitle: eventCardTitle[locale],
     },
   };
 };
@@ -86,30 +86,30 @@ const cards = ({
   cards,
   navigationList,
   title,
-  projectCard,
-  jobCard,
-  eventCard,
+  projectCardTitle,
+  jobCardTitle,
+  eventCardTitle,
 }) => {
   return (
     <Base nav={navigationList}>
       <Headline title={title} />
-      <CardsColumns
+      <CardsGrid
         id={`project-cards`}
-        title={projectCard}
+        title={projectCardTitle}
         cards={cards}
-        type={`project`}
+        filter={`project`}
       />
-      <CardsColumns
+      <CardsGrid
         id={`job-cards`}
-        title={jobCard}
+        title={jobCardTitle}
         cards={cards}
-        type={`job`}
+        filter={`job`}
       />
-      <CardsColumns
+      <CardsGrid
         id={`event-cards`}
-        title={eventCard}
+        title={eventCardTitle}
         cards={cards}
-        type={`event`}
+        filter={`event`}
       />
     </Base>
   );
