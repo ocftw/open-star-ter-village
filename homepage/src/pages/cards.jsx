@@ -52,7 +52,7 @@ export const getStaticProps = async ({ locale }) => {
   };
 
   const campaignPage = {
-    en: 'Campaign',
+    en: 'Activities',
     'zh-tw': '活動頁',
   };
 

@@ -32,7 +32,7 @@ export const getStaticProps = async ({ locale }) => {
   };
 
   const campaignPage = {
-    en: 'Campaign',
+    en: 'Activities',
     'zh-tw': '活動頁',
   };
 
@@ -43,6 +43,17 @@ export const getStaticProps = async ({ locale }) => {
     { link: `/cards`, text: cardsPage[locale] },
     { link: `/campaign`, text: campaignPage[locale] },
   ];
+
+  const headInfo = {
+    title: {
+      en: `OpenStarTerVillage`,
+      'zh-tw': `開源星手村`,
+    },
+    description: {
+      en: `How can technology change the world? Play this board game and discover the answer for yourself!`,
+      'zh-tw': `科技怎麼改變世界？玩桌遊、就知道！`,
+    },
+  };
 
   const banner = {
     componentType: 'Banner',
@@ -335,6 +346,10 @@ export const getStaticProps = async ({ locale }) => {
   return {
     props: {
       navigationList,
+      headInfo: {
+        title: headInfo.title[locale],
+        description: headInfo.description[locale],
+      },
       banner: {
         ...banner,
         title: banner.title[locale],
@@ -373,6 +388,7 @@ export const getStaticProps = async ({ locale }) => {
 
 const Index = ({
   navigationList,
+  headInfo,
   banner,
   projectIntro,
   gameIntro,
@@ -382,8 +398,8 @@ const Index = ({
 }) => (
   <Base nav={navigationList}>
     <Head>
-      <title>{`開源星手村`}</title>
-      <meta name="description" content={`科技怎麼改變世界？玩桌遊、就知道！`} />
+      <title>{headInfo.title}</title>
+      <meta name="description" content={headInfo.description} />
     </Head>
     <Script
       id="netlify-identity-widget"

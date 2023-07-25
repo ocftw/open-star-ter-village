@@ -13,9 +13,16 @@ export const getStaticProps = async ({ locale }) => {
 
   const navigationList = [{ link: `/`, text: homepage[locale] }];
 
+  const headInfo = {
+    title: {
+      en: `OpenStarTerVillage - Page Not Found`,
+      'zh-tw': `開源星手村 - 找不到網頁`,
+    },
+  };
+
   const desc = {
     en: `
-      Having an issue? Find 兔摩. <a href="https://forms.gle/t9j8dbiKUohny8PZ8">Fill out the form</a> to report the problem!
+      Bug report? Ask TwoMore. <a href="https://forms.gle/t9j8dbiKUohny8PZ8">Filling the form</a> to report a bug!
     `,
     'zh-tw': `
       有問題？找兔摩。<a href="https://forms.gle/t9j8dbiKUohny8PZ8">填寫表單</a>回報你找到的問題吧！
@@ -25,15 +32,18 @@ export const getStaticProps = async ({ locale }) => {
   return {
     props: {
       navigationList,
+      headInfo: {
+        title: headInfo.title[locale],
+      },
       desc: desc[locale],
     },
   };
 };
 
-const NotFoundPage = ({ navigationList, desc }) => (
+const NotFoundPage = ({ navigationList, headInfo, desc }) => (
   <Base nav={navigationList}>
     <Head>
-      <title>{`開源星手村 - 找不到網頁`}</title>
+      <title>{headInfo.title}</title>
       <meta name="description" content="" />
     </Head>
     <div className="site-container not-found-page">
