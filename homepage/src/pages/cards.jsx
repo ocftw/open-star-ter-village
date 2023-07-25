@@ -1,5 +1,4 @@
 import Head from 'next/head';
-import Base from '../layouts/base';
 import Headline from '../components/headline';
 import CardsGrid from '../components/cardsGrid';
 
@@ -95,7 +94,6 @@ export const getStaticProps = async ({ locale }) => {
 
 const cards = ({
   cards,
-  navigationList,
   headInfo,
   title,
   projectCardTitle,
@@ -103,7 +101,7 @@ const cards = ({
   eventCardTitle,
 }) => {
   return (
-    <Base nav={navigationList}>
+    <>
       <Head>
         <title>{headInfo.title}</title>
         <meta name="description" content="" />
@@ -127,7 +125,7 @@ const cards = ({
         cards={cards}
         filter={`event`}
       />
-    </Base>
+    </>
   );
 };
 

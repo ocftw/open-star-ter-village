@@ -1,6 +1,5 @@
 import Head from 'next/head';
 import Script from 'next/script';
-import Base from '../layouts/base';
 import Banner from '../components/banner';
 import TwoColumns from '../components/twoColumns';
 import ThreeColumns from '../components/threeColumns';
@@ -387,7 +386,6 @@ export const getStaticProps = async ({ locale }) => {
 };
 
 const Index = ({
-  navigationList,
   headInfo,
   banner,
   projectIntro,
@@ -396,7 +394,7 @@ const Index = ({
   gameUseCases,
   projectRoles,
 }) => (
-  <Base nav={navigationList}>
+  <>
     <Head>
       <title>{headInfo.title}</title>
       <meta name="description" content={headInfo.description} />
@@ -455,7 +453,7 @@ const Index = ({
       title={projectRoles.title}
       columns={projectRoles.columns}
     />
-  </Base>
+  </>
 );
 
 export default Index;

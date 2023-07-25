@@ -1,5 +1,4 @@
 import Head from 'next/head';
-import Base from '../layouts/base';
 
 /**
  *
@@ -40,8 +39,8 @@ export const getStaticProps = async ({ locale }) => {
   };
 };
 
-const NotFoundPage = ({ navigationList, headInfo, desc }) => (
-  <Base nav={navigationList}>
+const NotFoundPage = ({ headInfo, desc }) => (
+  <>
     <Head>
       <title>{headInfo.title}</title>
       <meta name="description" content="" />
@@ -56,7 +55,7 @@ const NotFoundPage = ({ navigationList, headInfo, desc }) => (
         ></p>
       </div>
     </div>
-  </Base>
+  </>
 );
 
 export default NotFoundPage;
