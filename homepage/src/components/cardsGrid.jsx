@@ -1,6 +1,6 @@
-const CardsColumns = ({ id, title, cards, type }) => {
+const CardsGrid = ({ id, title, cards, filter }) => {
   // Group cards by type
-  const groupCards = cards.filter((card) => card.frontMatter.type === type);
+  const groupCards = cards.filter((card) => card.frontMatter.type === filter);
   // Filter cards by draft
   const filterGroupedCards = groupCards.filter(
     (card) => !card.frontMatter.draft,
@@ -14,7 +14,7 @@ const CardsColumns = ({ id, title, cards, type }) => {
         </div>
         <div className="row">
           {filterGroupedCards.map((card, index) => (
-            <CardUnit key={index} card={card} />
+            <Card key={index} card={card} />
           ))}
         </div>
       </div>
@@ -22,7 +22,7 @@ const CardsColumns = ({ id, title, cards, type }) => {
   );
 };
 
-const CardUnit = ({ card }) => (
+const Card = ({ card }) => (
   <div className="col-md-4 mb-3">
     <div className="section-main">
       <h3>{card.frontMatter.title}</h3>
@@ -35,4 +35,4 @@ const CardUnit = ({ card }) => (
   </div>
 );
 
-export default CardsColumns;
+export default CardsGrid;

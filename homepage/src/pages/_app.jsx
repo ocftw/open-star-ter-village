@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import Head from 'next/head';
 import Script from 'next/script';
 import { useRouter } from 'next/router';
+import Base from '../layouts/base';
 import { pageview, GTM_ID } from '../lib/gtm';
 import '../../public/css/style.css';
 
@@ -15,7 +16,29 @@ const useRouteChangeComplete = (callback) => {
   }, [router.events]);
 };
 
-export default function App({ Component, pageProps }) {
+const siteDataDictionary = {
+  en: {
+    title: `OpenStarTerVillage`,
+    description: `How can technology change the world? Play this board game and discover the answer for yourself!`,
+    logo: `/images/logo.png`,
+    footerLinks: [
+      { link: `/s/manual`, text: `Game Manual` },
+      { link: `/admin`, text: `Admin` },
+    ],
+  },
+  'zh-tw': {
+    title: `開源星手村`,
+    description: `科技怎麼改變世界？玩桌遊、就知道！`,
+    logo: `/images/logo.png`,
+    footerLinks: [
+      { link: `/s/manual`, text: `遊戲規則書` },
+      { link: `/admin`, text: `管理後台` },
+    ],
+  },
+};
+
+export default function App({ Component, pageProps, router }) {
+  const siteData = siteDataDictionary[router.locale];
   useRouteChangeComplete(pageview);
   return (
     <>
@@ -28,15 +51,17 @@ export default function App({ Component, pageProps }) {
         strategy="afterInteractive"
         dangerouslySetInnerHTML={{
           __html: `
-            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-            })(window,document,'script','dataLayer', '${GTM_ID}');
-          `,
+          (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+          new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+          j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+          'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer', '${GTM_ID}');
+        `,
         }}
       />
-      <Component {...pageProps} />
+      <Base nav={pageProps.navigationList} siteData={siteData}>
+        <Component {...pageProps} />
+      </Base>
     </>
   );
 }

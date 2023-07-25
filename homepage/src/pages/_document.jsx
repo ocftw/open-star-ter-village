@@ -1,8 +1,8 @@
 import { Html, Head, Main, NextScript } from 'next/document';
 
-export default function Document() {
+export default function Document({ locale }) {
   return (
-    <Html lang={'zh-tw'}>
+    <Html lang={locale}>
       <Head>
         <meta charSet="utf-8" />
         <link

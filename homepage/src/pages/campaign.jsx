@@ -1,20 +1,26 @@
-import Base from '../layouts/base';
 import Banner from '../components/banner';
 import Section from '../components/section';
 import TwoColumns from '../components/twoColumns';
 import Head from 'next/head';
 
-const navigationList = [
-  { link: `/`, text: `首頁` },
-  { link: `/campaign`, text: `活動頁` },
-  { link: `#about-open-source`, text: `關於開源` },
-  { link: `#join-project`, text: `活動理念` },
-  { link: `#talkers`, text: `講師介紹` },
-  { link: `#upcoming-events`, text: `活動資訊` },
-];
+export const getStaticProps = () => {
+  const navigationList = [
+    { link: `/`, text: `首頁` },
+    { link: `/campaign`, text: `活動頁` },
+    { link: `#about-open-source`, text: `關於開源` },
+    { link: `#join-project`, text: `活動理念` },
+    { link: `#talkers`, text: `講師介紹` },
+    { link: `#upcoming-events`, text: `活動資訊` },
+  ];
+  return {
+    props: {
+      navigationList,
+    },
+  };
+};
 
 const Campaign = () => (
-  <Base nav={navigationList}>
+  <>
     <Head>
       <title>{`開源星手村 - 工作坊`}</title>
       <meta name="description" content={`用桌遊，參與台灣的未來`} />
@@ -197,7 +203,7 @@ const Campaign = () => (
         ],
       ]}
     />
-  </Base>
+  </>
 );
 
 export default Campaign;

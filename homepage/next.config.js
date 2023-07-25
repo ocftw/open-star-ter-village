@@ -6,4 +6,9 @@ module.exports = {
   images: {
     unoptimized: true,
   },
+  i18n: {
+    locales: ['zh-tw', 'en'],
+    defaultLocale: 'zh-tw',
+  },
+  trailingSlash: true,
 };
