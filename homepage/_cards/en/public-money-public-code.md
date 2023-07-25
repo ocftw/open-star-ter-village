@@ -1,4 +1,5 @@
 ---
+image: images/uploads/open-source-open-hack-farm.jpg
 title: Public Money Public Code
 description: An initiative which advocates that public digital services or
   systems built with public money must be released under open-source license.
