@@ -1,3 +1,4 @@
+import Head from 'next/head';
 import Base from '../layouts/base';
 import Headline from '../components/headline';
 import CardsGrid from '../components/cardsGrid';
@@ -70,10 +71,20 @@ export const getStaticProps = async ({ locale }) => {
     { link: `/`, text: homepage[locale] },
   ];
 
+  const headInfo = {
+    title: {
+      en: `OpenStarTerVillage - Card Introduction`,
+      'zh-tw': `開源星手村 - 卡片介紹`,
+    },
+  };
+
   return {
     props: {
       cards: updatedCards,
       navigationList,
+      headInfo: {
+        title: headInfo.title[locale],
+      },
       title: title[locale],
       projectCardTitle: projectCardTitle[locale],
       jobCardTitle: jobCardTitle[locale],
@@ -85,6 +96,7 @@ export const getStaticProps = async ({ locale }) => {
 const cards = ({
   cards,
   navigationList,
+  headInfo,
   title,
   projectCardTitle,
   jobCardTitle,
@@ -92,6 +104,10 @@ const cards = ({
 }) => {
   return (
     <Base nav={navigationList}>
+      <Head>
+        <title>{headInfo.title}</title>
+        <meta name="description" content="" />
+      </Head>
       <Headline title={title} />
       <CardsGrid
         id={`project-cards`}
