@@ -1,5 +1,6 @@
 ---
-title: Firefox
+image: images/uploads/英-專案卡-09.jpg
+title: https://openstartervillage.ocf.tw/admin/#/workflowFirefox
 description: A browser with free and open source code
 draft: false
 type: project

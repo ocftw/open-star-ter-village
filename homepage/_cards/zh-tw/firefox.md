@@ -1,4 +1,5 @@
 ---
+image: images/uploads/專案卡-09.jpg
 title: Firefox
 description: 自由及開放原始碼的網頁瀏覽器
 draft: false
