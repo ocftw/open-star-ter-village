@@ -48,6 +48,7 @@ collections: # A list of collections the CMS should be able to edit
           label: 'Description',
           name: 'description',
           widget: 'string',
+          required: false,
           i18n: true,
         }
       - {
