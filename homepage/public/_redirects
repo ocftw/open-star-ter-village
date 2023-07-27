@@ -1,5 +1,2 @@
-# Redirects from what the browser requests to what we serve
-/en/*                     https://openstartervillage-en.netlify.app/:splat  200
-
 # Abbreivations redirect
 /s/manual                       https://drive.google.com/file/d/1PQQfFv0QSdt3qymEEu5B_NrmKSsn34UI/view?usp=sharing

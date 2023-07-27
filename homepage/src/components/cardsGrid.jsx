@@ -1,16 +1,33 @@
-const CardsGrid = ({ id, title, cards, filter }) => {
+const CardsGrid = ({
+  id,
+  title,
+  cards,
+  filter,
+  projectCardSubtype = '',
+  projectCardSubtitle = '',
+}) => {
   // Group cards by type
   const groupCards = cards.filter((card) => card.frontMatter.type === filter);
   // Filter cards by draft
-  const filterGroupedCards = groupCards.filter(
-    (card) => !card.frontMatter.draft,
-  );
+  let filterGroupedCards = groupCards.filter((card) => !card.frontMatter.draft);
+  // Project cards grouped by subtype tag
+  if (projectCardSubtype) {
+    filterGroupedCards = filterGroupedCards.filter((card) =>
+      card.frontMatter.tags?.includes(projectCardSubtype),
+    );
+  }
 
   return (
     <div className="section" id={id}>
       <div className="container">
         <div className="section-head">
-          <h2>{title}</h2>
+          {projectCardSubtype ? (
+            <h2>
+              {title} | {projectCardSubtitle}
+            </h2>
+          ) : (
+            <h2>{title}</h2>
+          )}
         </div>
         <div className="row">
           {filterGroupedCards.map((card, index) => (
