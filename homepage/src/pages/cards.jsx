@@ -17,11 +17,16 @@ export const getStaticProps = async ({ locale }) => {
       ? card.frontMatter.image.replace('/homepage/public', '')
       : '/images/uploads/初階專案卡封面-01.png';
 
+    // Workaround for image prefix path. Will be removed after image path is fixed in all cards.
+    const image = !updatedImage.startsWith('/')
+      ? `/${updatedImage}`
+      : updatedImage;
+
     return {
       ...card,
       frontMatter: {
         ...card.frontMatter,
-        image: updatedImage,
+        image,
       },
     };
   });
