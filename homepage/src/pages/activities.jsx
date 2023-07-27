@@ -488,7 +488,7 @@ export const getStaticProps = async ({ locale }) => {
   };
 };
 
-const Campaign = ({
+const Activities = ({
   headInfo,
   banner,
   aboutOpenSource,
@@ -539,4 +539,4 @@ const Campaign = ({
   </>
 );
 
-export default Campaign;
+export default Activities;
