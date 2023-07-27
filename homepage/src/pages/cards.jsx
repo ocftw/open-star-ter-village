@@ -61,6 +61,21 @@ export const getStaticProps = async ({ locale }) => {
     'zh-tw': '首頁',
   };
 
+  const projectCardSubtitle = {
+    'open gov': {
+      en: 'Open Government',
+      'zh-tw': '開放政府專案',
+    },
+    'open data': {
+      en: 'Open Data',
+      'zh-tw': '開放資料專案',
+    },
+    'open source': {
+      en: 'Open Source',
+      'zh-tw': '開放原始碼專案',
+    },
+  };
+
   const navigationList = [
     { link: `#page-top`, text: backToTop[locale] },
     { link: `#project-cards`, text: projectCardTitle[locale] },
@@ -88,6 +103,11 @@ export const getStaticProps = async ({ locale }) => {
       projectCardTitle: projectCardTitle[locale],
       jobCardTitle: jobCardTitle[locale],
       eventCardTitle: eventCardTitle[locale],
+      projectCardSubtitle: {
+        'open gov': projectCardSubtitle['open gov'][locale],
+        'open data': projectCardSubtitle['open data'][locale],
+        'open source': projectCardSubtitle['open source'][locale],
+      },
     },
   };
 };
@@ -99,6 +119,7 @@ const cards = ({
   projectCardTitle,
   jobCardTitle,
   eventCardTitle,
+  projectCardSubtitle,
 }) => {
   return (
     <>
@@ -112,6 +133,24 @@ const cards = ({
         title={projectCardTitle}
         cards={cards}
         filter={`project`}
+        projectCardSubtype={`open gov`}
+        projectCardSubtitle={projectCardSubtitle['open gov']}
+      />
+      <CardsGrid
+        id={`project-cards`}
+        title={projectCardTitle}
+        cards={cards}
+        filter={`project`}
+        projectCardSubtype={`open data`}
+        projectCardSubtitle={projectCardSubtitle['open data']}
+      />
+      <CardsGrid
+        id={`project-cards`}
+        title={projectCardTitle}
+        cards={cards}
+        filter={`project`}
+        projectCardSubtype={`open source`}
+        projectCardSubtitle={projectCardSubtitle['open source']}
       />
       <CardsGrid
         id={`job-cards`}
