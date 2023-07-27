@@ -1,9 +1,9 @@
 ---
 image: images/uploads/英-專案卡-14.jpg
 title: BigBlueButton
-description: '"An open-source online meeting system that doesn’t require users
-  to download the system and can be integrated with multiple learning management
-  systems."'
+description: An open-source online meeting system that doesn’t require users to
+  download the system and can be integrated with multiple learning management
+  systems.
 draft: false
 type: project
 tags:
