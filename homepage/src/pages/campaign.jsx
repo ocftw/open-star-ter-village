@@ -44,11 +44,13 @@ export const getStaticProps = async ({ locale }) => {
   };
 
   const navigationList = [
-    { link: `/`, text: homepage[locale] },
+    { link: `#page-top`, text: backToTop[locale] },
     { link: `#about-open-source`, text: aboutOpenSourceNav[locale] },
     { link: `#our-beliefs`, text: ourBeliefsNav[locale] },
-    { link: `#instructors`, text: instructorsNav[locale] },
     { link: `#details`, text: detailsNav[locale] },
+    { link: `#instructors`, text: instructorsNav[locale] },
+    { link: `/cards`, text: cardsPage[locale] },
+    { link: `/`, text: homepage[locale] },
   ];
 
   const headInfo = {
