@@ -1,4 +1,5 @@
 ---
+image: images/uploads/open-source-opass.jpeg
 title: OPass
 description: "A sign-up app used at symposiums held by all major open-source
   groups across Taiwan "
