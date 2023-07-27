@@ -12,6 +12,7 @@ const Footer = ({ siteData }) => (
             key={link.text}
             target="_blank"
             rel="noopener noreferrer"
+            locale={false}
           >
             {link.text}
           </Link>
