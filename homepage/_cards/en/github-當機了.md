@@ -1,8 +1,8 @@
 ---
 image: images/uploads/event-card-github-is-down.jpg
 title: Github is down
-description: No one can play Initiator Contribution this round.
+description: ""
 draft: false
 type: event
 ---
-e﻿vent card
+No one can play Initiator Contribution this round.
