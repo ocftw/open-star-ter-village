@@ -127,7 +127,7 @@ export const getStaticProps = async ({ locale }) => {
       'zh-tw': '給下一代社會的日常備忘錄',
     },
     content: {
-      // Line 135. amend openess to openness
+      // Line 137. amend openess to openness
       en: `
         Let's participate in the change of our future!<br />
         <br />
