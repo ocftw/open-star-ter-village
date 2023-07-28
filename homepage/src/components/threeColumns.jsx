@@ -9,6 +9,7 @@ const ThreeColumns = ({ id, title, columns }) => (
           <div className="section-main">
             <h3>{columns[0][0]}</h3>
             <div
+              className="flex flex-col"
               dangerouslySetInnerHTML={{
                 __html: columns[0][1],
               }}
@@ -19,6 +20,7 @@ const ThreeColumns = ({ id, title, columns }) => (
           <div className="section-main">
             <h3>{columns[1][0]}</h3>
             <div
+              className="flex flex-col"
               dangerouslySetInnerHTML={{
                 __html: columns[1][1],
               }}
@@ -29,6 +31,7 @@ const ThreeColumns = ({ id, title, columns }) => (
           <div className="section-main">
             <h3>{columns[2][0]}</h3>
             <div
+              className="flex flex-col"
               dangerouslySetInnerHTML={{
                 __html: columns[2][1],
               }}

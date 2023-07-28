@@ -175,7 +175,6 @@ body {
   background: #fff;
 }
 .section-main {
-  text-align: center;
   box-shadow: 3px 3px 8px 2px #0000000a;
   padding: 30px 30px;
   transition: 0.5s all;
@@ -187,6 +186,17 @@ body {
 .section-main:hover {
   box-shadow: 3px 3px 8px 2px #0000002b;
   transition: 0.5s all;
+}
+.section-main > h1,h2,h3,h4,h5,h6 {
+  text-align: center;
+}
+.section-main ul {
+  padding: 0;
+  list-style-type: none;
+}
+.section-main ul li::before {
+  content: '🔗';
+  margin-right: 10px;
 }
 .flex-row {
   display: flex;
