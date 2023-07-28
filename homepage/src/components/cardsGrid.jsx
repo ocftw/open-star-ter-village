@@ -16,6 +16,12 @@ const CardsGrid = ({
       card.frontMatter.tags?.includes(projectCardSubtype),
     );
   }
+  // temporarily remove card content of Job card and Event card
+  if (filter === 'job' || filter === 'event') {
+    filterGroupedCards.forEach((card) => {
+      card.content = '';
+    });
+  }
 
   return (
     <div className="section" id={id}>
