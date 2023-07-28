@@ -14,4 +14,5 @@ tags:
 ---
 Developed by the Argentinian NGO "Democracia En Red”, Democracy OS is an app for democratic participation that aims to “democratize democracy”. The app allows users to engage in participatory budgeting, policy discussions, and voting simulations, as well as to express their opinions on certain policies and acquire additional information.
 
-[D﻿emocracy OS](https://democraciaos.org/es/)[W﻿ebsite](https://democraciaos.org/es/)
+- [Democracy OS](https://democraciaos.org/es/)
+- [Website](https://democraciaos.org/es/)

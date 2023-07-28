@@ -9,4 +9,4 @@ tags:
 ---
 Common Voice 是 Mozilla 的開源專案。收集世界各地的貢獻者錄音，並以 CC0 釋出至公眾領域。提供涵括各國語言、免費且自由開放的語音資料庫，讓任何人都能用以打造語音相關技術。
 
-[Mozilla Common Voice](https://commonvoice.mozilla.org/zh-TW)
+- [Mozilla Common Voice](https://commonvoice.mozilla.org/zh-TW)

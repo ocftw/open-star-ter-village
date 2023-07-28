@@ -10,4 +10,4 @@ tags:
 ---
 OCF Lab is a news platform founded by the Open Culture Foundation. It focuses on five core issues: open source code, open government, open data, digital rights, and civic technology. Through collecting, translating and covering stories on technological affairs at home and abroad in its biweekly reports, OCF Lab has become an important force promoting social progress.
 
-[Website](https://lab.ocf.tw/)
+- [Website](https://lab.ocf.tw/)
