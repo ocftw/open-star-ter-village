@@ -56,7 +56,7 @@ export const getStaticProps = async ({ locale }) => {
     'zh-tw': '事件卡',
   };
 
-  const campaignPage = {
+  const activitiesPage = {
     en: 'Activities',
     'zh-tw': '活動頁',
   };
@@ -86,7 +86,7 @@ export const getStaticProps = async ({ locale }) => {
     { link: `#project-cards`, text: projectCardTitle[locale] },
     { link: `#job-cards`, text: jobCardTitle[locale] },
     { link: `#event-cards`, text: eventCardTitle[locale] },
-    { link: `/campaign`, text: campaignPage[locale] },
+    { link: `/activities`, text: activitiesPage[locale] },
     { link: `/`, text: homepage[locale] },
   ];
 
