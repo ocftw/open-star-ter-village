@@ -1,7 +1,7 @@
 ---
 title: Inkscape
 description: 一款通用公眾授權條款釋出的開源向量圖形編輯器
-draft: false
+draft: true
 type: project
 tags:
   - open source

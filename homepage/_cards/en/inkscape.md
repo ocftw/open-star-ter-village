@@ -1,7 +1,7 @@
 ---
 title: Inkscape
 description: An open-source vector graphics editor released under General Public License
-draft: false
+draft: true
 type: project
 tags:
   - open source
