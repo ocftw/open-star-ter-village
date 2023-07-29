@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 
 const Header = ({ nav, siteData }) => (
@@ -6,7 +7,7 @@ const Header = ({ nav, siteData }) => (
       <nav className="navbar navbar-expand-lg">
         <div className="logo navbar-brand">
           <Link href="/">
-            <img src={siteData.logo} height="48" alt="logo" />
+            <Image src={siteData.logo} height="48" width="60" alt="logo" />
           </Link>
         </div>
         <button
