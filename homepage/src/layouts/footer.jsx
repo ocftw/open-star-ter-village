@@ -21,8 +21,16 @@ const Footer = ({ siteData }) => (
       <span>{siteData.title}</span>
       <Social />
       <div className="flex flex-row flex-justify-center logos margin-2-percent">
-        <Logo text="Initiator" src="/images/campaignpage/logo__OCF.png" />
-        <Logo text="Sponsor" src="/images/campaignpage/logo__FNF.png" />
+        <Logo
+          text="Initiator"
+          src="/images/campaignpage/logo__OCF.png"
+          dimension={{ width: 170, height: 34 }}
+        />
+        <Logo
+          text="Sponsor"
+          src="/images/campaignpage/logo__FNF.png"
+          dimension={{ width: 163, height: 45 }}
+        />
       </div>
     </div>
   </div>
