@@ -1,8 +1,16 @@
+import Image from 'next/image';
 import Social from './social';
 
 const Banner = ({ heroImage, title, subtitle = '', highlights = [] }) => (
   <div className="banner">
-    <img src={heroImage} />
+    <Image
+      src={heroImage}
+      alt={`${title}-hero-image`}
+      fill
+      priority
+      sizes="100vh"
+      style={{ objectFit: 'cover' }}
+    />
     <div className="container">
       <div className="banner-details">
         <h1>{title}</h1>
