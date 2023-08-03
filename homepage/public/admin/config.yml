@@ -28,6 +28,8 @@ collections: # A list of collections the CMS should be able to edit
         field: draft
       - label: 'Type'
         field: type
+      - label: 'Tags'
+        field: tags
     fields:
       - {
           label: 'Image',
