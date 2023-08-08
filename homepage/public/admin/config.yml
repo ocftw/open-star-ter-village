@@ -35,26 +35,27 @@ collections: # A list of collections the CMS should be able to edit
             widget: 'object'
             fields:
               - { label: 'Title', name: 'title', widget: 'string' }
-              - { label: 'Subtitle', name: 'subtitle', widget: 'string' }
-              - { label: 'Highlights', name: 'highlights', widget: 'list' }
+              - { label: 'Subtitle', name: 'subtitle', widget: 'string', required: false }
+              - { label: 'Highlights', name: 'highlights', widget: 'list', required: false }
           - label: 'Layout - Headline'
             name: 'layout_headline'
             widget: 'object'
             fields:
               - { label: 'Title', name: 'title', widget: 'string' }
-              - { label: 'Subtitle', name: 'subtitle', widget: 'string' }
+              - { label: 'Subtitle', name: 'subtitle', widget: 'string', required: false }
           - label: 'Layout - Image & Text'
             name: 'layout_image_text'
             widget: 'object'
             fields:
               - { label: 'Image', name: 'image', widget: 'image' }
               - { label: 'Title', name: 'title', widget: 'string' }
-              - { label: 'Subtitle', name: 'subtitle', widget: 'string' }
-              - { label: 'Text', name: 'text', widget: 'markdown' }
+              - { label: 'Subtitle', name: 'subtitle', widget: 'string', required: false }
+              - { label: 'Text', name: 'text', widget: 'markdown', required: false }
           - label: 'Layout - Section'
             name: 'layout_section'
             widget: 'list'
             fields:
+              - { label: 'Title', name: 'title', widget: 'string' }
               - {
                   name: columns,
                   label: Columns,
@@ -63,9 +64,9 @@ collections: # A list of collections the CMS should be able to edit
                   fields:
                     [
                       { label: 'Title', name: 'title', widget: 'string' },
-                      { label: 'Image', name: 'image', widget: 'image' },
-                      { label: 'Subtitle', name: 'subtitle', widget: 'string' },
-                      { label: 'Text', name: 'text', widget: 'markdown' },
+                      { label: 'Image', name: 'image', widget: 'image', required: false },
+                      { label: 'Subtitle', name: 'subtitle', widget: 'string', required: false },
+                      { label: 'Text', name: 'text', widget: 'markdown', required: false },
                     ],
                 }
 
