@@ -16,6 +16,60 @@ i18n:
   default_locale: zh-tw # TODO: change to en before launch
 
 collections: # A list of collections the CMS should be able to edit
+  - name: 'pages'
+    label: 'Pages'
+    label_singular: 'Page'
+    description: 'Pages in the website'
+    folder: 'homepage/_pages'
+    create: true
+    i18n: true
+    fields:
+      - { label: Name, name: name, widget: string, i18n: true }
+      - label: 'Layout & Content'
+        name: 'layout_list'
+        widget: 'list'
+        i18n: true
+        types:
+          - label: 'Layout - Banner'
+            name: 'layout_banner'
+            widget: 'object'
+            fields:
+              - { label: 'Title', name: 'title', widget: 'string' }
+              - { label: 'Subtitle', name: 'subtitle', widget: 'string', required: false }
+              - { label: 'Highlights', name: 'highlights', widget: 'list', required: false }
+          - label: 'Layout - Headline'
+            name: 'layout_headline'
+            widget: 'object'
+            fields:
+              - { label: 'Title', name: 'title', widget: 'string' }
+              - { label: 'Subtitle', name: 'subtitle', widget: 'string', required: false }
+          - label: 'Layout - Image & Text'
+            name: 'layout_image_text'
+            widget: 'object'
+            fields:
+              - { label: 'Image', name: 'image', widget: 'image' }
+              - { label: 'Title', name: 'title', widget: 'string' }
+              - { label: 'Subtitle', name: 'subtitle', widget: 'string', required: false }
+              - { label: 'Text', name: 'text', widget: 'markdown', required: false }
+          - label: 'Layout - Section'
+            name: 'layout_section'
+            widget: 'list'
+            fields:
+              - { label: 'Title', name: 'title', widget: 'string' }
+              - {
+                  name: columns,
+                  label: Columns,
+                  label_singular: Column,
+                  widget: list,
+                  fields:
+                    [
+                      { label: 'Title', name: 'title', widget: 'string' },
+                      { label: 'Image', name: 'image', widget: 'image', required: false },
+                      { label: 'Subtitle', name: 'subtitle', widget: 'string', required: false },
+                      { label: 'Text', name: 'text', widget: 'markdown', required: false },
+                    ],
+                }
+
   - name: 'cards'
     label: 'Cards'
     label_singular: 'Card'
