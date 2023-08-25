@@ -27,3 +27,5 @@ const Admin = () => {
 };
 
 export default Admin;
+
+Admin.getLayout = (page) => page;
