@@ -21,9 +21,16 @@
       "label_singular": "Page",
       "description": "Pages in the website",
       "folder": "homepage/_pages",
+      "slug": "{{unique_slug}}",
       "create": true,
       "i18n": true,
       "fields": [
+        {
+          "label": "Unique Slug",
+          "name": "unique_slug",
+          "widget": "string",
+          "i18n": "duplicate"
+        },
         { "label": "Name", "name": "name", "widget": "string", "i18n": true },
         {
           "label": "Layout & Content",
