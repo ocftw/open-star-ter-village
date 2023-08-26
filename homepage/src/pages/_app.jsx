@@ -37,9 +37,20 @@ const siteDataDictionary = {
   },
 };
 
+const getDefaultLayout = (page, pageProps, siteData) => {
+  return (
+    <Base nav={pageProps.navigationList} siteData={siteData}>
+      {page}
+    </Base>
+  );
+};
+
 export default function App({ Component, pageProps, router }) {
   const siteData = siteDataDictionary[router.locale];
   useRouteChangeComplete(pageview);
+
+  const getLayout = Component.getLayout || getDefaultLayout;
+
   return (
     <>
       <Head>
@@ -59,9 +70,7 @@ export default function App({ Component, pageProps, router }) {
         `,
         }}
       />
-      <Base nav={pageProps.navigationList} siteData={siteData}>
-        <Component {...pageProps} />
-      </Base>
+      {getLayout(<Component {...pageProps} />, pageProps, siteData)}
     </>
   );
 }

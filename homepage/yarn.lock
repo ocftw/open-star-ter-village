@@ -388,6 +388,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@juggle/resize-observer@npm:^3.4.0":
+  version: 3.4.0
+  resolution: "@juggle/resize-observer@npm:3.4.0"
+  checksum: 2505028c05cc2e17639fcad06218b1c4b60f932a4ebb4b41ab546ef8c157031ae377e3f560903801f6d01706dbefd4943b6c4704bf19ed86dfa1c62f1473a570
+  languageName: node
+  linkType: hard
+
 "@mapbox/jsonlint-lines-primitives@npm:~2.0.2":
   version: 2.0.2
   resolution: "@mapbox/jsonlint-lines-primitives@npm:2.0.2"
@@ -568,10 +575,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@open-starter-village/homepage@workspace:."
   dependencies:
+    decap-cms-app: ^3.0.5
     eslint: ^8.35.0
     eslint-config-next: 13.2.3
     eslint-config-prettier: ^8.8.0
-    netlify-cms-app: ^2.15.72
     next: ^13.2.3
     prettier: ^3.0.0
     react: ^18.2.0
@@ -623,6 +630,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@reduxjs/toolkit@npm:^1.9.1":
+  version: 1.9.5
+  resolution: "@reduxjs/toolkit@npm:1.9.5"
+  dependencies:
+    immer: ^9.0.21
+    redux: ^4.2.1
+    redux-thunk: ^2.4.2
+    reselect: ^4.1.8
+  peerDependencies:
+    react: ^16.9.0 || ^17.0.0 || ^18
+    react-redux: ^7.2.1 || ^8.0.2
+  peerDependenciesMeta:
+    react:
+      optional: true
+    react-redux:
+      optional: true
+  checksum: 54672c5593d05208af577e948a338f23128d3aa01ef056ab0d40bcfa14400cf6566be99e11715388f12c1d7655cdf7c5c6b63cb92eb0fecf996c454a46a3914c
+  languageName: node
+  linkType: hard
+
 "@rushstack/eslint-patch@npm:^1.1.3":
   version: 1.2.0
   resolution: "@rushstack/eslint-patch@npm:1.2.0"
@@ -648,6 +675,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/escape-html@npm:^1.0.0":
+  version: 1.0.2
+  resolution: "@types/escape-html@npm:1.0.2"
+  checksum: 42505406d8680cf735b456034f8a1464849be415271ed8682ab24c7add7d8448fd3ce3ca48ec15354d656d532c640e0f9db28adffc95bf80d61dd69c143e7c1c
+  languageName: node
+  linkType: hard
+
 "@types/hast@npm:^2.0.0":
   version: 2.3.4
   resolution: "@types/hast@npm:2.3.4"
@@ -667,10 +701,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/is-hotkey@npm:^0.1.1":
+  version: 0.1.7
+  resolution: "@types/is-hotkey@npm:0.1.7"
+  checksum: bce7c8874b30f346f20cf6cfcf4a10372962924f0e1b1a925a279004faeb276242ebfbfee47bd48df57e1021f2e3078c34e25837e226960c418d5f78f83dacea
+  languageName: node
+  linkType: hard
+
 "@types/json5@npm:^0.0.29":
   version: 0.0.29
   resolution: "@types/json5@npm:0.0.29"
   checksum: e60b153664572116dfea673c5bda7778dbff150498f44f998e34b5886d8afc47f16799280e4b6e241c0472aef1bc36add771c569c68fc5125fc2ae519a3eb9ac
+  languageName: node
+  linkType: hard
+
+"@types/lodash@npm:^4.14.149":
+  version: 4.14.197
+  resolution: "@types/lodash@npm:4.14.197"
+  checksum: 53d7567d1704de76cf33266c78062e0fd722d4b846e5b1417d0b6ef0ee41c0d9c451b92bc34f73d5f1fcc45c7d36511e92f6f47a9279b48157ba60a92ddaa078
   languageName: node
   linkType: hard
 
@@ -680,6 +728,15 @@ __metadata:
   dependencies:
     "@types/unist": "*"
   checksum: 3f587bfc0a9a2403ecadc220e61031b01734fedaf82e27eb4d5ba039c0eb54db8c85681ccc070ab4df3f7ec711b736a82b990e69caa14c74bf7ac0ccf2ac7313
+  languageName: node
+  linkType: hard
+
+"@types/mdast@npm:^3.0.10":
+  version: 3.0.12
+  resolution: "@types/mdast@npm:3.0.12"
+  dependencies:
+    "@types/unist": ^2
+  checksum: 83adb8679b9d139f69f63554d120af921e9f1289e9903a2c99e0554a327c8524a6c0beccdc0721e4fdbccc606e81964fecb0d390d53df0f74360938e22f1a469
   languageName: node
   linkType: hard
 
@@ -752,6 +809,13 @@ __metadata:
   version: 2.0.6
   resolution: "@types/unist@npm:2.0.6"
   checksum: 25cb860ff10dde48b54622d58b23e66214211a61c84c0f15f88d38b61aa1b53d4d46e42b557924a93178c501c166aa37e28d7f6d994aba13d24685326272d5db
+  languageName: node
+  linkType: hard
+
+"@types/unist@npm:^2":
+  version: 2.0.7
+  resolution: "@types/unist@npm:2.0.7"
+  checksum: b97a219554e83431f19a93ff113306bf0512909292815e8f32964e47d041c505af1aaa2a381c23e137c4c0b962fad58d4ce9c5c3256642921a466be43c1fc715
   languageName: node
   linkType: hard
 
@@ -902,15 +966,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ajv@npm:8.1.0":
-  version: 8.1.0
-  resolution: "ajv@npm:8.1.0"
+"ajv@npm:8.12.0":
+  version: 8.12.0
+  resolution: "ajv@npm:8.12.0"
   dependencies:
     fast-deep-equal: ^3.1.1
     json-schema-traverse: ^1.0.0
     require-from-string: ^2.0.2
     uri-js: ^4.2.2
-  checksum: 612cb595ff113ffca09bce2987bf76b117de9b5257981eb21369ed444fb57ecce0025d43476788b7ca5dd0d5c28f8e1dcf428cfbd0803fc5e576647d4ef4bfbb
+  checksum: 4dc13714e316e67537c8b31bc063f99a1d9d9a497eb4bbd55191ac0dcd5e4985bbb71570352ad6f1e76684fb6d790928f96ba3b2d4fd6e10024be9612fe3f001
   languageName: node
   linkType: hard
 
@@ -1418,6 +1482,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"clsx@npm:^1.1.1":
+  version: 1.2.1
+  resolution: "clsx@npm:1.2.1"
+  checksum: 30befca8019b2eb7dbad38cff6266cf543091dae2825c856a62a8ccf2c3ab9c2907c4d12b288b73101196767f66812365400a227581484a05f968b0307cfaf12
+  languageName: node
+  linkType: hard
+
 "codemirror@npm:^5.46.0":
   version: 5.65.12
   resolution: "codemirror@npm:5.65.12"
@@ -1482,6 +1553,13 @@ __metadata:
   version: 1.8.2
   resolution: "common-tags@npm:1.8.2"
   checksum: 767a6255a84bbc47df49a60ab583053bb29a7d9687066a18500a516188a062c4e4cd52de341f22de0b07062e699b1b8fe3cfa1cb55b241cb9301aeb4f45b4dff
+  languageName: node
+  linkType: hard
+
+"compute-scroll-into-view@npm:^1.0.20":
+  version: 1.0.20
+  resolution: "compute-scroll-into-view@npm:1.0.20"
+  checksum: f15fab29221953620735393ac1866541aab0d27d28078bedbba071a291ee9c8cc1a72bee302cf0bc06ed83c5e55afb74ebcbd634a63671ba33cf1fb1c51d3308
   languageName: node
   linkType: hard
 
@@ -1588,7 +1666,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:^3.1.0, debug@npm:^3.2.7":
+"debug@npm:^3.2.7":
   version: 3.2.7
   resolution: "debug@npm:3.2.7"
   dependencies:
@@ -1606,6 +1684,619 @@ __metadata:
     supports-color:
       optional: true
   checksum: 3dbad3f94ea64f34431a9cbf0bafb61853eda57bff2880036153438f50fb5a84f27683ba0d8e5426bf41a8c6ff03879488120cf5b3a761e77953169c0600a708
+  languageName: node
+  linkType: hard
+
+"decap-cms-app@npm:^3.0.5":
+  version: 3.0.5
+  resolution: "decap-cms-app@npm:3.0.5"
+  dependencies:
+    "@emotion/core": ^10.0.35
+    "@emotion/styled": ^10.0.27
+    codemirror: ^5.46.0
+    decap-cms-backend-azure: ^3.0.1
+    decap-cms-backend-bitbucket: ^3.0.1
+    decap-cms-backend-git-gateway: ^3.0.1
+    decap-cms-backend-github: ^3.0.1
+    decap-cms-backend-gitlab: ^3.0.1
+    decap-cms-backend-proxy: ^3.0.1
+    decap-cms-backend-test: ^3.0.1
+    decap-cms-core: ^3.2.2
+    decap-cms-editor-component-image: ^3.0.0
+    decap-cms-lib-auth: ^3.0.0
+    decap-cms-lib-util: ^3.0.0
+    decap-cms-lib-widgets: ^3.0.0
+    decap-cms-locales: ^3.1.0
+    decap-cms-ui-default: ^3.0.1
+    decap-cms-widget-boolean: ^3.0.1
+    decap-cms-widget-code: ^3.0.1
+    decap-cms-widget-colorstring: ^3.0.1
+    decap-cms-widget-date: ^3.0.1
+    decap-cms-widget-datetime: ^3.0.1
+    decap-cms-widget-file: ^3.0.1
+    decap-cms-widget-image: ^3.0.1
+    decap-cms-widget-list: ^3.0.1
+    decap-cms-widget-map: ^3.0.1
+    decap-cms-widget-markdown: ^3.0.1
+    decap-cms-widget-number: ^3.0.1
+    decap-cms-widget-object: ^3.0.1
+    decap-cms-widget-relation: ^3.0.1
+    decap-cms-widget-select: ^3.0.1
+    decap-cms-widget-string: ^3.0.1
+    decap-cms-widget-text: ^3.0.1
+    immutable: ^3.7.6
+    lodash: ^4.17.11
+    moment: ^2.24.0
+    prop-types: ^15.7.2
+    react-immutable-proptypes: ^2.1.0
+    uuid: ^3.3.2
+  peerDependencies:
+    react: ^16.8.4 || ^17.0.0
+    react-dom: ^16.8.4 || ^17.0.0
+  checksum: 8b1e09a83b3cacce520cce9e5d0cb489b576c4dc14819d429ce7769c503228ab92c424966e65e4fff076acbbaab5a3082e602d9d6f071dc9626a38037f807342
+  languageName: node
+  linkType: hard
+
+"decap-cms-backend-azure@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "decap-cms-backend-azure@npm:3.0.1"
+  dependencies:
+    js-base64: ^3.0.0
+    semaphore: ^1.1.0
+  peerDependencies:
+    "@emotion/core": ^10.0.9
+    "@emotion/styled": ^10.0.9
+    decap-cms-lib-auth: ^3.0.0
+    decap-cms-lib-util: ^3.0.0
+    decap-cms-ui-default: ^3.0.0
+    immutable: ^3.7.6
+    lodash: ^4.17.11
+    prop-types: ^15.7.2
+    react: ^16.8.4 || ^17.0.0
+  checksum: b09866dbe69b2d910c3798d7735d1206962c460bee86d9e99322937c7c159464361a27d81bb3834c0769951bc68f9cf6a48b1ce479f056858e27f9a6f2211769
+  languageName: node
+  linkType: hard
+
+"decap-cms-backend-bitbucket@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "decap-cms-backend-bitbucket@npm:3.0.1"
+  dependencies:
+    common-tags: ^1.8.0
+    js-base64: ^3.0.0
+    semaphore: ^1.1.0
+    what-the-diff: ^0.6.0
+  peerDependencies:
+    "@emotion/core": ^10.0.35
+    "@emotion/styled": ^10.0.27
+    decap-cms-lib-auth: ^3.0.0
+    decap-cms-lib-util: ^3.0.0
+    decap-cms-ui-default: ^3.0.0
+    immutable: ^3.7.6
+    lodash: ^4.17.11
+    prop-types: ^15.7.2
+    react: ^16.8.4 || ^17.0.0
+  checksum: 0f6ec77330189b0572c711b4aad0d5240ed5ce5f9fbd727de2a26fabc24722c70b9d51d759b8fba241bc11f8d57e57a363cf1897d2f681d0fd9daf268258d7aa
+  languageName: node
+  linkType: hard
+
+"decap-cms-backend-git-gateway@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "decap-cms-backend-git-gateway@npm:3.0.1"
+  dependencies:
+    gotrue-js: ^0.9.24
+    ini: ^2.0.0
+    jwt-decode: ^3.0.0
+    minimatch: ^3.0.4
+  peerDependencies:
+    "@emotion/core": ^10.0.35
+    "@emotion/styled": ^10.0.27
+    decap-cms-backend-bitbucket: ^3.0.0
+    decap-cms-backend-github: ^3.0.0
+    decap-cms-backend-gitlab: ^3.0.0
+    decap-cms-lib-auth: ^3.0.0
+    decap-cms-lib-util: ^3.0.0
+    decap-cms-ui-default: ^3.0.0
+    lodash: ^4.17.11
+    prop-types: ^15.7.2
+    react: ^16.8.4 || ^17.0.0
+  checksum: 0c7993c35fec3cf22c2d796eb3475e2aaf51c1e14110a793eb70049309e277198763e755b35c92e0a8800e557ac71dff7c620d11b2582e63ab2b431258f8450b
+  languageName: node
+  linkType: hard
+
+"decap-cms-backend-github@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "decap-cms-backend-github@npm:3.0.1"
+  dependencies:
+    apollo-cache-inmemory: ^1.6.2
+    apollo-client: ^2.6.3
+    apollo-link-context: ^1.0.18
+    apollo-link-http: ^1.5.15
+    common-tags: ^1.8.0
+    graphql: ^15.0.0
+    graphql-tag: ^2.10.1
+    js-base64: ^3.0.0
+    semaphore: ^1.1.0
+  peerDependencies:
+    "@emotion/core": ^10.0.35
+    "@emotion/styled": ^10.0.27
+    decap-cms-lib-auth: ^3.0.0
+    decap-cms-lib-util: ^3.0.0
+    decap-cms-ui-default: ^3.0.0
+    lodash: ^4.17.11
+    prop-types: ^15.7.2
+    react: ^16.8.4 || ^17.0.0
+  checksum: f5f0e66ca1e38c485b36ac0654ff66283725dfc1c6861b7f136030168ecabd5c5a4c269dcd547a7c2d204bfa7899a93471d71d5d2bd63c45ba83aba232c5d21f
+  languageName: node
+  linkType: hard
+
+"decap-cms-backend-gitlab@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "decap-cms-backend-gitlab@npm:3.0.1"
+  dependencies:
+    apollo-cache-inmemory: ^1.6.2
+    apollo-client: ^2.6.3
+    apollo-link-context: ^1.0.18
+    apollo-link-http: ^1.5.15
+    js-base64: ^3.0.0
+    semaphore: ^1.1.0
+  peerDependencies:
+    "@emotion/core": ^10.0.35
+    "@emotion/styled": ^10.0.27
+    decap-cms-lib-auth: ^3.0.0
+    decap-cms-lib-util: ^3.0.0
+    decap-cms-ui-default: ^3.0.0
+    immutable: ^3.7.6
+    lodash: ^4.17.11
+    prop-types: ^15.7.2
+    react: ^16.8.4 || ^17.0.0
+  checksum: 150612220239caf9f495f2872b56f57978f7012616a6c60057d31f96670477fe5e3a4f511ad69abb1f2ec0eb8f6194d71a210a08bbe601e23e1bcd41fdb3816f
+  languageName: node
+  linkType: hard
+
+"decap-cms-backend-proxy@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "decap-cms-backend-proxy@npm:3.0.1"
+  peerDependencies:
+    "@emotion/core": ^10.0.35
+    "@emotion/styled": ^10.0.27
+    decap-cms-lib-util: ^3.0.0
+    decap-cms-ui-default: ^3.0.0
+    prop-types: ^15.7.2
+    react: ^16.8.4 || ^17.0.0
+  checksum: ebe32b9454e022ab25576f597ef174ca5eb76435d018c2662ec265a236c594ab04fb25946dc1b58999daadb14b7d925a6a55d38e14345780bc801a7968a18b43
+  languageName: node
+  linkType: hard
+
+"decap-cms-backend-test@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "decap-cms-backend-test@npm:3.0.1"
+  peerDependencies:
+    "@emotion/core": ^10.0.35
+    "@emotion/styled": ^10.0.27
+    decap-cms-lib-util: ^3.0.0
+    decap-cms-ui-default: ^3.0.0
+    lodash: ^4.17.11
+    prop-types: ^15.7.2
+    react: ^16.8.4 || ^17.0.0
+    uuid: ^3.3.2
+  checksum: 37476556b7a7c2a1460b1ae3614a04dc7a7f386c1d0ec5bbe7befcc97782e60c07b6401b1aefce60c320d6f7ea95a8625d45c657e83e0d97b91466cdf8532a28
+  languageName: node
+  linkType: hard
+
+"decap-cms-core@npm:^3.2.2":
+  version: 3.2.2
+  resolution: "decap-cms-core@npm:3.2.2"
+  dependencies:
+    "@iarna/toml": 2.2.5
+    "@reduxjs/toolkit": ^1.9.1
+    ajv: 8.12.0
+    ajv-errors: ^3.0.0
+    ajv-keywords: ^5.0.0
+    clean-stack: ^4.1.0
+    copy-text-to-clipboard: ^3.0.0
+    deepmerge: ^4.2.2
+    diacritics: ^1.3.0
+    fuzzy: ^0.1.1
+    gotrue-js: ^0.9.24
+    gray-matter: ^4.0.2
+    history: ^4.7.2
+    immer: ^9.0.0
+    js-base64: ^3.0.0
+    jwt-decode: ^3.0.0
+    node-polyglot: ^2.3.0
+    prop-types: ^15.7.2
+    react: ^16.8.4
+    react-dnd: ^14.0.0
+    react-dnd-html5-backend: ^14.0.0
+    react-dom: ^16.8.4
+    react-frame-component: ^5.2.1
+    react-hot-loader: ^4.8.0
+    react-immutable-proptypes: ^2.1.0
+    react-is: 16.13.1
+    react-markdown: ^6.0.2
+    react-modal: ^3.8.1
+    react-polyglot: ^0.7.0
+    react-redux: ^7.2.0
+    react-router-dom: ^5.2.0
+    react-scroll-sync: ^0.9.0
+    react-sortable-hoc: ^2.0.0
+    react-split-pane: ^0.1.85
+    react-toastify: ^9.1.1
+    react-topbar-progress-indicator: ^4.0.0
+    react-virtualized-auto-sizer: ^1.0.2
+    react-waypoint: ^10.0.0
+    react-window: ^1.8.5
+    redux: ^4.0.5
+    redux-devtools-extension: ^2.13.8
+    redux-notifications: ^4.0.1
+    redux-thunk: ^2.3.0
+    remark-gfm: 1.0.0
+    sanitize-filename: ^1.6.1
+    semaphore: ^1.0.5
+    tomlify-j0.4: ^3.0.0-alpha.0
+    url: ^0.11.0
+    url-join: ^4.0.1
+    what-input: ^5.1.4
+    yaml: ^1.8.3
+  peerDependencies:
+    "@emotion/core": ^10.0.35
+    "@emotion/styled": ^10.0.27
+    decap-cms-editor-component-image: ^3.0.0
+    decap-cms-lib-auth: ^3.0.0
+    decap-cms-lib-util: ^3.0.0
+    decap-cms-lib-widgets: ^3.0.0
+    decap-cms-ui-default: ^3.0.0
+    immutable: ^3.7.6
+    lodash: ^4.17.11
+    moment: ^2.24.0
+    prop-types: ^15.7.2
+    react: ^16.8.4 || ^17.0.0
+    react-dom: ^16.8.4 || ^17.0.0
+    react-immutable-proptypes: ^2.1.0
+  checksum: fe31daf6d754b4b556a83d19bf2a0f13a89d67384d8c91d39392eb198707cff8b4ff65d3c6d6b0bddfeb7adf3d484476cb6a22e8244a4e6b40c076b821b28dfe
+  languageName: node
+  linkType: hard
+
+"decap-cms-editor-component-image@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "decap-cms-editor-component-image@npm:3.0.0"
+  peerDependencies:
+    react: ^16.8.4 || ^17.0.0
+  checksum: 5fc2d91b41cb1bd9e71b97459d6f597fa03267a32f44bba4dde738b4a98bab572656975ca7ceb1bfc2d1d19407089fdd404291222a7152beb2bea5e0e2cd6391
+  languageName: node
+  linkType: hard
+
+"decap-cms-lib-auth@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "decap-cms-lib-auth@npm:3.0.0"
+  peerDependencies:
+    immutable: ^3.7.6
+    lodash: ^4.17.11
+    uuid: ^3.3.2
+  checksum: e600ed5fbc6491e3016d2ca5ff0899484e8a416fc7c084e39022a5dc426d1f2a54a925eda4442c30dca6720510813b7d8029097a4e522182e00da0575e00851e
+  languageName: node
+  linkType: hard
+
+"decap-cms-lib-util@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "decap-cms-lib-util@npm:3.0.0"
+  dependencies:
+    js-sha256: ^0.9.0
+    localforage: ^1.7.3
+    semaphore: ^1.1.0
+  peerDependencies:
+    immutable: ^3.7.6
+    lodash: ^4.17.11
+  checksum: ecd08bec5093be54bfd88a56b6f161f66d19acfd7823b52f90c112621fee043558fb9e62461b83d8e4e40d5e69d8a4d2630b7fb2a46b2f7347c01753c1772635
+  languageName: node
+  linkType: hard
+
+"decap-cms-lib-widgets@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "decap-cms-lib-widgets@npm:3.0.0"
+  peerDependencies:
+    immutable: ^3.7.6
+    lodash: ^4.17.11
+    moment: ^2.24.0
+  checksum: 06068af2e47c913b1322783dadd195ac23c5c69b7000013b37538a49792f4a00cbb46360eea2da10167613c6d56c7f733dfc59ec516b1c71dbb8bbc5db8080e8
+  languageName: node
+  linkType: hard
+
+"decap-cms-locales@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "decap-cms-locales@npm:3.1.0"
+  checksum: 94194e381ae1315f16f171f410c91e50eac94324f9ae8d648fe89aa0bc72cf1632129a714dc9d27a270332454b3f9374df0735d4a6304e185d81f67a0dd1a4ad
+  languageName: node
+  linkType: hard
+
+"decap-cms-ui-default@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "decap-cms-ui-default@npm:3.0.1"
+  dependencies:
+    react-aria-menubutton: ^7.0.0
+    react-transition-group: ^4.4.5
+  peerDependencies:
+    "@emotion/core": ^10.0.35
+    "@emotion/styled": ^10.0.27
+    lodash: ^4.17.11
+    prop-types: ^15.7.2
+    react: ^16.8.4 || ^17.0.0
+  checksum: 2fc0d83451be16671051a0918258ea7deca8a62c1e1033a98dc241a06610afda826df588799590d88d30dd6e8f907b2fa16c9934ffcdff456bf754865a0d86d9
+  languageName: node
+  linkType: hard
+
+"decap-cms-widget-boolean@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "decap-cms-widget-boolean@npm:3.0.1"
+  peerDependencies:
+    "@emotion/core": ^10.0.35
+    decap-cms-ui-default: ^3.0.0
+    lodash: ^4.17.11
+    prop-types: ^15.7.2
+    react: ^16.8.4 || ^17.0.0
+    react-immutable-proptypes: ^2.1.0
+  checksum: 0ca915a08740e9041e58567645fd3b320c67848e3ac72ee6b7953d22244223d88b9cb9477d02cac59b4bca729d0a4d1b33a7747a9433e3e8c392615fd8282af9
+  languageName: node
+  linkType: hard
+
+"decap-cms-widget-code@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "decap-cms-widget-code@npm:3.0.1"
+  dependencies:
+    react-codemirror2: ^7.0.0
+    react-select: ^4.0.0
+  peerDependencies:
+    "@emotion/core": ^10.0.35
+    codemirror: ^5.46.0
+    decap-cms-ui-default: ^3.0.0
+    lodash: ^4.17.11
+    react: ^16.8.4 || ^17.0.0
+  checksum: 8f25a6462c86b7e6c40ddbfbed4cda1bb1a721125070b44660212725bd95dd1da8ea18fdc4604e93c6ab679f87df82d283b59533b931e87526744b1b867b8908
+  languageName: node
+  linkType: hard
+
+"decap-cms-widget-colorstring@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "decap-cms-widget-colorstring@npm:3.0.1"
+  dependencies:
+    react-color: ^2.18.1
+    validate-color: ^2.1.0
+  peerDependencies:
+    "@emotion/core": ^10.0.35
+    "@emotion/styled": ^10.0.27
+    decap-cms-ui-default: ^3.0.0
+    prop-types: ^15.7.2
+    react: ^16.8.4 || ^17.0.0
+  checksum: d345d697e7e712583d9b4e53d1002ec6c91426ba99452389bd36ba3493b3951d081a1c2ebd2d1c73fc590db339d5b04fa9ce8c6c809e8580065dd182571b27a8
+  languageName: node
+  linkType: hard
+
+"decap-cms-widget-date@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "decap-cms-widget-date@npm:3.0.1"
+  dependencies:
+    react-datetime: ^3.1.1
+  peerDependencies:
+    "@emotion/core": ^10.0.35
+    "@emotion/styled": ^10.0.27
+    decap-cms-ui-default: ^3.0.0
+    moment: ^2.24.0
+    prop-types: ^15.7.2
+    react: ^16.8.4 || ^17.0.0
+    react-dom: ^16.8.4 || ^17.0.0
+  checksum: 54a295177b2675b48538552902911357191d59a5f572d5444ab383688c0e21b3faaeca635846dded36060c02e7b6337b006d04bb8e32ee3b1d5be44b02dfb327
+  languageName: node
+  linkType: hard
+
+"decap-cms-widget-datetime@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "decap-cms-widget-datetime@npm:3.0.1"
+  dependencies:
+    react-datetime: ^3.1.1
+  peerDependencies:
+    "@emotion/core": ^10.0.35
+    decap-cms-widget-date: ^3.0.0
+    react: ^16.8.4 || ^17.0.0
+  checksum: 0c3020500a158fe5913e4f4fb60ecb22770a6226e5d57f693c1cb444a4628d94f05eeb6c655c2700d055713d484ba9674deed52000cc3da89c7ed624c518ac57
+  languageName: node
+  linkType: hard
+
+"decap-cms-widget-file@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "decap-cms-widget-file@npm:3.0.1"
+  dependencies:
+    array-move: 4.0.0
+    common-tags: ^1.8.0
+    react-sortable-hoc: ^2.0.0
+  peerDependencies:
+    "@emotion/core": ^10.0.35
+    "@emotion/styled": ^10.0.27
+    decap-cms-ui-default: ^3.0.0
+    immutable: ^3.7.6
+    prop-types: ^15.7.2
+    react: ^16.8.4 || ^17.0.0
+    react-immutable-proptypes: ^2.1.0
+    uuid: ^3.3.2
+  checksum: 29320a331f6e9a3059c4978b9f373c44a0a3e20f7623a531a225326a46ee54c8354ac7e9b1c42d8e531c1fcbcbae2e60d71c78b61ed928c52b8ce5572f7318b0
+  languageName: node
+  linkType: hard
+
+"decap-cms-widget-image@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "decap-cms-widget-image@npm:3.0.1"
+  peerDependencies:
+    "@emotion/core": ^10.0.35
+    "@emotion/styled": ^10.0.27
+    decap-cms-ui-default: ^3.0.0
+    decap-cms-widget-file: ^3.0.0
+    immutable: ^3.7.6
+    prop-types: ^15.7.2
+    react: ^16.8.4 || ^17.0.0
+  checksum: cc14bc422d5b2d02a588fb0fda63495a2712f6976f85be7bd91b40d22f5d801172406b905de563ba191c511613df8d73a482f5722367d0d50765fc2f2f8355d5
+  languageName: node
+  linkType: hard
+
+"decap-cms-widget-list@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "decap-cms-widget-list@npm:3.0.1"
+  dependencies:
+    react-sortable-hoc: ^2.0.0
+  peerDependencies:
+    "@emotion/core": ^10.0.35
+    "@emotion/styled": ^10.0.27
+    decap-cms-lib-widgets: ^3.0.0
+    decap-cms-ui-default: ^3.0.0
+    decap-cms-widget-object: ^3.0.0
+    immutable: ^3.7.6
+    lodash: ^4.17.11
+    prop-types: ^15.7.2
+    react: ^16.8.4 || ^17.0.0
+    react-immutable-proptypes: ^2.1.0
+  checksum: 97f2cc98c30575d88d1470046226c1a48dfb8110c248f5a614843b8a89936283c634149880cb2e9c599cdb26ffb9d35c0248a8efd75085e17fd78bc41ad32830
+  languageName: node
+  linkType: hard
+
+"decap-cms-widget-map@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "decap-cms-widget-map@npm:3.0.1"
+  dependencies:
+    ol: ^6.9.0
+  peerDependencies:
+    "@emotion/core": ^10.0.35
+    decap-cms-ui-default: ^3.0.0
+    lodash: ^4.17.11
+    prop-types: ^15.7.2
+    react: ^16.8.4 || ^17.0.0
+    react-immutable-proptypes: ^2.1.0
+  checksum: 878d3e160f6b38896ea28c08a453ed1844bb28b2399ceb18bb98febe8a93b7cc03f28f27c59f9d2c064c83fb7248b44251d14204baff738d34a718caa73f24ba
+  languageName: node
+  linkType: hard
+
+"decap-cms-widget-markdown@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "decap-cms-widget-markdown@npm:3.0.1"
+  dependencies:
+    dompurify: ^2.2.6
+    is-hotkey: ^0.2.0
+    is-url: ^1.2.4
+    mdast-util-definitions: ^1.2.3
+    mdast-util-to-string: ^1.0.5
+    rehype-parse: ^6.0.0
+    rehype-remark: ^8.0.0
+    rehype-stringify: ^7.0.0
+    remark-parse: ^6.0.3
+    remark-rehype: ^4.0.0
+    remark-slate: ^1.8.6
+    remark-slate-transformer: ^0.7.4
+    remark-stringify: ^6.0.4
+    slate: ^0.91.1
+    slate-base64-serializer: ^0.2.107
+    slate-history: ^0.93.0
+    slate-plain-serializer: ^0.7.1
+    slate-react: ^0.91.2
+    slate-soft-break: ^0.9.0
+    unified: ^7.1.0
+    unist-builder: ^1.0.3
+    unist-util-visit-parents: ^2.0.1
+  peerDependencies:
+    "@emotion/core": ^10.0.35
+    "@emotion/styled": ^10.0.27
+    decap-cms-ui-default: ^3.0.0
+    immutable: ^3.7.6
+    lodash: ^4.17.11
+    prop-types: ^15.7.2
+    react: ^16.8.4 || ^17.0.0
+    react-dom: ^16.8.4 || ^17.0.0
+    react-immutable-proptypes: ^2.1.0
+  checksum: e1461729e128fa3de535999a20e85b60122f0e9f9983ddda23e5aea8a852387351cb3b52dbb551427c513f12eacce52ce1a53663d78f15c322adfdf2c37d5eb7
+  languageName: node
+  linkType: hard
+
+"decap-cms-widget-number@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "decap-cms-widget-number@npm:3.0.1"
+  peerDependencies:
+    decap-cms-ui-default: ^3.0.0
+    prop-types: ^15.7.2
+    react: ^16.8.4 || ^17.0.0
+  checksum: 7968bd9c1ceacb1ac759f9a99d12e265173f54ce8904ee1dc1c1867d39fbc54caed94f679b8246012c702730103c6c720654fe3b2b95e593b7d77371d92608ac
+  languageName: node
+  linkType: hard
+
+"decap-cms-widget-object@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "decap-cms-widget-object@npm:3.0.1"
+  peerDependencies:
+    "@emotion/core": ^10.0.35
+    "@emotion/styled": ^10.0.27
+    decap-cms-ui-default: ^3.0.0
+    immutable: ^3.7.6
+    lodash: ^4.17.11
+    prop-types: ^15.7.2
+    react: ^16.8.4 || ^17.0.0
+    react-immutable-proptypes: ^2.1.0
+  checksum: 00af666f15e714823fd974e06c02942d9ae7dd5187cb605e5fa0d3a06610b79931a6d876a4383133e66a49d6e77d61861215a41e93e16e4eafcf56a5b467fad4
+  languageName: node
+  linkType: hard
+
+"decap-cms-widget-relation@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "decap-cms-widget-relation@npm:3.0.1"
+  dependencies:
+    react-select: ^4.0.0
+    react-sortable-hoc: ^2.0.0
+    react-window: ^1.8.5
+  peerDependencies:
+    "@emotion/core": ^10.0.35
+    "@emotion/styled": ^10.0.27
+    decap-cms-lib-widgets: ^3.0.0
+    decap-cms-ui-default: ^3.0.0
+    immutable: ^3.7.6
+    lodash: ^4.17.11
+    prop-types: ^15.7.2
+    react: ^16.8.4 || ^17.0.0
+    uuid: ^3.3.2
+  checksum: 6672d6828be1b7174681bfbcde31a9a8d69d42cef18eab8c57ac2bfdfb26b04f3a193e55ce2488b134d97c7982729e93548dade04ad57969ea3b9ca9bb2d88ec
+  languageName: node
+  linkType: hard
+
+"decap-cms-widget-select@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "decap-cms-widget-select@npm:3.0.1"
+  dependencies:
+    react-select: ^4.0.0
+  peerDependencies:
+    decap-cms-lib-widgets: ^3.0.0
+    decap-cms-ui-default: ^3.0.0
+    immutable: ^3.7.6
+    prop-types: ^15.7.2
+    react: ^16.8.4 || ^17.0.0
+    react-immutable-proptypes: ^2.1.0
+  checksum: d53a7417b162c783c1148f7c29c9794fa5c0dfab2da5625b823de25766d4d5e62a8a0a433de5351f19560b98915d3e2e2ad4417ac156fb15d666e722f6129c1a
+  languageName: node
+  linkType: hard
+
+"decap-cms-widget-string@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "decap-cms-widget-string@npm:3.0.1"
+  peerDependencies:
+    decap-cms-ui-default: ^3.0.0
+    prop-types: ^15.7.2
+    react: ^16.8.4 || ^17.0.0
+  checksum: 477b5ea58dba438f64024e34466eb52e3a1bda0efaa89e73d4e07a5a5153c23c54f656134e374cd5827ad81acb546d297e0c60b404fffa08fd38263f0d99cb47
+  languageName: node
+  linkType: hard
+
+"decap-cms-widget-text@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "decap-cms-widget-text@npm:3.0.1"
+  dependencies:
+    react-textarea-autosize: ^8.0.0
+  peerDependencies:
+    decap-cms-ui-default: ^3.0.0
+    prop-types: ^15.7.2
+    react: ^16.8.4 || ^17.0.0
+  checksum: b2509ae00a4f0a24c345a9b5cdec61668ecf213c53cdd43599966278778cd5afdd69aaf8c197e559b46dd2e7b1fa2e6c806e10edb589de589262a2d094150b4e
   languageName: node
   linkType: hard
 
@@ -1713,12 +2404,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"direction@npm:^0.1.5":
-  version: 0.1.5
-  resolution: "direction@npm:0.1.5"
+"direction@npm:^1.0.3":
+  version: 1.0.4
+  resolution: "direction@npm:1.0.4"
   bin:
     direction: cli.js
-  checksum: bf7d6ceca38f1cd4ffd33777207d0d64fe6075a2dee9c2b6c99b18ec9550fe20526a65baf1e0c1c9e683af6f4be27f84d55f753fc0c50df56dbd5551814b70c8
+  checksum: 572ac399093d7c9f2181c96828d252922e2a962b8f31a7fc118e3f7619592c566cc2ed313baf7703f17b2be00cd3c1402550140d0c3f4f70362976376a08b095
   languageName: node
   linkType: hard
 
@@ -1910,6 +2601,13 @@ __metadata:
     is-date-object: ^1.0.1
     is-symbol: ^1.0.2
   checksum: 4ead6671a2c1402619bdd77f3503991232ca15e17e46222b0a41a5d81aebc8740a77822f5b3c965008e631153e9ef0580540007744521e72de8e33599fca2eed
+  languageName: node
+  linkType: hard
+
+"escape-html@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "escape-html@npm:1.0.3"
+  checksum: 6213ca9ae00d0ab8bccb6d8d4e0a98e76237b2410302cf7df70aaa6591d509a2a37ce8998008cbecae8fc8ffaadf3fb0229535e6a145f3ce0b211d060decbb24
   languageName: node
   linkType: hard
 
@@ -2218,15 +2916,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esrever@npm:^0.2.0":
-  version: 0.2.0
-  resolution: "esrever@npm:0.2.0"
-  bin:
-    esrever: bin/esrever
-  checksum: 2404ae76ff8f04979c9e2eba4d5b1c03b07bb754f284af1115d1566c27660a3f42bb7c64e3a08deed6e7ce5aea12ffe3cb130955d619d278323ac5482300b144
-  languageName: node
-  linkType: hard
-
 "estraverse@npm:^5.1.0, estraverse@npm:^5.2.0, estraverse@npm:^5.3.0":
   version: 5.3.0
   resolution: "estraverse@npm:5.3.0"
@@ -2430,13 +3119,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"get-document@npm:1":
-  version: 1.0.0
-  resolution: "get-document@npm:1.0.0"
-  checksum: b181cc60e41333c3b509be6daa69ae611e55f6ab1324d876c6df4c0066ff47af05fbb339a8a68d83ee13b12c6f0908e7d38fe84459bb24fee6ae6db7138a6d37
-  languageName: node
-  linkType: hard
-
 "get-intrinsic@npm:^1.0.2, get-intrinsic@npm:^1.1.1, get-intrinsic@npm:^1.1.3, get-intrinsic@npm:^1.2.0":
   version: 1.2.0
   resolution: "get-intrinsic@npm:1.2.0"
@@ -2462,15 +3144,6 @@ __metadata:
   version: 4.4.0
   resolution: "get-tsconfig@npm:4.4.0"
   checksum: e193558b4f0c84c81ae9688cf5b9950dc0b341e44f91b002713fd0c37cfb73108e1cd9998ed540bcc423f193fde32cc58a15e99dd469f5158a2eb4a148611176
-  languageName: node
-  linkType: hard
-
-"get-window@npm:^1.1.1":
-  version: 1.1.2
-  resolution: "get-window@npm:1.1.2"
-  dependencies:
-    get-document: 1
-  checksum: 2475b4e33811b6ee3b3c3734f7901f30e26da8f436b3396cc9b8e2b0f2081ba3ca6ab08c70a1b393f4023d1a4c2d9a7a39760793e310a1ea42f0847300f57cc0
   languageName: node
   linkType: hard
 
@@ -2994,6 +3667,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"immer@npm:^9.0.21, immer@npm:^9.0.6":
+  version: 9.0.21
+  resolution: "immer@npm:9.0.21"
+  checksum: 70e3c274165995352f6936695f0ef4723c52c92c92dd0e9afdfe008175af39fa28e76aafb3a2ca9d57d1fb8f796efc4dd1e1cc36f18d33fa5b74f3dfb0375432
+  languageName: node
+  linkType: hard
+
 "immutable@npm:^3.7.6":
   version: 3.8.2
   resolution: "immutable@npm:3.8.2"
@@ -3218,10 +3898,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-hotkey@npm:0.1.4":
-  version: 0.1.4
-  resolution: "is-hotkey@npm:0.1.4"
-  checksum: d02af3f4840fd7bebf2e890f32e5e889e391f856bae4aab1085632b5bbdd4929e879008db4ee223bd8192b2d20fbac799cca2b6e912c3a10d5f2e03ebdbf5e47
+"is-hotkey@npm:^0.1.6":
+  version: 0.1.8
+  resolution: "is-hotkey@npm:0.1.8"
+  checksum: 793d0cccaf804583d8f4b835e040d4b6a74cb3f8d4094cb8188ed7cc86e6edf8f650fc80fabd4309e6c29938f5b0e9a17b45504b29dbf92735ef8d780d613aa0
   languageName: node
   linkType: hard
 
@@ -3229,13 +3909,6 @@ __metadata:
   version: 0.2.0
   resolution: "is-hotkey@npm:0.2.0"
   checksum: 97d295cfd8c3eb2c9b218daee5bff0ddaf47210930e3eb1eff36d2e6ad74854028203c640f35ea2d183d0cba94ac4c4bcd291925bc3a343d8a4c7d2c5ab3e2a6
-  languageName: node
-  linkType: hard
-
-"is-in-browser@npm:^1.1.3":
-  version: 1.1.3
-  resolution: "is-in-browser@npm:1.1.3"
-  checksum: 178491f97f6663c0574565701b76f41633dbe065e4bd8d518ce017a8fa25e5109ecb6a3bd8bd55c0aba11b208f86b9f0f9c91f3664e148ebf618b74a74fcaf09
   languageName: node
   linkType: hard
 
@@ -3297,12 +3970,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-plain-object@npm:^2.0.4":
-  version: 2.0.4
-  resolution: "is-plain-object@npm:2.0.4"
-  dependencies:
-    isobject: ^3.0.1
-  checksum: 2a401140cfd86cabe25214956ae2cfee6fbd8186809555cd0e84574f88de7b17abacb2e477a6a658fa54c6083ecbda1e6ae404c7720244cd198903848fca70ca
+"is-plain-object@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "is-plain-object@npm:5.0.0"
+  checksum: e32d27061eef62c0847d303125440a38660517e586f2f3db7c9d179ae5b6674ab0f469d519b2e25c147a1a3bc87156d0d5f4d8821e0ce4a9ee7fe1fcf11ce45c
   languageName: node
   linkType: hard
 
@@ -3363,6 +4034,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"is-url@npm:^1.2.4":
+  version: 1.2.4
+  resolution: "is-url@npm:1.2.4"
+  checksum: 100e74b3b1feab87a43ef7653736e88d997eb7bd32e71fd3ebc413e58c1cbe56269699c776aaea84244b0567f2a7d68dfaa512a062293ed2f9fdecb394148432
+  languageName: node
+  linkType: hard
+
 "is-weakmap@npm:^2.0.1":
   version: 2.0.1
   resolution: "is-weakmap@npm:2.0.1"
@@ -3393,13 +4071,6 @@ __metadata:
   version: 1.0.4
   resolution: "is-whitespace-character@npm:1.0.4"
   checksum: adab8ad9847ccfcb6f1b7000b8f622881b5ba2a09ce8be2794a6d2b10c3af325b469fc562c9fb889f468eed27be06e227ac609d0aa1e3a59b4dbcc88e2b0418e
-  languageName: node
-  linkType: hard
-
-"is-window@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "is-window@npm:1.0.2"
-  checksum: aeaacd2ca816d38d4e2fba4670158fba2190061f28a61c5d84df7c479abf8897b8cb634d22cb76cdf7805035e95bebd430faaab6231ac2ebc814eae02d2c8fd4
   languageName: node
   linkType: hard
 
@@ -3437,13 +4108,6 @@ __metadata:
   version: 2.0.0
   resolution: "isexe@npm:2.0.0"
   checksum: 26bf6c5480dda5161c820c5b5c751ae1e766c587b1f951ea3fcfc973bafb7831ae5b54a31a69bd670220e42e99ec154475025a468eae58ea262f813fdc8d1c62
-  languageName: node
-  linkType: hard
-
-"isobject@npm:^3.0.1":
-  version: 3.0.1
-  resolution: "isobject@npm:3.0.1"
-  checksum: db85c4c970ce30693676487cca0e61da2ca34e8d4967c2e1309143ff910c207133a969f9e4ddb2dc6aba670aabce4e0e307146c310350b298e74a31f7d464703
   languageName: node
   linkType: hard
 
@@ -3683,7 +4347,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:^4.0.1, lodash@npm:^4.1.1, lodash@npm:^4.17.11, lodash@npm:^4.17.15, lodash@npm:^4.17.4":
+"lodash@npm:^4.0.1, lodash@npm:^4.17.11, lodash@npm:^4.17.15, lodash@npm:^4.17.4":
   version: 4.17.21
   resolution: "lodash@npm:4.17.21"
   checksum: eb835a2e51d381e561e508ce932ea50a8e5a68f4ebdd771ea240d3048244a8d13658acbd502cd4829768c56f2e16bdd4340b9ea141297d472517b83868e677f7
@@ -3895,6 +4559,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mdast-util-math@npm:^2.0.1":
+  version: 2.0.2
+  resolution: "mdast-util-math@npm:2.0.2"
+  dependencies:
+    "@types/mdast": ^3.0.0
+    longest-streak: ^3.0.0
+    mdast-util-to-markdown: ^1.3.0
+  checksum: 60b3c1ca8dd0f009504de17515249fa396818fd4d5f83ed2c9c4aa3523add080c9076b32299b9622a8b1eb6e249d65fd4a8c1f0ab231a7656396353c2898d0bd
+  languageName: node
+  linkType: hard
+
 "mdast-util-phrasing@npm:^2.0.0":
   version: 2.0.0
   resolution: "mdast-util-phrasing@npm:2.0.0"
@@ -3979,7 +4654,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mdast-util-to-markdown@npm:^1.0.0":
+"mdast-util-to-markdown@npm:^1.0.0, mdast-util-to-markdown@npm:^1.3.0":
   version: 1.5.0
   resolution: "mdast-util-to-markdown@npm:1.5.0"
   dependencies:
@@ -4029,13 +4704,6 @@ __metadata:
   version: 5.2.1
   resolution: "memoize-one@npm:5.2.1"
   checksum: a3cba7b824ebcf24cdfcd234aa7f86f3ad6394b8d9be4c96ff756dafb8b51c7f71320785fbc2304f1af48a0467cbbd2a409efc9333025700ed523f254cb52e3d
-  languageName: node
-  linkType: hard
-
-"memoize-one@npm:^4.0.0":
-  version: 4.0.3
-  resolution: "memoize-one@npm:4.0.3"
-  checksum: addd18c046542f57440ba70bf8ebd48663d17626cade681f777522ef70900a87ec72c5041bed8ece4f6d40a2cb58803bae388b50a4b740d64f36bcda20c147b7
   languageName: node
   linkType: hard
 
@@ -4432,614 +5100,6 @@ __metadata:
   version: 1.4.0
   resolution: "natural-compare@npm:1.4.0"
   checksum: 23ad088b08f898fc9b53011d7bb78ec48e79de7627e01ab5518e806033861bef68d5b0cd0e2205c2f36690ac9571ff6bcb05eb777ced2eeda8d4ac5b44592c3d
-  languageName: node
-  linkType: hard
-
-"netlify-cms-app@npm:^2.15.72":
-  version: 2.15.72
-  resolution: "netlify-cms-app@npm:2.15.72"
-  dependencies:
-    "@emotion/core": ^10.0.35
-    "@emotion/styled": ^10.0.27
-    codemirror: ^5.46.0
-    immutable: ^3.7.6
-    lodash: ^4.17.11
-    moment: ^2.24.0
-    netlify-cms-backend-azure: ^1.3.1
-    netlify-cms-backend-bitbucket: ^2.14.0
-    netlify-cms-backend-git-gateway: ^2.13.1
-    netlify-cms-backend-github: ^2.14.1
-    netlify-cms-backend-gitlab: ^2.13.0
-    netlify-cms-backend-proxy: ^1.2.3
-    netlify-cms-backend-test: ^2.11.3
-    netlify-cms-core: ^2.55.2
-    netlify-cms-editor-component-image: ^2.7.0
-    netlify-cms-lib-auth: ^2.4.2
-    netlify-cms-lib-util: ^2.15.1
-    netlify-cms-lib-widgets: ^1.8.1
-    netlify-cms-locales: ^1.39.0
-    netlify-cms-ui-default: ^2.15.5
-    netlify-cms-widget-boolean: ^2.4.1
-    netlify-cms-widget-code: ^1.3.4
-    netlify-cms-widget-colorstring: ^1.1.2
-    netlify-cms-widget-date: ^2.6.3
-    netlify-cms-widget-datetime: ^2.7.4
-    netlify-cms-widget-file: ^2.12.1
-    netlify-cms-widget-image: ^2.8.1
-    netlify-cms-widget-list: ^2.10.1
-    netlify-cms-widget-map: ^1.5.1
-    netlify-cms-widget-markdown: ^2.15.1
-    netlify-cms-widget-number: ^2.5.0
-    netlify-cms-widget-object: ^2.7.2
-    netlify-cms-widget-relation: ^2.11.1
-    netlify-cms-widget-select: ^2.8.2
-    netlify-cms-widget-string: ^2.3.0
-    netlify-cms-widget-text: ^2.4.1
-    prop-types: ^15.7.2
-    react-immutable-proptypes: ^2.1.0
-    uuid: ^3.3.2
-  peerDependencies:
-    react: ^16.8.4 || ^17.0.0
-    react-dom: ^16.8.4 || ^17.0.0
-  checksum: 0cdf8a9e81cb65ed36719438426e37bc7c28af3efb4c7d904b362711d2eab6777a043d98dabc1ebdb6e25ac7e8e3c49dd4dd988ee6bae56ea32fd077235131b4
-  languageName: node
-  linkType: hard
-
-"netlify-cms-backend-azure@npm:^1.3.1":
-  version: 1.3.1
-  resolution: "netlify-cms-backend-azure@npm:1.3.1"
-  dependencies:
-    js-base64: ^3.0.0
-    semaphore: ^1.1.0
-  peerDependencies:
-    "@emotion/core": ^10.0.9
-    "@emotion/styled": ^10.0.9
-    immutable: ^3.7.6
-    lodash: ^4.17.11
-    netlify-cms-lib-auth: ^2.3.0
-    netlify-cms-lib-util: ^2.12.3
-    netlify-cms-ui-default: ^2.12.1
-    prop-types: ^15.7.2
-    react: ^16.8.4 || ^17.0.0
-  checksum: 235bbc464fd4d100f9d437b285c23aca34197394e3824463c8e523a209035d4d5d260aed7b82d5a40f32fc447b4226f6dc61cf8ab7396daed4d794d7a0ae4896
-  languageName: node
-  linkType: hard
-
-"netlify-cms-backend-bitbucket@npm:^2.14.0":
-  version: 2.14.0
-  resolution: "netlify-cms-backend-bitbucket@npm:2.14.0"
-  dependencies:
-    common-tags: ^1.8.0
-    js-base64: ^3.0.0
-    semaphore: ^1.1.0
-    what-the-diff: ^0.6.0
-  peerDependencies:
-    "@emotion/core": ^10.0.35
-    "@emotion/styled": ^10.0.27
-    immutable: ^3.7.6
-    lodash: ^4.17.11
-    netlify-cms-lib-auth: ^2.3.0
-    netlify-cms-lib-util: ^2.12.3
-    netlify-cms-ui-default: ^2.12.1
-    prop-types: ^15.7.2
-    react: ^16.8.4 || ^17.0.0
-  checksum: 63ed1b122526b3af69d4f779cbfd8c0f6fca523306c3491f3b778f6485775a583a17354ed912446716875cd400574fa6649aa058f11ca5d1b50fe2c3bdd49519
-  languageName: node
-  linkType: hard
-
-"netlify-cms-backend-git-gateway@npm:^2.13.1":
-  version: 2.13.1
-  resolution: "netlify-cms-backend-git-gateway@npm:2.13.1"
-  dependencies:
-    gotrue-js: ^0.9.24
-    ini: ^2.0.0
-    jwt-decode: ^3.0.0
-    minimatch: ^3.0.4
-  peerDependencies:
-    "@emotion/core": ^10.0.35
-    "@emotion/styled": ^10.0.27
-    lodash: ^4.17.11
-    netlify-cms-backend-bitbucket: ^2.12.8
-    netlify-cms-backend-github: ^2.11.9
-    netlify-cms-backend-gitlab: ^2.9.9
-    netlify-cms-lib-auth: ^2.3.0
-    netlify-cms-lib-util: ^2.12.3
-    netlify-cms-ui-default: ^2.12.1
-    prop-types: ^15.7.2
-    react: ^16.8.4 || ^17.0.0
-  checksum: fc6ab28d7ba8daec0d46dbe2a873f2078800e30f0b9cdee2a8cb278ed0c7aa704922d257b22ed2307eddb1997dcd59c705f3b4ecf1a4c52b4b72ae74584e5b2d
-  languageName: node
-  linkType: hard
-
-"netlify-cms-backend-github@npm:^2.14.1":
-  version: 2.14.1
-  resolution: "netlify-cms-backend-github@npm:2.14.1"
-  dependencies:
-    apollo-cache-inmemory: ^1.6.2
-    apollo-client: ^2.6.3
-    apollo-link-context: ^1.0.18
-    apollo-link-http: ^1.5.15
-    common-tags: ^1.8.0
-    graphql: ^15.0.0
-    graphql-tag: ^2.10.1
-    js-base64: ^3.0.0
-    semaphore: ^1.1.0
-  peerDependencies:
-    "@emotion/core": ^10.0.35
-    "@emotion/styled": ^10.0.27
-    lodash: ^4.17.11
-    netlify-cms-lib-auth: ^2.3.0
-    netlify-cms-lib-util: ^2.12.3
-    netlify-cms-ui-default: ^2.12.1
-    prop-types: ^15.7.2
-    react: ^16.8.4 || ^17.0.0
-  checksum: 73c6ce9102382a4818445f7668a1df13bbaaea98a2f9532540e53369a4402e9a95a9334cae2f69f81857712a8af7c82892aa5fbc1a3f2eea6b44bb8aa8aa93a8
-  languageName: node
-  linkType: hard
-
-"netlify-cms-backend-gitlab@npm:^2.13.0":
-  version: 2.13.0
-  resolution: "netlify-cms-backend-gitlab@npm:2.13.0"
-  dependencies:
-    apollo-cache-inmemory: ^1.6.2
-    apollo-client: ^2.6.3
-    apollo-link-context: ^1.0.18
-    apollo-link-http: ^1.5.15
-    js-base64: ^3.0.0
-    semaphore: ^1.1.0
-  peerDependencies:
-    "@emotion/core": ^10.0.35
-    "@emotion/styled": ^10.0.27
-    immutable: ^3.7.6
-    lodash: ^4.17.11
-    netlify-cms-lib-auth: ^2.3.0
-    netlify-cms-lib-util: ^2.12.3
-    netlify-cms-ui-default: ^2.12.1
-    prop-types: ^15.7.2
-    react: ^16.8.4 || ^17.0.0
-  checksum: 8d4b62b121554053e39f6dc799b078d294a90f96b431deabd4d197607da8986db3b8629cb559490d6757be9f188a22b3dcadd6ff82f082aaace1712a21c6ec9d
-  languageName: node
-  linkType: hard
-
-"netlify-cms-backend-proxy@npm:^1.2.3":
-  version: 1.2.3
-  resolution: "netlify-cms-backend-proxy@npm:1.2.3"
-  peerDependencies:
-    "@emotion/core": ^10.0.35
-    "@emotion/styled": ^10.0.27
-    netlify-cms-lib-util: ^2.12.3
-    netlify-cms-ui-default: ^2.12.1
-    prop-types: ^15.7.2
-    react: ^16.8.4 || ^17.0.0
-  checksum: 00001345f200b4fc0e52d76b4ce85fd043891a1d82b40ef5db5b6bdf72e65a3b7e462e6bdd810ccb808fc80077a21e9800fb9e09f0a5526afc3ce68a73bda8b0
-  languageName: node
-  linkType: hard
-
-"netlify-cms-backend-test@npm:^2.11.3":
-  version: 2.11.3
-  resolution: "netlify-cms-backend-test@npm:2.11.3"
-  peerDependencies:
-    "@emotion/core": ^10.0.35
-    "@emotion/styled": ^10.0.27
-    lodash: ^4.17.11
-    netlify-cms-lib-util: ^2.12.3
-    netlify-cms-ui-default: ^2.12.1
-    prop-types: ^15.7.2
-    react: ^16.8.4 || ^17.0.0
-    uuid: ^3.3.2
-  checksum: 52873da5339993cf3ea955252966a2114056bd89e7b7893b36c51c3956a023060c75d7c28ae7a499c6f631d2b721f267c9422914a7ccc52339130153c49ac39d
-  languageName: node
-  linkType: hard
-
-"netlify-cms-core@npm:^2.55.2":
-  version: 2.55.2
-  resolution: "netlify-cms-core@npm:2.55.2"
-  dependencies:
-    "@iarna/toml": 2.2.5
-    ajv: 8.1.0
-    ajv-errors: ^3.0.0
-    ajv-keywords: ^5.0.0
-    clean-stack: ^4.1.0
-    copy-text-to-clipboard: ^3.0.0
-    deepmerge: ^4.2.2
-    diacritics: ^1.3.0
-    fuzzy: ^0.1.1
-    gotrue-js: ^0.9.24
-    gray-matter: ^4.0.2
-    history: ^4.7.2
-    immer: ^9.0.0
-    js-base64: ^3.0.0
-    jwt-decode: ^3.0.0
-    node-polyglot: ^2.3.0
-    prop-types: ^15.7.2
-    react: ^16.8.4
-    react-dnd: ^14.0.0
-    react-dnd-html5-backend: ^14.0.0
-    react-dom: ^16.8.4
-    react-frame-component: ^5.2.1
-    react-hot-loader: ^4.8.0
-    react-immutable-proptypes: ^2.1.0
-    react-is: 16.13.1
-    react-markdown: ^6.0.2
-    react-modal: ^3.8.1
-    react-polyglot: ^0.7.0
-    react-redux: ^7.2.0
-    react-router-dom: ^5.2.0
-    react-scroll-sync: ^0.9.0
-    react-sortable-hoc: ^2.0.0
-    react-split-pane: ^0.1.85
-    react-topbar-progress-indicator: ^4.0.0
-    react-virtualized-auto-sizer: ^1.0.2
-    react-waypoint: ^10.0.0
-    react-window: ^1.8.5
-    redux: ^4.0.5
-    redux-devtools-extension: ^2.13.8
-    redux-notifications: ^4.0.1
-    redux-thunk: ^2.3.0
-    remark-gfm: 1.0.0
-    sanitize-filename: ^1.6.1
-    semaphore: ^1.0.5
-    tomlify-j0.4: ^3.0.0-alpha.0
-    url: ^0.11.0
-    url-join: ^4.0.1
-    what-input: ^5.1.4
-    yaml: ^1.8.3
-  peerDependencies:
-    "@emotion/core": ^10.0.35
-    "@emotion/styled": ^10.0.27
-    immutable: ^3.7.6
-    lodash: ^4.17.11
-    moment: ^2.24.0
-    netlify-cms-editor-component-image: ^2.6.7
-    netlify-cms-lib-auth: ^2.3.0
-    netlify-cms-lib-util: ^2.12.3
-    netlify-cms-lib-widgets: ^1.6.1
-    netlify-cms-ui-default: ^2.12.1
-    prop-types: ^15.7.2
-    react: ^16.8.4 || ^17.0.0
-    react-dom: ^16.8.4 || ^17.0.0
-    react-immutable-proptypes: ^2.1.0
-  checksum: d7b95d4d86991ef310bd8a703a7e25a7b3daace0d13b29d74e2aed1a73699dc23cfcde16aa46850f50795c647acd9e604ca5173f7e2aa6a0c2422be2c1c6bb16
-  languageName: node
-  linkType: hard
-
-"netlify-cms-editor-component-image@npm:^2.7.0":
-  version: 2.7.0
-  resolution: "netlify-cms-editor-component-image@npm:2.7.0"
-  peerDependencies:
-    react: ^16.8.4 || ^17.0.0
-  checksum: 3f64c6a260d48b93982be10dee5eeb6e2dd985dcaaf5af53c043a363d276ff651f410a4b45c6620fc424c1e689204893f6bff70881e192d6d37bb3271d1c0745
-  languageName: node
-  linkType: hard
-
-"netlify-cms-lib-auth@npm:^2.4.2":
-  version: 2.4.2
-  resolution: "netlify-cms-lib-auth@npm:2.4.2"
-  peerDependencies:
-    immutable: ^3.7.6
-    lodash: ^4.17.11
-    uuid: ^3.3.2
-  checksum: 366608e5f54f60bbf91770dfeb5b38a0bf2d39b47501c92b305b943d641481f7245e585cffeb64d2b09df0531058cd97ab9365adb6121fad2e366657513c4027
-  languageName: node
-  linkType: hard
-
-"netlify-cms-lib-util@npm:^2.15.1":
-  version: 2.15.1
-  resolution: "netlify-cms-lib-util@npm:2.15.1"
-  dependencies:
-    js-sha256: ^0.9.0
-    localforage: ^1.7.3
-    semaphore: ^1.1.0
-  peerDependencies:
-    immutable: ^3.7.6
-    lodash: ^4.17.11
-  checksum: 43f772e93f6e59ad919bcb7991ba20496863201a646195a3d5ac8116f59115b03adfda2ff0b533d76fd15c0c101be41bb94c3b138bb6693064980f2c9753d21d
-  languageName: node
-  linkType: hard
-
-"netlify-cms-lib-widgets@npm:^1.8.1":
-  version: 1.8.1
-  resolution: "netlify-cms-lib-widgets@npm:1.8.1"
-  peerDependencies:
-    immutable: ^3.7.6
-    lodash: ^4.17.11
-    moment: ^2.24.0
-  checksum: e402295e8785c20b226c6fa9f04e8db18231024549cd2969b215bd4f01303642f5be9952b10b1aab627774be15ea1e36e6e4349b096d8b541ae88f2b501c0606
-  languageName: node
-  linkType: hard
-
-"netlify-cms-locales@npm:^1.39.0":
-  version: 1.39.0
-  resolution: "netlify-cms-locales@npm:1.39.0"
-  checksum: a65a74bebaf9a78481bbd2cb10a6452593aca02be9d46cc108fc894b9f7c35bef78b52c6aea8fc75e5fb049e0c786d1a4c307f76da896b6962531c945a8c4c74
-  languageName: node
-  linkType: hard
-
-"netlify-cms-ui-default@npm:^2.15.5":
-  version: 2.15.5
-  resolution: "netlify-cms-ui-default@npm:2.15.5"
-  dependencies:
-    react-aria-menubutton: ^7.0.0
-    react-toggled: ^1.1.2
-    react-transition-group: ^4.0.0
-  peerDependencies:
-    "@emotion/core": ^10.0.35
-    "@emotion/styled": ^10.0.27
-    lodash: ^4.17.11
-    prop-types: ^15.7.2
-    react: ^16.8.4 || ^17.0.0
-  checksum: ee14606496de7ff7256f91daa2159b5f914ef1023c3b8ead1ac45a4fef46788c2c4ee3099b27feccbfa2bc30c24992a30dea1f9f2e788ea1ec47c70a4bf78c45
-  languageName: node
-  linkType: hard
-
-"netlify-cms-widget-boolean@npm:^2.4.1":
-  version: 2.4.1
-  resolution: "netlify-cms-widget-boolean@npm:2.4.1"
-  peerDependencies:
-    "@emotion/core": ^10.0.35
-    lodash: ^4.17.11
-    netlify-cms-ui-default: ^2.12.1
-    prop-types: ^15.7.2
-    react: ^16.8.4 || ^17.0.0
-    react-immutable-proptypes: ^2.1.0
-  checksum: 75ad7858593986d71f2ddf776afede5456d36aa94ef98e00ebcc22431d6bcb62709f1c50055599b875ec1062c6f6ef1a3d5fd3ed86f3dba8ebd1e84f213f4aec
-  languageName: node
-  linkType: hard
-
-"netlify-cms-widget-code@npm:^1.3.4":
-  version: 1.3.4
-  resolution: "netlify-cms-widget-code@npm:1.3.4"
-  dependencies:
-    react-codemirror2: ^7.0.0
-    react-select: ^4.0.0
-  peerDependencies:
-    "@emotion/core": ^10.0.35
-    codemirror: ^5.46.0
-    lodash: ^4.17.11
-    netlify-cms-ui-default: ^2.12.1
-    react: ^16.8.4 || ^17.0.0
-  checksum: 6d26e44ade772b47510aac8aaf20874aa1d32a33ec996eefe881e340e6c1862164b18b237d31d1b229519da16c4111f7915213bdbebf8c6d0bea6bab5956c241
-  languageName: node
-  linkType: hard
-
-"netlify-cms-widget-colorstring@npm:^1.1.2":
-  version: 1.1.2
-  resolution: "netlify-cms-widget-colorstring@npm:1.1.2"
-  dependencies:
-    react-color: ^2.18.1
-    validate-color: ^2.1.0
-  peerDependencies:
-    "@emotion/core": ^10.0.35
-    "@emotion/styled": ^10.0.27
-    netlify-cms-ui-default: ^2.12.1
-    prop-types: ^15.7.2
-    react: ^16.8.4 || ^17.0.0
-  checksum: c53a6ad874fed139775bbb407a1c971e5150d39456f343b35067cb6f8828307652522cec3c51deb22dddb1619e01c7b6f2e38874ddf6f2956ded15b71c6a4831
-  languageName: node
-  linkType: hard
-
-"netlify-cms-widget-date@npm:^2.6.3":
-  version: 2.6.3
-  resolution: "netlify-cms-widget-date@npm:2.6.3"
-  dependencies:
-    react-datetime: ^3.1.1
-  peerDependencies:
-    "@emotion/core": ^10.0.35
-    "@emotion/styled": ^10.0.27
-    moment: ^2.24.0
-    netlify-cms-ui-default: ^2.12.1
-    prop-types: ^15.7.2
-    react: ^16.8.4 || ^17.0.0
-    react-dom: ^16.8.4 || ^17.0.0
-  checksum: b6628155e880964e5f02200e45e572f7e909644b62c5d6b9bb632bc6907a0a9f94bffbaaefa3bca7cc63163cd750ab73fce51998e58d6e3f5d3a93447b0ec0fc
-  languageName: node
-  linkType: hard
-
-"netlify-cms-widget-datetime@npm:^2.7.4":
-  version: 2.7.4
-  resolution: "netlify-cms-widget-datetime@npm:2.7.4"
-  dependencies:
-    react-datetime: ^3.1.1
-  peerDependencies:
-    "@emotion/core": ^10.0.35
-    netlify-cms-widget-date: ^2.5.7
-    react: ^16.8.4 || ^17.0.0
-  checksum: 3743473dda8e73c050936cc49d4a983de1cf787a5597c219f27ea2f7968a67707174c88b5accc8d00437bafab168ed572b927783e6a9590b63bccb0a7e36b305
-  languageName: node
-  linkType: hard
-
-"netlify-cms-widget-file@npm:^2.12.1":
-  version: 2.12.1
-  resolution: "netlify-cms-widget-file@npm:2.12.1"
-  dependencies:
-    array-move: 4.0.0
-    common-tags: ^1.8.0
-    react-sortable-hoc: ^2.0.0
-  peerDependencies:
-    "@emotion/core": ^10.0.35
-    "@emotion/styled": ^10.0.27
-    immutable: ^3.7.6
-    netlify-cms-ui-default: ^2.12.1
-    prop-types: ^15.7.2
-    react: ^16.8.4 || ^17.0.0
-    react-immutable-proptypes: ^2.1.0
-    uuid: ^3.3.2
-  checksum: c3ff3b44133a07281591bd4278d6f256ef833a39f6572445705c2de5031adf3f0443ee9698a517a1641614fc8d73deefdaef14fe224e14a8b51ba4793ad26ac0
-  languageName: node
-  linkType: hard
-
-"netlify-cms-widget-image@npm:^2.8.1":
-  version: 2.8.1
-  resolution: "netlify-cms-widget-image@npm:2.8.1"
-  peerDependencies:
-    "@emotion/core": ^10.0.35
-    "@emotion/styled": ^10.0.27
-    immutable: ^3.7.6
-    netlify-cms-ui-default: ^2.12.1
-    netlify-cms-widget-file: ^2.9.2
-    prop-types: ^15.7.2
-    react: ^16.8.4 || ^17.0.0
-  checksum: 768d1e241ede8c2f74d1f8e5b384fd535f548fc85c6321a4448bdb9b93c4a458adb430b3d933fe426844506f57ad347326835b2c7b49db126e39197750c46663
-  languageName: node
-  linkType: hard
-
-"netlify-cms-widget-list@npm:^2.10.1":
-  version: 2.10.1
-  resolution: "netlify-cms-widget-list@npm:2.10.1"
-  dependencies:
-    react-sortable-hoc: ^2.0.0
-  peerDependencies:
-    "@emotion/core": ^10.0.35
-    "@emotion/styled": ^10.0.27
-    immutable: ^3.7.6
-    lodash: ^4.17.11
-    netlify-cms-lib-widgets: ^1.6.1
-    netlify-cms-ui-default: ^2.12.1
-    netlify-cms-widget-object: ^2.6.2
-    prop-types: ^15.7.2
-    react: ^16.8.4 || ^17.0.0
-    react-immutable-proptypes: ^2.1.0
-  checksum: a5e008d3f1eabc9da306c611ce112973e52012c2d1484d812ca1340f2137cc4480990d462fcf8a06042015668bc38a5dcc9de87bfd88ab648bd1aff15fd3e15d
-  languageName: node
-  linkType: hard
-
-"netlify-cms-widget-map@npm:^1.5.1":
-  version: 1.5.1
-  resolution: "netlify-cms-widget-map@npm:1.5.1"
-  dependencies:
-    ol: ^6.9.0
-  peerDependencies:
-    "@emotion/core": ^10.0.35
-    lodash: ^4.17.11
-    netlify-cms-ui-default: ^2.12.1
-    prop-types: ^15.7.2
-    react: ^16.8.4 || ^17.0.0
-    react-immutable-proptypes: ^2.1.0
-  checksum: ed84fc67235e02852590e749b827c454ae2ef90b092585c54b7c789d8f413562ac89e57ac7a1ef6e0566a1681242c19835d7bba1697bd07644f33239f2afb7ea
-  languageName: node
-  linkType: hard
-
-"netlify-cms-widget-markdown@npm:^2.15.1":
-  version: 2.15.1
-  resolution: "netlify-cms-widget-markdown@npm:2.15.1"
-  dependencies:
-    dompurify: ^2.2.6
-    is-hotkey: ^0.2.0
-    mdast-util-definitions: ^1.2.3
-    mdast-util-to-string: ^1.0.5
-    rehype-parse: ^6.0.0
-    rehype-remark: ^8.0.0
-    rehype-stringify: ^7.0.0
-    remark-parse: ^6.0.3
-    remark-rehype: ^4.0.0
-    remark-stringify: ^6.0.4
-    slate: ^0.47.0
-    slate-base64-serializer: ^0.2.107
-    slate-plain-serializer: ^0.7.1
-    slate-react: ^0.22.0
-    slate-soft-break: ^0.9.0
-    unified: ^7.1.0
-    unist-builder: ^1.0.3
-    unist-util-visit-parents: ^2.0.1
-  peerDependencies:
-    "@emotion/core": ^10.0.35
-    "@emotion/styled": ^10.0.27
-    immutable: ^3.7.6
-    lodash: ^4.17.11
-    netlify-cms-ui-default: ^2.12.1
-    prop-types: ^15.7.2
-    react: ^16.8.4 || ^17.0.0
-    react-dom: ^16.8.4 || ^17.0.0
-    react-immutable-proptypes: ^2.1.0
-  checksum: ff74552e2ec2f08e02a4dce8824421667bdaacd70a3ee61b1d8d33e35e5613325c0cafffd5fe201c3ce39169fae58d8eb65b74d70be140596f72334424a1e714
-  languageName: node
-  linkType: hard
-
-"netlify-cms-widget-number@npm:^2.5.0":
-  version: 2.5.0
-  resolution: "netlify-cms-widget-number@npm:2.5.0"
-  peerDependencies:
-    netlify-cms-ui-default: ^2.12.1
-    prop-types: ^15.7.2
-    react: ^16.8.4 || ^17.0.0
-  checksum: ed9cb33a7fb1a66dd7712ac63e43986b194906131932f2e7ed17b79f176c2cf19ac16d285d0ca0a46d65e63a273f6871df4a090fd0265e1e1b3223fe9665f632
-  languageName: node
-  linkType: hard
-
-"netlify-cms-widget-object@npm:^2.7.2":
-  version: 2.7.2
-  resolution: "netlify-cms-widget-object@npm:2.7.2"
-  peerDependencies:
-    "@emotion/core": ^10.0.35
-    "@emotion/styled": ^10.0.27
-    immutable: ^3.7.6
-    lodash: ^4.17.11
-    netlify-cms-ui-default: ^2.12.1
-    prop-types: ^15.7.2
-    react: ^16.8.4 || ^17.0.0
-    react-immutable-proptypes: ^2.1.0
-  checksum: 4214c7cde29b5a1094219741d8ee9d758ee54b5725a7109f663bdffae760fe2d0bcd93299fd2cca3e931d010e69346d7a0baf8dca668c263ebe99397372c3702
-  languageName: node
-  linkType: hard
-
-"netlify-cms-widget-relation@npm:^2.11.1":
-  version: 2.11.1
-  resolution: "netlify-cms-widget-relation@npm:2.11.1"
-  dependencies:
-    react-select: ^4.0.0
-    react-sortable-hoc: ^2.0.0
-    react-window: ^1.8.5
-  peerDependencies:
-    "@emotion/core": ^10.0.35
-    "@emotion/styled": ^10.0.27
-    immutable: ^3.7.6
-    lodash: ^4.17.11
-    netlify-cms-lib-widgets: ^1.6.1
-    netlify-cms-ui-default: ^2.12.1
-    prop-types: ^15.7.2
-    react: ^16.8.4 || ^17.0.0
-    uuid: ^3.3.2
-  checksum: b33685635927e00ef09874894cfcbdb51e0538ed391a731ccf7309e2d4a171666acd2c06db80b967d8ad2053be32aa63c9c8d3062c931eae4ade646272d11ea5
-  languageName: node
-  linkType: hard
-
-"netlify-cms-widget-select@npm:^2.8.2":
-  version: 2.8.2
-  resolution: "netlify-cms-widget-select@npm:2.8.2"
-  dependencies:
-    react-select: ^4.0.0
-  peerDependencies:
-    immutable: ^3.7.6
-    netlify-cms-lib-widgets: ^1.6.1
-    netlify-cms-ui-default: ^2.12.1
-    prop-types: ^15.7.2
-    react: ^16.8.4 || ^17.0.0
-    react-immutable-proptypes: ^2.1.0
-  checksum: a53159fe988295caaee3523a4c8528999d03538d3b6926d051c8ace96257aeeecf869fff56a0bc3a93d9ea9c0cc1ec0b9142964a6bdedf3df4682b62eafbeab5
-  languageName: node
-  linkType: hard
-
-"netlify-cms-widget-string@npm:^2.3.0":
-  version: 2.3.0
-  resolution: "netlify-cms-widget-string@npm:2.3.0"
-  peerDependencies:
-    netlify-cms-ui-default: ^2.12.1
-    prop-types: ^15.7.2
-    react: ^16.8.4 || ^17.0.0
-  checksum: b049db7634b7793f0084efca504616c8bf2d2af600b38ca1e3d5af9b13e8b8372e0ed8526f86172c88b21f23c438ac1b322854b11d053ed2f3a9b3fb64422dc7
-  languageName: node
-  linkType: hard
-
-"netlify-cms-widget-text@npm:^2.4.1":
-  version: 2.4.1
-  resolution: "netlify-cms-widget-text@npm:2.4.1"
-  dependencies:
-    react-textarea-autosize: ^8.0.0
-  peerDependencies:
-    netlify-cms-ui-default: ^2.12.1
-    prop-types: ^15.7.2
-    react: ^16.8.4 || ^17.0.0
-  checksum: 5752bffd86de8ad8a7566fc5e1ed46ef21213a35ae070be45332cf6ed205c93959d55817299d4f0e34f7a0a99d57d95e1549179337e9276fb84f0ca2636a1ceb
   languageName: node
   linkType: hard
 
@@ -5958,13 +6018,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-toggled@npm:^1.1.2":
-  version: 1.2.7
-  resolution: "react-toggled@npm:1.2.7"
+"react-toastify@npm:^9.1.1":
+  version: 9.1.3
+  resolution: "react-toastify@npm:9.1.3"
+  dependencies:
+    clsx: ^1.1.1
   peerDependencies:
-    prop-types: ">=15"
-    react: ">=15"
-  checksum: babd184ce752622df45c6cfc0e17a21b52def2ecaa482dad3771d608cdc1fae41cb447dc8b1e2de79426a532fd97bd63c25026683c048381e7daa1b304c4a6ef
+    react: ">=16"
+    react-dom: ">=16"
+  checksum: e8bd92c5cbf831b43a042644ab9bc69abe6ceb3ce91ba71f5cd2d8b6a2c9885ca52770e1f1ba64c5632607f6df962db344a26c7fba57606faf5aa0e7bfc8535f
   languageName: node
   linkType: hard
 
@@ -5995,7 +6057,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-transition-group@npm:^4.0.0, react-transition-group@npm:^4.3.0":
+"react-transition-group@npm:^4.3.0, react-transition-group@npm:^4.4.5":
   version: 4.4.5
   resolution: "react-transition-group@npm:4.4.5"
   dependencies:
@@ -6100,7 +6162,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"redux-thunk@npm:^2.3.0":
+"redux-thunk@npm:^2.3.0, redux-thunk@npm:^2.4.2":
   version: 2.4.2
   resolution: "redux-thunk@npm:2.4.2"
   peerDependencies:
@@ -6109,7 +6171,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"redux@npm:^4.0.0, redux@npm:^4.0.5, redux@npm:^4.1.1":
+"redux@npm:^4.0.0, redux@npm:^4.0.5, redux@npm:^4.1.1, redux@npm:^4.2.1":
   version: 4.2.1
   resolution: "redux@npm:4.2.1"
   dependencies:
@@ -6272,6 +6334,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"remark-slate-transformer@npm:^0.7.4":
+  version: 0.7.5
+  resolution: "remark-slate-transformer@npm:0.7.5"
+  dependencies:
+    "@types/mdast": ^3.0.10
+    mdast-util-math: ^2.0.1
+    tslib: ^2.4.0
+  peerDependencies:
+    unified: ">=10.1.0"
+  checksum: d2ee7357901d9eb4856727be7de0b71ae814915af5aef64db9bc75c29599b2c2ab80f6c289a97452bc6a4ea90c094710dd1849d7535b7c713fd94e856ecbf626
+  languageName: node
+  linkType: hard
+
+"remark-slate@npm:^1.8.6":
+  version: 1.8.6
+  resolution: "remark-slate@npm:1.8.6"
+  dependencies:
+    "@types/escape-html": ^1.0.0
+    escape-html: ^1.0.3
+  checksum: d3d4b08e0d5230f752abf1ce313a2a03935cc6d8ec1155ea37720eb8230449e6c5b9845677d604c4ab64c28409a775c035cb6d631674d9187317a1c278bdffa9
+  languageName: node
+  linkType: hard
+
 "remark-stringify@npm:^10.0.0":
   version: 10.0.3
   resolution: "remark-stringify@npm:10.0.3"
@@ -6335,6 +6420,13 @@ __metadata:
   version: 2.0.2
   resolution: "require-from-string@npm:2.0.2"
   checksum: a03ef6895445f33a4015300c426699bc66b2b044ba7b670aa238610381b56d3f07c686251740d575e22f4c87531ba662d06937508f0f3c0f1ddc04db3130560b
+  languageName: node
+  linkType: hard
+
+"reselect@npm:^4.1.8":
+  version: 4.1.8
+  resolution: "reselect@npm:4.1.8"
+  checksum: a4ac87cedab198769a29be92bc221c32da76cfdad6911eda67b4d3e7136dca86208c3b210e31632eae31ebd2cded18596f0dd230d3ccc9e978df22f233b5583e
   languageName: node
   linkType: hard
 
@@ -6495,6 +6587,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"scroll-into-view-if-needed@npm:^2.2.20":
+  version: 2.2.31
+  resolution: "scroll-into-view-if-needed@npm:2.2.31"
+  dependencies:
+    compute-scroll-into-view: ^1.0.20
+  checksum: 93b28f3723a462245b40d4120c40c542c8449473e2b157a5f8e18f04d95d66cd35249d96c625e8a440a56891f7d8905b1d026c690bdda07fcfb4f1a48d643ad1
+  languageName: node
+  linkType: hard
+
 "section-matter@npm:^1.0.0":
   version: 1.0.0
   resolution: "section-matter@npm:1.0.0"
@@ -6502,13 +6603,6 @@ __metadata:
     extend-shallow: ^2.0.1
     kind-of: ^6.0.0
   checksum: 3cc4131705493b2955729b075dcf562359bba66183debb0332752dc9cad35616f6da7a23e42b6cab45cd2e4bb5cda113e9e84c8f05aee77adb6b0289a0229101
-  languageName: node
-  linkType: hard
-
-"selection-is-backward@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "selection-is-backward@npm:1.0.0"
-  checksum: 93b540811393816979d4798b4706433a15d64f892f59524e66473b5b239bfffd629a7bca490be32c6773c47286c513b74e97fb68a7bb5d98f3eac998b505e85a
   languageName: node
   linkType: hard
 
@@ -6587,7 +6681,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"slate-base64-serializer@npm:^0.2.107, slate-base64-serializer@npm:^0.2.112":
+"slate-base64-serializer@npm:^0.2.107":
   version: 0.2.115
   resolution: "slate-base64-serializer@npm:0.2.115"
   dependencies:
@@ -6598,26 +6692,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"slate-dev-environment@npm:^0.2.2":
-  version: 0.2.5
-  resolution: "slate-dev-environment@npm:0.2.5"
+"slate-history@npm:^0.93.0":
+  version: 0.93.0
+  resolution: "slate-history@npm:0.93.0"
   dependencies:
-    is-in-browser: ^1.1.3
-  checksum: 3a94d855a5c50f650f38c93741700d1e840eb923c79a3b1e01a5e7ca347944662099dc5773521c84ee939cb156ccc27af7e39ecb79d3d9e2ddfcfe3ead312073
+    is-plain-object: ^5.0.0
+  peerDependencies:
+    slate: ">=0.65.3"
+  checksum: 4ce44a9ecbccbfd3b9c023e5bc20c6e151f1064fb2a6dd42cfec72bd6f8fd29e60f533e74130bb69f4706e86802929eb6fd89eb271dda34924ab46965c36a3e2
   languageName: node
   linkType: hard
 
-"slate-hotkeys@npm:^0.2.9":
-  version: 0.2.11
-  resolution: "slate-hotkeys@npm:0.2.11"
-  dependencies:
-    is-hotkey: 0.1.4
-    slate-dev-environment: ^0.2.2
-  checksum: e8c77e46924289be71d12745f0cf4b6f0f995f524f408a9830decaba5bde9fad107b803176f7b8ea0236008c3e06d28c2ec475a5e443c1315a32bcf980dea6b2
-  languageName: node
-  linkType: hard
-
-"slate-plain-serializer@npm:^0.7.1, slate-plain-serializer@npm:^0.7.11":
+"slate-plain-serializer@npm:^0.7.1":
   version: 0.7.13
   resolution: "slate-plain-serializer@npm:0.7.13"
   peerDependencies:
@@ -6627,53 +6713,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"slate-prop-types@npm:^0.5.42":
-  version: 0.5.44
-  resolution: "slate-prop-types@npm:0.5.44"
-  peerDependencies:
-    immutable: ">=3.8.1"
-    slate: ">=0.32.0 <0.50.0"
-  checksum: 6ef3632255383ef3a8a13e0f52c191a7b1d23064bf5f14f8f316555f2d63ac32dc9e8d429fa742ce7219caa32e69a9163d24f36d5c6789d1c9b14a4158eea339
-  languageName: node
-  linkType: hard
-
-"slate-react-placeholder@npm:^0.2.9":
-  version: 0.2.9
-  resolution: "slate-react-placeholder@npm:0.2.9"
-  peerDependencies:
-    react: ">=16.0.0"
-    slate: ">=0.47.0"
-    slate-react: ">=0.22.0"
-  checksum: 34b9cd299bda66031ad6d88e63748439e4ad47a4dfddef04ebf47d8e3afbf3be9fb5e8ca923ef719e7c9f8627af4d3faf764c858b68761e376c0f3daeab705f8
-  languageName: node
-  linkType: hard
-
-"slate-react@npm:^0.22.0":
-  version: 0.22.10
-  resolution: "slate-react@npm:0.22.10"
+"slate-react@npm:^0.91.2":
+  version: 0.91.11
+  resolution: "slate-react@npm:0.91.11"
   dependencies:
-    debug: ^3.1.0
-    get-window: ^1.1.1
-    is-window: ^1.0.2
-    lodash: ^4.1.1
-    memoize-one: ^4.0.0
-    prop-types: ^15.5.8
-    react-immutable-proptypes: ^2.1.0
-    selection-is-backward: ^1.0.0
-    slate-base64-serializer: ^0.2.112
-    slate-dev-environment: ^0.2.2
-    slate-hotkeys: ^0.2.9
-    slate-plain-serializer: ^0.7.11
-    slate-prop-types: ^0.5.42
-    slate-react-placeholder: ^0.2.9
-    tiny-invariant: ^1.0.1
-    tiny-warning: ^0.0.3
+    "@juggle/resize-observer": ^3.4.0
+    "@types/is-hotkey": ^0.1.1
+    "@types/lodash": ^4.14.149
+    direction: ^1.0.3
+    is-hotkey: ^0.1.6
+    is-plain-object: ^5.0.0
+    lodash: ^4.17.4
+    scroll-into-view-if-needed: ^2.2.20
+    tiny-invariant: 1.0.6
   peerDependencies:
-    immutable: ">=3.8.1 || >4.0.0-rc"
-    react: ">=16.6.0"
-    react-dom: ">=16.6.0"
-    slate: ">=0.47.0"
-  checksum: 1ecddaf0f635205249680961d7e772cf25a60179b39ca69a34f874b2797e3c122ef405921fa2787ea0c559af48d1d79f10d7e169749f0f084c6bf366aeffdfc8
+    react: ">=16.8.0"
+    react-dom: ">=16.8.0"
+    slate: ">=0.65.3"
+  checksum: c0cced1bb756f2ce5429741d8f4e26af5c2c82ad24be62a5a1750f1d9be0bb11ac9fa0c5839f9a43bafef049d894f6e8f367ad2bbe8f175785f5e914de3c7341
   languageName: node
   linkType: hard
 
@@ -6687,21 +6744,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"slate@npm:^0.47.0":
-  version: 0.47.9
-  resolution: "slate@npm:0.47.9"
+"slate@npm:^0.91.1":
+  version: 0.91.4
+  resolution: "slate@npm:0.91.4"
   dependencies:
-    debug: ^3.1.0
-    direction: ^0.1.5
-    esrever: ^0.2.0
-    is-plain-object: ^2.0.4
-    lodash: ^4.17.4
-    tiny-invariant: ^1.0.1
-    tiny-warning: ^0.0.3
-    type-of: ^2.0.1
-  peerDependencies:
-    immutable: ">=3.8.1 || >4.0.0-rc"
-  checksum: a128d1eaa4c203dbb13d197d69758341df485e42e52aea1739d05939b16df42633949f116ae9b75b95b647ec39b18867ca5c8a05dbe97eeb15cf31bc8d2edc7f
+    immer: ^9.0.6
+    is-plain-object: ^5.0.0
+    tiny-warning: ^1.0.3
+  checksum: 70164a5106cac7caaa681b0eca5dba5cf172b2c406f769744babb28350906ca92dc496a0d9224911564bd4ee0650a19be7279d917bba02159e1672f37475d74d
   languageName: node
   linkType: hard
 
@@ -7004,21 +7054,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tiny-invariant@npm:^1.0.1, tiny-invariant@npm:^1.0.2":
+"tiny-invariant@npm:1.0.6":
+  version: 1.0.6
+  resolution: "tiny-invariant@npm:1.0.6"
+  checksum: c90b34beea3cb10c49531e754afb0999033a2d7edffef6602922de27678d8a96dcbc0e8f0a959bc272859281b0cd1305b711e25d5edfb1da5fc7135e2a992961
+  languageName: node
+  linkType: hard
+
+"tiny-invariant@npm:^1.0.2":
   version: 1.3.1
   resolution: "tiny-invariant@npm:1.3.1"
   checksum: 872dbd1ff20a21303a2fd20ce3a15602cfa7fcf9b228bd694a52e2938224313b5385a1078cb667ed7375d1612194feaca81c4ecbe93121ca1baebe344de4f84c
   languageName: node
   linkType: hard
 
-"tiny-warning@npm:^0.0.3":
-  version: 0.0.3
-  resolution: "tiny-warning@npm:0.0.3"
-  checksum: edc25b4cfd50f55cdfde932b172b94f8581f6f1b1e5a9ec15c4978f7719baf523e71e26549dde714787868d41aa6b9bc1dacff2300cc0d180f8c44d040f7b1a5
-  languageName: node
-  linkType: hard
-
-"tiny-warning@npm:^1.0.0":
+"tiny-warning@npm:^1.0.0, tiny-warning@npm:^1.0.3":
   version: 1.0.3
   resolution: "tiny-warning@npm:1.0.3"
   checksum: da62c4acac565902f0624b123eed6dd3509bc9a8d30c06e017104bedcf5d35810da8ff72864400ad19c5c7806fc0a8323c68baf3e326af7cb7d969f846100d71
@@ -7172,13 +7222,6 @@ __metadata:
   version: 0.20.2
   resolution: "type-fest@npm:0.20.2"
   checksum: 4fb3272df21ad1c552486f8a2f8e115c09a521ad7a8db3d56d53718d0c907b62c6e9141ba5f584af3f6830d0872c521357e512381f24f7c44acae583ad517d73
-  languageName: node
-  linkType: hard
-
-"type-of@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "type-of@npm:2.0.1"
-  checksum: 51e889c9b09644ce4ec343ae24cfaa73399f6416c68532d46df1f068bd1773f639bb9dbf5d4bf0078825d0767810e6c7940489c17bd94998ad4e3770488956fe
   languageName: node
   linkType: hard
 
