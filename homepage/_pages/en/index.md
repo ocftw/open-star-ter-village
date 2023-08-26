@@ -1,0 +1,3 @@
+---
+unique_slug: index
+---
