@@ -6,6 +6,9 @@ import config from './config.json';
 import Banner from '../../components/banner';
 import ImageAndText from '../../components/imageAndText';
 import Headline from '../../components/headline';
+import Section from '../../components/section';
+import TwoColumns from '../../components/twoColumns';
+import ThreeColumns from '../../components/threeColumns';
 
 const PagePreview = ({ entry }) => {
   const layoutList = entry.getIn(['data', 'layout_list']);
@@ -41,6 +44,55 @@ const PagePreview = ({ entry }) => {
           subtitle={layout.get('subtitle')?.toString()}
         />
       );
+    } else if (layoutType === 'layout_section') {
+      const columnSize = layout.get('columns')?.size ?? 0;
+      if (columnSize === 0 || columnSize === 1) {
+        return (
+          <Section
+            key={layout.get('title')?.toString()}
+            id={layout.get('title')?.toString()}
+            title={layout.get('title')?.toString()}
+            subtitle={layout.getIn(['columns', 0, 'title'])?.toString()}
+            content={layout.getIn(['columns', 0, 'text'])?.toString()}
+          />
+        );
+      } else if (columnSize === 2) {
+        const columns = layout
+          .get('columns')
+          ?.map((column) => {
+            return [
+              column.get('title')?.toString(),
+              column.get('text')?.toString(),
+            ];
+          })
+          .toArray();
+        return (
+          <TwoColumns
+            key={layout.get('title')?.toString()}
+            id={layout.get('title')?.toString()}
+            title={layout.get('title')?.toString()}
+            columns={columns}
+          />
+        );
+      } else if (columnSize === 3) {
+        const columns = layout
+          .get('columns')
+          ?.map((column) => {
+            return [
+              column.get('title')?.toString(),
+              column.get('text')?.toString(),
+            ];
+          })
+          .toArray();
+        return (
+          <ThreeColumns
+            key={layout.get('title')?.toString()}
+            id={layout.get('title')?.toString()}
+            title={layout.get('title')?.toString()}
+            columns={columns}
+          />
+        );
+      }
     } else {
       return <div key={layout.get('title')?.toString()}></div>;
     }
