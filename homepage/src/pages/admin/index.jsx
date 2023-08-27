@@ -5,6 +5,7 @@ import config from './config.json';
 
 import Banner from '../../components/banner';
 import ImageAndText from '../../components/imageAndText';
+import Headline from '../../components/headline';
 
 const PagePreview = ({ entry }) => {
   const layoutList = entry.getIn(['data', 'layout_list']);
@@ -30,6 +31,14 @@ const PagePreview = ({ entry }) => {
           subtitle={layout.get('subtitle')?.toString()}
           content={layout.get('text')?.toString()}
           highlights={layout.get('highlights')?.toArray()}
+        />
+      );
+    } else if (layoutType === 'layout_headline') {
+      return (
+        <Headline
+          key={layout.get('title')?.toString()}
+          title={layout.get('title')?.toString()}
+          subtitle={layout.get('subtitle')?.toString()}
         />
       );
     } else {
