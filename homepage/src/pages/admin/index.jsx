@@ -4,6 +4,7 @@ import Script from 'next/script';
 import config from './config.json';
 
 import Banner from '../../components/banner';
+import ImageAndText from '../../components/imageAndText';
 
 const PagePreview = ({ entry }) => {
   const layoutList = entry.getIn(['data', 'layout_list']);
@@ -16,6 +17,18 @@ const PagePreview = ({ entry }) => {
           heroImage={layout.get('hero_image')?.toString()}
           title={layout.get('title')?.toString()}
           subtitle={layout.get('subtitle')?.toString()}
+          highlights={layout.get('highlights')?.toArray()}
+        />
+      );
+    } else if (layoutType === 'layout_image_text') {
+      return (
+        <ImageAndText
+          key={layout.get('title')?.toString()}
+          id={layout.get('title')?.toString()}
+          image={layout.get('image')?.toString()}
+          title={layout.get('title')?.toString()}
+          subtitle={layout.get('subtitle')?.toString()}
+          content={layout.get('text')?.toString()}
           highlights={layout.get('highlights')?.toArray()}
         />
       );
