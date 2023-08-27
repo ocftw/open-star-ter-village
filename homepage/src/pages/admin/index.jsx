@@ -3,6 +3,29 @@ import Head from 'next/head';
 import Script from 'next/script';
 import config from './config.json';
 
+import Banner from '../../components/banner';
+
+const PagePreview = ({ entry }) => {
+  const layoutList = entry.getIn(['data', 'layout_list']);
+  const sections = layoutList?.map((layout) => {
+    const layoutType = layout.get('type')?.toString();
+    if (layoutType === 'layout_banner') {
+      return (
+        <Banner
+          key={layout.get('title')?.toString()}
+          heroImage={layout.get('hero_image')?.toString()}
+          title={layout.get('title')?.toString()}
+          subtitle={layout.get('subtitle')?.toString()}
+          highlights={layout.get('highlights')?.toArray()}
+        />
+      );
+    } else {
+      return <div key={layout.get('title')?.toString()}></div>;
+    }
+  });
+  return <div>{sections}</div>;
+};
+
 const CMS = dynamic(
   () =>
     import('decap-cms-app').then((cms) => {
@@ -20,6 +43,8 @@ const CMS = dynamic(
         'https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700',
       );
       cms.registerPreviewStyle('/css/style.css');
+
+      cms.registerPreviewTemplate('pages', PagePreview);
     }),
   { ssr: false, loading: () => <p>Loading...</p> },
 );
