@@ -7,6 +7,19 @@ const CMS = dynamic(
   () =>
     import('decap-cms-app').then((cms) => {
       cms.init({ config });
+      cms.registerPreviewStyle(
+        'https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css',
+      );
+      cms.registerPreviewStyle(
+        'https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css',
+      );
+      cms.registerPreviewStyle(
+        'https://fonts.googleapis.com/css?family=Montserrat:400,700',
+      );
+      cms.registerPreviewStyle(
+        'https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700',
+      );
+      cms.registerPreviewStyle('/css/style.css');
     }),
   { ssr: false, loading: () => <p>Loading...</p> },
 );
