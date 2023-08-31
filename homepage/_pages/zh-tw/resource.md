@@ -100,4 +100,27 @@ layout_list:
     title: 實體桌遊租借
     text: 迫不急待想要開箱桌遊了？來信 hi@ocf.tw 將有專人協助登記免費借用。請詳閱租用規則(目前僅提供中文版桌遊，限於台灣本島內租借)。
     image: /images/uploads/boardgame.jpg
+  - type: layout_section
+    title: 線上桌遊一起玩！
+    columns:
+      - text: 我們正在招兵買馬中，邀請各界志同道合的好朋友一起與我們開發線上桌遊。加入我們的 discord 一起遊戲開發！
+        title: 線上桌遊一起玩！
+  - type: layout_section
+    title: FAQ
+    columns:
+      - title: FAQ
+        text: >-
+          <details><summary>Q：我對這一切都很有興趣，請問你們的授權條款是什麼？</summary>
+
+
+          Answer: o(^▽^)o 好開心，以下是我們的授權規則：CC BY-NC 4.0(CC 姓名標示-非商業性 4.0)--> 白話文就是，可自由使用、改作、散播桌遊的所有資訊（設計、文件全部都可），但需標注來自 OCF 且不可作商業利用
+
+
+          </details>
+
+
+          <details><summary>Q:：開源聽起來很棒？可以邀請 OCF 來場華麗的演講嗎？</summary>
+
+
+          基金會非常樂意推廣開源理念，請來信info@ocf.com.tw 詳談。將桌遊融入教案，帶學生認識開源
 ---
