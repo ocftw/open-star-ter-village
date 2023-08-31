@@ -122,5 +122,5 @@ layout_list:
           <details><summary>Q:：開源聽起來很棒？可以邀請 OCF 來場華麗的演講嗎？</summary>
 
 
-          基金會非常樂意推廣開源理念，請來信info@ocf.com.tw 詳談。將桌遊融入教案，帶學生認識開源
+          基金會非常樂意推廣開源理念，請來信info@ocf.tw 詳談。將桌遊融入教案，帶學生認識開源
 ---
