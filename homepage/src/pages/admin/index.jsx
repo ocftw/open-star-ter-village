@@ -73,7 +73,7 @@ const PagePreview = ({ entry }) => {
             columns={columns}
           />
         );
-      } else if (columnSize === 3) {
+      } else if (columnSize >= 3) {
         const columns = layout
           .get('columns')
           ?.map((column) => {
