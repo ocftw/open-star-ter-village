@@ -41,7 +41,6 @@ const PagePreview = ({ entry }) => {
         <Headline
           key={layout.get('title')?.toString()}
           title={layout.get('title')?.toString()}
-          subtitle={layout.get('subtitle')?.toString()}
         />
       );
     } else if (layoutType === 'layout_section') {
