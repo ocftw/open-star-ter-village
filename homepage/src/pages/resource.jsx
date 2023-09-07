@@ -14,7 +14,7 @@ import { fetchPage } from '../lib/fetchPage';
  * @type {import('next').GetStaticProps}
  */
 export const getStaticProps = async ({ locale }) => {
-  const page = fetchPage(locale, 'index');
+  const page = fetchPage(locale, 'resource');
 
   return {
     props: {
@@ -26,7 +26,7 @@ export const getStaticProps = async ({ locale }) => {
 export default function Resource({ page }) {
   return (
     <>
-      {page.data['layout_list'].map((layout) => {
+      {page.data['layout_list']?.map((layout) => {
         switch (layout.type) {
           case 'layout_banner':
             return (
@@ -41,7 +41,7 @@ export default function Resource({ page }) {
           case 'layout_section':
             if (layout.columns?.length === 2) {
               const columns = layout.columns?.map((column) => {
-                return [column.title?.toString(), column.text?.toString()];
+                return [column?.title, column?.text];
               });
               return (
                 <TwoColumns
@@ -53,7 +53,7 @@ export default function Resource({ page }) {
               );
             } else if (layout.columns?.length === 3) {
               const columns = layout.columns?.map((column) => {
-                return [column.title?.toString(), column.text?.toString()];
+                return [column?.title, column?.text];
               });
               return (
                 <ThreeColumns
