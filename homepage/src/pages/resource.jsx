@@ -2,8 +2,6 @@ import Banner from '../components/banner';
 import TwoColumns from '../components/twoColumns';
 import ThreeColumns from '../components/threeColumns';
 import ImageAndText from '../components/imageAndText';
-
-// ? Not used in index.md, just for Generic part
 import Section from '../components/section';
 import Headline from '../components/headline';
 
@@ -69,8 +67,8 @@ export default function Resource({ page }) {
                   key={layout?.title}
                   id={layout?.id}
                   title={layout?.title}
-                  subtitle={layout?.subtitle}
-                  content={layout?.content}
+                  subtitle={layout?.columns[0].title}
+                  content={layout?.columns[0].text}
                 />
               );
             }
