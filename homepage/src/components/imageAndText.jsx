@@ -1,3 +1,6 @@
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
+
 const ImageAndText = ({ id, image, title, subtitle, content, highlights }) => (
   <div className="section" id={id}>
     <div className="container">
@@ -9,16 +12,16 @@ const ImageAndText = ({ id, image, title, subtitle, content, highlights }) => (
           <div className="image-and-text-details">
             <span className="name">{subtitle}</span>
             <h2 className="sub-position">{title}</h2>
-            <div
-              dangerouslySetInnerHTML={{
-                __html: content,
-              }}
-            />
+            <ReactMarkdown rehypePlugins={rehypeRaw}>{content}</ReactMarkdown>
             <ul className="details">
               {highlights?.map((highlight) => (
                 <li key={`highlight-${highlight[0]}`}>
                   <strong>{highlight[0]}</strong>
-                  <p dangerouslySetInnerHTML={{ __html: highlight[1] }} />
+                  <p>
+                    <ReactMarkdown rehypePlugins={rehypeRaw}>
+                      {highlight[1]}
+                    </ReactMarkdown>
+                  </p>
                 </li>
               ))}
             </ul>

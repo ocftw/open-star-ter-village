@@ -1,3 +1,6 @@
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
+
 const TwoColumns = ({ id, title, columns }) => (
   <div className="section" id={id}>
     <div className="container">
@@ -8,23 +11,21 @@ const TwoColumns = ({ id, title, columns }) => (
         <div className="col-md-6 mb-3">
           <div className="section-main">
             <h3>{columns[0][0]}</h3>
-            <div
-              className="flex flex-col"
-              dangerouslySetInnerHTML={{
-                __html: columns[0][1],
-              }}
-            />
+            <div className="flex flex-col">
+              <ReactMarkdown rehypePlugins={rehypeRaw}>
+                {columns[0][1]}
+              </ReactMarkdown>
+            </div>
           </div>
         </div>
         <div className="col-md-6 mb-3">
           <div className="section-main">
             <h3>{columns[1][0]}</h3>
-            <div
-              className="flex flex-col"
-              dangerouslySetInnerHTML={{
-                __html: columns[1][1],
-              }}
-            />
+            <div className="flex flex-col">
+              <ReactMarkdown rehypePlugins={rehypeRaw}>
+                {columns[1][1]}
+              </ReactMarkdown>
+            </div>
           </div>
         </div>
       </div>
