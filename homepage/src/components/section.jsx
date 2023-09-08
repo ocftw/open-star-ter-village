@@ -1,3 +1,6 @@
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
+
 const Section = ({ id, title, subtitle, content }) => (
   <div className="section" id={id}>
     <div className="container">
@@ -6,11 +9,7 @@ const Section = ({ id, title, subtitle, content }) => (
       </div>
       <div className="section-main">
         <h3>{subtitle}</h3>
-        <div
-          dangerouslySetInnerHTML={{
-            __html: content,
-          }}
-        />
+        <ReactMarkdown rehypePlugins={rehypeRaw}>{content}</ReactMarkdown>
       </div>
     </div>
   </div>
