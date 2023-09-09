@@ -1,5 +1,4 @@
-import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
+import { ParseMarkdownAndHtml } from './parseMarkdownAndHtml';
 
 const ImageAndText = ({ id, image, title, subtitle, content, highlights }) => (
   <div className="section" id={id}>
@@ -12,15 +11,13 @@ const ImageAndText = ({ id, image, title, subtitle, content, highlights }) => (
           <div className="image-and-text-details">
             <span className="name">{subtitle}</span>
             <h2 className="sub-position">{title}</h2>
-            <ReactMarkdown rehypePlugins={rehypeRaw}>{content}</ReactMarkdown>
+            <ParseMarkdownAndHtml>{content}</ParseMarkdownAndHtml>
             <ul className="details">
               {highlights?.map((highlight) => (
                 <li key={`highlight-${highlight[0]}`}>
                   <strong>{highlight[0]}</strong>
                   <p>
-                    <ReactMarkdown rehypePlugins={rehypeRaw}>
-                      {highlight[1]}
-                    </ReactMarkdown>
+                    <ParseMarkdownAndHtml>{highlight[1]}</ParseMarkdownAndHtml>
                   </p>
                 </li>
               ))}
