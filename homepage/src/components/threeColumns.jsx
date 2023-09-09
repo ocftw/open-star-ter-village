@@ -1,5 +1,4 @@
-import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
+import { ParseMarkdownAndHtml } from './parseMarkdownAndHtml';
 
 const ThreeColumns = ({ id, title, columns }) => (
   <div className="section" id={id}>
@@ -12,9 +11,7 @@ const ThreeColumns = ({ id, title, columns }) => (
           <div className="section-main">
             <h3>{columns[0][0]}</h3>
             <div className="flex flex-col">
-              <ReactMarkdown rehypePlugins={rehypeRaw}>
-                {columns[0][1]}
-              </ReactMarkdown>
+              <ParseMarkdownAndHtml>{columns[0][1]}</ParseMarkdownAndHtml>
             </div>
           </div>
         </div>
@@ -22,9 +19,7 @@ const ThreeColumns = ({ id, title, columns }) => (
           <div className="section-main">
             <h3>{columns[1][0]}</h3>
             <div className="flex flex-col">
-              <ReactMarkdown rehypePlugins={rehypeRaw}>
-                {columns[1][1]}
-              </ReactMarkdown>
+              <ParseMarkdownAndHtml>{columns[1][1]}</ParseMarkdownAndHtml>
             </div>
           </div>
         </div>
@@ -32,9 +27,7 @@ const ThreeColumns = ({ id, title, columns }) => (
           <div className="section-main">
             <h3>{columns[2][0]}</h3>
             <div className="flex flex-col">
-              <ReactMarkdown rehypePlugins={rehypeRaw}>
-                {columns[2][1]}
-              </ReactMarkdown>
+              <ParseMarkdownAndHtml>{columns[2][1]}</ParseMarkdownAndHtml>
             </div>
           </div>
         </div>

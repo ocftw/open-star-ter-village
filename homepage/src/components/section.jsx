@@ -1,5 +1,4 @@
-import ReactMarkdown from 'react-markdown';
-import rehypeRaw from 'rehype-raw';
+import { ParseMarkdownAndHtml } from './parseMarkdownAndHtml';
 
 const Section = ({ id, title, subtitle, content }) => (
   <div className="section" id={id}>
@@ -9,7 +8,7 @@ const Section = ({ id, title, subtitle, content }) => (
       </div>
       <div className="section-main">
         <h3>{subtitle}</h3>
-        <ReactMarkdown rehypePlugins={rehypeRaw}>{content}</ReactMarkdown>
+        <ParseMarkdownAndHtml>{content}</ParseMarkdownAndHtml>
       </div>
     </div>
   </div>
