@@ -1,4 +1,6 @@
-const ImageAndText = ({ id, image, title, subtitle, content, highlights }) => (
+import { ParseMarkdownAndHtml } from './parseMarkdownAndHtml';
+
+const ImageAndText = ({ id, image, title, subtitle, content, highlights, markdown }) => (
   <div className="section" id={id}>
     <div className="container">
       <div className="image-and-text-main row">
@@ -9,16 +11,12 @@ const ImageAndText = ({ id, image, title, subtitle, content, highlights }) => (
           <div className="image-and-text-details">
             <span className="name">{subtitle}</span>
             <h2 className="sub-position">{title}</h2>
-            <div
-              dangerouslySetInnerHTML={{
-                __html: content,
-              }}
-            />
+            <ParseMarkdownAndHtml markdown={markdown}>{content}</ParseMarkdownAndHtml>
             <ul className="details">
               {highlights?.map((highlight) => (
                 <li key={`highlight-${highlight[0]}`}>
                   <strong>{highlight[0]}</strong>
-                  <p dangerouslySetInnerHTML={{ __html: highlight[1] }} />
+                  <ParseMarkdownAndHtml markdown={markdown}>{highlight[1]}</ParseMarkdownAndHtml>
                 </li>
               ))}
             </ul>
