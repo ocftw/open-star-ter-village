@@ -34,6 +34,7 @@ const PagePreview = ({ entry }) => {
           subtitle={layout.get('subtitle')?.toString()}
           content={layout.get('text')?.toString()}
           highlights={layout.get('highlights')?.toArray()}
+          markdown={true}
         />
       );
     } else if (layoutType === 'layout_headline') {
@@ -53,6 +54,7 @@ const PagePreview = ({ entry }) => {
             title={layout.get('title')?.toString()}
             subtitle={layout.getIn(['columns', 0, 'title'])?.toString()}
             content={layout.getIn(['columns', 0, 'text'])?.toString()}
+            markdown={true}
           />
         );
       } else if (columnSize === 2) {
@@ -71,6 +73,7 @@ const PagePreview = ({ entry }) => {
             id={layout.get('title')?.toString()}
             title={layout.get('title')?.toString()}
             columns={columns}
+            markdown={true}
           />
         );
       } else if (columnSize >= 3) {
@@ -89,6 +92,7 @@ const PagePreview = ({ entry }) => {
             id={layout.get('title')?.toString()}
             title={layout.get('title')?.toString()}
             columns={columns}
+            markdown={true}
           />
         );
       }
