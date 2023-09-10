@@ -1,3 +1,5 @@
+import { ParseMarkdownAndHtml } from './parseMarkdownAndHtml';
+
 const Section = ({ id, title, subtitle, content }) => (
   <div className="section" id={id}>
     <div className="container">
@@ -6,11 +8,7 @@ const Section = ({ id, title, subtitle, content }) => (
       </div>
       <div className="section-main">
         <h3>{subtitle}</h3>
-        <div
-          dangerouslySetInnerHTML={{
-            __html: content,
-          }}
-        />
+        <ParseMarkdownAndHtml>{content}</ParseMarkdownAndHtml>
       </div>
     </div>
   </div>
