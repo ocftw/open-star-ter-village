@@ -33,9 +33,6 @@ h4 {
 h5 {
   font-size: 10px;
 }
-p {
-  font-size: 14px;
-}
 .banner {
   position: relative;
   height: 100vh;
@@ -180,6 +177,12 @@ body {
   transition: 0.5s all;
   background: #fff;
 }
+.section-main p {
+  font-size: 16px;
+}
+.section-main .flex-col p {
+  font-size: 14px;
+}
 .section:nth-child(even) .section-main {
   background: #fafafe;
 }
@@ -187,7 +190,12 @@ body {
   box-shadow: 3px 3px 8px 2px #0000002b;
   transition: 0.5s all;
 }
-.section-main h1,h2,h3,h4,h5,h6 {
+.section-main h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   text-align: center;
 }
 .section-main ul {
