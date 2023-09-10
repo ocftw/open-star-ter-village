@@ -105,17 +105,16 @@
                   "label_singular": "Column",
                   "widget": "list",
                   "fields": [
-                    { "label": "Title", "name": "title", "widget": "string" },
+                    {
+                      "label": "Title",
+                      "name": "title",
+                      "widget": "string",
+                      "required": false
+                    },
                     {
                       "label": "Image",
                       "name": "image",
                       "widget": "image",
-                      "required": false
-                    },
-                    {
-                      "label": "Subtitle",
-                      "name": "subtitle",
-                      "widget": "string",
                       "required": false
                     },
                     {
