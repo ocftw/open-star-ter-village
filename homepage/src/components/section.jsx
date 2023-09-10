@@ -1,6 +1,6 @@
 import { ParseMarkdownAndHtml } from './parseMarkdownAndHtml';
 
-const Section = ({ id, title, subtitle, content }) => (
+const Section = ({ id, title, subtitle, content, markdown }) => (
   <div className="section" id={id}>
     <div className="container">
       <div className="section-head">
@@ -8,7 +8,7 @@ const Section = ({ id, title, subtitle, content }) => (
       </div>
       <div className="section-main">
         <h3>{subtitle}</h3>
-        <ParseMarkdownAndHtml>{content}</ParseMarkdownAndHtml>
+        <ParseMarkdownAndHtml markdown={markdown}>{content}</ParseMarkdownAndHtml>
       </div>
     </div>
   </div>

@@ -1,6 +1,6 @@
 import { ParseMarkdownAndHtml } from './parseMarkdownAndHtml';
 
-const TwoColumns = ({ id, title, columns }) => (
+const TwoColumns = ({ id, title, columns, markdown }) => (
   <div className="section" id={id}>
     <div className="container">
       <div className="section-head">
@@ -11,7 +11,7 @@ const TwoColumns = ({ id, title, columns }) => (
           <div className="section-main">
             <h3>{columns[0][0]}</h3>
             <div className="flex flex-col">
-              <ParseMarkdownAndHtml>{columns[0][1]}</ParseMarkdownAndHtml>
+              <ParseMarkdownAndHtml markdown={markdown}>{columns[0][1]}</ParseMarkdownAndHtml>
             </div>
           </div>
         </div>
@@ -19,7 +19,7 @@ const TwoColumns = ({ id, title, columns }) => (
           <div className="section-main">
             <h3>{columns[1][0]}</h3>
             <div className="flex flex-col">
-              <ParseMarkdownAndHtml>{columns[1][1]}</ParseMarkdownAndHtml>
+              <ParseMarkdownAndHtml markdown={markdown}>{columns[1][1]}</ParseMarkdownAndHtml>
             </div>
           </div>
         </div>

@@ -47,6 +47,7 @@ export default function Resource({ page }) {
                   id={layout?.id}
                   title={layout?.title}
                   columns={columns}
+                  markdown={true}
                 />
               );
             } else if (layout.columns?.length === 3) {
@@ -59,6 +60,7 @@ export default function Resource({ page }) {
                   id={layout?.id}
                   title={layout?.title}
                   columns={columns}
+                  markdown={true}
                 />
               );
             } else {
@@ -69,6 +71,7 @@ export default function Resource({ page }) {
                   title={layout?.title}
                   subtitle={layout?.columns[0].title}
                   content={layout?.columns[0].text}
+                  markdown={true}
                 />
               );
             }
@@ -82,6 +85,7 @@ export default function Resource({ page }) {
                 subtitle={layout?.subtitle}
                 content={layout?.text}
                 highlights={layout?.highlights}
+                markdown={true}
               />
             );
           case 'layout_headline':
