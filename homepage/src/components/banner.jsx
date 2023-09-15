@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import Social from './social';
+import SocialMedia from './socialMedia';
 
 const Banner = ({ heroImage, title, subtitle = '', highlights = [] }) => (
   <div className="banner">
@@ -20,7 +20,7 @@ const Banner = ({ heroImage, title, subtitle = '', highlights = [] }) => (
             <li key={`sub-data-${highlight}`}>{highlight}</li>
           ))}
         </ul>
-        <Social />
+        <SocialMedia />
       </div>
     </div>
   </div>

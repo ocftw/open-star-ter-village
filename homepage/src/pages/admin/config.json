@@ -344,27 +344,35 @@
           ]
         },
         {
-          "name": "authors",
-          "label": "Authors",
-          "file": "homepage/_data/authors.yml",
-          "description": "Author descriptions",
+          "name": "social_media",
+          "label": "Social Media",
+          "file": "homepage/_data/social_media.json",
+          "description": "Social media link switches",
           "fields": [
             {
-              "name": "authors",
-              "label": "Authors",
-              "label_singular": "Author",
+              "name": "links",
+              "label": "Links",
+              "label_singular": "Link",
               "widget": "list",
               "fields": [
                 {
-                  "label": "Name",
-                  "name": "name",
-                  "widget": "string",
-                  "hint": "First and Last"
+                  "label": "Type`",
+                  "name": "type",
+                  "widget": "select",
+                  "options": [
+                    "facebook",
+                    "twitter",
+                    "instagram",
+                    "linkedin",
+                    "discord",
+                    "github"
+                  ]
                 },
                 {
-                  "label": "Description",
-                  "name": "description",
-                  "widget": "markdown"
+                  "label": "Url",
+                  "name": "url",
+                  "widget": "string",
+                  "hint": "https://<social_media>/<account|username>"
                 }
               ]
             }

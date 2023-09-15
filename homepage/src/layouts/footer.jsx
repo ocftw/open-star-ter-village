@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import Social from '../components/social';
+import SocialMedia from '../components/socialMedia';
 import Logo from '../components/logo';
 
 const Footer = ({ siteData }) => (
@@ -19,7 +19,7 @@ const Footer = ({ siteData }) => (
         ))}
       </div>
       <span>{siteData.title}</span>
-      <Social />
+      <SocialMedia />
       <div className="flex flex-row flex-justify-center logos margin-2-percent">
         <Logo
           text="Initiator"
