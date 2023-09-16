@@ -72,13 +72,13 @@ export default function Resource({ page }) {
           case 'layout_image_text':
             return (
               <ImageAndText
-                key={layout?.title}
-                id={layout?.id}
-                image={layout?.image}
-                title={layout?.title}
-                subtitle={layout?.subtitle}
-                content={layout?.text}
-                highlights={layout?.highlights}
+                key={layout.title}
+                id={layout.id}
+                image={layout.image}
+                title={layout.title}
+                subtitle={layout.subtitle}
+                content={layout.text}
+                highlights={layout.highlights}
                 markdown={true}
               />
             );
