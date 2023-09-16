@@ -62,10 +62,11 @@ const PagePreview = ({ entry }) => {
         const columns = layout
           .get('columns')
           ?.map((column) => {
-            return [
-              column.get('title')?.toString(),
-              column.get('text')?.toString(),
-            ];
+            return {
+              title: column.get('title')?.toString(),
+              image: column.get('image')?.toString(),
+              text: column.get('text')?.toString(),
+            };
           })
           .toArray();
         return (
@@ -81,10 +82,11 @@ const PagePreview = ({ entry }) => {
         const columns = layout
           .get('columns')
           ?.map((column) => {
-            return [
-              column.get('title')?.toString(),
-              column.get('text')?.toString(),
-            ];
+            return {
+              title: column.get('title')?.toString(),
+              image: column.get('image')?.toString(),
+              text: column.get('text')?.toString(),
+            };
           })
           .toArray();
         return (

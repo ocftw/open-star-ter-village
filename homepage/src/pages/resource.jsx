@@ -38,28 +38,22 @@ export default function Resource({ page }) {
             );
           case 'layout_section':
             if (layout.columns?.length === 2) {
-              const columns = layout.columns?.map((column) => {
-                return [column?.title, column?.text];
-              });
               return (
                 <TwoColumns
-                  key={layout?.title}
-                  id={layout?.id}
-                  title={layout?.title}
-                  columns={columns}
+                  key={layout.title}
+                  id={layout.id}
+                  title={layout.title}
+                  columns={layout.columns}
                   markdown={true}
                 />
               );
             } else if (layout.columns?.length === 3) {
-              const columns = layout.columns?.map((column) => {
-                return [column?.title, column?.text];
-              });
               return (
                 <ThreeColumns
-                  key={layout?.title}
-                  id={layout?.id}
-                  title={layout?.title}
-                  columns={columns}
+                  key={layout.title}
+                  id={layout.id}
+                  title={layout.title}
+                  columns={layout.columns}
                   markdown={true}
                 />
               );
