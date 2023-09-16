@@ -29,11 +29,11 @@ export default function Resource({ page }) {
           case 'layout_banner':
             return (
               <Banner
-                key={layout?.title}
-                title={layout?.title}
-                subtitle={layout?.subtitle}
-                heroImage={layout?.heroImage}
-                highlights={layout?.highlights}
+                key={layout.title}
+                title={layout.title}
+                subtitle={layout.subtitle}
+                heroImage={layout.hero_image}
+                highlights={layout.highlights}
               />
             );
           case 'layout_section':
@@ -89,7 +89,7 @@ export default function Resource({ page }) {
               />
             );
           case 'layout_headline':
-            return <Headline key={layout?.title} title={layout?.title} />;
+            return <Headline key={layout.title} title={layout.title} />;
           default:
             return null;
         }

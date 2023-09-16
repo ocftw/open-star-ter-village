@@ -8,6 +8,7 @@ layout_list:
     highlights:
       - 工人放置
       - 模擬真實開源情境
+    hero_image: /images/uploads/heroimage.jpg
   - type: layout_section
     columns:
       - title: 我們想解決的問題
