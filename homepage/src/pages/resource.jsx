@@ -66,11 +66,11 @@ export default function Resource({ page }) {
             } else {
               return (
                 <Section
-                  key={layout?.title}
-                  id={layout?.id}
-                  title={layout?.title}
-                  subtitle={layout?.columns[0].title}
-                  content={layout?.columns[0].text}
+                  key={layout.title}
+                  id={layout.id}
+                  title={layout.title}
+                  subtitle={layout.columns?.[0]?.title}
+                  content={layout.columns?.[0]?.text}
                   markdown={true}
                 />
               );

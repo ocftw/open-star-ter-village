@@ -53,6 +53,7 @@ const PagePreview = ({ entry }) => {
             id={layout.get('title')?.toString()}
             title={layout.get('title')?.toString()}
             subtitle={layout.getIn(['columns', 0, 'title'])?.toString()}
+            image={layout.getIn(['columns', 0, 'image'])?.toString()}
             content={layout.getIn(['columns', 0, 'text'])?.toString()}
             markdown={true}
           />
