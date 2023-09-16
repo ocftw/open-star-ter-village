@@ -25,6 +25,15 @@ const PagePreview = ({ entry }) => {
         />
       );
     } else if (layoutType === 'layout_image_text') {
+      const highlights = layout
+        .get('highlights')
+        ?.map((highlight) => {
+          return {
+            item: highlight.get('item')?.toString(),
+            description: highlight.get('description')?.toString(),
+          };
+        })
+        ?.toArray();
       return (
         <ImageAndText
           key={layout.get('title')?.toString()}
@@ -33,7 +42,7 @@ const PagePreview = ({ entry }) => {
           title={layout.get('title')?.toString()}
           subtitle={layout.get('subtitle')?.toString()}
           content={layout.get('text')?.toString()}
-          highlights={layout.get('highlights')?.toArray()}
+          highlights={highlights}
           markdown={true}
         />
       );

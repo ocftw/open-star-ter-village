@@ -95,6 +95,25 @@
                   "name": "text",
                   "widget": "markdown",
                   "required": false
+                },
+                {
+                  "label": "Highlights",
+                  "label_singular": "Highlight",
+                  "name": "highlights",
+                  "widget": "list",
+                  "required": false,
+                  "fields": [
+                    {
+                      "label": "Item",
+                      "name": "item",
+                      "widget": "string"
+                    },
+                    {
+                      "label": "Description",
+                      "name": "description",
+                      "widget": "string"
+                    }
+                  ]
                 }
               ]
             },

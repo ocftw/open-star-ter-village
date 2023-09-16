@@ -29,14 +29,29 @@ const ImageAndText = ({
           <div className="image-and-text-details">
             <span className="name">{subtitle}</span>
             <h2 className="sub-position">{title}</h2>
-            <ParseMarkdownAndHtml markdown={markdown}>{content}</ParseMarkdownAndHtml>
+            <ParseMarkdownAndHtml markdown={markdown}>
+              {content}
+            </ParseMarkdownAndHtml>
             <ul className="details">
-              {highlights?.map((highlight) => (
-                <li key={`highlight-${highlight[0]}`}>
-                  <strong>{highlight[0]}</strong>
-                  <ParseMarkdownAndHtml markdown={markdown}>{highlight[1]}</ParseMarkdownAndHtml>
-                </li>
-              ))}
+              {highlights?.map((highlight) => {
+                if (Array.isArray(highlight)) {
+                  return (
+                    <li key={`highlight-${highlight[0]}`}>
+                      <strong>{highlight[0]}</strong>
+                      <ParseMarkdownAndHtml markdown={false}>
+                        {highlight[1]}
+                      </ParseMarkdownAndHtml>
+                    </li>
+                  );
+                } else {
+                  return (
+                    <li key={highlight.item}>
+                      <strong>{highlight.item}</strong>
+                      <div>{highlight.description}</div>
+                    </li>
+                  );
+                }
+              })}
             </ul>
           </div>
         </div>
