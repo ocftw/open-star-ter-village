@@ -33,6 +33,13 @@ layout_list:
       同時，玩家間的合作將加速改變世界，進步、退化由你決定！ 體驗參與開源專案的過程，一起經歷發起專案、參與專案、完成專案並增進社會的開源環境，
       在互相合作的過程中獲得最多影響力分數的玩家獲勝！
       [點我看完整遊戲規則書](https://openstartervillage.ocf.tw/s/manual)
+    highlights:
+      - item: 時間
+        description: 60-90分
+      - item: 人數
+        description: 2-4人
+      - item: 類型
+        description: 策略、工人放置
   - type: layout_section
     title: 遊戲特色
     columns:
