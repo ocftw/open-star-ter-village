@@ -56,8 +56,6 @@ export const getStaticProps = async ({ locale }) => {
     },
   };
 
-  const page = fetchPage(locale, 'index');
-
   const banner = {
     componentType: 'Banner',
     title: {
@@ -346,15 +344,7 @@ export const getStaticProps = async ({ locale }) => {
     },
   };
 
-  if (locale === 'zh-tw') {
-    return {
-      props: {
-        navigationList,
-        headInfo,
-        page,
-      },
-    };
-  }
+  const page = fetchPage(locale, 'index');
 
   return {
     props: {
@@ -395,6 +385,7 @@ export const getStaticProps = async ({ locale }) => {
         title: projectRoles.title[locale],
         columns: projectRoles.columns[locale],
       },
+      page,
     },
   };
 };
@@ -435,44 +426,42 @@ const Index = ({
       }}
     />
     {page && page.data['layout_list']?.map(contentMapper)}
-    {!page && (
-      <>
-        <Banner
-          title={banner.title}
-          subtitle={banner.subtitle}
-          heroImage={banner.heroImage}
-          highlights={banner.highlights}
-        />
-        <TwoColumns
-          id={projectIntro.id}
-          title={projectIntro.title}
-          columns={projectIntro.columns}
-        />
-        <ImageAndText
-          id={gameIntro.id}
-          title={gameIntro.title}
-          subtitle={gameIntro.subtitle}
-          image={gameIntro.image}
-          content={gameIntro.content}
-          highlights={gameIntro.highlights}
-        />
-        <ThreeColumns
-          id={gameFeatures.id}
-          title={gameFeatures.title}
-          columns={gameFeatures.columns}
-        />
-        <ThreeColumns
-          id={gameUseCases.id}
-          title={gameUseCases.title}
-          columns={gameUseCases.columns}
-        />
-        <ThreeColumns
-          id={projectRoles.id}
-          title={projectRoles.title}
-          columns={projectRoles.columns}
-        />
-      </>
-    )}
+    {/* <>
+      <Banner
+        title={banner.title}
+        subtitle={banner.subtitle}
+        heroImage={banner.heroImage}
+        highlights={banner.highlights}
+      />
+      <TwoColumns
+        id={projectIntro.id}
+        title={projectIntro.title}
+        columns={projectIntro.columns}
+      />
+      <ImageAndText
+        id={gameIntro.id}
+        title={gameIntro.title}
+        subtitle={gameIntro.subtitle}
+        image={gameIntro.image}
+        content={gameIntro.content}
+        highlights={gameIntro.highlights}
+      />
+      <ThreeColumns
+        id={gameFeatures.id}
+        title={gameFeatures.title}
+        columns={gameFeatures.columns}
+      />
+      <ThreeColumns
+        id={gameUseCases.id}
+        title={gameUseCases.title}
+        columns={gameUseCases.columns}
+      />
+      <ThreeColumns
+        id={projectRoles.id}
+        title={projectRoles.title}
+        columns={projectRoles.columns}
+      />
+    </> */}
   </>
 );
 
