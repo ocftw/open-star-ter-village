@@ -8,20 +8,20 @@ import contentMapper from '../layouts/contentMapper';
  * @type {import('next').GetStaticProps}
  */
 export const getStaticProps = async ({ locale }) => {
-  const backToTop = {
-    en: 'Back to top',
-    'zh-tw': '回到頁首',
-  };
+  // const backToTop = {
+  //   en: 'Back to top',
+  //   'zh-tw': '回到頁首',
+  // };
 
-  const projectIntroNav = {
-    en: 'Project Intro', // prefer Intro or Introduction?
-    'zh-tw': '專案介紹',
-  };
+  // const projectIntroNav = {
+  //   en: 'Project Intro',
+  //   'zh-tw': '專案介紹',
+  // };
 
-  const gameIntroNav = {
-    en: 'Game Intro', // same as above
-    'zh-tw': '遊戲介紹',
-  };
+  // const gameIntroNav = {
+  //   en: 'Game Intro',
+  //   'zh-tw': '遊戲介紹',
+  // };
 
   const cardsPage = {
     en: 'Cards',
@@ -34,9 +34,9 @@ export const getStaticProps = async ({ locale }) => {
   };
 
   const navigationList = [
-    { link: `#page-top`, text: backToTop[locale] },
-    { link: `#project-intro`, text: projectIntroNav[locale] },
-    { link: `#game-intro`, text: gameIntroNav[locale] },
+    // { link: `#page-top`, text: backToTop[locale] },
+    // { link: `#project-intro`, text: projectIntroNav[locale] },
+    // { link: `#game-intro`, text: gameIntroNav[locale] },
     { link: `/cards`, text: cardsPage[locale] },
     { link: `/activities`, text: activitiesPage[locale] },
   ];
