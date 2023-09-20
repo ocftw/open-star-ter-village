@@ -1,5 +1,7 @@
 import Head from 'next/head';
 import Script from 'next/script';
+import { fetchPage } from '../lib/fetchPage';
+import contentMapper from '../layouts/contentMapper';
 import Banner from '../components/banner';
 import TwoColumns from '../components/twoColumns';
 import ThreeColumns from '../components/threeColumns';
@@ -53,6 +55,8 @@ export const getStaticProps = async ({ locale }) => {
       'zh-tw': `科技怎麼改變世界？玩桌遊、就知道！`,
     },
   };
+
+  const page = fetchPage(locale, 'index');
 
   const banner = {
     componentType: 'Banner',
@@ -342,6 +346,16 @@ export const getStaticProps = async ({ locale }) => {
     },
   };
 
+  if (locale === 'zh-tw') {
+    return {
+      props: {
+        navigationList,
+        headInfo,
+        page,
+      },
+    };
+  }
+
   return {
     props: {
       navigationList,
@@ -387,6 +401,7 @@ export const getStaticProps = async ({ locale }) => {
 
 const Index = ({
   headInfo,
+  page,
   banner,
   projectIntro,
   gameIntro,
@@ -419,40 +434,45 @@ const Index = ({
       `,
       }}
     />
-    <Banner
-      title={banner.title}
-      subtitle={banner.subtitle}
-      heroImage={banner.heroImage}
-      highlights={banner.highlights}
-    />
-    <TwoColumns
-      id={projectIntro.id}
-      title={projectIntro.title}
-      columns={projectIntro.columns}
-    />
-    <ImageAndText
-      id={gameIntro.id}
-      title={gameIntro.title}
-      subtitle={gameIntro.subtitle}
-      image={gameIntro.image}
-      content={gameIntro.content}
-      highlights={gameIntro.highlights}
-    />
-    <ThreeColumns
-      id={gameFeatures.id}
-      title={gameFeatures.title}
-      columns={gameFeatures.columns}
-    />
-    <ThreeColumns
-      id={gameUseCases.id}
-      title={gameUseCases.title}
-      columns={gameUseCases.columns}
-    />
-    <ThreeColumns
-      id={projectRoles.id}
-      title={projectRoles.title}
-      columns={projectRoles.columns}
-    />
+    {page && page.data['layout_list']?.map(contentMapper)}
+    {!page && (
+      <>
+        <Banner
+          title={banner.title}
+          subtitle={banner.subtitle}
+          heroImage={banner.heroImage}
+          highlights={banner.highlights}
+        />
+        <TwoColumns
+          id={projectIntro.id}
+          title={projectIntro.title}
+          columns={projectIntro.columns}
+        />
+        <ImageAndText
+          id={gameIntro.id}
+          title={gameIntro.title}
+          subtitle={gameIntro.subtitle}
+          image={gameIntro.image}
+          content={gameIntro.content}
+          highlights={gameIntro.highlights}
+        />
+        <ThreeColumns
+          id={gameFeatures.id}
+          title={gameFeatures.title}
+          columns={gameFeatures.columns}
+        />
+        <ThreeColumns
+          id={gameUseCases.id}
+          title={gameUseCases.title}
+          columns={gameUseCases.columns}
+        />
+        <ThreeColumns
+          id={projectRoles.id}
+          title={projectRoles.title}
+          columns={projectRoles.columns}
+        />
+      </>
+    )}
   </>
 );
 
