@@ -1,0 +1,22 @@
+{
+  "footer": {
+    "links": [
+      {
+        "display_text": "Rulebook",
+        "url": "/s/manual"
+      },
+      {
+        "display_text": "Admin",
+        "url": "/admin"
+      },
+      {
+        "display_text": "OCF.TW",
+        "url": "https://ocf.tw/"
+      },
+      {
+        "display_text": "Borrow Board Game",
+        "url": "mailto:hi@ocf.tw"
+      }
+    ]
+  }
+}

@@ -1,5 +1,6 @@
 {
   "cms_manual_init": true,
+  "local_backend": true,
   "backend": {
     "name": "git-gateway",
     "branch": "main"
@@ -397,6 +398,47 @@
                   "name": "url",
                   "widget": "string",
                   "hint": "https://<social_media>/<account|username>"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "footer",
+      "label": "Footer",
+      "label_singular": "Footer",
+      "folder": "homepage/_footer",
+      "i18n": true,
+      "create": true,
+      "delete": false,
+      "slug": "footer",
+      "extension": "json",
+      "fields": [
+        {
+          "label": "Footer",
+          "name": "footer",
+          "widget": "object",
+          "i18n": true,
+          "fields": [
+            {
+              "label": "Links",
+              "name": "links",
+              "label_singular": "Link",
+              "widget": "list",
+              "i18n": true,
+              "fields": [
+                {
+                  "label": "Display Text",
+                  "name": "display_text",
+                  "widget": "string"
+                },
+                {
+                  "label": "Url",
+                  "name": "url",
+                  "widget": "string",
+                  "hint": "External link: `https://example.com/path/to/link`, Internal link: `/resouce`, Email: `mailto:username@example.com`"
                 }
               ]
             }

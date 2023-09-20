@@ -1,4 +1,4 @@
-import Footer from './footer';
+import Footer from './footer/footer';
 import Header from './header';
 
 const PageWrapper = ({ children, nav, siteData }) => (
