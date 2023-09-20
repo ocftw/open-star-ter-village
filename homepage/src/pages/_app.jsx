@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import Head from 'next/head';
 import Script from 'next/script';
 import { useRouter } from 'next/router';
-import Base from '../layouts/base';
+import PageWrapper from '../layouts/pageWrapper';
 import { pageview, GTM_ID } from '../lib/gtm';
 import '../../public/css/style.css';
 
@@ -39,9 +39,9 @@ const siteDataDictionary = {
 
 const getDefaultLayout = (page, pageProps, siteData) => {
   return (
-    <Base nav={pageProps.navigationList} siteData={siteData}>
+    <PageWrapper nav={pageProps.navigationList} siteData={siteData}>
       {page}
-    </Base>
+    </PageWrapper>
   );
 };
 

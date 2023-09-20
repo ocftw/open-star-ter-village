@@ -1,7 +1,7 @@
 import Footer from './footer';
 import Header from './header';
 
-const Base = ({ children, nav, siteData }) => (
+const PageWrapper = ({ children, nav, siteData }) => (
   <>
     <Header nav={nav} siteData={siteData} />
     <main>{children}</main>
@@ -9,4 +9,4 @@ const Base = ({ children, nav, siteData }) => (
   </>
 );
 
-export default Base;
+export default PageWrapper;

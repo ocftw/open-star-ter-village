@@ -1,6 +1,7 @@
+import Image from 'next/image';
 import { ParseMarkdownAndHtml } from './parseMarkdownAndHtml';
 
-const Section = ({ id, title, subtitle, content, markdown }) => (
+const Section = ({ id, title, subtitle, image, content, markdown }) => (
   <div className="section" id={id}>
     <div className="container">
       <div className="section-head">
@@ -8,7 +9,14 @@ const Section = ({ id, title, subtitle, content, markdown }) => (
       </div>
       <div className="section-main">
         <h3>{subtitle}</h3>
-        <ParseMarkdownAndHtml markdown={markdown}>{content}</ParseMarkdownAndHtml>
+        {image && (
+          <div className="image-container">
+            <Image src={image} alt={`${title} image`} fill className="image" />
+          </div>
+        )}
+        <ParseMarkdownAndHtml markdown={markdown}>
+          {content}
+        </ParseMarkdownAndHtml>
       </div>
     </div>
   </div>
