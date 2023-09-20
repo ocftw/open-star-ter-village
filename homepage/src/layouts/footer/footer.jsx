@@ -1,31 +1,23 @@
-import Link from 'next/link';
 import { useRouter } from 'next/router';
-import SocialMedia from '../components/socialMedia';
-import Logo from '../components/logo';
-import footerZh from '../../_footer/zh-tw/footer.json';
-import footerEn from '../../_footer/en/footer.json';
+import SocialMedia from '../../components/socialMedia';
+import Logo from '../../components/logo';
+import footerZh from '../../../_footer/zh-tw/footer.json';
+import footerEn from '../../../_footer/en/footer.json';
+import FooterLinks from './footerLinks';
 
-const Footer = ({ siteData }) => {
+const Footer = ({ siteData, footer }) => {
   const router = useRouter();
   const locale = router.locale;
   const footerData = locale === 'en' ? footerEn : footerZh;
-  const footerLinks = footerData?.footer?.links ?? [];
+  const footerLinks = footer?.links ?? footerData?.footer?.links ?? [];
+  const links = footerLinks.map((link) => ({
+    displayText: link.display_text,
+    url: link.url,
+  }));
   return (
     <div className="site-footer" id="footer">
       <div className="container footer-main">
-        <div className="flex flex-row gap">
-          {footerLinks.map((link) => (
-            <Link
-              href={link.url}
-              key={link.display_text}
-              target="_blank"
-              rel="noopener noreferrer"
-              locale={false}
-            >
-              {link.display_text}
-            </Link>
-          ))}
-        </div>
+        <FooterLinks links={links} />
         <span>{siteData.title}</span>
         <SocialMedia />
         <div className="flex flex-row flex-justify-center logos margin-2-percent">
