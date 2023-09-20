@@ -25,18 +25,6 @@ const Footer = ({ siteData }) => {
               {link.display_text}
             </Link>
           ))}
-          {footerLinks.length === 0 &&
-            siteData.footerLinks.map((link) => (
-              <Link
-                href={link.link}
-                key={link.text}
-                target="_blank"
-                rel="noopener noreferrer"
-                locale={false}
-              >
-                {link.text}
-              </Link>
-            ))}
         </div>
         <span>{siteData.title}</span>
         <SocialMedia />
