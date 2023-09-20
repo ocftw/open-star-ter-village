@@ -9,6 +9,7 @@ import Headline from '../../components/headline';
 import Section from '../../components/section';
 import TwoColumns from '../../components/twoColumns';
 import ThreeColumns from '../../components/threeColumns';
+import FooterLinks from '../../layouts/footer/footerLinks';
 
 const PagePreview = ({ entry }) => {
   const layoutList = entry.getIn(['data', 'layout_list']);
@@ -115,6 +116,22 @@ const PagePreview = ({ entry }) => {
   return <div>{sections}</div>;
 };
 
+const FooterPreview = ({ entry }) => {
+  const footer = entry.getIn(['data', 'footer']);
+  const links = footer
+    ?.get('links')
+    .map((link) => {
+      return {
+        displayText: link.get('display_text')?.toString(),
+        url: link.get('url')?.toString(),
+      };
+    })
+    .toArray();
+  return (
+    <FooterLinks links={links} />
+  );
+};
+
 const CMS = dynamic(
   () =>
     import('decap-cms-app').then((cms) => {
@@ -134,6 +151,7 @@ const CMS = dynamic(
       cms.registerPreviewStyle('/css/style.css');
 
       cms.registerPreviewTemplate('pages', PagePreview);
+      cms.registerPreviewTemplate('footer', FooterPreview);
     }),
   { ssr: false, loading: () => <p>Loading...</p> },
 );
