@@ -8,10 +8,10 @@ import Head from 'next/head';
  * @type {import('next').GetStaticProps}
  */
 export const getStaticProps = async ({ locale }) => {
-  const backToTop = {
-    en: 'Back to top',
-    'zh-tw': '回到頁首',
-  };
+  // const backToTop = {
+  //   en: 'Back to top',
+  //   'zh-tw': '回到頁首',
+  // };
 
   const aboutOpenSourceNav = {
     en: 'About Open Source',
@@ -44,11 +44,11 @@ export const getStaticProps = async ({ locale }) => {
   };
 
   const navigationList = [
-    { link: `#page-top`, text: backToTop[locale] },
-    { link: `#about-open-source`, text: aboutOpenSourceNav[locale] },
-    { link: `#our-beliefs`, text: ourBeliefsNav[locale] },
-    { link: `#details`, text: detailsNav[locale] },
-    { link: `#instructors`, text: instructorsNav[locale] },
+    // { link: `#page-top`, text: backToTop[locale] },
+    // { link: `#about-open-source`, text: aboutOpenSourceNav[locale] },
+    // { link: `#our-beliefs`, text: ourBeliefsNav[locale] },
+    // { link: `#details`, text: detailsNav[locale] },
+    // { link: `#instructors`, text: instructorsNav[locale] },
     { link: `/cards`, text: cardsPage[locale] },
     { link: `/`, text: homepage[locale] },
   ];

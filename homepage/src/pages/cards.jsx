@@ -36,10 +36,10 @@ export const getStaticProps = async ({ locale }) => {
     'zh-tw': '卡片介紹',
   };
 
-  const backToTop = {
-    en: 'Back to top',
-    'zh-tw': '回到頁首',
-  };
+  // const backToTop = {
+  //   en: 'Back to top',
+  //   'zh-tw': '回到頁首',
+  // };
 
   const projectCardTitle = {
     en: 'Project Card',
@@ -82,10 +82,10 @@ export const getStaticProps = async ({ locale }) => {
   };
 
   const navigationList = [
-    { link: `#page-top`, text: backToTop[locale] },
-    { link: `#project-cards`, text: projectCardTitle[locale] },
-    { link: `#job-cards`, text: jobCardTitle[locale] },
-    { link: `#event-cards`, text: eventCardTitle[locale] },
+    // { link: `#page-top`, text: backToTop[locale] },
+    // { link: `#project-cards`, text: projectCardTitle[locale] },
+    // { link: `#job-cards`, text: jobCardTitle[locale] },
+    // { link: `#event-cards`, text: eventCardTitle[locale] },
     { link: `/activities`, text: activitiesPage[locale] },
     { link: `/`, text: homepage[locale] },
   ];
