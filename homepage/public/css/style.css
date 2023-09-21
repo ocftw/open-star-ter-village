@@ -180,9 +180,9 @@ body {
 .section-main p {
   font-size: 16px;
 }
-.section-main .flex-col p {
+/* .section-main .flex-col p {
   font-size: 14px;
-}
+} */
 .section:nth-child(even) .section-main {
   background: #fafafe;
 }
