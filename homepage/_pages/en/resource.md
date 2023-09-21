@@ -2,8 +2,10 @@
 unique_slug: resource
 name: 資源頁
 layout_list:
-  - type: layout_headline
+  - type: layout_banner
+    hero_image: /images/uploads/as_real_as_life.png
     title: 資源分享
+    subtitle: 開源，從桌遊開始，參與台灣的未來
   - type: layout_section
     title: 開源，開放這個世界的資源
     columns:
@@ -12,11 +14,7 @@ layout_list:
           「開源星手村」讓你深度體驗「開源」（Open Source）專案。
 
 
-
-
           你用過「台北等公車」嗎？又或者是否使用過「口罩地圖」？以上的專案都是由民間發起，號召程式設計、行銷公關、文化工作者等不同專業的夥伴，透過貢獻彼此的專業所架構而成的開源專案。
-
-
 
 
           開放文化基金會一直以來致力於推動台灣開源社群的發展與耕耘，讓各方人才在執行多元專案的過程裡，同時推動社會進步、充實自我技能與成就。
