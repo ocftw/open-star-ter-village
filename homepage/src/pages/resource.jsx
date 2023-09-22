@@ -1,5 +1,6 @@
 import contentMapper from '../layouts/contentMapper';
 import { fetchPage } from '../lib/fetchPage';
+import { getPagesList } from '../lib/getPagesList';
 
 /**
  *
@@ -7,6 +8,7 @@ import { fetchPage } from '../lib/fetchPage';
  */
 export const getStaticProps = async ({ locale }) => {
   const page = fetchPage(locale, 'resource');
+  const pagesList = await getPagesList(locale);
 
   const homepage = {
     en: 'Home',
@@ -29,6 +31,12 @@ export const getStaticProps = async ({ locale }) => {
     { link: `/activities`, text: activitiesPage[locale] },
     { link: `/`, text: homepage[locale] },
   ];
+
+  // * dynamic page navigation
+  // const navigationList = pagesList.map((page) => {
+  //   page.path = page.path.replace('index', '');
+  //   return { link: `/${page.path}`, text: page.name ?? 'page' };
+  // });
 
   /*
   // content navigation
