@@ -10,33 +10,20 @@ export const getStaticProps = async ({ locale }) => {
   const page = fetchPage(locale, 'resource');
   const pagesList = await getPagesList(locale);
 
-  const homepage = {
-    en: 'Home',
-    'zh-tw': '首頁',
-  };
-
   const cardsPage = {
     en: 'Cards',
     'zh-tw': '卡片頁',
   };
 
-  const activitiesPage = {
-    en: 'Activities',
-    'zh-tw': '活動頁',
-  };
-
-  // site page navigation
-  const navigationList = [
-    { link: `/cards`, text: cardsPage[locale] },
-    { link: `/activities`, text: activitiesPage[locale] },
-    { link: `/`, text: homepage[locale] },
-  ];
-
   // * dynamic page navigation
-  // const navigationList = pagesList.map((page) => {
-  //   page.path = page.path.replace('index', '');
-  //   return { link: `/${page.path}`, text: page.name ?? 'page' };
-  // });
+  const navigationList = pagesList
+    .filter((page) => page.path && page.name)
+    .map((page) => {
+      page.path = page.path.replace('index', '');
+      return { link: `/${page.path}`, text: page.name };
+    });
+  // add hard coded cards page
+  navigationList.push({ link: `/cards`, text: cardsPage[locale] });
 
   /*
   // content navigation

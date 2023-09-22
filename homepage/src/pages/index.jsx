@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import Script from 'next/script';
 import { fetchPage } from '../lib/fetchPage';
+import { getPagesList } from '../lib/getPagesList';
 import contentMapper from '../layouts/contentMapper';
 
 /**
@@ -8,6 +9,7 @@ import contentMapper from '../layouts/contentMapper';
  * @type {import('next').GetStaticProps}
  */
 export const getStaticProps = async ({ locale }) => {
+  const pagesList = await getPagesList(locale);
   // const backToTop = {
   //   en: 'Back to top',
   //   'zh-tw': '回到頁首',
@@ -28,18 +30,15 @@ export const getStaticProps = async ({ locale }) => {
     'zh-tw': '卡片頁',
   };
 
-  const activitiesPage = {
-    en: 'Activities',
-    'zh-tw': '活動頁',
-  };
-
-  const navigationList = [
-    // { link: `#page-top`, text: backToTop[locale] },
-    // { link: `#project-intro`, text: projectIntroNav[locale] },
-    // { link: `#game-intro`, text: gameIntroNav[locale] },
-    { link: `/cards`, text: cardsPage[locale] },
-    { link: `/activities`, text: activitiesPage[locale] },
-  ];
+  // * dynamic page navigation
+  const navigationList = pagesList
+    .filter((page) => page.path && page.name)
+    .map((page) => {
+      page.path = page.path.replace('index', '');
+      return { link: `/${page.path}`, text: page.name };
+    });
+  // add hard coded cards page
+  navigationList.push({ link: `/cards`, text: cardsPage[locale] });
 
   const headInfo = {
     title: {

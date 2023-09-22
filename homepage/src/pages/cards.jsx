@@ -3,6 +3,7 @@ import Headline from '../components/headline';
 import CardsGrid from '../components/cardsGrid';
 
 import { fetchCards } from '../lib/fetchCards';
+import { getPagesList } from '../lib/getPagesList';
 
 /**
  *
@@ -56,14 +57,9 @@ export const getStaticProps = async ({ locale }) => {
     'zh-tw': '事件卡',
   };
 
-  const activitiesPage = {
-    en: 'Activities',
-    'zh-tw': '活動頁',
-  };
-
-  const homepage = {
-    en: 'Home',
-    'zh-tw': '首頁',
+  const cardsPage = {
+    en: 'Cards',
+    'zh-tw': '卡片頁',
   };
 
   const projectCardSubtitle = {
@@ -81,14 +77,17 @@ export const getStaticProps = async ({ locale }) => {
     },
   };
 
-  const navigationList = [
-    // { link: `#page-top`, text: backToTop[locale] },
-    // { link: `#project-cards`, text: projectCardTitle[locale] },
-    // { link: `#job-cards`, text: jobCardTitle[locale] },
-    // { link: `#event-cards`, text: eventCardTitle[locale] },
-    { link: `/activities`, text: activitiesPage[locale] },
-    { link: `/`, text: homepage[locale] },
-  ];
+  const pagesList = await getPagesList(locale);
+
+  // * dynamic page navigation
+  const navigationList = pagesList
+    .filter((page) => page.path && page.name)
+    .map((page) => {
+      page.path = page.path.replace('index', '');
+      return { link: `/${page.path}`, text: page.name };
+    });
+  // add hard coded cards page
+  navigationList.push({ link: `/cards`, text: cardsPage[locale] });
 
   const headInfo = {
     title: {
