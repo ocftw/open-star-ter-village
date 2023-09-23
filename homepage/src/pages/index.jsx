@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import Script from 'next/script';
 import { fetchPage } from '../lib/fetchPage';
-import { getPagesList } from '../lib/getPagesList';
+import { getNavigationList } from '../lib/getNavigationList';
 import contentMapper from '../layouts/contentMapper';
 
 /**
@@ -9,36 +9,7 @@ import contentMapper from '../layouts/contentMapper';
  * @type {import('next').GetStaticProps}
  */
 export const getStaticProps = async ({ locale }) => {
-  const pagesList = await getPagesList(locale);
-  // const backToTop = {
-  //   en: 'Back to top',
-  //   'zh-tw': '回到頁首',
-  // };
-
-  // const projectIntroNav = {
-  //   en: 'Project Intro',
-  //   'zh-tw': '專案介紹',
-  // };
-
-  // const gameIntroNav = {
-  //   en: 'Game Intro',
-  //   'zh-tw': '遊戲介紹',
-  // };
-
-  const cardsPage = {
-    en: 'Cards',
-    'zh-tw': '卡片頁',
-  };
-
-  // * dynamic page navigation
-  const navigationList = pagesList
-    .filter((page) => page.path && page.name)
-    .map((page) => {
-      page.path = page.path.replace('index', '');
-      return { link: `/${page.path}`, text: page.name };
-    });
-  // add hard coded cards page
-  navigationList.push({ link: `/cards`, text: cardsPage[locale] });
+  const navigationList = await getNavigationList(locale);
 
   const headInfo = {
     title: {

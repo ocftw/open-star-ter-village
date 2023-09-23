@@ -1,6 +1,6 @@
 import contentMapper from '../layouts/contentMapper';
 import { fetchPage } from '../lib/fetchPage';
-import { getPagesList } from '../lib/getPagesList';
+import { getNavigationList } from '../lib/getNavigationList';
 
 /**
  *
@@ -8,32 +8,7 @@ import { getPagesList } from '../lib/getPagesList';
  */
 export const getStaticProps = async ({ locale }) => {
   const page = fetchPage(locale, 'resource');
-  const pagesList = await getPagesList(locale);
-
-  const cardsPage = {
-    en: 'Cards',
-    'zh-tw': '卡片頁',
-  };
-
-  // * dynamic page navigation
-  const navigationList = pagesList
-    .filter((page) => page.path && page.name)
-    .map((page) => {
-      page.path = page.path.replace('index', '');
-      return { link: `/${page.path}`, text: page.name };
-    });
-  // add hard coded cards page
-  navigationList.push({ link: `/cards`, text: cardsPage[locale] });
-
-  /*
-  // content navigation
-  const navigationList = page.data['layout_list']?.map((layout) => {
-    return {
-      text: layout?.title,
-      link: `#${layout?.title}`,
-    };
-  });
-   */
+  const navigationList = await getNavigationList(locale);
 
   return {
     props: {

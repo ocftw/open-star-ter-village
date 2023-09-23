@@ -3,7 +3,7 @@ import Headline from '../components/headline';
 import CardsGrid from '../components/cardsGrid';
 
 import { fetchCards } from '../lib/fetchCards';
-import { getPagesList } from '../lib/getPagesList';
+import { getNavigationList } from '../lib/getNavigationList';
 
 /**
  *
@@ -32,15 +32,12 @@ export const getStaticProps = async ({ locale }) => {
     };
   });
 
+  const navigationList = await getNavigationList(locale);
+
   const title = {
     en: 'Card Introduction',
     'zh-tw': '卡片介紹',
   };
-
-  // const backToTop = {
-  //   en: 'Back to top',
-  //   'zh-tw': '回到頁首',
-  // };
 
   const projectCardTitle = {
     en: 'Project Card',
@@ -57,11 +54,6 @@ export const getStaticProps = async ({ locale }) => {
     'zh-tw': '事件卡',
   };
 
-  const cardsPage = {
-    en: 'Cards',
-    'zh-tw': '卡片頁',
-  };
-
   const projectCardSubtitle = {
     'open gov': {
       en: 'Open Government',
@@ -76,18 +68,6 @@ export const getStaticProps = async ({ locale }) => {
       'zh-tw': '開放原始碼專案',
     },
   };
-
-  const pagesList = await getPagesList(locale);
-
-  // * dynamic page navigation
-  const navigationList = pagesList
-    .filter((page) => page.path && page.name)
-    .map((page) => {
-      page.path = page.path.replace('index', '');
-      return { link: `/${page.path}`, text: page.name };
-    });
-  // add hard coded cards page
-  navigationList.push({ link: `/cards`, text: cardsPage[locale] });
 
   const headInfo = {
     title: {
