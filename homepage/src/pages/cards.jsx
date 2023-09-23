@@ -3,6 +3,7 @@ import Headline from '../components/headline';
 import CardsGrid from '../components/cardsGrid';
 
 import { fetchCards } from '../lib/fetchCards';
+import { getNavigationList } from '../lib/getNavigationList';
 
 /**
  *
@@ -31,14 +32,11 @@ export const getStaticProps = async ({ locale }) => {
     };
   });
 
+  const navigationList = await getNavigationList(locale);
+
   const title = {
     en: 'Card Introduction',
     'zh-tw': '卡片介紹',
-  };
-
-  const backToTop = {
-    en: 'Back to top',
-    'zh-tw': '回到頁首',
   };
 
   const projectCardTitle = {
@@ -56,16 +54,6 @@ export const getStaticProps = async ({ locale }) => {
     'zh-tw': '事件卡',
   };
 
-  const activitiesPage = {
-    en: 'Activities',
-    'zh-tw': '活動頁',
-  };
-
-  const homepage = {
-    en: 'Home',
-    'zh-tw': '首頁',
-  };
-
   const projectCardSubtitle = {
     'open gov': {
       en: 'Open Government',
@@ -80,15 +68,6 @@ export const getStaticProps = async ({ locale }) => {
       'zh-tw': '開放原始碼專案',
     },
   };
-
-  const navigationList = [
-    { link: `#page-top`, text: backToTop[locale] },
-    { link: `#project-cards`, text: projectCardTitle[locale] },
-    { link: `#job-cards`, text: jobCardTitle[locale] },
-    { link: `#event-cards`, text: eventCardTitle[locale] },
-    { link: `/activities`, text: activitiesPage[locale] },
-    { link: `/`, text: homepage[locale] },
-  ];
 
   const headInfo = {
     title: {

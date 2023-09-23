@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import Script from 'next/script';
 import { fetchPage } from '../lib/fetchPage';
+import { getNavigationList } from '../lib/getNavigationList';
 import contentMapper from '../layouts/contentMapper';
 
 /**
@@ -8,38 +9,7 @@ import contentMapper from '../layouts/contentMapper';
  * @type {import('next').GetStaticProps}
  */
 export const getStaticProps = async ({ locale }) => {
-  // const backToTop = {
-  //   en: 'Back to top',
-  //   'zh-tw': '回到頁首',
-  // };
-
-  // const projectIntroNav = {
-  //   en: 'Project Intro',
-  //   'zh-tw': '專案介紹',
-  // };
-
-  // const gameIntroNav = {
-  //   en: 'Game Intro',
-  //   'zh-tw': '遊戲介紹',
-  // };
-
-  const cardsPage = {
-    en: 'Cards',
-    'zh-tw': '卡片頁',
-  };
-
-  const activitiesPage = {
-    en: 'Activities',
-    'zh-tw': '活動頁',
-  };
-
-  const navigationList = [
-    // { link: `#page-top`, text: backToTop[locale] },
-    // { link: `#project-intro`, text: projectIntroNav[locale] },
-    // { link: `#game-intro`, text: gameIntroNav[locale] },
-    { link: `/cards`, text: cardsPage[locale] },
-    { link: `/activities`, text: activitiesPage[locale] },
-  ];
+  const navigationList = await getNavigationList(locale);
 
   const headInfo = {
     title: {
