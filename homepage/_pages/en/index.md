@@ -1,6 +1,6 @@
 ---
 unique_slug: index
-name: homepage
+name: Home
 layout_list:
   - type: layout_banner
     title: Open StarTer Village
