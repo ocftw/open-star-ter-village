@@ -32,9 +32,3 @@ Please attach screenshots of UI accordingly. If you don't have any UI changes, p
 | ---------- | ------ | ------ |
 | w/ Cached  | 00m00s | 00m00s |
 | w/o Cached | 00m00s | 00m00s |
-
-### LightHouse
-
-| item       | Before | After  |
-| ---------- | ------ | ------ |
-| Lighthouse | img 1  | img 2  |
