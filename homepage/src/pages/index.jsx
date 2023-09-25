@@ -41,6 +41,7 @@ const Index = ({ headInfo, page }) => (
     <Head>
       <title>{headInfo.title}</title>
       <meta name="description" content={headInfo.description} />
+      <meta name="google-site-verification" content="NejiRhdBA-bewypiYDtrGnKJ09VSH6-15HsXUNKdrm4" />
     </Head>
     <Script
       id="netlify-identity-widget"
