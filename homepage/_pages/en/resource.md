@@ -124,7 +124,7 @@ layout_list:
   - type: layout_section
     title: 參與專案，參與台灣的未來
     columns:
-      - title: 參與專案，參與台灣的未來
+      - title: ""
         subtitle: 給下一代社會的日常備忘錄
         text: |-
           桌遊玩完了，是否覺得現實社會依然一樣糟糕？想做些什麼？太好了，歡迎你加入我們，用開源，讓世界更好。**現在，來參與彼此的未來吧！**
