@@ -106,7 +106,7 @@ layout_list:
   - type: layout_section
     title: FAQ
     columns:
-      - title: FAQ
+      - title: ""
         text: >-
           <details><summary>Q：我對這一切都很有興趣，請問你們的授權條款是什麼？</summary>
 
