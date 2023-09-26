@@ -3,7 +3,7 @@ unique_slug: resource
 name: 資源頁
 layout_list:
   - type: layout_banner
-    hero_image: /images/uploads/as_real_as_life.png
+    hero_image: /images/uploads/img_3584_2.jpeg
     title: 資源分享
     subtitle: 開源，從桌遊開始，參與台灣的未來
   - type: layout_section
@@ -165,4 +165,5 @@ layout_list:
           台灣的未來需要你的參與。
 
           這一次，我們絕不能缺席。
+        image: /images/uploads/find_mates.png
 ---
