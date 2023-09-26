@@ -1,6 +1,6 @@
 ---
 unique_slug: resource
-name: 資源頁
+name: Resource
 layout_list:
   - type: layout_banner
     hero_image: /images/uploads/as_real_as_life.png
