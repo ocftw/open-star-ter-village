@@ -9,11 +9,12 @@ layout_list:
       technology and project collaboration. "
     highlights:
       - Worker Placement
-      - simulating scenarios
-      - real-world projects
+      - Simulating Scenarios
+      - Real-world Projects
     hero_image: /images/uploads/heroimage.jpg
   - type: layout_section
-    columns: []
+    columns:
+      - image: /images/uploads/as_real_as_life.png
     title: What's in the box
   - type: layout_image_text
     image: /images/uploads/boardgame.jpg
@@ -42,14 +43,14 @@ layout_list:
       - item: Type
         description: Strategy, Worker Placement
   - type: layout_section
-    title: 尚未翻譯
+    title: Rent for Free! Let's get open-sourced together
     columns:
       - title: Rent a Game
         image: ""
         subtitle: 解決問題，不只嚷嚷而已！
         text: Can't wait to play? OCF offers FREE board game rental services. Currently,
-          only the Chinese edition is available for rent. Contact OCF for more
-          details.
+          only the Chinese edition is available for rent. [Contact
+          OCF](<mailto:hi@ocf.tw>) for more details.
       - title: Play Online
         subtitle: 理念一致卻各有所長！
         text: Do you want to invite family and friends to play virtually? The online
@@ -74,20 +75,21 @@ layout_list:
     title: Story behind the Scene
     columns:
       - title: ""
-        text: From missing buses and declining heritage languages to confusing
+        text: >-
+          From missing buses and declining heritage languages to confusing
           pre-election candidate information, we live in a society with many
           issues that impact our daily lives. These concerns aren't just yours;
           they belong to us all. We all yearn for change and transparency, yet
-          often feel powerless. Open-source is the idea that solutions can be
-          built on the shoulders of giants. Through collective efforts, we, as
-          members of society, can contribute to finding solutions. Open Source,
-          through accessible resources and technological prowess, allows
-          collaboration with partners, leveraging the achievements of
-          predecessors to create practical tech tools and services,
-          fundamentally improving problems. "Tech tools" aren't exclusive to
-          "coders." Through openness and cooperation, we aim to explore how
-          individuals with diverse skills and a passion for solving societal
-          issues can collaboratively create "tech tools"!
+          often feel powerless. 
+
+
+          Open-source is the idea that solutions can be built on the shoulders of giants. Through collective efforts, we, as members of society, can contribute to finding solutions. 
+
+
+          Open Source, through accessible resources and technological prowess, allows collaboration with partners, leveraging the achievements of predecessors to create practical tech tools and services, fundamentally improving problems. 
+
+
+          "Tech tools" aren't exclusive to "coders." Through openness and cooperation, we aim to explore how individuals with diverse skills and a passion for solving societal issues can collaboratively create "tech tools"!
   - type: layout_section
     title: " Open Culture Foundation (OCF) x Promoting Open Source"
     columns:
@@ -99,17 +101,11 @@ layout_list:
           community, and address a broader range of issues. Working with
           passionate volunteers, the development of the tabletop game, "Open
           StarTer Village," is a result of our efforts in promoting open-source
-          through different platforms. One of the main concepts in the game is
-          to experience project management: by utilizing real-world open-source
-          projects, players experience project management from drafting a
-          project, and recruiting talents, to seeing the fruition.  While we are
-          in a world where technology drives changes, it is not a
-          coder-exclusive club. To push for changes, diverse talents such as
-          content creators, marketing specialists, copyeditors and law are
-          equally indispensable in the world of open-source. 
+          through different platforms. 
 
 
+          One of the main concepts in the game is to experience project management: by utilizing real-world open-source projects, players experience project management from drafting a project, and recruiting talents, to seeing the fruition.  While we are in a world where technology drives changes, it is not a coder-exclusive club. To push for changes, diverse talents such as content creators, marketing specialists, copyeditors and law are equally indispensable in the world of open-source. 
 
 
-          `This game is an adventure of change and a fusion of diverse expertise. We hope that through it, you'll grasp the essence of open-source projects and realize that all skill sets hold crucial value in the journey of reshaping the world.`
+          This game is an adventure of change and a fusion of diverse expertise. We hope that through it, you'll grasp the essence of open-source projects and realize that all skill sets hold crucial value in the journey of reshaping the world.
 ---
