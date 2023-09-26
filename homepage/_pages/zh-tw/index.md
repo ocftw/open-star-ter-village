@@ -12,7 +12,7 @@ layout_list:
     hero_image: /images/uploads/heroimage.jpg
   - type: layout_section
     columns:
-      - image: /images/uploads/boardgame.jpg
+      - image: /images/uploads/未命名-3_工作區域-1.png
     title: 桌遊開箱
   - type: layout_image_text
     image: /images/uploads/人力－行銷公關.jpg
