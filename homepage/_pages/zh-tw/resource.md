@@ -60,7 +60,8 @@ layout_list:
         text: 專案卡的專案過時了？想要客製化自己的專案卡？進階玩家看過來，利用我們的[進階客製規則](https://docs.google.com/document/d/1mmyCw-wlcOL5P_QXf0dc47MFFJMN3ISbGXlF6tw1ZwI/edit?usp=drive_link)，玩家可自己套入想發起的專案，讓桌遊更貼近你想推廣的理念！
   - type: layout_image_text
     title: 實體桌遊租借
-    text: 迫不急待想要開箱桌遊了？來信 hi@ocf.tw 將有專人協助登記免費借用。請詳閱租用規則(目前僅提供中文版桌遊，限於台灣本島內租借)。
+    text: 迫不急待想要開箱桌遊了？[來信 OCF](mailto:hi@ocf.tw)
+      將有專人協助登記免費借用。請詳閱[租用規則](https://drive.google.com/file/d/120Fbj4QsPwRsWWxCkzCGqmImDnbfgjlB/view?usp=drive_link)(目前僅提供中文版桌遊，限於台灣本島內租借)。
     image: /images/uploads/boardgame.jpg
   - type: layout_section
     title: 實體桌遊租借
