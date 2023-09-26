@@ -2,20 +2,16 @@
   "footer": {
     "links": [
       {
-        "display_text": "Rulebook",
-        "url": "/s/manual"
+        "display_text": "Rent a Boardgame ",
+        "url": "mailto:hi@ocf.tw"
       },
       {
         "display_text": "Admin",
         "url": "/admin"
       },
       {
-        "display_text": "OCF.TW",
-        "url": "https://ocf.tw/"
-      },
-      {
-        "display_text": "Borrow Board Game",
-        "url": "mailto:hi@ocf.tw"
+        "display_text": "Play Online!",
+        "url": "/resource"
       }
     ]
   }
