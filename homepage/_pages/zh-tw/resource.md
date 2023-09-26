@@ -101,7 +101,23 @@ layout_list:
   - type: layout_section
     title: 多元參與，全面體驗|活動預告
     columns:
-      - title: 10/27 推廣者工作坊-線上國際場次
+      - title: 10/13 推廣者工作坊－線上活動
+        image: /images/uploads/new.jpg
+        text: >-
+          我們致力於幫助來自不同領域的人們了解開源文化，期望藉此增加多元的貢獻者，建立一個穩健的開源生態系。
+
+
+          在這場線上工作坊，我們將討論 OCF 是如何透過「開源星手村」這款遊戲來推廣開源文化，我們是如何制定推廣策略的？這套推廣方式有什麼優點？又面臨什麼挑戰？
+
+
+          我們誠摯邀請所有推廣開源文化的夥伴們一起參加，暢聊你們推廣開源路上的甘苦談！
+
+
+          1. 時間：10/13 8:00 PM to 9:30 PM (Taipei, Taiwan Time UTC+8).
+
+          2. 因這場工作坊將邀請世界各地推廣開源的夥伴們參與，故將以英文進行活動
+
+          3. [報名活動請點此](https://docs.google.com/forms/d/e/1FAIpQLSfsD48X2DeW-qjf8efCc0Crii7rqMUCQVy0kaUlsTly1VSr6A/viewform)
   - type: layout_section
     title: FAQ
     columns:
@@ -119,7 +135,7 @@ layout_list:
           <details><summary>Q:：開源聽起來很棒？可以邀請 OCF 來場華麗的演講嗎？</summary>
 
 
-          活動合作請來信 hi@ocf.tw，說明合作目的與時間，讓我們一起來討論如何推廣開源吧！
+          活動合作請[來信 OCF](mailto:hi@ocf.tw)，說明合作目的與時間，讓我們一起來討論如何推廣開源吧！
   - type: layout_section
     title: 參與專案，參與台灣的未來
     columns:
