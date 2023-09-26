@@ -12,10 +12,10 @@ layout_list:
     hero_image: /images/uploads/heroimage.jpg
   - type: layout_section
     columns:
-      - image: /images/uploads/as_real_as_life.png
+      - image: /images/uploads/boardgame.jpg
     title: 桌遊開箱
   - type: layout_image_text
-    image: /images/uploads/boardgame.jpg
+    image: /images/uploads/人力－行銷公關.jpg
     title: 桌遊介紹
     text: >-
       穿越星際，成為開源新手！在《開源星際探險》中，你將進入神秘的星手村，親身體驗開源精神的真諦。發起專案、邀請夥伴、自主執行，並運用事件卡、星源樹等元素，攜手推進專案。合作中爭取影響力，獲得最多影響力分數的玩家獲勝！玩家間的團結更將塑造世界，進步或衰退，盡在你手！
@@ -35,8 +35,8 @@ layout_list:
     title: 借你玩！跟我們一起開源
     columns:
       - title: 實體桌遊租借
-        text: 迫不急待想要開箱桌遊了？來信 hi@ocf.tw
-          將有專人協助登記免費借用。請詳閱[租用規則](https://drive.google.com/file/d/120Fbj4QsPwRsWWxCkzCGqmImDnbfgjlB/view?usp=drive_link)(目前僅提供中文版桌遊，限於台灣本島內租借)。
+        text: 迫不急待想要開箱桌遊了？[來信 OCF
+          ](mailto:hi@ocf.tw)將有專人協助登記免費借用。請詳閱[租用規則](https://drive.google.com/file/d/120Fbj4QsPwRsWWxCkzCGqmImDnbfgjlB/view?usp=drive_link)(目前僅提供中文版桌遊，限於台灣本島內租借)。
       - title: 線上桌遊一起玩
         text: 想邀請台灣或者世界各角落的朋友一起玩？宅在家即可開源？一起來參與開發線上版本！
   - type: layout_section
@@ -53,8 +53,15 @@ layout_list:
     columns:
       - title: ""
         subtitle: 跟你的人生一樣真實！
-        text: 從追不上公車、沒落的母語、大選前霧煞煞的候選人資訊，大大小小的社會問題，這些煩惱不僅是你的，更是大家的。眾人心中都渴望改變，卻常常束手無策。然而，開源（Open
-          Source）這個方法，卻能讓你站在巨人的肩膀上，一同找出解方。開源，透過開放的資源和科技技術，與夥伴們攜手合作，借鑑前人的成就，創造出實用的科技工具和服務，從根本上改善問題。「科技工具」不只是「程式人」的專屬，透過開源與協作，我們希望帶你一起探索，如何讓擁有不同技能，有心解決社會議題的熱血人士，一起創造「科技工具」！
+        text: >-
+          從追不上公車、沒落的母語、大選前霧煞煞的候選人資訊，大大小小的社會問題，這些煩惱不僅是你的，更是大家的。眾人心中都渴望改變，卻常常束手無策。然而，開源（Open
+          Source）這個方法，卻能讓你站在巨人的肩膀上，一同找出解方。
+
+
+          開源，透過開放的資源和科技技術，與夥伴們攜手合作，借鑑前人的成就，創造出實用的科技工具和服務，從根本上改善問題。
+
+
+          「科技工具」不只是「程式人」的專屬，透過開源與協作，我們希望帶你一起探索，如何讓擁有不同技能，有心解決社會議題的熱血人士，一起創造「科技工具」！
         image: ""
   - type: layout_section
     title: 開放文化基金會 OCF x 開源推廣
