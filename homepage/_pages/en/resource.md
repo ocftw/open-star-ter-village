@@ -3,7 +3,7 @@ unique_slug: resource
 name: Resource
 layout_list:
   - type: layout_banner
-    hero_image: /images/uploads/as_real_as_life.png
+    hero_image: /images/uploads/img_3584_2.jpeg
     title: Resource Sharing
     subtitle: Participate in Taiwan's Future through open source. Let's start with
       the board game
@@ -87,7 +87,7 @@ layout_list:
           <details><summary>For Advanced Players</summary>
 
 
-          Can't get enough projects? Advanced players, take note! Using our [advanced custom rules,](https://docs.google.com/document/d/1mmyCw-wlcOL5P_QXf0dc47MFFJMN3ISbGXlF6tw1ZwI/edit?usp=drive_link) players can integrate their own projects into the game, making the board game more aligned with the ideas you want to promote!
+          Can't get enough projects? Advanced players, take note! Using our [advanced custom rules,](https://drive.google.com/file/d/1V-q2UCA-XOF_4t0n6wBNYTa9dFzgareV/view?usp=drive_link) players can integrate their own projects into the game, making the board game more aligned with the ideas you want to promote!
 
 
           </details>
@@ -112,6 +112,26 @@ layout_list:
         title: ""
   - type: layout_section
     title: Upcoming Events/Workshops
+    columns:
+      - title: "OpenStarTerVillage Promotes Sharing Webinar "
+        image: /images/uploads/new.jpg
+        text: >-
+          We are committed to helping people from various fields understand
+          open-source culture, with the aim of increasing diverse contributors
+          and establishing a robust open-source ecosystem.
+
+
+          During this online workshop, we will discuss how OCF promotes open-source culture through the "Open StarTer Village" game and how we have formulated our promotion strategies. What are the advantages of this promotional approach, and what challenges have we encountered?
+
+
+          We sincerely invite all advocates of open-source culture to join us and share their experiences in promoting open source. 
+
+
+          1. The event will take place on October 13th, from 8:00 PM to 9:30 PM (Taipei, Taiwan Time UTC+8). 
+
+          2. As we will be inviting partners from around the world to participate, the event will be conducted in English.
+
+          3. To register for the event, [please click here.](https://docs.google.com/forms/d/e/1FAIpQLSfsD48X2DeW-qjf8efCc0Crii7rqMUCQVy0kaUlsTly1VSr6A/viewform)
   - type: layout_section
     title: FAQ
     columns:
@@ -168,4 +188,5 @@ layout_list:
 
 
           This time, we will be there.
+        image: /images/uploads/find_mates.png
 ---
