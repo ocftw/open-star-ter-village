@@ -87,7 +87,7 @@ layout_list:
           <details><summary>For Advanced Players</summary>
 
 
-          Can't get enough projects? Advanced players, take note! Using our [advanced custom rules,](https://docs.google.com/document/d/1mmyCw-wlcOL5P_QXf0dc47MFFJMN3ISbGXlF6tw1ZwI/edit?usp=drive_link) players can integrate their own projects into the game, making the board game more aligned with the ideas you want to promote!
+          Can't get enough projects? Advanced players, take note! Using our [advanced custom rules,](https://drive.google.com/file/d/1V-q2UCA-XOF_4t0n6wBNYTa9dFzgareV/view?usp=drive_link) players can integrate their own projects into the game, making the board game more aligned with the ideas you want to promote!
 
 
           </details>
