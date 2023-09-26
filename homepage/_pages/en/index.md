@@ -14,10 +14,10 @@ layout_list:
     hero_image: /images/uploads/heroimage.jpg
   - type: layout_section
     columns:
-      - image: /images/uploads/as_real_as_life.png
+      - image: /images/uploads/boardgame.jpg
     title: What's in the box
   - type: layout_image_text
-    image: /images/uploads/boardgame.jpg
+    image: /images/uploads/labor-card-marketing-pr.jpg
     title: Game Introduction
     text: >-
       Embark on an interstellar journey and become an open-source rookie! Enter
