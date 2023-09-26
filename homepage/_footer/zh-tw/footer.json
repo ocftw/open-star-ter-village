@@ -2,20 +2,16 @@
   "footer": {
     "links": [
       {
-        "display_text": "遊戲規則書",
-        "url": "/s/manual"
+        "display_text": "租借實體桌遊",
+        "url": "mailto:hi@ocf.tw"
       },
       {
         "display_text": "後台管理",
         "url": "/admin"
       },
       {
-        "display_text": "OCF.TW",
-        "url": "https://ocf.tw/"
-      },
-      {
-        "display_text": "借桌遊",
-        "url": "mailto:hi@ocf.tw"
+        "display_text": "來玩線上桌遊！",
+        "url": "/resource"
       }
     ]
   }
