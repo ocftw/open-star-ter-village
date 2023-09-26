@@ -101,7 +101,7 @@ layout_list:
   - type: layout_section
     title: 多元參與，全面體驗|活動預告
     columns:
-      - title: 10/13 推廣者工作坊－線上活動
+      - title: 開源星手村推廣者線上分享
         image: /images/uploads/new.jpg
         text: >-
           我們致力於幫助來自不同領域的人們了解開源文化，期望藉此增加多元的貢獻者，建立一個穩健的開源生態系。
