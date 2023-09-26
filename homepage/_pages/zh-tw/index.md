@@ -11,7 +11,8 @@ layout_list:
       - 真實專案
     hero_image: /images/uploads/heroimage.jpg
   - type: layout_section
-    columns: []
+    columns:
+      - image: /images/uploads/as_real_as_life.png
     title: 桌遊開箱
   - type: layout_image_text
     image: /images/uploads/boardgame.jpg
