@@ -63,14 +63,17 @@ layout_list:
         text: Perfect for university or high school courses, instructional presentations
           combined with tabletop games provide an easy introduction to
           open-source concepts, enhancing civic engagement!
+        image: /images/uploads/pxl_20230508_052023298.jpg
       - title: "Community "
         text: Already a seasoned open-source enthusiast and active community member?
           Want to effortlessly recruit newcomers to the open-source community?
           Gather a group and start to play today!
+        image: /images/uploads/pxl_20230730_051310179.jpeg
       - title: Team Building
         text: Wondering how to lead club activities? Utilize the StarTer Village board
           game to easily break the ice and brainstorm ideas. Get your juniors
           involved--perfect teambuilding experience!
+        image: /images/uploads/img_3763.jpeg
   - type: layout_section
     title: Story behind the Scene
     columns:
@@ -108,4 +111,5 @@ layout_list:
 
 
           This game is an adventure of change and a fusion of diverse expertise. We hope that through it, you'll grasp the essence of open-source projects and realize that all skill sets hold crucial value in the journey of reshaping the world.
+        image: /images/uploads/367468114_678560620981599_1990717821666194652_n.jpeg
 ---
