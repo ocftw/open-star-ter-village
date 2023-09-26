@@ -83,7 +83,7 @@ layout_list:
           <details><summary>給進階玩家</summary>
 
 
-          專案卡的專案過時了？想要客製化自己的專案卡？進階玩家看過來，利用我們的[進階客製規則](https://docs.google.com/document/d/1mmyCw-wlcOL5P_QXf0dc47MFFJMN3ISbGXlF6tw1ZwI/edit?usp=drive_link)，玩家可自己套入想發起的專案，讓桌遊更貼近你想推廣的理念！
+          專案卡的專案過時了？想要客製化自己的專案卡？進階玩家看過來，利用我們的[進階客製規則](https://drive.google.com/file/d/1oDiYCTC2rXllYz-l2mowzLyuEgYJsknm/view?usp=drive_link)，玩家可自己套入想發起的專案，讓桌遊更貼近你想推廣的理念！
 
 
           </details>
