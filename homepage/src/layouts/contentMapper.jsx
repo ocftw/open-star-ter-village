@@ -45,6 +45,7 @@ const contentMapper = (layout) => {
             id={layout.id}
             title={layout.title}
             subtitle={layout.columns?.[0]?.title}
+            image={layout.columns?.[0]?.image}
             content={layout.columns?.[0]?.text}
             markdown={true}
           />
