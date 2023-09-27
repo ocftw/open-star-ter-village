@@ -5,3 +5,5 @@ Disallow: /admin
 # Allow all crawlers
 User-agent: *
 Allow: /
+
+Sitemap: https://openstartervillage.ocf.tw/sitemap.xml
