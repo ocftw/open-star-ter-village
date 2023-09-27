@@ -102,9 +102,10 @@ layout_list:
           the world requires coding skills." We aim to foster a dialogue between
           technology and society, promote diversity in the open-source
           community, and address a broader range of issues. Working with
-          passionate volunteers, the development of the tabletop game, "Open
-          StarTer Village," is a result of our efforts in promoting open-source
-          through different platforms. 
+          passionate volunteers and [FNF Global Innovation
+          Hub](https://www.freiheit.org/taiwan), the development of the tabletop
+          game, "Open StarTer Village," is a result of our efforts in promoting
+          open-source through different platforms. 
 
 
           One of the main concepts in the game is to experience project management: by utilizing real-world open-source projects, players experience project management from drafting a project, and recruiting talents, to seeing the fruition.  While we are in a world where technology drives changes, it is not a coder-exclusive club. To push for changes, diverse talents such as content creators, marketing specialists, copyeditors and law are equally indispensable in the world of open-source. 
