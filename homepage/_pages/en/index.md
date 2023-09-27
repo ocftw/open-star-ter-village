@@ -97,12 +97,12 @@ layout_list:
     title: " Open Culture Foundation (OCF) x Promoting Open Source"
     columns:
       - text: >-
-          Open Culture Foundation is dedicated to promoting the ideas of open
-          source and open resources, shattering the misconception that "changing
-          the world requires coding skills." We aim to foster a dialogue between
-          technology and society, promote diversity in the open-source
-          community, and address a broader range of issues. Working with
-          passionate volunteers and [FNF Global Innovation
+          [Open Culture Foundation](https://ocf.tw/en/) is dedicated to
+          promoting the ideas of open source and open resources, shattering the
+          misconception that "changing the world requires coding skills." We aim
+          to foster a dialogue between technology and society, promote diversity
+          in the open-source community, and address a broader range of issues.
+          Working with passionate volunteers and [FNF Global Innovation
           Hub](https://www.freiheit.org/taiwan), the development of the tabletop
           game, "Open StarTer Village," is a result of our efforts in promoting
           open-source through different platforms. 
