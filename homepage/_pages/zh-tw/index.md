@@ -3,7 +3,7 @@ unique_slug: index
 name: 首頁
 layout_list:
   - type: layout_banner
-    title: 開源星手村
+    title: 開源星手村-2
     subtitle: 開源是什麼？玩桌遊，就知道！透過開源、科技、協作，一起改變世界。
     highlights:
       - 工人置放

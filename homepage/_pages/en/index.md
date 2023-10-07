@@ -3,7 +3,7 @@ unique_slug: index
 name: Home
 layout_list:
   - type: layout_banner
-    title: Open StarTer Village
+    title: Open StarTer Village-2
     subtitle: "What is open source? Play and learn with Open StarTer Village, an
       educational board game on transforming the world through open-source
       technology and project collaboration. "
