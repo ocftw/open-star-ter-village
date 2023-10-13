@@ -16,6 +16,9 @@ img {
 .site-header * {
   color: #fff;
 }
+.dropdown-menu {
+  background-color: #3d3d3d;
+}
 a {
   color: #ef5826;
 }
