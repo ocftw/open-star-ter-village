@@ -14,7 +14,7 @@ layout_list:
     hero_image: /images/uploads/heroimage.jpg
   - type: layout_section
     columns:
-      - image: /images/uploads/boardgame.jpg
+      - image: /images/uploads/首頁＿桌遊開箱-english-.jpg
     title: What's in the box
   - type: layout_image_text
     image: /images/uploads/labor-card-marketing-pr.jpg
