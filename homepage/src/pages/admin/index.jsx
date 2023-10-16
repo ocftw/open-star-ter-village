@@ -52,6 +52,7 @@ const PagePreview = ({ entry }) => {
         <Headline
           key={layout.get('title')?.toString()}
           title={layout.get('title')?.toString()}
+          subtitle={layout.get('subtitle')?.toString()}
         />
       );
     } else if (layoutType === 'layout_section') {
@@ -127,9 +128,7 @@ const FooterPreview = ({ entry }) => {
       };
     })
     .toArray();
-  return (
-    <FooterLinks links={links} />
-  );
+  return <FooterLinks links={links} />;
 };
 
 const CMS = dynamic(
