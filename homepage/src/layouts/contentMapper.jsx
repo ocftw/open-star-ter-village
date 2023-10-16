@@ -11,6 +11,7 @@ const contentMapper = (layout) => {
       return (
         <Banner
           key={layout.title}
+          id={layout.id}
           title={layout.title}
           subtitle={layout.subtitle}
           heroImage={layout.hero_image}
