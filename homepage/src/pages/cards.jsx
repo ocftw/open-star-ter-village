@@ -1,7 +1,9 @@
 import Head from 'next/head';
 import Headline from '../components/headline';
 import CardsGrid from '../components/cardsGrid';
+import contentMapper from '../layouts/contentMapper';
 
+import { fetchPage } from '../lib/fetchPage';
 import { fetchCards } from '../lib/fetchCards';
 import { getNavigationList } from '../lib/getNavigationList';
 
@@ -33,6 +35,7 @@ export const getStaticProps = async ({ locale }) => {
   });
 
   const navigationList = await getNavigationList(locale);
+  const page = fetchPage(locale, 'cards');
 
   const title = {
     en: 'Card Introduction',
@@ -92,6 +95,7 @@ export const getStaticProps = async ({ locale }) => {
         'open data': projectCardSubtitle['open data'][locale],
         'open source': projectCardSubtitle['open source'][locale],
       },
+      page,
     },
   };
 };
@@ -104,6 +108,7 @@ const cards = ({
   jobCardTitle,
   eventCardTitle,
   projectCardSubtitle,
+  page,
 }) => {
   return (
     <>
@@ -111,6 +116,7 @@ const cards = ({
         <title>{headInfo.title}</title>
         <meta name="description" content="" />
       </Head>
+      {page.data['layout_list']?.map(contentMapper)}
       <Headline title={title} />
       <CardsGrid
         id={`project-cards`}
