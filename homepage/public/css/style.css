@@ -934,6 +934,9 @@ code {
 .logo-image {
   margin-left: 1rem;
 }
+.logo-margin {
+  margin: 0 15px;
+}
 @media only screen and (max-width: 991px) {
   .blogs-list .item {
     width: 50% !important;
@@ -975,6 +978,9 @@ code {
   }
   .logos {
     flex-wrap: wrap;
+  }
+  .logo-margin {
+    margin: 10px auto;
   }
 }
 @media only screen and (max-width: 568px) {
