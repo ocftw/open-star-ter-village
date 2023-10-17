@@ -1,6 +1,7 @@
-const Headline = ({ title }) => (
-  <div className="headline">
+const Headline = ({ id, title, subtitle }) => (
+  <div className="headline" id={id}>
     <h1>{title}</h1>
+    <span>{subtitle}</span>
   </div>
 );
 

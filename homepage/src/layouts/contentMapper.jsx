@@ -11,6 +11,7 @@ const contentMapper = (layout) => {
       return (
         <Banner
           key={layout.title}
+          id={layout.id}
           title={layout.title}
           subtitle={layout.subtitle}
           heroImage={layout.hero_image}
@@ -65,7 +66,14 @@ const contentMapper = (layout) => {
         />
       );
     case 'layout_headline':
-      return <Headline key={layout.title} title={layout.title} />;
+      return (
+        <Headline
+          key={layout.title}
+          id={layout.id}
+          title={layout.title}
+          subtitle={layout.subtitle}
+        />
+      );
     default:
       return null;
   }

@@ -1,8 +1,8 @@
 import Image from 'next/image';
 import SocialMedia from './socialMedia';
 
-const Banner = ({ heroImage, title, subtitle = '', highlights = [] }) => (
-  <div className="banner">
+const Banner = ({ id, heroImage, title, subtitle = '', highlights = [] }) => (
+  <div className="banner" id={id}>
     <Image
       src={heroImage}
       alt={`${title}-hero-image`}
