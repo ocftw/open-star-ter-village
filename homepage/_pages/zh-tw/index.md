@@ -15,7 +15,7 @@ layout_list:
       - image: /images/uploads/未命名-3_工作區域-1.png
     title: 桌遊開箱
   - type: layout_image_text
-    image: /images/uploads/人力－行銷公關.jpg
+    image: /images/uploads/行銷公關_工作區域-1.png
     title: 桌遊介紹
     text: >-
       穿越星際，成為開源新手！在《開源星際探險》中，你將進入神秘的星手村，親身體驗開源精神的真諦。發起專案、邀請夥伴、自主執行，並運用事件卡、星源樹等元素，攜手推進專案。合作中爭取影響力，獲得最多影響力分數的玩家獲勝！玩家間的團結更將塑造世界，進步或衰退，盡在你手！
