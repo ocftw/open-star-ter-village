@@ -151,6 +151,47 @@
                   ]
                 }
               ]
+            },
+            {
+              "label": "Layout - Cards",
+              "name": "layout_cards",
+              "widget": "object",
+              "summary": "{{fields.title}}",
+              "fields": [
+                { "label": "Title", "name": "title", "widget": "string" },
+                {
+                  "label": "Card type",
+                  "name": "card_type",
+                  "widget": "select",
+                  "options": [
+                    { "label": "專案", "value": "project" },
+                    { "label": "人力", "value": "job" },
+                    { "label": "事件", "value": "event" }
+                  ],
+                  "required": false
+                },
+                {
+                  "label": "Card tags",
+                  "name": "card_tags",
+                  "widget": "select",
+                  "multiple": true,
+                  "options": [
+                    { "label": "開放政府", "value": "open gov" },
+                    { "label": "開放資料", "value": "open data" },
+                    { "label": "開放原始碼", "value": "open source" },
+                    { "label": "基礎", "value": "basic" },
+                    { "label": "進階", "value": "advance" },
+                    { "label": "工程師", "value": "engineer" },
+                    { "label": "美術設計", "value": "designer" },
+                    { "label": "文字工作者", "value": "writer" },
+                    { "label": "行銷公關", "value": "marketing" },
+                    { "label": "議題工作者", "value": "advocator" },
+                    { "label": "公務員", "value": "civil servants" },
+                    { "label": "法務人員", "value": "legal" }
+                  ],
+                  "required": false
+                }
+              ]
             }
           ]
         }
