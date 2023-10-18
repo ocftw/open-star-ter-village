@@ -19,5 +19,5 @@ export const getStaticProps = async ({ locale }) => {
 };
 
 export default function Resource({ page }) {
-  return <>{page.contentList.map(contentMapper)}</>;
+  return <>{page.contentList?.map(contentMapper)}</>;
 }

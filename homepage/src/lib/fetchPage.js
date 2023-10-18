@@ -1,7 +1,7 @@
 import fs from 'fs';
 import { join } from 'path';
 import matter from 'gray-matter';
-import { titleToAnchorId } from './titleToAnchorId';
+import { componentMapper } from './componentMapper';
 
 const pagesDirectory = join(process.cwd(), '_pages');
 
@@ -16,12 +16,7 @@ export function fetchPage(lang, page) {
     const fileContent = fs.readFileSync(filePath, 'utf8');
     const { data } = matter(fileContent);
 
-    const contentList = data['layout_list']?.map((layout) => {
-      return {
-        id: layout.id || titleToAnchorId(layout.title),
-        ...layout,
-      };
-    });
+    const contentList = data['layout_list']?.map(componentMapper);
 
     return {
       contentList,
