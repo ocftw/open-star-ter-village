@@ -116,7 +116,7 @@ const cards = ({
         <title>{headInfo.title}</title>
         <meta name="description" content="" />
       </Head>
-      {page.data['layout_list']?.map(contentMapper)}
+      {page.contentList?.map(contentMapper)}
       <Headline title={title} />
       <CardsGrid
         id={`project-cards`}

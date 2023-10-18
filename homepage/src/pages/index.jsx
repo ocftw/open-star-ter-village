@@ -63,7 +63,7 @@ const Index = ({ headInfo, page }) => (
       `,
       }}
     />
-    {page.data['layout_list']?.map(contentMapper)}
+    {page.contentList.map(contentMapper)}
   </>
 );
 

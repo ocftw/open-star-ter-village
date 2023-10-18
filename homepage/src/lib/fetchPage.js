@@ -16,12 +16,15 @@ export function fetchPage(lang, page) {
     const fileContent = fs.readFileSync(filePath, 'utf8');
     const { data } = matter(fileContent);
 
-    data['layout_list']?.forEach((layout) => {
-      layout.id = layout.id || titleToAnchorId(layout.title);
+    const contentList = data['layout_list']?.map((layout) => {
+      return {
+        id: layout.id || titleToAnchorId(layout.title),
+        ...layout,
+      };
     });
 
     return {
-      data,
+      contentList,
     };
   } catch (error) {
     console.log(error);
