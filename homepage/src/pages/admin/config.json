@@ -43,6 +43,7 @@
               "label": "Layout - Banner",
               "name": "layout_banner",
               "widget": "object",
+              "summary": "{{fields.title}}",
               "fields": [
                 {
                   "label": "Background Hero Image",
@@ -68,6 +69,7 @@
               "label": "Layout - Headline",
               "name": "layout_headline",
               "widget": "object",
+              "summary": "{{fields.title}}",
               "fields": [
                 { "label": "Title", "name": "title", "widget": "string" },
                 {
@@ -82,6 +84,7 @@
               "label": "Layout - Image & Text",
               "name": "layout_image_text",
               "widget": "object",
+              "summary": "{{fields.title}}",
               "fields": [
                 { "label": "Image", "name": "image", "widget": "image" },
                 { "label": "Title", "name": "title", "widget": "string" },
@@ -122,6 +125,7 @@
               "label": "Layout - Section",
               "name": "layout_section",
               "widget": "list",
+              "summary": "{{fields.title}}",
               "fields": [
                 { "label": "Title", "name": "title", "widget": "string" },
                 {
@@ -329,9 +333,10 @@
               "label": "Links",
               "label_singular": "Link",
               "widget": "list",
+              "summary": "{{fields.type} - {{fields.url}}",
               "fields": [
                 {
-                  "label": "Type`",
+                  "label": "Type",
                   "name": "type",
                   "widget": "select",
                   "options": [
@@ -378,6 +383,7 @@
               "label_singular": "Link",
               "widget": "list",
               "i18n": true,
+              "summary": "{{fields.display_text}} - {{fields.url}}",
               "fields": [
                 {
                   "label": "Display Text",
