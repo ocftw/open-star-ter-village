@@ -4,7 +4,7 @@ import ThreeColumns from '../components/threeColumns';
 import ImageAndText from '../components/imageAndText';
 import Section from '../components/section';
 import Headline from '../components/headline';
-import Cards from '../components/cards';
+import Cards from '../components/cards/cards';
 import { componentTypes } from '../lib/componentMapper';
 
 const contentMapper = (component) => {
