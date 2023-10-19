@@ -9,10 +9,12 @@ import contentMapper from '../../layouts/contentMapper';
 import Card from '../../components/cards/card';
 import { processCardData } from '../../lib/processCardData';
 
+import mockCards from './mock_cards.json';
+
 const PagePreview = ({ entry }) => {
   const layoutList = entry.getIn(['data', 'layout_list']);
   const sections = layoutList?.map((layout) => {
-    const component = componentMapper(layout.toJS(), []);
+    const component = componentMapper(layout.toJS(), mockCards);
     return contentMapper(component);
   });
   return <div>{sections}</div>;
@@ -37,7 +39,7 @@ const CardPreview = ({ entry }) => {
   const content = data.body;
 
   return <Card card={{ data: processCardData(data), content }} />;
-}
+};
 
 const CMS = dynamic(
   () =>
