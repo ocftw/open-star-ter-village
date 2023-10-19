@@ -6,7 +6,7 @@ const cleanTitle = (title) => {
     .trim();
 };
 
-export const titleToAnchorId = (title) => {
+export const titleToAnchorId = (title = '') => {
   let anchorId = title.toLowerCase(); // lowercase
   anchorId = cleanTitle(anchorId); // remove special characters
   anchorId = anchorId.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); // remove accents

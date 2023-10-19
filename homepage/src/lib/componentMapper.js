@@ -58,7 +58,7 @@ export const componentMapper = (layout, cards = []) => {
       break;
     }
     case 'layout_section': {
-      if (layout.columns?.length === 1) {
+      if (layout.columns?.length <= 1) {
         type = componentTypes.OneColumn;
         props = {
           id: titleToAnchorId(layout.title),
@@ -78,7 +78,7 @@ export const componentMapper = (layout, cards = []) => {
           markdown: true,
         };
         break;
-      } else if (layout.columns?.length === 3) {
+      } else if (layout.columns?.length >= 3) {
         type = componentTypes.ThreeColumns;
         props = {
           id: titleToAnchorId(layout.title),
