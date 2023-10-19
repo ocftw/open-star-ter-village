@@ -2,7 +2,6 @@ import Head from 'next/head';
 import Headline from '../components/headline';
 import CardsGrid from '../components/cardsGrid';
 import contentMapper from '../layouts/contentMapper';
-
 import { fetchPage } from '../lib/fetchPage';
 import { fetchCards } from '../lib/fetchCards';
 import { getNavigationList } from '../lib/getNavigationList';
@@ -12,29 +11,29 @@ import { getNavigationList } from '../lib/getNavigationList';
  * @type {import('next').GetStaticProps}
  */
 export const getStaticProps = async ({ locale }) => {
-  const cards = await fetchCards(locale);
-
-  // Get correct image path
-  const updatedCards = cards.map((card) => {
-    const updatedImage = card.frontMatter.image
-      ? card.frontMatter.image.replace('/homepage/public', '')
-      : '/images/uploads/初階專案卡封面-01.png';
+  const rawCards = fetchCards(locale);
+  const cardTasks = rawCards.map(async ({ data, content }) => {
+    let image = data.image;
+    const defaultImage = '/images/uploads/初階專案卡封面-01.png';
+    image = image ? image.replace('/homepage/public', '') : defaultImage;
 
     // Workaround for image prefix path. Will be removed after image path is fixed in all cards.
-    const image = !updatedImage.startsWith('/')
-      ? `/${updatedImage}`
-      : updatedImage;
+    image = !image.startsWith('/') ? `/${image}` : image;
+
+    data.image = image;
+
+    const { markdownToHtml } = await import('../lib/markdownToHtml');
+    const processedContent = await markdownToHtml(content);
 
     return {
-      ...card,
-      frontMatter: {
-        ...card.frontMatter,
-        image,
-      },
+      frontMatter: data,
+      content: processedContent,
     };
   });
+  const cards = await Promise.all(cardTasks);
 
   const navigationList = await getNavigationList(locale);
+
   const page = fetchPage(locale, 'cards');
 
   const title = {
@@ -81,7 +80,7 @@ export const getStaticProps = async ({ locale }) => {
 
   return {
     props: {
-      cards: updatedCards,
+      cards,
       navigationList,
       headInfo: {
         title: headInfo.title[locale],
