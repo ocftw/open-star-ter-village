@@ -5,6 +5,7 @@ import contentMapper from '../layouts/contentMapper';
 import { fetchPage } from '../lib/fetchPage';
 import { fetchCards } from '../lib/fetchCards';
 import { getNavigationList } from '../lib/getNavigationList';
+import { componentMapper } from '../lib/componentMapper';
 
 /**
  *
@@ -35,6 +36,10 @@ export const getStaticProps = async ({ locale }) => {
   const navigationList = await getNavigationList(locale);
 
   const page = fetchPage(locale, 'cards');
+
+  const contentList = page.data['layout_list']?.map((layout) =>
+    componentMapper(layout, rawCards),
+  );
 
   const title = {
     en: 'Card Introduction',
@@ -94,7 +99,9 @@ export const getStaticProps = async ({ locale }) => {
         'open data': projectCardSubtitle['open data'][locale],
         'open source': projectCardSubtitle['open source'][locale],
       },
-      page,
+      page: {
+        contentList,
+      },
     },
   };
 };

@@ -3,6 +3,7 @@ import Script from 'next/script';
 import { fetchPage } from '../lib/fetchPage';
 import { getNavigationList } from '../lib/getNavigationList';
 import contentMapper from '../layouts/contentMapper';
+import { componentMapper } from '../lib/componentMapper';
 
 /**
  *
@@ -23,6 +24,7 @@ export const getStaticProps = async ({ locale }) => {
   };
 
   const page = fetchPage(locale, 'index');
+  const contentList = page.data['layout_list']?.map(componentMapper);
 
   return {
     props: {
@@ -31,7 +33,9 @@ export const getStaticProps = async ({ locale }) => {
         title: headInfo.title[locale],
         description: headInfo.description[locale],
       },
-      page,
+      page: {
+        contentList,
+      },
     },
   };
 };
