@@ -6,6 +6,8 @@ import config from './config.json';
 import FooterLinks from '../../layouts/footer/footerLinks';
 import { componentMapper } from '../../lib/componentMapper';
 import contentMapper from '../../layouts/contentMapper';
+import Card from '../../components/cards/card';
+import { processCardData } from '../../lib/processCardData';
 
 const PagePreview = ({ entry }) => {
   const layoutList = entry.getIn(['data', 'layout_list']);
@@ -30,6 +32,13 @@ const FooterPreview = ({ entry }) => {
   return <FooterLinks links={links} />;
 };
 
+const CardPreview = ({ entry }) => {
+  const data = entry.getIn(['data']).toJS();
+  const content = data.body;
+
+  return <Card card={{ data: processCardData(data), content }} />;
+}
+
 const CMS = dynamic(
   () =>
     import('decap-cms-app').then((cms) => {
@@ -50,6 +59,7 @@ const CMS = dynamic(
 
       cms.registerPreviewTemplate('pages', PagePreview);
       cms.registerPreviewTemplate('footer', FooterPreview);
+      cms.registerPreviewTemplate('cards', CardPreview);
     }),
   { ssr: false, loading: () => <p>Loading...</p> },
 );
