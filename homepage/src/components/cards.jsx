@@ -9,7 +9,7 @@ const Cards = ({ id, title, cards }) => {
         </div>
         <div className="row">
           {cards.map((card) => (
-            <Card key={card.data.title} card={card} />
+            <Card key={card.data.id} card={card} />
           ))}
         </div>
       </div>
@@ -18,7 +18,7 @@ const Cards = ({ id, title, cards }) => {
 };
 
 const Card = ({ card }) => (
-  <div className="col-md-4 mb-3">
+  <div className="col-md-4 mb-3" id={card.data.id}>
     <div className="section-main">
       <h3>{card.data.title}</h3>
       <div>
