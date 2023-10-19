@@ -25,4 +25,6 @@ layout_list:
   - type: layout_cards
     title: Event Card
     card_type: event
+  - type: layout_section
+    title: Section Title
 ---
