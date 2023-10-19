@@ -4,6 +4,7 @@ import ThreeColumns from '../components/threeColumns';
 import ImageAndText from '../components/imageAndText';
 import Section from '../components/section';
 import Headline from '../components/headline';
+import Cards from '../components/cards';
 import { componentTypes } from '../lib/componentMapper';
 
 const contentMapper = (component) => {
@@ -20,6 +21,8 @@ const contentMapper = (component) => {
       return <TwoColumns key={component.id} {...component.props} />;
     case componentTypes.ThreeColumns:
       return <ThreeColumns key={component.id} {...component.props} />;
+    case componentTypes.Cards:
+      return <Cards key={component.id} {...component.props} />;
     default:
       return null;
   }

@@ -24,7 +24,9 @@ export const getStaticProps = async ({ locale }) => {
   };
 
   const page = fetchPage(locale, 'index');
-  const contentList = page.data['layout_list']?.map(componentMapper);
+  const contentList = page.data['layout_list']?.map((layout) =>
+    componentMapper(layout, []),
+  );
 
   return {
     props: {

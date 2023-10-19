@@ -9,7 +9,9 @@ import { getNavigationList } from '../lib/getNavigationList';
  */
 export const getStaticProps = async ({ locale }) => {
   const page = fetchPage(locale, 'resource');
-  const contentList = page.data['layout_list']?.map(componentMapper);
+  const contentList = page.data['layout_list']?.map((layout) =>
+    componentMapper(layout, []),
+  );
   const navigationList = await getNavigationList(locale);
 
   return {

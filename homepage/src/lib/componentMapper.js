@@ -8,7 +8,7 @@ const removeUndefined = (obj) => {
     }
   });
   return newObj;
-}
+};
 
 export const componentTypes = {
   Banner: 'Banner',
@@ -17,9 +17,10 @@ export const componentTypes = {
   TwoColumns: 'TwoColumns',
   ThreeColumns: 'ThreeColumns',
   ImageAndText: 'ImageAndText',
-}
+  Cards: 'Cards',
+};
 
-export const componentMapper = (layout) => {
+export const componentMapper = (layout, cards = []) => {
   let type = '';
   let props = {};
   switch (layout.type) {
@@ -88,10 +89,33 @@ export const componentMapper = (layout) => {
         break;
       }
     }
+    case 'layout_cards': {
+      let filteredCards = cards;
+      // filter cards by card_type
+      if (layout.card_type) {
+        filteredCards = cards.filter(
+          (card) => layout.card_type === card.data.type,
+        );
+      }
+      // filter cards by card_tags
+      if (layout.card_tags && layout.card_tags.length > 0) {
+        filteredCards = filteredCards.filter((card) =>
+          layout.card_tags.every((tag) => card.data.tags?.includes(tag)),
+        );
+      }
+
+      type = componentTypes.Cards;
+      props = {
+        id: titleToAnchorId(layout.title),
+        title: layout.title,
+        cards: filteredCards,
+      };
+      break;
+    }
   }
 
   return {
     type,
     props: removeUndefined(props),
   };
-}
+};
