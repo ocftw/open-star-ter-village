@@ -4,76 +4,25 @@ import ThreeColumns from '../components/threeColumns';
 import ImageAndText from '../components/imageAndText';
 import Section from '../components/section';
 import Headline from '../components/headline';
+import Cards from '../components/cards';
+import { componentTypes } from '../lib/componentMapper';
 
-const contentMapper = (layout) => {
-  switch (layout.type) {
-    case 'layout_banner':
-      return (
-        <Banner
-          key={layout.title}
-          id={layout.id}
-          title={layout.title}
-          subtitle={layout.subtitle}
-          heroImage={layout.hero_image}
-          highlights={layout.highlights}
-        />
-      );
-    case 'layout_section':
-      if (layout.columns?.length === 2) {
-        return (
-          <TwoColumns
-            key={layout.title}
-            id={layout.id}
-            title={layout.title}
-            columns={layout.columns}
-            markdown={true}
-          />
-        );
-      } else if (layout.columns?.length === 3) {
-        return (
-          <ThreeColumns
-            key={layout.title}
-            id={layout.id}
-            title={layout.title}
-            columns={layout.columns}
-            markdown={true}
-          />
-        );
-      } else {
-        return (
-          <Section
-            key={layout.title}
-            id={layout.id}
-            title={layout.title}
-            subtitle={layout.columns?.[0]?.title}
-            image={layout.columns?.[0]?.image}
-            content={layout.columns?.[0]?.text}
-            markdown={true}
-          />
-        );
-      }
-    case 'layout_image_text':
-      return (
-        <ImageAndText
-          key={layout.title}
-          id={layout.id}
-          image={layout.image}
-          title={layout.title}
-          subtitle={layout.subtitle}
-          content={layout.text}
-          highlights={layout.highlights}
-          markdown={true}
-        />
-      );
-    case 'layout_headline':
-      return (
-        <Headline
-          key={layout.title}
-          id={layout.id}
-          title={layout.title}
-          subtitle={layout.subtitle}
-        />
-      );
+const contentMapper = (component) => {
+  switch (component.type) {
+    case componentTypes.Banner:
+      return <Banner key={component.id} {...component.props} />;
+    case componentTypes.Headline:
+      return <Headline key={component.id} {...component.props} />;
+    case componentTypes.ImageAndText:
+      return <ImageAndText key={component.id} {...component.props} />;
+    case componentTypes.OneColumn:
+      return <Section key={component.id} {...component.props} />;
+    case componentTypes.TwoColumns:
+      return <TwoColumns key={component.id} {...component.props} />;
+    case componentTypes.ThreeColumns:
+      return <ThreeColumns key={component.id} {...component.props} />;
+    case componentTypes.Cards:
+      return <Cards key={component.id} {...component.props} />;
     default:
       return null;
   }

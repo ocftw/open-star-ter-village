@@ -1,7 +1,6 @@
 import fs from 'fs';
 import { join } from 'path';
 import matter from 'gray-matter';
-import { titleToAnchorId } from './titleToAnchorId';
 
 const pagesDirectory = join(process.cwd(), '_pages');
 
@@ -15,10 +14,6 @@ export function fetchPage(lang, page) {
 
     const fileContent = fs.readFileSync(filePath, 'utf8');
     const { data } = matter(fileContent);
-
-    data['layout_list']?.forEach((layout) => {
-      layout.id = layout.id || titleToAnchorId(layout.title);
-    });
 
     return {
       data,

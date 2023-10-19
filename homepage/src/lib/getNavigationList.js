@@ -29,10 +29,6 @@ export async function getPagesList(lang) {
 
 export async function getNavigationList(lang) {
   const pagesList = await getPagesList(lang);
-  const cardsPage = {
-    en: 'Cards',
-    'zh-tw': '卡片頁',
-  };
 
   // * dynamic page navigation
   const navigationList = pagesList
@@ -41,8 +37,6 @@ export async function getNavigationList(lang) {
       page.path = page.path.replace('index', '');
       return { link: `/${page.path}`, text: page.name };
     });
-  // add hard coded cards page
-  navigationList.push({ link: `/cards`, text: cardsPage[lang] });
 
   return navigationList;
 }

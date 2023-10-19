@@ -1,4 +1,5 @@
 import contentMapper from '../layouts/contentMapper';
+import { componentMapper } from '../lib/componentMapper';
 import { fetchPage } from '../lib/fetchPage';
 import { getNavigationList } from '../lib/getNavigationList';
 
@@ -8,16 +9,21 @@ import { getNavigationList } from '../lib/getNavigationList';
  */
 export const getStaticProps = async ({ locale }) => {
   const page = fetchPage(locale, 'resource');
+  const contentList = page.data['layout_list']?.map((layout) =>
+    componentMapper(layout, []),
+  );
   const navigationList = await getNavigationList(locale);
 
   return {
     props: {
-      page,
+      page: {
+        contentList,
+      },
       navigationList,
     },
   };
 };
 
 export default function Resource({ page }) {
-  return <>{page.data['layout_list']?.map(contentMapper)}</>;
+  return <>{page.contentList?.map(contentMapper)}</>;
 }
