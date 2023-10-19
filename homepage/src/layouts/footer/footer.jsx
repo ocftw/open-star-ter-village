@@ -23,7 +23,7 @@ const Footer = ({ siteData, footer }) => {
         <div className="flex flex-row flex-justify-center logos margin-2-percent">
           <Logo
             text="Initiator"
-            src="/images/campaignpage/logo__OCF.png"
+            src="/images/campaignpage/logo__OCF.svg"
             dimension={{ width: 170, height: 34 }}
           />
           <Logo

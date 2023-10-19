@@ -9,6 +9,9 @@ const Logo = ({ text, src, dimension }) => (
       alt={`${text}-logo`}
       height={dimension.height}
       width={dimension.width}
+      style={{
+        objectFit: 'cover',
+      }}
     />
   </div>
 );
