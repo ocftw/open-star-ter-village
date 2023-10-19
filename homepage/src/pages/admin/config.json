@@ -23,6 +23,8 @@
       "description": "Pages in the website",
       "folder": "homepage/_pages",
       "slug": "{{unique_slug}}",
+      "identifier_field": "unique_slug",
+      "preview_path": "{{unique_slug}}",
       "create": true,
       "i18n": true,
       "fields": [
@@ -209,10 +211,26 @@
       "folder": "homepage/_cards",
       "create": true,
       "i18n": true,
-      "view_groups": [
-        { "label": "Drafts", "field": "draft" },
-        { "label": "Type", "field": "type" }
+      "view_groups": [{ "label": "Type", "field": "type" }],
+      "view_filters": [
+        { "label": "專案", "field": "type", "pattern": "project" },
+        { "label": "人力", "field": "type", "pattern": "job" },
+        { "label": "事件", "field": "type", "pattern": "event" },
+
+        { "label": "開放政府", "field": "tags", "pattern": "open gov" },
+        { "label": "開放資料", "field": "tags", "pattern": "open data" },
+        { "label": "開放原始碼", "field": "tags", "pattern": "open source" },
+        { "label": "基礎", "field": "tags", "pattern": "basic" },
+        { "label": "進階", "field": "tags", "pattern": "advance" },
+        { "label": "工程師", "field": "tags", "pattern": "engineer" },
+        { "label": "美術設計", "field": "tags", "pattern": "designer" },
+        { "label": "文字工作者", "field": "tags", "pattern": "writer" },
+        { "label": "行銷公關", "field": "tags", "pattern": "marketing" },
+        { "label": "議題工作者", "field": "tags", "pattern": "advocator" },
+        { "label": "公務員", "field": "tags", "pattern": "civil servants" },
+        { "label": "法務人員", "field": "tags", "pattern": "legal" }
       ],
+      "summary": "{{fields.type}} / {{fields.title}}",
       "fields": [
         {
           "label": "Image",
