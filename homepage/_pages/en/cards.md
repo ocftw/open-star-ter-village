@@ -2,6 +2,15 @@
 unique_slug: cards
 name: Cards
 layout_list:
+  - type: layout_section
+    title: Talent, Event & Project Cards
+    columns:
+      - text: '"Open StarTer Village" leverages a recruiting system by using Talent
+          cards so players can collectively tackle natural disasters and
+          human-made crises (Event cards) and subsequently complete projects
+          (Project cards) to earn victory points! Will you go at it alone or
+          work with collaborators to solve these societal issues and promote
+          civic engagement? The choice is yours, players decide!'
   - type: layout_headline
     title: Card Introduction
   - type: layout_cards
