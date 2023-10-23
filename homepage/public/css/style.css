@@ -937,6 +937,15 @@ code {
 .logo-margin {
   margin: 0 15px;
 }
+.avatar {
+  margin: 0.5rem auto;
+  height: 10rem;
+  width: 10rem;
+  border-radius: 50%;
+}
+.avatar-event {
+  background-color: #f1c287;
+}
 @media only screen and (max-width: 991px) {
   .blogs-list .item {
     width: 50% !important;
