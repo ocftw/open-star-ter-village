@@ -3,6 +3,8 @@ unique_slug: cards
 name: Cards
 layout_list:
   - type: layout_headline
+    title: 卡片特色
+  - type: layout_headline
     title: Card Introduction
   - type: layout_cards
     card_type: project
