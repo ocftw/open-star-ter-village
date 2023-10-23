@@ -17,7 +17,7 @@ layout_list:
       - image: /images/uploads/首頁＿桌遊開箱-english-.png
     title: What's in the box
   - type: layout_image_text
-    image: /images/uploads/labor-card-marketing-pr.jpg
+    image: /images/uploads/行銷公關_工作區域-1.png
     title: Game Introduction
     text: >-
       Embark on an interstellar journey and become an open-source rookie! Enter
