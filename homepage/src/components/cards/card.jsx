@@ -105,6 +105,13 @@ const Card = ({ card }) => {
             <div className="image-container">
               <Image src={card.data.image} alt={card.data.title} fill className='image' />
             </div>
+            {
+              card.data.avatarList.map((avatar) => {
+                <div className="image-container">
+                  <Image src={avatar.data.image} alt={avatar.data.title} fill className='image' />
+                </div>
+              })
+            }
             <strong>{card.data.description}</strong>
             <ParseMarkdownAndHtml markdown={true}>
               {card.content}
