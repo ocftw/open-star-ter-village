@@ -69,7 +69,10 @@ layout_list:
           **Ready-to-Use Lesson Plans**
 
 
-          [Download the complete lesson plan package (simplified and advanced versions included)](https://drive.google.com/file/d/1vZ1d1mQ6kC8KjI_vSgbMmrJxzvz3nG-K/view?usp=drive_link)
+          Wondering how to create exciting classroom experiences with open-source themes? Check out our [guidelines for open source Promoters](https://drive.google.com/file/d/1locvsw1T2LdGZbF3_FZ4PSPfbZjYvVCe/view?usp=drive_link) and[](https://drive.google.com/file/d/1locvsw1T2LdGZbF3_FZ4PSPfbZjYvVCe/view?usp=drive_link)[](https://drive.google.com/file/d/1locvsw1T2LdGZbF3_FZ4PSPfbZjYvVCe/view?usp=drive_link) [download the complete lesson plan package (simplified and advanced versions included).](https://drive.google.com/file/d/1vZ1d1mQ6kC8KjI_vSgbMmrJxzvz3nG-K/view?usp=drive_link)  Let's make a creativity flow in your teaching![](https://drive.google.com/file/d/1vZ1d1mQ6kC8KjI_vSgbMmrJxzvz3nG-K/view?usp=drive_link)
+
+
+          [](https://drive.google.com/file/d/1vZ1d1mQ6kC8KjI_vSgbMmrJxzvz3nG-K/view?usp=drive_link)
 
 
           </details>
