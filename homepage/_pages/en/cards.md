@@ -1,6 +1,6 @@
 ---
 unique_slug: cards
-name: ""
+name: Cards
 layout_list:
   - type: layout_section
     title: Talent, Event & Project Cards
