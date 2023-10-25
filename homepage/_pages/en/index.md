@@ -31,7 +31,7 @@ layout_list:
       Immerse yourself in the process of participating in open-source projects,
       experiencing project initiation, involvement, and the power of open-source
       community cohesion. Explore the complete [rule book of the
-      game](https://drive.google.com/file/d/1dfsmN0RxmfjhAknSNjnzYQT8CzIbp6lx/view?usp=drive_link)!
+      game](https://drive.google.com/file/d/1gBGKhavLdDQ-J1elxQNN6E7Sdz0ZBTeO/view?usp=drive_link)!
 
 
       [](https://openstartervillage.ocf.tw/s/manual)

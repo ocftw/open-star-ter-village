@@ -20,7 +20,7 @@ layout_list:
     text: >-
       穿越星際，成為開源新手！在《開源星際探險》中，你將進入神秘的星手村，親身體驗開源精神的真諦。發起專案、邀請夥伴、自主執行，並運用事件卡、星源樹等元素，攜手推進專案。合作中爭取影響力，獲得最多影響力分數的玩家獲勝！玩家間的團結更將塑造世界，進步或衰退，盡在你手！
       體驗參與開源專案的過程，一起經歷發起專案、參與專案、凝聚社會的開源力量。
-      探索完整[遊戲規則書](https://drive.google.com/file/d/1HHvGLrRPDnDOx5FK9SfJBemZlrKdMEji/view?usp=drive_link)！
+      探索完整[遊戲規則書](https://drive.google.com/file/d/1PxPb77QvcE0bFCgVrTkGowUt9000Ukyo/view?usp=drive_link)！
 
 
       [](https://openstartervillage.ocf.tw/s/manual)
