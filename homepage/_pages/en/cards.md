@@ -1,6 +1,6 @@
 ---
 unique_slug: cards
-name: Cards
+name: ""
 layout_list:
   - type: layout_section
     title: Talent, Event & Project Cards
@@ -28,6 +28,8 @@ layout_list:
     card_type: project
     card_tags:
       - open source
+  - type: layout_section
+    title: Card
   - type: layout_cards
     title: Job Card
     card_type: job

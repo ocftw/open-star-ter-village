@@ -27,10 +27,21 @@ layout_list:
     card_type: project
     card_tags:
       - open source
-  - type: layout_cards
+  - type: layout_section
     title: 人力卡|多元技能
-    card_type: job
+    columns:
+      - text: 工欲善其事，必先找對人！打開任何一款科技工具、軟體、網頁，都不可能只有程式碼對吧？ 7
+          種不同技能角色，各自發揮所長，完美解決開發科技工具的多元需求！文案產出、美編視覺，法條解析、程式撰寫等技能，視玩家專案需求進行招募！招兵買馬，一起共好。
   - type: layout_cards
-    title: 事件卡
+    title: 七種角色，開源社群的各路好手
+    card_type: job
+  - type: layout_section
+    columns:
+      - text: 不來點天災，出現點人禍，怎麼能成為好的專案管理師呢？每回合抽取事件卡，不管是鯊魚咬斷海底電纜直接斷網、莫名肺炎擴散讓人變宅；或是忽然來個官員力挺科技開放，種種障礙及資源、直接影響佈局規劃。15
+          種擬真事件卡，讓執行專案的路上擦撞出不同驚喜（與災難）
+        title: ""
+    title: 事件卡|天災人禍
+  - type: layout_cards
+    title: 15 張事件卡，為專案開發環境來點變化
     card_type: event
 ---
