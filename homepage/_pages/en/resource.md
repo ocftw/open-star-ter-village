@@ -39,7 +39,7 @@ layout_list:
           <details><summary>For all players out there</summary>
 
 
-          Simple and easy-to-follow board game rules, paired with beautifully crafted quick-start tutorial slides, make it easy for any newbie or seasoned board game enthusiast to enjoy. 
+          Simple and easy-to-follow [board game rules](https://drive.google.com/file/d/1gBGKhavLdDQ-J1elxQNN6E7Sdz0ZBTeO/view?usp=drive_link), paired with beautifully crafted quick-start tutorial slides, make it easy for any newbie or seasoned board game enthusiast to enjoy. 
 
 
           </details>
