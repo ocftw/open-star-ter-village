@@ -35,7 +35,7 @@ layout_list:
           <details><summary>給每個人</summary>
 
 
-          淺顯易懂的桌遊規則，配上精美的懶人包教學簡報，讓想參與桌遊的你快速上手！
+          淺顯易懂的[桌遊規則](https://drive.google.com/file/d/1PxPb77QvcE0bFCgVrTkGowUt9000Ukyo/view?usp=drive_link)，配上精美的懶人包教學簡報，讓想參與桌遊的你快速上手！
 
 
           </details>
@@ -65,7 +65,7 @@ layout_list:
           **桌遊教案給你知**
 
 
-          [完整教案大補帖（簡易與進階版）](https://drive.google.com/file/d/1ikNaY7Laau1BIPvYoIlKaSS7BSd5Yp5h/view?usp=drive_link)
+          想知道怎麼將開源的主題融入課程，設計有趣的課堂體驗嗎？參考[ OCF 的行動指引](https://drive.google.com/file/d/1Na30l6aRICEOtqncg6E1YYEqVUlVywVh/view?usp=drive_link)，以及[完整教案大補帖（簡易與進階版）](https://drive.google.com/file/d/1ikNaY7Laau1BIPvYoIlKaSS7BSd5Yp5h/view?usp=drive_link)，讓備課更輕鬆！
 
 
           </details>
