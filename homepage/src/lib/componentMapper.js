@@ -20,25 +20,25 @@ export const componentTypes = {
   Cards: 'Cards',
 };
 
-const extendProjectCardTagsContent = (projectCards, jobCards) => {
-  return projectCards.map((projectCard) => {
-    const tags = projectCard.data.tags;
-    let avatarList = [];
-    if (tags) {
-      avatarList = tags.map((tag) => {
-        const jobCard = jobCards.find((jobCard) => jobCard.data.title === tag);
-        if (jobCard) {
-          return jobCard.data;
-        }
-        return null;
-      }).filter(x => x);
-    }
-    return {
-      ...projectCard,
-      avatarList,
-    };
-  });
-}
+// const extendProjectCardTagsContent = (projectCards, jobCards) => {
+//   return projectCards.map((projectCard) => {
+//     const tags = projectCard.data.tags;
+//     let avatarList = [];
+//     if (tags) {
+//       avatarList = tags.map((tag) => {
+//         const jobCard = jobCards.find((jobCard) => jobCard.data.title === tag);
+//         if (jobCard) {
+//           return jobCard.data;
+//         }
+//         return null;
+//       }).filter(x => x);
+//     }
+//     return {
+//       ...projectCard,
+//       avatarList,
+//     };
+//   });
+// }
 
 export const componentMapper = (layout, cards = []) => {
   let type = '';
@@ -123,24 +123,26 @@ export const componentMapper = (layout, cards = []) => {
           layout.card_tags.every((tag) => card.data.tags?.includes(tag)),
         );
       }
-      if (layout.card_type === 'card_project') {
-        type = componentTypes.Cards;
-        props = {
-          id: titleToAnchorId(layout.title),
-          title: layout.title,
-          cards: extendProjectCardTagsContent(filteredCards, cards.filter((card) => card.data.type === 'job_card')),
-        };
-        break;
-      }
-      else {
-        type = componentTypes.Cards;
-        props = {
-          id: titleToAnchorId(layout.title),
-          title: layout.title,
-          cards: filteredCards,
-        };
-        break;
-      }
+      // if (layout.card_type === 'card_project') {
+      //   type = componentTypes.Cards;
+      //   props = {
+      //     id: titleToAnchorId(layout.title),
+      //     title: layout.title,
+      //     cards: extendProjectCardTagsContent(
+      //       filteredCards,
+      //       cards.filter((card) => card.data.type === 'job_card'),
+      //     ),
+      //   };
+      //   break;
+      // } else {
+      type = componentTypes.Cards;
+      props = {
+        id: titleToAnchorId(layout.title),
+        title: layout.title,
+        cards: filteredCards,
+      };
+      break;
+      // }
     }
   }
 
