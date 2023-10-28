@@ -8,7 +8,10 @@ const Card = ({ card }) => {
   } else {
     return (
       <div className="col-md-4 mb-3" id={card.data.id}>
-        <div className="section-main">
+        <div
+          className="section-main"
+          style={{ backgroundColor: `${card.data.color.background}` }}
+        >
           <h3>{card.data.title}</h3>
           <div>
             <div className="image-container">

@@ -69,6 +69,38 @@ export function processCardData(data) {
     };
   }
   // project card
+  const jobCards = data.type === 'job';
+
+  if (data.type === 'project') {
+    const color = {};
+    const mainTag = data.tags.find((tag) =>
+      ['open gov', 'open data', 'open source'].includes(tag),
+    );
+    switch (mainTag) {
+      case 'open gov':
+        color.background = '#efac49';
+        break;
+      case 'open data':
+        color.background = '#73a09b';
+        break;
+      case 'open source':
+        color.background = '#9b2123';
+        break;
+      default:
+        color.background = '#ffffff';
+    }
+
+    const tags = data.tags || [];
+    const avatarList = tags.map((tag) => {
+      const jobCard = jobCards.find((jobCard) => jobCard.data.tags[0] === tag);
+      return jobCard ? jobCard.data : null;
+    });
+
+    data = {
+      ...data,
+      color,
+    };
+  }
 
   return {
     ...data,
