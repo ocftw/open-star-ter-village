@@ -4,7 +4,7 @@ import { fetchPage } from '../lib/fetchPage';
 import { fetchCards } from '../lib/fetchCards';
 import { getNavigationList } from '../lib/getNavigationList';
 import { componentMapper } from '../lib/componentMapper';
-import { processCardData } from '../lib/processCardData';
+import { processCard } from '../lib/processCard';
 
 /**
  *
@@ -12,12 +12,8 @@ import { processCardData } from '../lib/processCardData';
  */
 export const getStaticProps = async ({ locale }) => {
   const rawCards = fetchCards(locale);
-  const cardTasks = rawCards.map(async ({ data, content }) => {
-
-    return {
-      data: processCardData(data),
-      content,
-    };
+  const cardTasks = rawCards.map(async (card) => {
+    return processCard(card, rawCards);
   });
   const cards = await Promise.all(cardTasks);
 
