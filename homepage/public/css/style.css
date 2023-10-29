@@ -943,7 +943,22 @@ code {
   width: 10rem;
   border-radius: 50%;
 }
-
+.avatar.avatar-list {
+  min-height: 56px;
+  max-height: 56px;
+  min-width: 56px;
+  max-width: 56px;
+  padding: 0 !important;
+}
+.avatar.avatar-list > div {
+  min-width: 56px;
+  max-width: 56px;
+  min-height: 56px;
+  max-height: 56px;
+  background-size: 56px 56px;
+  background-repeat: no-repeat;
+  background-position: center;
+}
 @media only screen and (max-width: 991px) {
   .blogs-list .item {
     width: 50% !important;

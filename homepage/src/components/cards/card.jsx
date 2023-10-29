@@ -10,25 +10,30 @@ const Card = ({ card }) => {
       <div className="col-md-4 mb-3" id={card.data.id}>
         <div
           className="section-main"
-          style={{ backgroundColor: `${card.data.color.background}` }}
+          style={{ border: `1rem solid ${card.data.color.background}` }}
         >
           <h3>{card.data.title}</h3>
           <div>
-            <div className="image-container">
-              <Image
-                src={card.data.image}
-                alt={card.data.title}
-                fill
-                className="image"
-              />
-            </div>
-            {/* {
-              card.data.avatarList.map((avatar) => {
-                <div className="image-container">
-                  <Image src={avatar.data.image} alt={avatar.data.title} fill className='image' />
+            <div className="d-flex">
+              {card.data.avatarList.map((avatar) => (
+                <div
+                  key={avatar.data.title}
+                  className="col-3 avatar avatar-list"
+                  style={{
+                    backgroundColor: `${avatar.data.color.background}`,
+                    border: `1px solid ${avatar.data.color.border}`,
+                  }}
+                >
+                  <div
+                    style={{
+                      backgroundImage: `url(${avatar.data.image})`,
+                    }}
+                  >
+                    &nbsp;
+                  </div>
                 </div>
-              })
-            } */}
+              ))}
+            </div>
             <strong>{card.data.description}</strong>
             <ParseMarkdownAndHtml markdown={true}>
               {card.content}
