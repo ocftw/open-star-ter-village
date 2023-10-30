@@ -2,7 +2,7 @@ import Image from 'next/image';
 import { ParseMarkdownAndHtml } from '../parseMarkdownAndHtml';
 
 const DefaultCard = ({ card }) => (
-  <div className="col-md-4 mb-3" id={card.data.id}>
+  <div className="col-xl-4 col-lg-6 mb-3" id={card.data.id}>
     <div
       className="section-main"
       style={{
