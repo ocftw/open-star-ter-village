@@ -15,7 +15,7 @@ const NonProjectCard = ({ card }) => (
       <h3>{card.data.title}</h3>
       <div>
         <div
-          className="avatar"
+          className="avatar avatar-tablet"
           style={{ backgroundColor: card.data.color.avatar }}
         >
           <div className="image-container">

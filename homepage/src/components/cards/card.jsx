@@ -14,14 +14,14 @@ const Card = ({ card }) => {
         >
           <h3>{card.data.title}</h3>
           <div>
-            <div className="d-flex">
+            <div className="d-flex flex-wrap">
               {card.data.avatarList.map((avatar) => (
                 <div
                   key={avatar.data.title}
                   className="col-3 avatar avatar-list"
                   style={{
                     backgroundColor: `${avatar.data.color.background}`,
-                    border: `1px solid ${avatar.data.color.border}`,
+                    border: `3px solid ${avatar.data.color.border}`,
                   }}
                 >
                   <div

@@ -951,11 +951,11 @@ code {
   padding: 0 !important;
 }
 .avatar.avatar-list > div {
-  min-width: 56px;
-  max-width: 56px;
-  min-height: 56px;
-  max-height: 56px;
-  background-size: 56px 56px;
+  min-width: 50px;
+  max-width: 50px;
+  min-height: 50px;
+  max-height: 50px;
+  background-size: 50px 50px;
   background-repeat: no-repeat;
   background-position: center;
 }
@@ -978,6 +978,11 @@ code {
   }
   .blog-post .feature-img {
     height: 400px;
+  }
+}
+@media only screen and (min-width: 768px) and (max-width: 991px) {
+  .avatar-tablet {
+    transform: translate(-13%);
   }
 }
 @media only screen and (max-width: 767px) {
