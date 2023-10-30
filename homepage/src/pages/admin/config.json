@@ -36,6 +36,9 @@
         },
         { "label": "Name", "name": "name", "widget": "string", "i18n": true },
         {
+          "label": "Page order", "name": "page_order", "widget": "number", "value_type": "int", "i18n": "duplicate"
+        },
+        {
           "label": "Layout & Content",
           "name": "layout_list",
           "widget": "list",
