@@ -1,6 +1,7 @@
 ---
 unique_slug: cards
 name: Cards
+page_order: 2
 layout_list:
   - type: layout_headline
     title: Card Introduction

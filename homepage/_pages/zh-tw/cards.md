@@ -1,6 +1,7 @@
 ---
 unique_slug: cards
 name: 卡片頁
+page_order: 2
 layout_list:
   - type: layout_headline
     title: 卡片介紹
