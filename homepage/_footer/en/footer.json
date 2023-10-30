@@ -13,6 +13,16 @@
         "display_text": "Play Online!",
         "url": "/resource/#play-online"
       }
+    ],
+    "logos": [
+      {
+        "logo_text": "Initiator",
+        "logo_image": "/images/uploads/logo__ocf.svg"
+      },
+      {
+        "logo_text": "Sponsor",
+        "logo_image": "/images/uploads/logo__fnf.png"
+      }
     ]
   }
 }

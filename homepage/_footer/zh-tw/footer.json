@@ -13,6 +13,16 @@
         "display_text": "來玩線上桌遊！",
         "url": "/resource/#線上桌遊一起玩"
       }
+    ],
+    "logos": [
+      {
+        "logo_text": "Initiator",
+        "logo_image": "/images/uploads/logo__ocf.svg"
+      },
+      {
+        "logo_text": "Sponsor",
+        "logo_image": "/images/uploads/logo__fnf.png"
+      }
     ]
   }
 }
