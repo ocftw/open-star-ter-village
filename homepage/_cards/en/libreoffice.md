@@ -1,5 +1,5 @@
 ---
-image: images/uploads/英-專案卡-10.jpg
+image: ""
 title: LibreOffice
 description: "A free and open-source office suite "
 draft: false

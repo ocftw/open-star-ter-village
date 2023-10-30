@@ -1,5 +1,5 @@
 ---
-image: images/uploads/open-source-firefox.jpg
+image: ""
 title: Firefox
 description: A browser with free and open source code
 draft: false

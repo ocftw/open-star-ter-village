@@ -1,5 +1,5 @@
 ---
-image: images/uploads/專案卡-03.jpg
+image: ""
 title: Open Hack Farm
 description: 「開放農業實驗基地」致力開源及開放資料的農業應用
 draft: false

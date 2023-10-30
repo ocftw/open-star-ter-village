@@ -1,5 +1,5 @@
 ---
-image: images/uploads/專案卡-10.jpg
+image: ""
 title: LibreOffice
 description: 一套自由及開放原始碼的辦公軟體。
 draft: false

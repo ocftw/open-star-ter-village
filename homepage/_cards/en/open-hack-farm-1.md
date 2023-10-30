@@ -1,5 +1,5 @@
 ---
-image: images/uploads/英-專案卡-03.jpg
+image: ""
 title: Open Hack Farm
 description: '"Open Hack Farm" promotes open source and open data in
   agricultural applications. '

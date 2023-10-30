@@ -1,5 +1,5 @@
 ---
-image: images/uploads/專案卡-08.jpg
+image: ""
 title: Linux Kernel
 description: 開源的類 Unix 作業系統核心。
 draft: false

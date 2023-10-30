@@ -1,5 +1,5 @@
 ---
-image: images/uploads/開放原始碼－firefox.jpg
+image: ""
 title: Firefox
 description: 自由及開放原始碼的網頁瀏覽器
 draft: false

@@ -1,5 +1,5 @@
 ---
-image: images/uploads/英-專案卡-15.jpg
+image: ""
 title: Notepad++
 description: An open-source text editor that supports multiple languages and
   programming languages.

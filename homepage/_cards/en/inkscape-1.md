@@ -1,5 +1,5 @@
 ---
-image: images/uploads/英-專案卡-12.jpg
+image: ""
 title: Inkscape
 description: An open-source vector graphics editor released under General Public License
 draft: false

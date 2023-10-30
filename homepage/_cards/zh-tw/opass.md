@@ -1,5 +1,5 @@
 ---
-image: images/uploads/開放原始碼－opasss.jpeg
+image: ""
 title: OPass
 description: 整合各大臺灣開源資訊社群研討會的報到平台 APP
 draft: false

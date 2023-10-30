@@ -1,5 +1,5 @@
 ---
-image: /images/uploads/開放資料－common-voice.jpg
+image: ""
 title: Common Voice
 description: 蒐集各語言真人發音資料庫，讓電腦學會最真實的說話方式
 draft: false

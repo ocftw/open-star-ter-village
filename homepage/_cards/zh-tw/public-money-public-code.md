@@ -1,5 +1,5 @@
 ---
-image: images/uploads/專案卡-11.jpg
+image: ""
 title: Public Money Public Code
 description: 「公費建制政府系統以自由開源軟體授權釋出」的倡議。
 draft: false

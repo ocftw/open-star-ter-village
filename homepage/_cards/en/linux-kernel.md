@@ -1,5 +1,5 @@
 ---
-image: images/uploads/英-專案卡-08.jpg
+image: ""
 title: Linux Kernel
 description: An open-source operating system kernel that's similar to Unix.
 draft: false

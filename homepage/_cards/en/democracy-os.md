@@ -1,5 +1,5 @@
 ---
-image: images/uploads/open-gov-democracy-os.jpg
+image: ""
 title: Democracy OS
 description: "A democratic participation platform that allows policy
   discussions, voting simulations, and participatory budgeting "
