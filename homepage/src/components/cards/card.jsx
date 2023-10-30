@@ -1,10 +1,10 @@
 import Image from 'next/image';
-import NonProjectCard from './nonProjectCard';
+import DefaultCard from './defaultCard';
 import { ParseMarkdownAndHtml } from '../parseMarkdownAndHtml';
 
 const Card = ({ card }) => {
   if (card.data.type !== 'project') {
-    return <NonProjectCard card={card} />;
+    return <DefaultCard card={card} />;
   } else {
     return (
       <div className="col-md-4 mb-3" id={card.data.id}>

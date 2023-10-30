@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { ParseMarkdownAndHtml } from '../parseMarkdownAndHtml';
 
-const NonProjectCard = ({ card }) => (
+const DefaultCard = ({ card }) => (
   <div className="col-md-4 mb-3" id={card.data.id}>
     <div
       className="section-main"
@@ -36,4 +36,4 @@ const NonProjectCard = ({ card }) => (
   </div>
 );
 
-export default NonProjectCard;
+export default DefaultCard;
