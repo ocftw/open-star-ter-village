@@ -21,6 +21,7 @@ export async function getPagesList(lang) {
     return {
       path: data.unique_slug,
       name: data.name,
+      order: data.page_order,
     };
   });
 
@@ -33,11 +34,11 @@ export async function getNavigationList(lang) {
   // * dynamic page navigation
   const navigationList = pagesList
     .filter((page) => page.path && page.name)
+    .sort((a, b) => a.order - b.order)
     .map((page) => {
       page.path = page.path.replace('index', '');
       return { link: `/${page.path}`, text: page.name };
     })
-    .sort((a, b) => a.link.length - b.link.length);
 
   return navigationList;
 }
