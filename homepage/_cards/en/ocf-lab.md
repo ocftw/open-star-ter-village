@@ -1,5 +1,5 @@
 ---
-image: images/uploads/英-專案卡-07.jpg
+image: ""
 title: OCF Lab
 description: "OCF Lab is a news platform covering topics about open culture,
   established by the Open Culture Foundation. "

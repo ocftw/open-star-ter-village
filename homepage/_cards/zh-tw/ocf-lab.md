@@ -1,5 +1,5 @@
 ---
-image: images/uploads/專案卡-07.jpg
+image: ""
 title: OCF Lab
 description: 由開放文化基金會創立，關注開放的新聞平台。
 draft: false

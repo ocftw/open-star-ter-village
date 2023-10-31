@@ -1,5 +1,5 @@
 ---
-image: images/uploads/專案卡-15.jpg
+image: ""
 title: Notepad++
 description: 萬能開源純文字編輯器，支援超多語言/程式語言！
 draft: false

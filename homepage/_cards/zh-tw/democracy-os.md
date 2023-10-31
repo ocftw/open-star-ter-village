@@ -1,5 +1,5 @@
 ---
-image: images/uploads/開放政府－專案卡-39.jpg
+image: ""
 title: Democracy OS
 description: 民主參與系統，可討論政策、模擬投票、進行參與式預算等
 draft: false

@@ -7,7 +7,7 @@ import FooterLinks from '../../layouts/footer/footerLinks';
 import { componentMapper } from '../../lib/componentMapper';
 import contentMapper from '../../layouts/contentMapper';
 import Card from '../../components/cards/card';
-import { processCardData } from '../../lib/processCardData';
+import { processCard } from '../../lib/processCard';
 
 import mockCards from './mock_cards.json';
 
@@ -34,11 +34,16 @@ const FooterPreview = ({ entry }) => {
   return <FooterLinks links={links} />;
 };
 
-const CardPreview = ({ entry }) => {
+const CardPreview = ({ entry, getAsset }) => {
   const data = entry.getIn(['data']).toJS();
   const content = data.body;
 
-  return <Card card={{ data: processCardData(data), content }} />;
+  // TODO: Cards could not be retrieved from the CMS. Set it as empty for now.
+  const card = processCard({ data, content }, []);
+
+  card.data.image = getAsset(card.data.image).toString();
+
+  return <Card card={card} />;
 };
 
 const CMS = dynamic(

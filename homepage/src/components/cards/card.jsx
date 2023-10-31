@@ -1,21 +1,11 @@
-import Image from 'next/image';
-import { ParseMarkdownAndHtml } from '../parseMarkdownAndHtml';
+import DefaultCard from './defaultCard';
+import ProjectCard from './projectCard';
 
-const Card = ({ card }) => (
-  <div className="col-md-4 mb-3" id={card.data.id}>
-    <div className="section-main">
-      <h3>{card.data.title}</h3>
-      <div>
-        <div className="image-container">
-          <Image src={card.data.image} alt={card.data.title} fill className='image' />
-        </div>
-        <strong>{card.data.description}</strong>
-        <ParseMarkdownAndHtml markdown={true}>
-          {card.content}
-        </ParseMarkdownAndHtml>
-      </div>
-    </div>
-  </div>
-);
+const Card = ({ card }) => {
+  if (card.data.type === 'project') {
+    return <ProjectCard card={card} />;
+  }
+  return <DefaultCard card={card} />;
+};
 
 export default Card;

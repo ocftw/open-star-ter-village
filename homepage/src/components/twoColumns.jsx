@@ -1,47 +1,25 @@
 import Column from './column';
 
-const TwoColumns = ({ id, title, columns, markdown }) => (
+const TwoColumns = ({ id, title, columns }) => (
   <div className="section" id={id}>
     <div className="container">
       <div className="section-head">
         <h2>{title}</h2>
       </div>
       <div className="row">
-        <div className="col-md-6 mb-3">
-          {Array.isArray(columns[0]) ? (
-            <Column
-              title={columns[0][0]}
-              // image is part of the text in hard coded data
-              // image={columns[0][1]}
-              text={columns[0][1]}
-              markdown={false}
-            />
-          ) : (
-            <Column
-              title={columns[0].title}
-              image={columns[0].image}
-              text={columns[0].text}
-              markdown={true}
-            />
-          )}
+        <div className="col-lg-6 mb-3">
+          <Column
+            title={columns[0].title}
+            image={columns[0].image}
+            text={columns[0].text}
+          />
         </div>
-        <div className="col-md-6 mb-3">
-          {Array.isArray(columns[1]) ? (
-            <Column
-              title={columns[1][0]}
-              // image is part of the text in hard coded data
-              // image={columns[1][1]}
-              text={columns[1][1]}
-              markdown={false}
-            />
-          ) : (
-            <Column
-              title={columns[1].title}
-              image={columns[1].image}
-              text={columns[1].text}
-              markdown={true}
-            />
-          )}
+        <div className="col-lg-6 mb-3">
+          <Column
+            title={columns[1].title}
+            image={columns[1].image}
+            text={columns[1].text}
+          />
         </div>
       </div>
     </div>

@@ -20,7 +20,7 @@ const Footer = ({ siteData, footer }) => {
         <FooterLinks links={links} />
         <span>{siteData.title}</span>
         <SocialMedia />
-        <div className="flex flex-row flex-justify-center logos margin-2-percent">
+        <div className="d-flex flex-row flex-justify-center logos margin-2-percent">
           <Logo
             text="Initiator"
             src="/images/campaignpage/logo__OCF.svg"

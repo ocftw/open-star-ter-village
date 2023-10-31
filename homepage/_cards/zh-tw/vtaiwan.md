@@ -1,5 +1,5 @@
 ---
-image: images/uploads/開放政府－vtaiwan.jpg
+image: ""
 title: vTaiwan
 description: 供民眾針對台灣法規表達意見、納入政策討論過程的平台
 draft: false

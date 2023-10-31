@@ -1,5 +1,5 @@
 ---
-image: /images/uploads/open-data-common-voice.jpg
+image: ""
 title: Common Voice
 description: "A database that invites speakers of any language to contribute
   their voices to teach computers how to speak any language with correct

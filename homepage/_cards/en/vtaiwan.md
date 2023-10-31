@@ -1,5 +1,5 @@
 ---
-image: images/uploads/open-gov-vtaiwan.jpg
+image: ""
 title: vTaiwan
 description: A platform for the public to express their opinions on Taiwanese
   laws and policies and for the government to collate these opinions.
