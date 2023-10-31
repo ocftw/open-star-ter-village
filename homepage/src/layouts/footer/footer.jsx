@@ -27,7 +27,7 @@ const Footer = ({ siteData, footer }) => {
         <FooterLinks links={links} />
         <span>{siteData.title}</span>
         <SocialMedia />
-        <div className="d-flex flex-row flex-justify-center logos margin-2-percent">
+        <div className="d-flex justify-content-center logos margin-2-percent">
           {logos.map((logo) => (
             <Logo
               key={logo.text}
