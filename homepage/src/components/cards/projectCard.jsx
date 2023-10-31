@@ -8,7 +8,7 @@ const ProjectCard = ({ card }) => (
     >
       <h3>{card.data.title}</h3>
       <div className="d-flex flex-column">
-        <div className="d-flex flex-wrap mb-3">
+        <div className="d-flex flex-wrap mb-3 justify-content-evenly">
           {card.data.avatarList.map((avatar) => (
             <div
               key={avatar.data.title}

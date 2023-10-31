@@ -930,6 +930,7 @@ code {
   min-width: 56px;
   max-width: 56px;
   padding: 0 !important;
+  margin: 0.5rem 0;
 }
 .avatar.avatar-list > div {
   min-width: 50px;
@@ -1054,4 +1055,8 @@ code {
   width: 100% !important;
   position: relative !important;
   height: unset !important;
+}
+
+.justify-content-evenly {
+  justify-content: space-evenly;
 }
