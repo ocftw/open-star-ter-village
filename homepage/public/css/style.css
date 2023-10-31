@@ -206,25 +206,6 @@ h6 {
   content: '🔗';
   margin-right: 10px;
 }
-.flex-row {
-  display: flex;
-}
-.flex-col {
-  display: flex;
-  flex-direction: column;
-}
-.flex-justify-space-between {
-  justify-content: space-between;
-}
-.flex-justify-center {
-  justify-content: center;
-}
-.flex-align-center {
-  align-items: center;
-}
-.flex-align-between {
-  align-items: between;
-}
 .gap {
   gap: 1rem;
 }

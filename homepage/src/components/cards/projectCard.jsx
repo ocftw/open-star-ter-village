@@ -7,8 +7,8 @@ const ProjectCard = ({ card }) => (
       style={{ border: `1rem solid ${card.data.color.background}` }}
     >
       <h3>{card.data.title}</h3>
-      <div>
-        <div className="d-flex flex-wrap">
+      <div className="d-flex flex-column">
+        <div className="d-flex flex-wrap mb-3">
           {card.data.avatarList.map((avatar) => (
             <div
               key={avatar.data.title}
@@ -28,7 +28,7 @@ const ProjectCard = ({ card }) => (
             </div>
           ))}
         </div>
-        <strong>{card.data.description}</strong>
+        <strong className="mb-3">{card.data.description}</strong>
         <ParseMarkdownAndHtml markdown={true}>
           {card.content}
         </ParseMarkdownAndHtml>
