@@ -1,7 +1,7 @@
 import { ParseMarkdownAndHtml } from '../parseMarkdownAndHtml';
 
 const ProjectCard = ({ card }) => (
-  <div className="col-lg-6 col-xl-4 mb-3" id={card.data.id}>
+  <div className="col-md-6 col-xl-4 mb-3" id={card.data.id}>
     <div
       className="section-main"
       style={{ border: `1rem solid ${card.data.color.background}` }}
