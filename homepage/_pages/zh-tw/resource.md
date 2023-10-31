@@ -1,6 +1,7 @@
 ---
 unique_slug: resource
 name: 資源頁
+page_order: 3
 layout_list:
   - type: layout_banner
     hero_image: /images/uploads/img_3584_2.jpeg

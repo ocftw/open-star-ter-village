@@ -1,6 +1,7 @@
 ---
 unique_slug: index
 name: 首頁
+page_order: 1
 layout_list:
   - type: layout_banner
     title: 開源星手村
