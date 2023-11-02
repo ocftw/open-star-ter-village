@@ -298,6 +298,7 @@
           "label": "Content",
           "name": "body",
           "widget": "markdown",
+          "required": false,
           "i18n": true
         }
       ]
