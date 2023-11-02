@@ -1,8 +1,7 @@
 import Card from '../../components/cards/card';
 import { processCard } from '../../lib/processCard';
 
-const CardPreview = ({ entry, getAsset, assetsByLocale }) => {
-  const locale = 'en';
+const CardPreview = ({ entry, getAsset, assetsByLocale, locale }) => {
   const assets = assetsByLocale[locale];
 
   const data = entry.getIn(['data']).toJS();

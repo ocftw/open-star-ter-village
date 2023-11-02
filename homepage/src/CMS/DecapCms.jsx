@@ -3,7 +3,7 @@ import PagePreview from './preview/PagePreview';
 import FooterPreview from './preview/FooterPreview';
 import CardPreview from './preview/CardPreview';
 
-import config from './config.json';
+import config from './decap-cms.config';
 
 const withAssetsByLocale = (Component, assetsByLocale) => {
   const WrappedComponent = (props) => (
