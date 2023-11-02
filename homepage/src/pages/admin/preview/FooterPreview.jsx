@@ -1,6 +1,6 @@
 import FooterLinks from '../../../layouts/footer/footerLinks';
 
-export const FooterPreview = ({ entry }) => {
+const FooterPreview = ({ entry }) => {
   const footer = entry.getIn(['data', 'footer']);
   const links = footer
     ?.get('links')
@@ -13,3 +13,5 @@ export const FooterPreview = ({ entry }) => {
     .toArray();
   return <FooterLinks links={links} />;
 };
+
+export default FooterPreview;

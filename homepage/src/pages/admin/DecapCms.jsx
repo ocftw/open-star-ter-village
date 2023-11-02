@@ -1,7 +1,7 @@
 import dynamic from 'next/dynamic';
-import { PagePreview } from './preview/PagePreview';
-import { FooterPreview } from './preview/FooterPreview';
-import { CardPreview } from './preview/CardPreview';
+import PagePreview from './preview/PagePreview';
+import FooterPreview from './preview/FooterPreview';
+import CardPreview from './preview/CardPreview';
 
 import config from './config.json';
 
@@ -13,7 +13,7 @@ const withAssetsByLocale = (Component, assetsByLocale) => {
   return WrappedComponent;
 };
 
-export const DecapCms = (assetsByLocale) =>
+const DecapCms = (assetsByLocale) =>
   dynamic(
     () =>
       import('decap-cms-app').then((cms) => {
@@ -47,3 +47,5 @@ export const DecapCms = (assetsByLocale) =>
       }),
     { ssr: false, loading: () => <p>Loading...</p> },
   );
+
+export default DecapCms;

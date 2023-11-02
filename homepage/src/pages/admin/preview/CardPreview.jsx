@@ -1,7 +1,7 @@
 import Card from '../../../components/cards/card';
 import { processCard } from '../../../lib/processCard';
 
-export const CardPreview = ({ entry, getAsset, assetsByLocale }) => {
+const CardPreview = ({ entry, getAsset, assetsByLocale }) => {
   const locale = 'en';
   const assets = assetsByLocale[locale];
 
@@ -14,3 +14,5 @@ export const CardPreview = ({ entry, getAsset, assetsByLocale }) => {
 
   return <Card card={card} />;
 };
+
+export default CardPreview;

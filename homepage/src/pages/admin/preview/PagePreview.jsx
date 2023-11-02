@@ -1,7 +1,7 @@
 import { componentMapper } from '../../../lib/componentMapper';
 import contentMapper from '../../../layouts/contentMapper';
 
-export const PagePreview = ({ entry, assetsByLocale }) => {
+const PagePreview = ({ entry, assetsByLocale }) => {
   const locale = 'en';
   const assets = assetsByLocale[locale];
 
@@ -12,3 +12,5 @@ export const PagePreview = ({ entry, assetsByLocale }) => {
   });
   return <div>{sections}</div>;
 };
+
+export default PagePreview;
