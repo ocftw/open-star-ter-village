@@ -15,7 +15,7 @@ const DefaultCard = ({ card }) => (
       <h3>{card.data.title}</h3>
       <div className="d-flex flex-column">
         <div
-          className="avatar avatar-tablet"
+          className="avatar"
           style={{ backgroundColor: card.data.color.avatar }}
         >
           <div className="image-container">

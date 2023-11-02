@@ -36,7 +36,11 @@
         },
         { "label": "Name", "name": "name", "widget": "string", "i18n": true },
         {
-          "label": "Page order", "name": "page_order", "widget": "number", "value_type": "int", "i18n": "duplicate"
+          "label": "Page order",
+          "name": "page_order",
+          "widget": "number",
+          "value_type": "int",
+          "i18n": "duplicate"
         },
         {
           "label": "Layout & Content",
@@ -294,6 +298,7 @@
           "label": "Content",
           "name": "body",
           "widget": "markdown",
+          "required": false,
           "i18n": true
         }
       ]
