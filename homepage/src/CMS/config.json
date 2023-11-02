@@ -9,10 +9,10 @@
   "publish_mode": "editorial_workflow",
   "media_folder": "homepage/public/images/uploads",
   "public_folder": "/images/uploads",
-  "locale": "zh-tw",
+  "locale": "zh_Hant",
   "i18n": {
     "structure": "multiple_folders",
-    "locales": ["en", "zh-tw"],
+    "locales": ["zh-tw", "en"],
     "default_locale": "zh-tw"
   },
   "collections": [
