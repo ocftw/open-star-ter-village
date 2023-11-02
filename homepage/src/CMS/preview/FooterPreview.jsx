@@ -1,4 +1,4 @@
-import FooterLinks from '../../../layouts/footer/footerLinks';
+import FooterLinks from '../../layouts/footer/footerLinks';
 
 const FooterPreview = ({ entry }) => {
   const footer = entry.getIn(['data', 'footer']);

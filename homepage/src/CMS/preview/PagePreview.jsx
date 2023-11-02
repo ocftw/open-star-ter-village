@@ -1,5 +1,5 @@
-import { componentMapper } from '../../../lib/componentMapper';
-import contentMapper from '../../../layouts/contentMapper';
+import { componentMapper } from '../../lib/componentMapper';
+import contentMapper from '../../layouts/contentMapper';
 
 const PagePreview = ({ entry, assetsByLocale }) => {
   const locale = 'en';

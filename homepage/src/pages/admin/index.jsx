@@ -3,7 +3,7 @@ import Script from 'next/script';
 
 import { fetchCards } from '../../lib/fetchCards';
 import { processCard } from '../../lib/processCard';
-import DecapCms from './DecapCms';
+import DecapCms from '../../CMS/DecapCms';
 
 /**
  *

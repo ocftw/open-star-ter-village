@@ -1,5 +1,5 @@
-import Card from '../../../components/cards/card';
-import { processCard } from '../../../lib/processCard';
+import Card from '../../components/cards/card';
+import { processCard } from '../../lib/processCard';
 
 const CardPreview = ({ entry, getAsset, assetsByLocale }) => {
   const locale = 'en';
