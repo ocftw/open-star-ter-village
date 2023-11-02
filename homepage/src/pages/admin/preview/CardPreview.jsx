@@ -3,7 +3,7 @@ import { processCard } from '../../../lib/processCard';
 
 export const CardPreview = ({ entry, getAsset, assetsByLocale }) => {
   const locale = 'en';
-  const assets = assetsByLocale['en'];
+  const assets = assetsByLocale[locale];
 
   const data = entry.getIn(['data']).toJS();
   const content = data.body;
