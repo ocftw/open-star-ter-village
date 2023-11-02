@@ -1,9 +1,9 @@
 import Head from 'next/head';
 import Script from 'next/script';
 
-import { fetchCards } from '../../lib/fetchCards';
-import { processCard } from '../../lib/processCard';
-import DecapCms from '../../CMS/DecapCms';
+import { fetchCards } from '../lib/fetchCards';
+import { processCard } from '../lib/processCard';
+import DecapCms from '../CMS/DecapCms';
 
 /**
  *
