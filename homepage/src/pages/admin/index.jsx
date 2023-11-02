@@ -7,14 +7,15 @@ import FooterLinks from '../../layouts/footer/footerLinks';
 import { componentMapper } from '../../lib/componentMapper';
 import contentMapper from '../../layouts/contentMapper';
 import Card from '../../components/cards/card';
+import { fetchCards } from '../../lib/fetchCards';
 import { processCard } from '../../lib/processCard';
 
-import mockCards from './mock_cards.json';
+const PagePreview = ({ entry, assetsByLocale }) => {
+  const cards = assetsByLocale['en'].cards;
 
-const PagePreview = ({ entry }) => {
   const layoutList = entry.getIn(['data', 'layout_list']);
   const sections = layoutList?.map((layout) => {
-    const component = componentMapper(layout.toJS(), mockCards);
+    const component = componentMapper(layout.toJS(), cards);
     return contentMapper(component);
   });
   return <div>{sections}</div>;
@@ -34,44 +35,96 @@ const FooterPreview = ({ entry }) => {
   return <FooterLinks links={links} />;
 };
 
-const CardPreview = ({ entry, getAsset }) => {
+const CardPreview = ({ entry, getAsset, assetsByLocale }) => {
+  const cards = assetsByLocale['en'].cards;
+
   const data = entry.getIn(['data']).toJS();
   const content = data.body;
 
-  // TODO: Cards could not be retrieved from the CMS. Set it as empty for now.
-  const card = processCard({ data, content }, []);
+  const card = processCard({ data, content }, cards);
 
   card.data.image = getAsset(card.data.image).toString();
 
   return <Card card={card} />;
 };
 
-const CMS = dynamic(
-  () =>
-    import('decap-cms-app').then((cms) => {
-      cms.init({ config });
-      cms.registerPreviewStyle(
-        'https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css',
-      );
-      cms.registerPreviewStyle(
-        'https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css',
-      );
-      cms.registerPreviewStyle(
-        'https://fonts.googleapis.com/css?family=Montserrat:400,700',
-      );
-      cms.registerPreviewStyle(
-        'https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700',
-      );
-      cms.registerPreviewStyle('/css/style.css');
+const withAssetsByLocale = (Component, assetsByLocale) => {
+  const WrappedComponent = (props) => (
+    <Component {...props} assetsByLocale={assetsByLocale} />
+  );
+  WrappedComponent.displayName = `withAssetsByLocale(${Component.displayName})`;
+  return WrappedComponent;
+};
 
-      cms.registerPreviewTemplate('pages', PagePreview);
-      cms.registerPreviewTemplate('footer', FooterPreview);
-      cms.registerPreviewTemplate('cards', CardPreview);
-    }),
-  { ssr: false, loading: () => <p>Loading...</p> },
-);
+const DecapCms = (assetsByLocale) =>
+  dynamic(
+    () =>
+      import('decap-cms-app').then((cms) => {
+        cms.init({ config });
+        cms.registerPreviewStyle(
+          'https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css',
+        );
+        cms.registerPreviewStyle(
+          'https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css',
+        );
+        cms.registerPreviewStyle(
+          'https://fonts.googleapis.com/css?family=Montserrat:400,700',
+        );
+        cms.registerPreviewStyle(
+          'https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700',
+        );
+        cms.registerPreviewStyle('/css/style.css');
 
-const Admin = () => {
+        console.log('assetsByLocale', assetsByLocale);
+        cms.registerPreviewTemplate(
+          'pages',
+          withAssetsByLocale(PagePreview, assetsByLocale),
+        );
+        cms.registerPreviewTemplate(
+          'footer',
+          withAssetsByLocale(FooterPreview, assetsByLocale),
+        );
+        cms.registerPreviewTemplate(
+          'cards',
+          withAssetsByLocale(CardPreview, assetsByLocale),
+        );
+      }),
+    { ssr: false, loading: () => <p>Loading...</p> },
+  );
+
+/**
+ *
+ * @type {import('next').GetStaticProps}
+ */
+export const getStaticProps = async ({ locales }) => {
+  const assetsTasks = locales.map(async (locale) => {
+    const rawCards = fetchCards(locale);
+    const cardTasks = rawCards.map(async (card) => {
+      return processCard(card, rawCards);
+    });
+    const cards = await Promise.all(cardTasks);
+
+    return {
+      locale,
+      cards,
+    };
+  });
+
+  const assets = await Promise.all(assetsTasks);
+  const assetsByLocale = assets.reduce((assets, asset) => {
+    assets[asset.locale] = asset;
+    return assets;
+  }, {});
+
+  return {
+    props: {
+      assetsByLocale,
+    },
+  };
+};
+
+const Admin = ({ assetsByLocale }) => {
+  const Cms = DecapCms(assetsByLocale);
   return (
     <>
       <Head>
@@ -81,7 +134,7 @@ const Admin = () => {
         id="netlify-identity-widget"
         src="https://identity.netlify.com/v1/netlify-identity-widget.js"
       />
-      <CMS />
+      <Cms />
     </>
   );
 };
