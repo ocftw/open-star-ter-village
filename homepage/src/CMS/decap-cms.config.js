@@ -429,6 +429,26 @@ module.exports = {
                 },
               ],
             },
+            {
+              label: 'Logos',
+              name: 'logos',
+              label_singular: 'Logo',
+              widget: 'list',
+              i18n: true,
+              summary: '{{fields.logo_text}}',
+              fields: [
+                {
+                  label: 'Logo Text',
+                  name: 'logo_text',
+                  widget: 'string',
+                },
+                {
+                  label: 'Logo Image',
+                  name: 'logo_image',
+                  widget: 'image',
+                },
+              ],
+            },
           ],
         },
       ],
