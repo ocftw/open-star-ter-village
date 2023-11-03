@@ -14,6 +14,13 @@ const Footer = ({ siteData, footer }) => {
     displayText: link.display_text,
     url: link.url,
   }));
+
+  const footerLogos = footerData?.footer?.logos ?? [];
+  const logos = footerLogos.map((logo) => ({
+    text: logo.logo_text,
+    image: logo.logo_image,
+  }));
+
   return (
     <div className="site-footer" id="footer">
       <div className="container footer-main">
@@ -22,13 +29,13 @@ const Footer = ({ siteData, footer }) => {
         <SocialMedia />
         <div className="d-flex flex-row flex-justify-center logos margin-2-percent">
           <Logo
-            text="Initiator"
-            src="/images/campaignpage/logo__OCF.svg"
+            text={logos[0].text}
+            src={logos[0].image}
             dimension={{ width: 170, height: 34 }}
           />
           <Logo
-            text="Sponsor"
-            src="/images/campaignpage/logo__FNF.png"
+            text={logos[1].text}
+            src={logos[1].image}
             dimension={{ width: 163, height: 45 }}
           />
         </div>
