@@ -28,16 +28,14 @@ const Footer = ({ siteData, footer }) => {
         <span>{siteData.title}</span>
         <SocialMedia />
         <div className="d-flex flex-row flex-justify-center logos margin-2-percent">
-          <Logo
-            text={logos[0].text}
-            src={logos[0].image}
-            dimension={{ width: 170, height: 34 }}
-          />
-          <Logo
-            text={logos[1].text}
-            src={logos[1].image}
-            dimension={{ width: 163, height: 45 }}
-          />
+          {logos.map((logo) => (
+            <Logo
+              key={logo.text}
+              text={logo.text}
+              src={logo.image}
+              dimension={{ width: 163, height: 45 }}
+            />
+          ))}
         </div>
       </div>
     </div>
