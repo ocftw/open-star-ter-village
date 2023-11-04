@@ -1,6 +1,5 @@
 import Head from 'next/head';
-import { getNavigationList } from '../lib/getNavigationList';
-import { fetchFooter } from '../lib/fetchFooter';
+import { getLayout } from '../lib/getLayout';
 
 /**
  *
@@ -23,15 +22,7 @@ export const getStaticProps = async ({ locale }) => {
     `,
   };
 
-  const navigation = await getNavigationList(locale);
-  const header = {
-    navigation,
-  };
-  const footer = fetchFooter(locale);
-  const layout = {
-    header,
-    footer,
-  };
+  const layout = await getLayout(locale);
 
   return {
     props: {
