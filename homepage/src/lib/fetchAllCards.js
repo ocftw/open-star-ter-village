@@ -1,6 +1,7 @@
 import fs from 'fs';
 import { join } from 'path';
 import matter from 'gray-matter';
+import { processCard } from './processCard';
 
 const cardsDirectory = join(process.cwd(), '_cards');
 
@@ -13,7 +14,7 @@ function getCardDirectoryPath(lang) {
   return join(cardsDirectory, lang);
 }
 
-export function fetchCards(lang) {
+export function fetchAllCards(lang) {
   const cardsDirectory = getCardDirectoryPath(lang);
   const filesInCards = fs.readdirSync(cardsDirectory);
 
@@ -26,5 +27,5 @@ export function fetchCards(lang) {
     return { data, content };
   });
 
-  return cards;
+  return cards.map((card) => processCard(card, cards));
 }

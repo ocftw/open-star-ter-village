@@ -1,8 +1,7 @@
 import Head from 'next/head';
 import Script from 'next/script';
 
-import { fetchCards } from '../lib/fetchCards';
-import { processCard } from '../lib/processCard';
+import { fetchAllCards } from '../lib/fetchAllCards';
 import DecapCms from '../CMS/DecapCms';
 
 /**
@@ -10,12 +9,8 @@ import DecapCms from '../CMS/DecapCms';
  * @type {import('next').GetStaticProps}
  */
 export const getStaticProps = async ({ locales }) => {
-  const assetsTasks = locales.map(async (locale) => {
-    const rawCards = fetchCards(locale);
-    const cardTasks = rawCards.map(async (card) => {
-      return processCard(card, rawCards);
-    });
-    const cards = await Promise.all(cardTasks);
+  const assets = locales.map((locale) => {
+    const cards = fetchAllCards(locale);
 
     return {
       locale,
@@ -23,7 +18,6 @@ export const getStaticProps = async ({ locales }) => {
     };
   });
 
-  const assets = await Promise.all(assetsTasks);
   const assetsByLocale = assets.reduce((assets, asset) => {
     assets[asset.locale] = asset;
     return assets;

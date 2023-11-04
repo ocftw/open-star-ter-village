@@ -1,14 +1,9 @@
 import { componentMapper } from './componentMapper';
-import { fetchCards } from './fetchCards';
+import { fetchAllCards } from './fetchAllCards';
 import { fetchPage } from './fetchPage';
-import { processCard } from './processCard';
 
 export const getPage = async (pageName, locale) => {
-  const rawCards = fetchCards(locale);
-  const cardTasks = rawCards.map(async (card) => {
-    return processCard(card, rawCards);
-  });
-  const cards = await Promise.all(cardTasks);
+  const cards = fetchAllCards(locale);
 
   const page = fetchPage(locale, pageName);
 
