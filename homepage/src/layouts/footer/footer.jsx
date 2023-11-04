@@ -2,7 +2,7 @@ import SocialMedia from '../../components/socialMedia';
 import Logo from '../../components/logo';
 import FooterLinks from './footerLinks';
 
-const Footer = ({ siteData, footer, links = [], logos = [] }) => {
+const Footer = ({ siteData, links = [], logos = [] }) => {
   return (
     <div className="site-footer" id="footer">
       <div className="container footer-main">

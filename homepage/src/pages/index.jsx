@@ -39,7 +39,6 @@ export const getStaticProps = async ({ locale }) => {
 
   return {
     props: {
-      navigationList: navigation,
       headInfo: {
         title: headInfo.title[locale],
         description: headInfo.description[locale],
@@ -57,7 +56,10 @@ const Index = ({ headInfo, page }) => (
     <Head>
       <title>{headInfo.title}</title>
       <meta name="description" content={headInfo.description} />
-      <meta name="google-site-verification" content="NejiRhdBA-bewypiYDtrGnKJ09VSH6-15HsXUNKdrm4" />
+      <meta
+        name="google-site-verification"
+        content="NejiRhdBA-bewypiYDtrGnKJ09VSH6-15HsXUNKdrm4"
+      />
     </Head>
     <Script
       id="netlify-identity-widget"

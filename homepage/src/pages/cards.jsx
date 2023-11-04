@@ -43,9 +43,9 @@ export const getStaticProps = async ({ locale }) => {
 
   return {
     props: {
-      navigationList: navigation,
       headInfo: {
         title: headInfo.title[locale],
+        description: '',
       },
       page: {
         contentList,

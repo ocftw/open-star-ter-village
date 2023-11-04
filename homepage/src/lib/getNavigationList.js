@@ -38,7 +38,7 @@ export async function getNavigationList(lang) {
     .map((page) => {
       page.path = page.path.replace('index', '');
       return { link: `/${page.path}`, text: page.name };
-    })
+    });
 
   return navigationList;
 }

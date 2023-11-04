@@ -8,7 +8,7 @@ const Logo = ({ title, text, src, dimension, link }) => (
       <Image
         className="logo-image"
         src={src}
-        alt={`${text}`}
+        alt={text}
         height={dimension.height}
         width={dimension.width}
         style={{

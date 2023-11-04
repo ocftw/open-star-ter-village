@@ -35,9 +35,9 @@ export const getStaticProps = async ({ locale }) => {
 
   return {
     props: {
-      navigationList: navigation,
       headInfo: {
         title: headInfo.title[locale],
+        description: '',
       },
       desc: desc[locale],
       layout,
@@ -49,7 +49,7 @@ const NotFoundPage = ({ headInfo, desc }) => (
   <>
     <Head>
       <title>{headInfo.title}</title>
-      <meta name="description" content="" />
+      <meta name="description" content={headInfo.description} />
     </Head>
     <div className="site-container not-found-page">
       <div className="container text-center">
