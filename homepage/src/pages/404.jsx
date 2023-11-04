@@ -1,17 +1,11 @@
 import Head from 'next/head';
+import { getLayout } from '../lib/getLayout';
 
 /**
  *
  * @type {import('next').GetStaticProps}
  */
 export const getStaticProps = async ({ locale }) => {
-  const homepage = {
-    en: 'Home',
-    'zh-tw': '首頁',
-  };
-
-  const navigationList = [{ link: `/`, text: homepage[locale] }];
-
   const headInfo = {
     title: {
       en: `OpenStarTerVillage - Page Not Found`,
@@ -28,13 +22,16 @@ export const getStaticProps = async ({ locale }) => {
     `,
   };
 
+  const layout = await getLayout(locale);
+
   return {
     props: {
-      navigationList,
       headInfo: {
         title: headInfo.title[locale],
+        description: '',
       },
       desc: desc[locale],
+      layout,
     },
   };
 };
@@ -43,7 +40,7 @@ const NotFoundPage = ({ headInfo, desc }) => (
   <>
     <Head>
       <title>{headInfo.title}</title>
-      <meta name="description" content="" />
+      <meta name="description" content={headInfo.description} />
     </Head>
     <div className="site-container not-found-page">
       <div className="container text-center">

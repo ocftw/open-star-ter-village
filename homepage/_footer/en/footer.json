@@ -13,6 +13,20 @@
         "display_text": "Play Online!",
         "url": "/resource/#play-online"
       }
+    ],
+    "logos": [
+      {
+        "alt_text": "open culture foundation",
+        "image_url": "/images/uploads/logo__ocf.svg",
+        "title": "Initiator",
+        "link_url": "https://ocf.tw/"
+      },
+      {
+        "alt_text": "Friedrich Naumann Foundation for Freedom",
+        "image_url": "/images/uploads/logo__fnf.png",
+        "title": "Sponsor",
+        "link_url": "https://www.freiheit.org/"
+      }
     ]
   }
 }

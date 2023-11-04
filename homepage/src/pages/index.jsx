@@ -1,17 +1,14 @@
 import Head from 'next/head';
 import Script from 'next/script';
-import { fetchPage } from '../lib/fetchPage';
-import { getNavigationList } from '../lib/getNavigationList';
 import contentMapper from '../layouts/contentMapper';
-import { componentMapper } from '../lib/componentMapper';
+import { getLayout } from '../lib/getLayout';
+import { getPage } from '../lib/getPage';
 
 /**
  *
  * @type {import('next').GetStaticProps}
  */
 export const getStaticProps = async ({ locale }) => {
-  const navigationList = await getNavigationList(locale);
-
   const headInfo = {
     title: {
       en: `OpenStarTerVillage`,
@@ -23,21 +20,18 @@ export const getStaticProps = async ({ locale }) => {
     },
   };
 
-  const page = fetchPage(locale, 'index');
-  const contentList = page.data['layout_list']?.map((layout) =>
-    componentMapper(layout, []),
-  );
+  const page = await getPage('index', locale);
+
+  const layout = await getLayout(locale);
 
   return {
     props: {
-      navigationList,
       headInfo: {
         title: headInfo.title[locale],
         description: headInfo.description[locale],
       },
-      page: {
-        contentList,
-      },
+      page,
+      layout,
     },
   };
 };
@@ -47,7 +41,10 @@ const Index = ({ headInfo, page }) => (
     <Head>
       <title>{headInfo.title}</title>
       <meta name="description" content={headInfo.description} />
-      <meta name="google-site-verification" content="NejiRhdBA-bewypiYDtrGnKJ09VSH6-15HsXUNKdrm4" />
+      <meta
+        name="google-site-verification"
+        content="NejiRhdBA-bewypiYDtrGnKJ09VSH6-15HsXUNKdrm4"
+      />
     </Head>
     <Script
       id="netlify-identity-widget"

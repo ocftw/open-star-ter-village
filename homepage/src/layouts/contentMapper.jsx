@@ -10,19 +10,19 @@ import { componentTypes } from '../lib/componentMapper';
 const contentMapper = (component) => {
   switch (component.type) {
     case componentTypes.Banner:
-      return <Banner key={component.id} {...component.props} />;
+      return <Banner key={component.props.id} {...component.props} />;
     case componentTypes.Headline:
-      return <Headline key={component.id} {...component.props} />;
+      return <Headline key={component.props.id} {...component.props} />;
     case componentTypes.ImageAndText:
-      return <ImageAndText key={component.id} {...component.props} />;
+      return <ImageAndText key={component.props.id} {...component.props} />;
     case componentTypes.OneColumn:
-      return <Section key={component.id} {...component.props} />;
+      return <Section key={component.props.id} {...component.props} />;
     case componentTypes.TwoColumns:
-      return <TwoColumns key={component.id} {...component.props} />;
+      return <TwoColumns key={component.props.id} {...component.props} />;
     case componentTypes.ThreeColumns:
-      return <ThreeColumns key={component.id} {...component.props} />;
+      return <ThreeColumns key={component.props.id} {...component.props} />;
     case componentTypes.Cards:
-      return <Cards key={component.id} {...component.props} />;
+      return <Cards key={component.props.id} {...component.props} />;
     default:
       return null;
   }

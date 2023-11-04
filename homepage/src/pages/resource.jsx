@@ -1,29 +1,44 @@
+import Head from 'next/head';
 import contentMapper from '../layouts/contentMapper';
-import { componentMapper } from '../lib/componentMapper';
-import { fetchPage } from '../lib/fetchPage';
-import { getNavigationList } from '../lib/getNavigationList';
+import { getLayout } from '../lib/getLayout';
+import { getPage } from '../lib/getPage';
 
 /**
  *
  * @type {import('next').GetStaticProps}
  */
 export const getStaticProps = async ({ locale }) => {
-  const page = fetchPage(locale, 'resource');
-  const contentList = page.data['layout_list']?.map((layout) =>
-    componentMapper(layout, []),
-  );
-  const navigationList = await getNavigationList(locale);
+  const headInfo = {
+    title: {
+      en: `OpenStarTerVillage - Resource`,
+      'zh-tw': `開源星手村 - 資源頁`,
+    },
+  };
+
+  const page = await getPage('resource', locale);
+
+  const layout = await getLayout(locale);
 
   return {
     props: {
-      page: {
-        contentList,
+      headInfo: {
+        title: headInfo.title[locale],
+        description: '',
       },
-      navigationList,
+      page,
+      layout,
     },
   };
 };
 
-export default function Resource({ page }) {
-  return <>{page.contentList?.map(contentMapper)}</>;
+export default function Resource({ page, headInfo }) {
+  return (
+    <>
+      <Head>
+        <title>{headInfo.title}</title>
+        <meta name="description" content={headInfo.description} />
+      </Head>
+      {page.contentList?.map(contentMapper)}
+    </>
+  );
 }

@@ -31,7 +31,7 @@ const siteDataDictionary = {
 
 const getDefaultLayout = (page, pageProps, siteData) => {
   return (
-    <SiteLayout nav={pageProps.navigationList} siteData={siteData} pageProps={pageProps}>
+    <SiteLayout siteData={siteData} pageProps={pageProps} {...pageProps.layout}>
       {page}
     </SiteLayout>
   );

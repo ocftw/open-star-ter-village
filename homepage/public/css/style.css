@@ -916,7 +916,7 @@ code {
   margin-left: 1rem;
 }
 .logo-margin {
-  margin: 0 15px;
+  margin: 0 1rem;
 }
 .avatar {
   margin: 0.5rem auto;
@@ -985,9 +985,6 @@ code {
   .logos {
     flex-wrap: wrap;
   }
-  .logo-margin {
-    margin: 10px auto;
-  }
 }
 @media only screen and (max-width: 568px) {
   .photos-page-list .item {
@@ -1020,6 +1017,9 @@ code {
   }
   .blogs-list .item .inner .details .title {
     font-size: 20px;
+  }
+  .logo-margin {
+    margin: 0.25rem auto;
   }
 }
 @media only screen and (max-width: 480px) {

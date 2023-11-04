@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 const FooterLinks = ({ links }) => (
-  <div className="flex flex-row gap">
+  <div className="d-flex gap">
     {links.map((link) => (
       <Link
         href={link.url}

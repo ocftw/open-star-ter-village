@@ -364,7 +364,7 @@ module.exports = {
               label: 'Links',
               label_singular: 'Link',
               widget: 'list',
-              summary: '{{fields.type} - {{fields.url}}',
+              summary: '{{fields.type}} - {{fields.url}}',
               fields: [
                 {
                   label: 'Type',
@@ -426,6 +426,36 @@ module.exports = {
                   name: 'url',
                   widget: 'string',
                   hint: 'External link: `https://example.com/path/to/link`, Internal link: `/resouce`, Email: `mailto:username@example.com`',
+                },
+              ],
+            },
+            {
+              label: 'Logos',
+              name: 'logos',
+              label_singular: 'Logo',
+              widget: 'list',
+              i18n: true,
+              summary: '{{fields.title}} | {{fields.alt_text}}',
+              fields: [
+                {
+                  label: 'Title',
+                  name: 'title',
+                  widget: 'string',
+                },
+                {
+                  label: 'Alt Text',
+                  name: 'alt_text',
+                  widget: 'string',
+                },
+                {
+                  label: 'Image',
+                  name: 'image_url',
+                  widget: 'image',
+                },
+                {
+                  label: 'Link Url',
+                  name: 'link_url',
+                  widget: 'string',
                 },
               ],
             },

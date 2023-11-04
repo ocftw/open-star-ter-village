@@ -1,18 +1,21 @@
 import Image from 'next/image';
+import Link from 'next/link';
 
-const Logo = ({ text, src, dimension }) => (
-  <div className="flex flex-row flex-align-center logo-margin">
-    <span className="logo-title">{text}</span>
-    <Image
-      className="logo-image"
-      src={src}
-      alt={`${text}-logo`}
-      height={dimension.height}
-      width={dimension.width}
-      style={{
-        objectFit: 'cover',
-      }}
-    />
+const Logo = ({ title, altText, src, dimension, link }) => (
+  <div className="d-flex align-items-center logo-margin">
+    <span className="logo-title">{title}</span>
+    <Link href={link} target="_blank">
+      <Image
+        className="logo-image"
+        src={src}
+        alt={altText}
+        height={dimension.height}
+        width={dimension.width}
+        style={{
+          objectFit: 'cover',
+        }}
+      />
+    </Link>
   </div>
 );
 
