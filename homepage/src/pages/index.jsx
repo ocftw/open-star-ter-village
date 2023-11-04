@@ -1,9 +1,8 @@
 import Head from 'next/head';
 import Script from 'next/script';
-import { fetchPage } from '../lib/fetchPage';
 import contentMapper from '../layouts/contentMapper';
-import { componentMapper } from '../lib/componentMapper';
 import { getLayout } from '../lib/getLayout';
+import { getPage } from '../lib/getPage';
 
 /**
  *
@@ -21,10 +20,7 @@ export const getStaticProps = async ({ locale }) => {
     },
   };
 
-  const page = fetchPage(locale, 'index');
-  const contentList = page.data['layout_list']?.map((layout) =>
-    componentMapper(layout, []),
-  );
+  const page = await getPage('index', locale);
 
   const layout = await getLayout(locale);
 
@@ -34,9 +30,7 @@ export const getStaticProps = async ({ locale }) => {
         title: headInfo.title[locale],
         description: headInfo.description[locale],
       },
-      page: {
-        contentList,
-      },
+      page,
       layout,
     },
   };
