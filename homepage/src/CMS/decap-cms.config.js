@@ -364,7 +364,7 @@ module.exports = {
               label: 'Links',
               label_singular: 'Link',
               widget: 'list',
-              summary: '{{fields.type} - {{fields.url}}',
+              summary: '{{fields.type}} - {{fields.url}}',
               fields: [
                 {
                   label: 'Type',
@@ -435,8 +435,13 @@ module.exports = {
               label_singular: 'Logo',
               widget: 'list',
               i18n: true,
-              summary: '{{fields.logo_text}}',
+              summary: '{{fields.logo_title}} | {{fields.logo_text}}',
               fields: [
+                {
+                  label: 'Logo Title',
+                  name: 'logo_title',
+                  widget: 'string',
+                },
                 {
                   label: 'Logo Text',
                   name: 'logo_text',
@@ -446,6 +451,11 @@ module.exports = {
                   label: 'Logo Image',
                   name: 'logo_image',
                   widget: 'image',
+                },
+                {
+                  label: 'Logo Link',
+                  name: 'logo_link',
+                  widget: 'string',
                 },
               ],
             },

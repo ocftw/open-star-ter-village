@@ -17,8 +17,10 @@ const Footer = ({ siteData, footer }) => {
 
   const footerLogos = footerData?.footer?.logos ?? [];
   const logos = footerLogos.map((logo) => ({
+    title: logo.logo_title,
     text: logo.logo_text,
     image: logo.logo_image,
+    link: logo.logo_link,
   }));
 
   return (
@@ -31,9 +33,11 @@ const Footer = ({ siteData, footer }) => {
           {logos.map((logo) => (
             <Logo
               key={logo.text}
+              title={logo.title}
               text={logo.text}
               src={logo.image}
               dimension={{ width: 163, height: 45 }}
+              link={logo.link}
             />
           ))}
         </div>
