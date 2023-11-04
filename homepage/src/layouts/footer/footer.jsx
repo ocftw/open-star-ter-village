@@ -1,28 +1,8 @@
-import { useRouter } from 'next/router';
 import SocialMedia from '../../components/socialMedia';
 import Logo from '../../components/logo';
-import footerZh from '../../../_footer/zh-tw/footer.json';
-import footerEn from '../../../_footer/en/footer.json';
 import FooterLinks from './footerLinks';
 
-const Footer = ({ siteData, footer }) => {
-  const router = useRouter();
-  const locale = router.locale;
-  const footerData = locale === 'en' ? footerEn : footerZh;
-  const footerLinks = footer?.links ?? footerData?.footer?.links ?? [];
-  const links = footerLinks.map((link) => ({
-    displayText: link.display_text,
-    url: link.url,
-  }));
-
-  const footerLogos = footerData?.footer?.logos ?? [];
-  const logos = footerLogos.map((logo) => ({
-    title: logo.logo_title,
-    text: logo.logo_text,
-    image: logo.logo_image,
-    link: logo.logo_link,
-  }));
-
+const Footer = ({ siteData, footer, links = [], logos = [] }) => {
   return (
     <div className="site-footer" id="footer">
       <div className="container footer-main">

@@ -4,14 +4,13 @@ import { fetchPage } from '../lib/fetchPage';
 import { getNavigationList } from '../lib/getNavigationList';
 import contentMapper from '../layouts/contentMapper';
 import { componentMapper } from '../lib/componentMapper';
+import { fetchFooter } from '../lib/fetchFooter';
 
 /**
  *
  * @type {import('next').GetStaticProps}
  */
 export const getStaticProps = async ({ locale }) => {
-  const navigationList = await getNavigationList(locale);
-
   const headInfo = {
     title: {
       en: `OpenStarTerVillage`,
@@ -28,9 +27,19 @@ export const getStaticProps = async ({ locale }) => {
     componentMapper(layout, []),
   );
 
+  const navigation = await getNavigationList(locale);
+  const header = {
+    navigation,
+  };
+  const footer = fetchFooter(locale);
+  const layout = {
+    header,
+    footer,
+  };
+
   return {
     props: {
-      navigationList,
+      navigationList: navigation,
       headInfo: {
         title: headInfo.title[locale],
         description: headInfo.description[locale],
@@ -38,6 +47,7 @@ export const getStaticProps = async ({ locale }) => {
       page: {
         contentList,
       },
+      layout,
     },
   };
 };

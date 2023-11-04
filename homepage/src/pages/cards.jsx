@@ -5,6 +5,7 @@ import { fetchCards } from '../lib/fetchCards';
 import { getNavigationList } from '../lib/getNavigationList';
 import { componentMapper } from '../lib/componentMapper';
 import { processCard } from '../lib/processCard';
+import { fetchFooter } from '../lib/fetchFooter';
 
 /**
  *
@@ -16,8 +17,6 @@ export const getStaticProps = async ({ locale }) => {
     return processCard(card, rawCards);
   });
   const cards = await Promise.all(cardTasks);
-
-  const navigationList = await getNavigationList(locale);
 
   const page = fetchPage(locale, 'cards');
 
@@ -32,15 +31,26 @@ export const getStaticProps = async ({ locale }) => {
     },
   };
 
+  const navigation = await getNavigationList(locale);
+  const header = {
+    navigation,
+  };
+  const footer = fetchFooter(locale);
+  const layout = {
+    header,
+    footer,
+  };
+
   return {
     props: {
-      navigationList,
+      navigationList: navigation,
       headInfo: {
         title: headInfo.title[locale],
       },
       page: {
         contentList,
       },
+      layout,
     },
   };
 };

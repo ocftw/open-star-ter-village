@@ -1,17 +1,12 @@
 import Head from 'next/head';
+import { getNavigationList } from '../lib/getNavigationList';
+import { fetchFooter } from '../lib/fetchFooter';
 
 /**
  *
  * @type {import('next').GetStaticProps}
  */
 export const getStaticProps = async ({ locale }) => {
-  const homepage = {
-    en: 'Home',
-    'zh-tw': '首頁',
-  };
-
-  const navigationList = [{ link: `/`, text: homepage[locale] }];
-
   const headInfo = {
     title: {
       en: `OpenStarTerVillage - Page Not Found`,
@@ -28,13 +23,24 @@ export const getStaticProps = async ({ locale }) => {
     `,
   };
 
+  const navigation = await getNavigationList(locale);
+  const header = {
+    navigation,
+  };
+  const footer = fetchFooter(locale);
+  const layout = {
+    header,
+    footer,
+  };
+
   return {
     props: {
-      navigationList,
+      navigationList: navigation,
       headInfo: {
         title: headInfo.title[locale],
       },
       desc: desc[locale],
+      layout,
     },
   };
 };
