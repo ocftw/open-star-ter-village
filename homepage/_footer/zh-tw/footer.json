@@ -16,13 +16,13 @@
     ],
     "logos": [
       {
-        "text": "open culture foundation",
+        "alt_text": "open culture foundation",
         "image_url": "/images/uploads/logo__ocf.svg",
         "title": "Initiator",
         "link_url": "https://ocf.tw/"
       },
       {
-        "text": "Friedrich Naumann Foundation for Freedom",
+        "alt_text": "Friedrich Naumann Foundation for Freedom",
         "image_url": "/images/uploads/logo__fnf.png",
         "title": "Sponsor",
         "link_url": "https://www.freiheit.org/"
