@@ -15,10 +15,10 @@ export function fetchFooter(lang) {
       url: link.url,
     })),
     logos: rawFooter.logos.map((logo) => ({
-      title: logo.logo_title,
-      image: logo.logo_image,
-      text: logo.logo_text,
-      link: logo.logo_link,
+      title: logo.title,
+      imageUrl: logo.image_url,
+      altText: logo.alt_text,
+      linkUrl: logo.link_url,
     })),
   };
   return footer;

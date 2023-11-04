@@ -16,16 +16,16 @@
     ],
     "logos": [
       {
-        "logo_text": "open culture foundation",
-        "logo_image": "/images/uploads/logo__ocf.svg",
-        "logo_title": "Initiator",
-        "logo_link": "https://ocf.tw/"
+        "text": "open culture foundation",
+        "image_url": "/images/uploads/logo__ocf.svg",
+        "title": "Initiator",
+        "link_url": "https://ocf.tw/"
       },
       {
-        "logo_text": "Friedrich Naumann Foundation for Freedom",
-        "logo_image": "/images/uploads/logo__fnf.png",
-        "logo_title": "Sponsor",
-        "logo_link": "https://www.freiheit.org/"
+        "text": "Friedrich Naumann Foundation for Freedom",
+        "image_url": "/images/uploads/logo__fnf.png",
+        "title": "Sponsor",
+        "link_url": "https://www.freiheit.org/"
       }
     ]
   }

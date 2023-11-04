@@ -14,10 +14,10 @@ const Footer = ({ siteData, links = [], logos = [] }) => {
             <Logo
               key={logo.text}
               title={logo.title}
-              text={logo.text}
-              src={logo.image}
+              altText={logo.altText}
+              src={logo.imageUrl}
               dimension={{ width: 163, height: 45 }}
-              link={logo.link}
+              link={logo.linkUrl}
             />
           ))}
         </div>
