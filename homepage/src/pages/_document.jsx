@@ -1,5 +1,5 @@
 import { Html, Head, Main, NextScript } from 'next/document';
-import { GTM_ID } from '../lib/gtm';
+import { GTM_ID } from '../lib/service/gtm';
 
 export default function Document({ locale }) {
   return (
@@ -15,12 +15,12 @@ export default function Document({ locale }) {
           href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css"
         />
         <link
-          href="https://fonts.googleapis.com/css?family=Montserrat:400,700"
+          href="https://fonts.googleapis.com/css?family=Josefin+Sans:300,400,400i,600,700,700i&display=swap"
           rel="stylesheet"
           type="text/css"
         />
         <link
-          href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700"
+          href="https://fonts.googleapis.com/css?family=Noto+Sans+TC:300,400,400i,600,700,700i&display=swap"
           rel="stylesheet"
           type="text/css"
         />
@@ -36,16 +36,6 @@ export default function Document({ locale }) {
           src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/js/fontawesome.min.js"
           defer
         ></script>
-        {/* <!-- Google tag (gtag.js) --> */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-            })(window,document,'script','dataLayer','${GTM_ID}');`,
-          }}
-        />
       </Head>
       <body id="page-top">
         <Main />

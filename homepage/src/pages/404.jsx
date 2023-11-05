@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import { getLayout } from '../lib/getLayout';
+import { getLayout } from '../lib/service/getLayout';
 
 /**
  *

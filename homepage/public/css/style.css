@@ -1,6 +1,5 @@
-@import url('https://fonts.googleapis.com/css?family=Josefin+Sans:300,400,400i,600,700,700i&display=swap');
 * {
-  font-family: 'Josefin Sans', sans-serif;
+  font-family: 'Josefin Sans', 'Noto Sans TC', sans-serif;
 }
 html {
   scroll-behavior: smooth;
@@ -10,7 +9,6 @@ img {
 }
 .site-header {
   background: #333333b8;
-  z-index: 999;
   padding: 0;
 }
 .site-header * {
@@ -41,13 +39,9 @@ h5 {
   height: 100vh;
 }
 .headline {
-  height: 9rem;
   display: flex;
   justify-content: center;
   align-items: flex-end;
-}
-.headline h1 {
-  border-bottom: 1px solid #ef5826;
 }
 a:hover {
   color: #d83d0a;
@@ -538,17 +532,6 @@ h2,
   display: inline-block;
   position: relative;
 }
-h2:after,
-.line-heading:after {
-  content: '';
-  width: 25px;
-  height: 1px;
-  display: inline-block;
-  position: absolute;
-  background: #ef5826;
-  top: 100%;
-  left: 0;
-}
 .see-more {
   text-align: center;
   display: inline-block;
@@ -1020,6 +1003,9 @@ code {
   }
   .logo-margin {
     margin: 0.25rem auto;
+  }
+  .text-wrap-md {
+    white-space: normal;
   }
 }
 @media only screen and (max-width: 480px) {

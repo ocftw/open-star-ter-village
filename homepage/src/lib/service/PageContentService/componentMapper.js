@@ -1,4 +1,4 @@
-import { titleToAnchorId } from './titleToAnchorId';
+import { titleToAnchorId } from '../../utils/titleToAnchorId';
 
 const removeUndefined = (obj) => {
   const newObj = {};

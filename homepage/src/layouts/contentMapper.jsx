@@ -5,7 +5,7 @@ import ImageAndText from '../components/imageAndText';
 import Section from '../components/section';
 import Headline from '../components/headline';
 import Cards from '../components/cards/cards';
-import { componentTypes } from '../lib/componentMapper';
+import { componentTypes } from '../lib/service/PageContentService/componentMapper';
 
 const contentMapper = (component) => {
   switch (component.type) {
