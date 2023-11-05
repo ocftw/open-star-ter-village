@@ -1,4 +1,4 @@
-import { fetchAllPages } from './getNavigationList';
+import { fetchAllPages } from './fetchAllPages';
 import { fetchFooter } from './fetchFooter';
 import { fetchAllCards } from './fetchAllCards';
 import { anchorMapper } from './anchorMapper';
