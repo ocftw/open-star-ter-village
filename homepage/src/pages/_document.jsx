@@ -15,12 +15,12 @@ export default function Document({ locale }) {
           href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css"
         />
         <link
-          href="https://fonts.googleapis.com/css?family=Montserrat:400,700"
+          href="https://fonts.googleapis.com/css?family=Josefin+Sans:300,400,400i,600,700,700i&display=swap"
           rel="stylesheet"
           type="text/css"
         />
         <link
-          href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700"
+          href="https://fonts.googleapis.com/css?family=Noto+Sans+TC:300,400,400i,600,700,700i&display=swap"
           rel="stylesheet"
           type="text/css"
         />

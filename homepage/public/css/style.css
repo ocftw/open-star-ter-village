@@ -1,6 +1,5 @@
-@import url('https://fonts.googleapis.com/css?family=Josefin+Sans:300,400,400i,600,700,700i&display=swap');
 * {
-  font-family: 'Josefin Sans', sans-serif;
+  font-family: 'Josefin Sans', 'Noto Sans TC', sans-serif;
 }
 html {
   scroll-behavior: smooth;
