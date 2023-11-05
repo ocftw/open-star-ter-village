@@ -43,6 +43,9 @@ h5 {
   justify-content: center;
   align-items: flex-end;
 }
+.headline h1 {
+  border-bottom: 1px solid #ef5826;
+}
 a:hover {
   color: #d83d0a;
   text-decoration: underline;
@@ -531,6 +534,17 @@ h2,
 .line-heading {
   display: inline-block;
   position: relative;
+}
+h2:after,
+.line-heading:after {
+  content: '';
+  width: 25px;
+  height: 1px;
+  display: inline-block;
+  position: absolute;
+  background: #ef5826;
+  top: 100%;
+  left: 0;
 }
 .see-more {
   text-align: center;
