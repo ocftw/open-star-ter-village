@@ -1,7 +1,7 @@
 import fs from 'fs';
 import { join } from 'path';
 import matter from 'gray-matter';
-import { processCard } from './processCard';
+import { processCard } from '../utils/processCard';
 
 const cardsDirectory = join(process.cwd(), '_cards');
 

@@ -1,5 +1,5 @@
 import { Html, Head, Main, NextScript } from 'next/document';
-import { GTM_ID } from '../lib/gtm';
+import { GTM_ID } from '../lib/service/gtm';
 
 export default function Document({ locale }) {
   return (

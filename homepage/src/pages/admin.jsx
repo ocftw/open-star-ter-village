@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import Script from 'next/script';
 
-import { fetchAllCards } from '../lib/fetchAllCards';
+import { fetchAllCards } from '../lib/repository/fetchAllCards';
 import DecapCms from '../CMS/DecapCms';
 
 /**

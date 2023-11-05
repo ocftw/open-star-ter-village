@@ -1,4 +1,4 @@
-import { titleToAnchorId } from './titleToAnchorId';
+import { titleToAnchorId } from '../../utils/titleToAnchorId';
 
 export const anchorMapper = (layout, cards = []) => {
   let id = '';

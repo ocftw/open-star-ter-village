@@ -1,8 +1,8 @@
 import Head from 'next/head';
 import Script from 'next/script';
 import contentMapper from '../layouts/contentMapper';
-import { getLayout } from '../lib/getLayout';
-import { getPage } from '../lib/getPage';
+import { getLayout } from '../lib/service/getLayout';
+import { getPage } from '../lib/service/getPage';
 
 /**
  *

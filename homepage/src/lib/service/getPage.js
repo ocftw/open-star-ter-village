@@ -1,6 +1,6 @@
-import { componentMapper } from './componentMapper';
-import { fetchAllCards } from './fetchAllCards';
-import { fetchPage } from './fetchPage';
+import { componentMapper } from './PageContentService/componentMapper';
+import { fetchAllCards } from '../repository/fetchAllCards';
+import { fetchPage } from '../repository/fetchPage';
 
 export const getPage = async (pageName, locale) => {
   const cards = fetchAllCards(locale);

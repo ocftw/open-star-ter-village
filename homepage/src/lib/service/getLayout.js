@@ -1,7 +1,7 @@
-import { fetchAllPages } from './fetchAllPages';
-import { fetchFooter } from './fetchFooter';
-import { fetchAllCards } from './fetchAllCards';
-import { anchorMapper } from './anchorMapper';
+import { fetchAllPages } from '../repository/fetchAllPages';
+import { fetchFooter } from '../repository/fetchFooter';
+import { fetchAllCards } from '../repository/fetchAllCards';
+import { anchorMapper } from './PageContentService/anchorMapper';
 
 const getNavigation = (pages, cards) => {
   const navigation = pages

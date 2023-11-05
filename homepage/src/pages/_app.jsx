@@ -3,7 +3,7 @@ import Head from 'next/head';
 import Script from 'next/script';
 import { useRouter } from 'next/router';
 import SiteLayout from '../layouts/siteLayout/siteLayout';
-import { pageview, GTM_ID } from '../lib/gtm';
+import { pageview, GTM_ID } from '../lib/service/gtm';
 import '../../public/css/style.css';
 
 const useRouteChangeComplete = (callback) => {

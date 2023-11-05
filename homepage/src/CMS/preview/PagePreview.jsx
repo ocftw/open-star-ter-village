@@ -1,4 +1,4 @@
-import { componentMapper } from '../../lib/componentMapper';
+import { componentMapper } from '../../lib/service/PageContentService/componentMapper';
 import contentMapper from '../../layouts/contentMapper';
 
 const PagePreview = ({ entry, assetsByLocale, locale }) => {
