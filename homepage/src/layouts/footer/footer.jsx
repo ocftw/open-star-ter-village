@@ -12,7 +12,7 @@ const Footer = ({ siteData, links = [], logos = [] }) => {
         <div className="d-flex justify-content-center logos margin-2-percent">
           {logos.map((logo) => (
             <Logo
-              key={logo.text}
+              key={logo.altText}
               title={logo.title}
               altText={logo.altText}
               src={logo.imageUrl}
