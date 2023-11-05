@@ -10,7 +10,6 @@ img {
 }
 .site-header {
   background: #333333b8;
-  z-index: 999;
   padding: 0;
 }
 .site-header * {
@@ -41,7 +40,6 @@ h5 {
   height: 100vh;
 }
 .headline {
-  height: 9rem;
   display: flex;
   justify-content: center;
   align-items: flex-end;
@@ -1020,6 +1018,9 @@ code {
   }
   .logo-margin {
     margin: 0.25rem auto;
+  }
+  .text-wrap-md {
+    white-space: normal;
   }
 }
 @media only screen and (max-width: 480px) {

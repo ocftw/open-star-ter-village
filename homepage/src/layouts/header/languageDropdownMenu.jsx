@@ -10,7 +10,7 @@ const LanguageDropdownMenu = () => {
   const router = useRouter();
   const { asPath, locales } = router;
   return (
-    <div className="dropdown-menu">
+    <div className="dropdown-menu dropdown-menu-right">
       {locales.map((locale) => (
         <Link
           key={languageLabelDictionary[locale]}
