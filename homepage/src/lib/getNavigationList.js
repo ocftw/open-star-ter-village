@@ -8,28 +8,26 @@ function getPagesDirectoryPath(lang) {
   return join(pagesDirectory, lang);
 }
 
-export async function getPagesList(lang) {
+export function fetchAllPages(lang) {
   const pagesDirectory = getPagesDirectoryPath(lang);
   const filesInPages = fs.readdirSync(pagesDirectory);
 
-  const pagesList = filesInPages.map(async (filename) => {
+  const pagesList = filesInPages.map((filename) => {
     const fullPath = join(pagesDirectory, filename);
     const file = fs.readFileSync(fullPath, 'utf8');
     const matterFile = matter(file);
     const { data, content } = matterFile;
 
     return {
-      path: data.unique_slug,
-      name: data.name,
-      order: data.page_order,
+      data,
     };
   });
 
-  return Promise.all(pagesList);
+  return pagesList;
 }
 
 export async function getNavigationList(lang) {
-  const pagesList = await getPagesList(lang);
+  const pagesList = fetchAllPages(lang);
 
   // * dynamic page navigation
   const navigationList = pagesList
