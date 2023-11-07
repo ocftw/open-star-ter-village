@@ -105,6 +105,8 @@ i18n: {
 > 語言資料夾名稱需與 `next.config.js` 中的 `i18n.locales` 陣列中的語言代碼一致。
 >
 > 如果`defaultLocale`是`zh-tw`，則在`zh-tw`修改為`zh-hant`時，需要同時修改`defaultLocale`為`zh-hant`。
+>
+> 在 [`public/_redirects`](./public/_redirects) 中新增一個重新導向規則，將舊的語言代碼導向到新的語言代碼。例如，如果您將 `zh-tw` 更改為 `zh-hant`，則應在 `public/_redirects` 中添加 `/zh-tw/* /zh-hant/:splat 301!`。
 
 ## 其他連結
 
