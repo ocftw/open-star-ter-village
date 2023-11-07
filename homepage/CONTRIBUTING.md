@@ -56,17 +56,21 @@ graph TB
 本專案使用 Netlify 與 Netlify Next.js runtime 進行部署，帶來以下優勢：
 
 - 分支預覽部署 (Branch Preview Deployment) 讓您可以預覽每個 Git 分支的變更。
-- 使用 Netlify Identity 和 Git Gateway 管理非 GitHub 使用者的網頁編輯權限。
+- 使用 [Netlify Identity](https://docs.netlify.com/security/secure-access-to-sites/identity/) 和 [Git Gateway](https://docs.netlify.com/security/secure-access-to-sites/git-gateway/) 管理非 GitHub 使用者的網頁編輯權限。
+
+如果您不熟悉 Netlify，請參考[Netlify 文件](https://docs.netlify.com/)。
 
 ### 主要網站
 
 [https://openstartervillage.netlify.app](https://openstartervillage.netlify.app)
 
-### CI/CD Canary 版本
+### Canary 版本
+
+為了在不直接影響主要網站的情況下測試新的 CI/CD 流程，我們使用 Canary 版本。
 
 [https://openstartervillage-canary.netlify.app](https://openstartervillage-canary.netlify.app)
 
-> Canary 版本會在每次推送到 `main` 分支時自動部署。它與主要網站的環境變數相同，但其網址不會被列入搜尋引擎索引。
+> Canary 版本會在每次推送到 `main` 分支時自動部署。它具有與主要網站相同的環境變數，但其網址不會被列入搜尋引擎索引。
 
 ## 開發前置流程
 
@@ -123,6 +127,7 @@ yarn start
 
 Decap CMS 是一個用於網站內容管理的工具。若您希望深入了解如何設定 Decap CMS 中的 collection、widget、i18n，您可以參考以下文件：
 
+- [Decap CMS local backend 設定](https://decapcms.org/docs/beta-features/#working-with-a-local-git-repository)
 - [Decap CMS Collection 設定](https://decapcms.org/docs/collection-types/)
 - [Decap CMS Widget 設定](https://decapcms.org/docs/widgets/)
 - [Decap CMS i18n 設定](https://decapcms.org/docs/beta-features/#i18n-support)
