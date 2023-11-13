@@ -1,131 +1,84 @@
-# 開源星手村
+# 開源星手村 - Open StarTer Village
 
-我們希望能有更多人加入開源社群的行列，因此設計了這款桌上遊戲，希望讓初次接觸開源的人能快速了解開源社群；理解開源專案是如何在社群間協作，與認識開源所帶來的好處等。整個遊戲不論是出版品或是網路版，皆會釋出給每一個人自由使用。
+English version: [README.en.md](./README.en.md)
 
-## 桌遊說明
+我們鼓勵更多人參與開源社群，透過這款桌上遊戲，幫助初學者快速了解開源文化、專案協作，以及開源所帶來的好處。此遊戲（不論是實體版或線上版）都是開放的，任何人都可以自由使用。
 
-### 桌遊目的
+## 遊戲概要
 
-讓初次接觸開源的人可以了解
+### 遊戲目標
 
-* 開源文化的內涵：開放定義、四大自由等
-* 開源的好處
-* 開源社群的運作
-* 開源專案如何協作
-* 世界/臺灣影響力重大或有趣的開放原始碼/開放政府/開放資料專案
+透過遊戲，玩家將了解：
 
-### 桌遊適用場合
+- 開源文化的核心價值，包括開放定義和四大自由
+- 開源的優勢
+- 開源社群的組織和運作方式
+- 如何參與開源專案的協作
+- 世界以及台灣重要且有趣的開放原始碼、開放政府和開放資料專案
 
-* 介紹及入門開源文化的聚會(開源新手村/開源科技訓練營等)
-* 開源社群聚會
-* 日常休閒遊玩
+### 適用場合
 
-### 遊戲人數
+- 用於介紹和入門開源文化的活動，例如開源新手村、開源科技訓練營等
+- 開源社群的聚會
+- 日常娛樂
 
-3-6人
+### 遊戲規格
 
-### 遊戲時數
+- **適用玩家人數：** 3-6人
+- **遊戲時間：** 約60分鐘
 
-約 60 分鐘
+## 如何開始
 
-## 現在開始玩
+### 開放遊戲租借
+
+如果您有興趣租借遊戲，請寄信至 <hi@ocf.tw> 進行申請，同時請附上遊戲出借同意書。
+
+- [遊戲規則與借用申請書](https://drive.google.com/drive/folders/16FZ0F8D32D4zWGBKwP13-fnf9gr-CZJz)
 
 ### 開放遊戲伺服器
 
-建制中！
+**建置中！**
 
-### 打造你自己的遊戲伺服器
+## 如何參與
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/ocftw/open-star-ter-village)
+我們歡迎各種形式的貢獻，即使您不具備程式能力，也歡迎分享您的想法。此專案有實體和線上兩個版本，您可以在我們的維基頁面上查看所有專案的規劃和進度，任何有 "[Assistance Required]" 標記的項目都歡迎您加入貢獻。
 
-## 參與貢獻
+### 發現問題？解決問題？
 
-### 開始參與
+如果您有 GitHub 帳戶，歡迎在我們的 [Issues](https://github.com/ocftw/open-star-ter-village/issues) 頁面上回報問題或提出建議。
+如果您沒有 GitHub 帳戶，也歡迎透過我們的 [Discord](https://discord.gg/JnTHGnxwYS) 與我們討論。
 
-我們歡迎您以任何形式參與，您甚至不用會寫程式，也能夠參與貢獻你的想法！目前專案有實體桌遊與線上桌遊兩個方向，實體桌遊會根據現有的規則設計與製作卡片、圖板並發行；線上桌遊最初呈現在Google表單以驗證遊戲可行性，目前團隊正在嘗試移植到網頁上，希望可以藉此推廣至更多人。
+### 想要增加新功能？
 
-#### 發現問題
+如果您有 GitHub 帳戶，歡迎在我們的 [Discussions](https://github.com/ocftw/open-star-ter-village/discussions) 中提出您的建議，或直接透過 [Pull Requests](https://github.com/ocftw/open-star-ter-village/pulls) 提供您的解決方案。
 
-#### 解決問題
+### 加入討論
 
-#### 增加功能
+您可以透過我們的 [Discord](https://discord.gg/JnTHGnxwYS) 加入我們的討論。
 
-* 參與卡片與圖板設計
-* [加入網頁版的開發](./WEBAPP)
+## 線上專案架構
 
-#### 加入我們一起討論
-
-#### 專案架構
-
-| 資料夾 | 說明 |
-| --- | --- |
-| `google-spreadsheet` | 桌遊線上版的prototype - 以google spreadsheet呈現 |
-| `client` | 桌遊網頁版的前端 - 遊戲介面 |
-| `server` | 桌遊網頁版的後端 - 處理遊戲房的分配、同步不同使用者間的狀態與遊戲的處理核心 |
-| `packages/game` | 桌遊網頁版的遊戲邏輯 - 處理遊戲的邏輯與規則 |
-| `homepage` | 專案首頁 |
+| 子專案                                        | 說明                                                |
+| --------------------------------------------- | --------------------------------------------------- |
+| [`google-spreadsheet`](./google-spreadsheet/) | 原型版本 - 以 Google Spreadsheet 呈現                 |
+| [`client`](./client/)                         | 網頁版前端 - 遊戲界面                               |
+| [`server`](./server/)                         | 網頁版後端 - 處理遊戲房間分配、同步玩家狀態和遊戲邏輯 |
+| [`packages/game`](./packages/game/)           | 網頁版遊戲邏輯 - 處理遊戲規則                    |
+| [`homepage`](./homepage/)                     | [官方網站 - Official Website](https://openstartervillage.ocf.tw/)
 
 ## 授權條款
 
-開源星手村的出版品、內容與資料夾內容以[創用CC姓名標示4.0](./LICENSE)授權。
+- **遊戲內容：** [創用CC姓名標示4.0授權](./LICENSE)
+- **程式碼：** [MIT條款](./LICENSE-CODE)
 
-開源星手村中的原始碼會以[MIT條款](./LICENSE-CODE)授權。
+## 進一步了解
 
-# open-star-ter-village
+您可以在我們的 [Wiki 頁面](https://github.com/ocftw/open-star-ter-village/wiki) 深入了解此專案。
 
-An open source board game to encourage people join open source community. You can understand more about open source community by playing this board game. It helps you practice how the open source community cooperates on the projects and acknoledge the benefits provided by the open source projects. All game design and game system are published for everyone.
+其他相關連結：
 
-## Board game summary
-
-### Design Idea
-
-### Players
-
-3 to 6 people
-
-### Playing time
-
-Around 60 minutes
-
-## Play it now
-
-### Public server
-
-NOT READY YET
-
-### Deploy your own game server
-
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/ocftw/open-star-ter-village)
-
-## Contributing
-
-### Start contributing now
-
-Any participation way is welcome. Coding is not required, just contribute your idea! Current project contains physical board game publish and online. We will publish the board game accroding to the latest game rules, card and board designs. The online game was proof of concept on Google Spreadsheet and it worked in a few trials with positive feedback. So we are migrating to webapp to encourge more people to play or join open source community.
-
-#### Open Issue
-
-#### Solve Issue
-
-#### Add Features
-
-* Join to design the card and board from scratch.
-* [Join the webapp development](./WEBAPP)
-
-#### Join us in discussions
-
-#### Project structure
-
-| Folder | Description |
-| --- | --- |
-| `google-spreadsheet` | Prototype of online version of the board game - using google spreadsheet |
-| `client` | Frontend of the web version of the board game - user interface |
-| `server` | Backend of the web version of the board game - handle the room allocation, sync the game state between users and the core game logic |
-| `packages/game` | Game logic of the web version of the board game - handle the game logic and rules |
-| `homepage` | Project homepage |
-
-## License
-
-The open-star-ter-village in the assets, content, and data folders are licensed under a [CC-BY-License](./LICENSE).
-
-All other codes in this repository is licensed under a [MIT-License](./LICENSE-CODE).
+- [Discord](https://discord.gg/JnTHGnxwYS)
+- [遊戲規則與借用申請書](https://drive.google.com/drive/folders/16FZ0F8D32D4zWGBKwP13-fnf9gr-CZJz)
+- [教學工具包](https://drive.google.com/drive/folders/1fLz5wBrNFWEx7FTmyTkAJUrPibU9UvWM)
+- [視覺素材](https://drive.google.com/drive/folders/1790me8hwJVJZpusIBtICdM2YOErbRIM5)
+- [討論規則書](https://docs.google.com/document/d/16LIiWzstcg6QAppXn18WT-NbrKLKv0oJmkvpyxBwZgk/edit?usp=sharing)

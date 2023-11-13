@@ -1,23 +1,21 @@
-# 開源星手村 - 網頁版
+# Open StarTer Village - Web App
 
-# Open Star Ter Village - Web App
+Open StarTer Village - Web App is a single-page application project designed for playing the game online. You can explore our [Web App Roadmap on the Wiki page](https://github.com/ocftw/open-star-ter-village/wiki/Webapp-Roadmap) for this website. Feel free to clone this project and create your Open StarTer Village on your local machine to enjoy with your friends or teams.
 
-Open Star Ter Village - Web App is a single page application project for playing the game online. You can find out our [road map](./ROADMAP.md) of this web site. You can freely clone this project and create your Open Star Ter Village on your machine and enjoy with your friends/teams.
+## How to Set Up Your Open StarTer Village Game
 
-## How to create your open-star-ter-village game
+1. Visit our website (Currently not available)
+2. Clone this project, host it, and enjoy!
 
-1. visit our website *[not ready yet]*
-2. clone this project, host it and enjoy!
-
-### clone this repository in your machine
+### Clone this repository on your machine
 
 ```shell
 git clone git@github.com:ocftw/open-star-ter-village.git open-star-ter-village
 ```
 
-> Note: OpenStarTerVillage requires node >= 12.0.0
+> Note: Open StarTer Village Game requires node >= 12.0.0
 
-### spinning up*
+### Get Started
 
 ```shell
 yarn
@@ -26,65 +24,67 @@ yarn deploy:webapp
 yarn start:webapp
 ```
 
-## Deploying to Heroku
+## Deployment Options
 
+### Deploying to Heroku (Please note, we are exploring alternative solutions to Heroku due to certain limitations)
+
+```shell
+heroku create
+git push heroku main
+heroku open
 ```
-$ heroku create
-$ git push heroku main
-$ heroku open
-```
+
 or
 
-[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/ocftw/open-star-ter-village/tree/main)
+[![Deploy to Heroku (Exploring Alternative Solutions)](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/ocftw/open-star-ter-village/tree/main)
 
-## How to contribute in source code
+## How to Contribute to the Source Code
 
-OpenStarTerVillage - WebApp is a typescript monorepo configure by yarn 2 with workspace-tools plugin. The core game engine is based on [boardgame.io](https://boardgame.io) on both server and client side. OpenStarTerVillage -  WebApp project divides into three parts. Core game logic, client UI, and game server. Their npm project name and locations are as follow table.
+Open StarTer Village - WebApp is a TypeScript monorepo configured with Yarn 2 using the workspace-tools plugin. The core game engine is based on [boardgame.io](https://boardgame.io) on both the server and client side. The Open StarTer Village - WebApp project is divided into three parts: core game logic, client UI, and the game server. Below is a table showing their npm project names and locations:
 
-| Project name                           | Location                           | Description         |
-| -------------------------------------- | ---------------------------------- | ------------------- |
-| `@open-star-ter-village/webapp-game`   | [./packages/game](./packages/game) | The core game logic |
-| `@open-star-ter-village/webapp-client` | [./client](./client)               | The client UI       |
-| `@open-star-ter-village/webapp-server` | [./server](./server)               | The game server     |
+| Project Name                                    | Description          |
+| ---------------------------------------------- | --------------------   |
+| [`@open-star-ter-village/webapp-game`](./packages/game/) | The core game logic   |
+| [`@open-star-ter-village/webapp-client`](./client/)      | The client UI         |
+| [`@open-star-ter-village/webapp-server`](./server/)      | The game server       |
 
-### How to start the local development environment
+### How to Start the Local Development Environment
 
-You should clone the project and dive into the webapp folder before you kick off the local development. Please [clone the project and go to the webapp folder](#how-to-create-your-open-star-ter-village-game) if you haven't done it yet.
+You should clone the project and navigate to the webapp folder before starting local development. Please refer to the [instructions for creating your Open StarTer Village game](#how-to-create-your-open-star-ter-village-game) if you haven't done that yet.
 
-OpenStarTerVillage - Web app is using yarn 2 workspaces to manage the project. Please ensure you have [latest yarn](https://yarnpkg.com/getting-started/install) in your machine before you start it. But don't worry, the yarn 2 upgrade is by-project basis so you can still access the other project with classic yarn 1. Please note that there are some [cli command changes](https://yarnpkg.com/getting-started/migration#cli-commands) as well.
+Open StarTer Village - Web App uses Yarn 2 workspaces to manage the project. Please ensure you have the [latest Yarn](https://yarnpkg.com/getting-started/install) installed on your machine before getting started. Don't worry, the Yarn 2 upgrade is on a per-project basis, so you can still access other projects with classic Yarn 1. Please note that there have been [CLI command changes](https://yarnpkg.com/getting-started/migration#cli-commands) as well.
 
-The follow command would start client UI (create-react-app) in dev server, server (koa) in ts-node under watchmon, and game core (pure-typescript) in watch compile mode.
+The following command will start the client UI (Create React App) on a development server, the server (Koa) using ts-node with watchmon, and the game core (pure TypeScript) in watch compile mode.
 
 ```shell
 yarn dev:webapp
 ```
 
-Everything is settle up. Ready, get, set, code!
+Everything is set up and ready for you to start coding!
 
-#### local build
+#### Local Build
 
-There are three outcome in OpenStarTerVillage - Web app. The major outcomes are `client` and `server` which are served the game on the platform. The other output would be used as library in part of `client` and `server`.
-
+Open StarTer Village - Web App has three primary outcomes: `client` and `server`, which serve the game on the platform, and other outputs used as libraries in parts of `client` and `server`.
 
 ```shell
 yarn build:webapp
 ```
 
-The project output table
-| Project name                           | Output Location      | Description         |
-| -------------------------------------- | -------------------- | ------------------- |
-| `@open-star-ter-village/webapp-game`   | ./packages/game/dist | The core game logic |
-| `@open-star-ter-village/webapp-client` | ./client/build       | The client UI       |
-| `@open-star-ter-village/webapp-server` | ./server/build       | The game server     |
+Project output table
+| Project Name                                 | Output Location            | Description            |
+| -------------------------------------------- | -----------------------    | -----------------------  |
+| `@open-star-ter-village/webapp-game`         | ./packages/game/dist       | The core game logic     |
+| `@open-star-ter-village/webapp-client`       | ./client/build             | The client UI           |
+| `@open-star-ter-village/webapp-server`       | ./server/build             | The game server         |
 
-> Note: The output folders are ignored by git. You can find them after built.
+> Note: The output folders are ignored by Git, but you can find them after the build process.
 
-#### Unit test *[not ready yet]*
+#### Unit Test (Currently not available)
 
 ```shell
 yarn test
 ```
 
-## How to contribute in assets
+## How to Contribute to Assets
 
-Please create an issue about the assets you would like to contribute in. The team may invite you to have further discussion about your idea. Then you may create a pull request to upload your contributions.
+If you'd like to contribute assets, please create an issue to discuss your ideas with the team. They may invite you for further discussions. Afterward, you can create a pull request to upload your contributions.

@@ -1,8 +1,8 @@
 # 開源星手村 - Google 表單
 
-# Open Star Ter Village - Google Spreadsheet
+# Open StarTer Village - Google Spreadsheet
 
-Open Star Ter Village - Google spreadsheet is a standalone prototype project for playing the game online during the COVID restriction. It is a Google-script plugin on a [spreadsheet](https://docs.google.com/spreadsheets/d/1xnuGOg5xSfGYNmfHm7EeSpFB-QRtlG-Kq8t53B7cmUU/edit#gid=695693469) and it requires your authentication before the game starts. You can freely clone the spreadsheet and this project and create your Open Star Ter Village on your Google drive and enjoy with your friends/teams.
+Open StarTer Village - Google spreadsheet is a standalone prototype project for playing the game online during the COVID restriction. It is a Google-script plugin on a [spreadsheet](https://docs.google.com/spreadsheets/d/1xnuGOg5xSfGYNmfHm7EeSpFB-QRtlG-Kq8t53B7cmUU/edit#gid=695693469) and it requires your authentication before the game starts. You can freely clone the spreadsheet and this project and create your Open StarTer Village on your Google drive and enjoy with your friends/teams.
 
 ## how to create your open-star-ter-village game
 

@@ -1,138 +1,119 @@
 # 開源星手村 首頁
 
-## 專案架構
+## 專案版本紀錄
+
+|                                       版本 | 更新摘要                                                             |
+| -----------------------------------------: | :------------------------------------------------------------------- |
+| [`v3.2.0`](./releases/tag/homepage-v3.2.0) | 升級 Netlify CMS 為 Decap CMS 以修復陳舊相依套件所引起的問題。       |
+| [`v3.1.0`](./releases/tag/homepage-v3.1.0) | 新增多語言支援與 Netlify CMS 功能。                                  |
+| [`v3.0.0`](./releases/tag/homepage-v3.0.0) | 轉換為 Next.js 架構。                                                |
+| [`v2.1.0`](./releases/tag/homepage-v2.1.0) | 將 `homepage` 分支合併到 `main` 作為子專案，同時改用 Yarn 管理套件。 |
+|                                   `v2.0.0` | 移除 Gatsby 及 Contentful CMS。                                      |
+|                                   `v1.0.0` | 初始新增網站首頁。                                                   |
 
 <details>
-<summary>更新紀錄</summary>
+<summary>
+詳細版本更新
+</summary>
 
-|     版本 | 更新細節                                          |
-| -------: | :------------------------------------------------ |
-| `v1.0.0` | 增加網站首頁                                      |
-| `v2.0.0` | 移除gatsby與contentful cms                        |
-| `v2.1.0` | 由`homepage`分支併入`main`，套件管理由npm改用yarn |
-| `v3.0.0` | 改用next.js架構                                   |
+- `v3.2.0` 升級 Netlify CMS 為 Decap CMS，修復陳舊相依套件所引起的問題。
+- `v3.1.0` 新增多語言支援與 Netlify CMS 功能。
+- `v3.0.0` 隨著專案擴展，計劃支援多語言，考慮引入 CMS 以降低團隊維護成本，因此轉換至 Next.js 結構。
+- `v2.1.0` 將 `homepage` 分支合併至 `main`，視為子專案，同時改用 Yarn 管理套件，以維持桌遊網頁版專案一致性，並刪除 `homepage` 分支。
+- `v2.0.0` 移除 Gatsby，改為純粹的 React JS 靜態網站生成，降低專案入門門檻，同時移除 Contentful CMS 部分，減少團隊金錢支出。
+- `v1.0.0` 以 [RG-Portfolio Gatsby starter](https://github.com/Rohitguptab/rg-portfolio.git) 為基礎新增網站首頁。
 
 </details>
 
-homepage 是以 [RG-Portfolio gatsby starter](https://github.com/Rohitguptab/rg-portfolio.git) 為基礎建置，移除了Gatsby並改用純粹的React JS static site generating以降低入門門檻，並移除Contentful CMS部分以減少團隊金錢花費。
+目前，模板設計基於 [首頁 wireframe](https://drive.google.com/file/d/1mHfiHLZPNvAGKtlY788Ojkmap9SXupH-/view?usp=sharing)，並使用 [Bootstrap v4.6.x](https://getbootstrap.com/docs/4.6/getting-started/introduction/) 和 [Font Awesome v5.15.4](https://fontawesome.com/v5/docs) 進行 CSS 設計。
 
-因為切換無相關的兩個分支容易造成開發者的困擾，因此將`homepage`分支併入`main`成為一個子專案，套件管理由npm改為yarn與桌遊網頁版專案的工具保持一致，並將`homepage`分支刪除。
+專案目前部署於 Netlify 上，Netlify有提供免費的[網域](https://openstartervillage.netlify.app/)，並且支援[自動部署](https://docs.netlify.com/site-deploys/overview/)，因此專案的部署流程相當簡單。
 
-隨著專案的推廣，我們需要將網站架構擴充支援多語系，同時考慮引入Netlify CMS以降低開發團隊維護成本，因此將網站架構改為Next.js，於後續版本加入多語系支援與Netlify CMS。
+同時，專案也支援[多語言](https://nextjs.org/docs/advanced-features/i18n-routing)，並且使用 [Decap CMS](https://decapcms.org/) 作為網站內容管理工具。
 
-模版設計上目前以[首頁 wireframe](https://drive.google.com/file/d/1mHfiHLZPNvAGKtlY788Ojkmap9SXupH-/view?usp=sharing)為開發方向，CSS延續之前的樣板繼續使用 [Bootstrap v4.6.x](https://getbootstrap.com/docs/4.6/getting-started/introduction/), [Font Awesome v5.15.4](https://fontawesome.com/v5/docs)
+## 💫 部署
 
-目前部屬在 Netlify 上，並有[預覽網頁](https://openstartervillage-preview.netlify.app/activity-test-page)與[正式網頁](https://openstartervillage.netlify.app/)
+[![部署至 Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/ocftw/open-star-ter-village/tree/homepage)
 
 ### 線上展示
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/2440ec97-301c-4a60-ae46-558cd2cb00b9/deploy-status)](https://app.netlify.com/sites/openstartervillage/deploys)
+[![Netlify 狀態](https://api.netlify.com/api/v1/badges/2440ec97-301c-4a60-ae46-558cd2cb00b9/deploy-status)](https://app.netlify.com/sites/openstartervillage/deploys)
 
 [https://openstartervillage.netlify.app/](https://openstartervillage.netlify.app/)
 
-### 如何參與合作/貢獻
+## 網域設定
 
-你可以在[共用資料夾的坑區](https://drive.google.com/drive/folders/1JgqEh5gkf9nzqwznLLAo1vtgHWi3o7gw)以及[試算表中的Story mapping](https://docs.google.com/spreadsheets/d/1QBjG9JozOvP1TOwg33h0Gs6yIdifd1sJ6CJTZZHZr7I/edit?usp=sharing)找到我們目前需要幫忙的內容。
+開源星手村在ocf.tw底下有一個子網域，網址為[https://openstartervillage.ocf.tw/](https://openstartervillage.ocf.tw/)，目前已經將此網址導向至Netlify。
 
-> 公用資料夾的坑主要為網頁內容或需要與工程師進一步確認的事項；試算表中的Story mapping主要是以工程師的任務為主
+## 🚀 快速開始
 
-也歡迎加入[discord](https://discord.gg/JnTHGnxwYS)與大家一起討論，你可以在 #村長辦公室 與 #基礎建設部 提出各種見解與參與討論喔！
+### 參與合作/貢獻方式
 
-#### 語法練習
+歡迎加入[Discord](https://discord.gg/JnTHGnxwYS)，於 #村長辦公室 與 #基礎建設部 提出您的見解並參與討論！
 
-- Markdown
+### 網站開發
 
-  可以到這兩個網頁知道如何撰寫markdown語法，以及我們的 [markdown playground](https://hackmd.io/2OBWFw_FSiazt4JxoINNlQ?both) 進行練習。
+若您對網站開發有興趣，歡迎參考以下資訊。
 
-  - <https://markdown.tw/> （網頁排版不支援手機/小螢幕裝置）
-  - <https://www.casper.tw/development/2019/11/23/ten-mins-learn-markdown/>
+- [官方網站進度規劃](https://github.com/ocftw/open-star-ter-village/wiki/Homepage-Roadmap)
 
-- 將Markdown轉為html
+#### 開發前需了解的事項
 
-  可以直接藉由這兩個網站輸入markdown得到html語法，也可以在 [markdown playground](https://hackmd.io/2OBWFw_FSiazt4JxoINNlQ?both) 找到簡易的對照表。
+請參考[CONTRIBUTING.md](./CONTRIBUTING.md)。
 
-  - <https://codebeautify.org/markdown-to-html>
-  - <https://markdowntohtml.com/>
+### 網站內容編輯
 
-- 增加html的attributes
+- [網站編輯說明](https://github.com/ocftw/open-star-ter-village/wiki/%E7%B6%B2%E7%AB%99%E7%B7%A8%E8%BC%AF%E8%AA%AA%E6%98%8E-%E2%80%90-How-to-Edit-Homepage)
 
-- 在jsx中使用html
+Decap CMS 支援 Markdown 語法，如對此不熟悉可參考以下兩個網站學習 Markdown 語法，並透過 [markdown playground](https://hackmd.io/2OBWFw_FSiazt4JxoINNlQ?both) 進行練習。
 
-- 在jsx中使用React component
+- <https://markdown.tw/> （注意：此網頁在手機和小螢幕裝置上的排版支援有限）
+- <https://www.casper.tw/development/2019/11/23/ten-mins-learn-markdown/>
 
-- 在jsx中使用expression
+### 增加新語言/修改語言代碼/刪除語言
 
-#### 各種有用的連結
+1. 增加語言於 [`next.config.js`](./next.config.js) 中的 `i18n.locales` 陣列中。語言代碼請參考 [BCP 47](https://www.w3.org/International/questions/qa-choosing-language-tags#question), [ISO 639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes), [ISO 639-2](https://en.wikipedia.org/wiki/List_of_ISO_639-2_codes), [ISO 639-3](https://en.wikipedia.org/wiki/List_of_ISO_639-3_codes)
+
+目前支援的語言有 `zh-tw`, `en`。
+
+```js
+// next.config.js
+i18n: {
+  locales: ['zh-tw', 'en'],
+  defaultLocale: 'zh-tw',
+},
+
+// decap-cms.config.js
+// decap cms i18n inherits from next.config.js
+i18n: {
+  structure: 'multiple_folders',
+  locales: nextConfig.i18n.locales,
+  default_locale: nextConfig.i18n.defaultLocale,
+},
+```
+
+> Decap cms中的語言陣列與預設語言是沿用next.config.js中的設定，因此在next.config.js中新增語言後，decap cms會自動套用新增的語言。
+>
+> 語言陣列中的語言順序為decap cms中的編輯文件的語言順序。
+
+2. 修改語言代碼需同時修改 `next.config.js` 中的 `i18n.locales` 並將 [`_cards`](./_cards/), [`_footer`](./_footer/), [`_pages`](./_pages/) 資料夾中底下的語言資料夾名稱一併修改。
+
+例如：將 `zh-tw` 修改為 `zh-hant`，則 `_cards`, `_footer`, `_pages` 底下的 `zh-tw` 資料夾名稱也需一併修改為 `zh-hant`。
+
+> Decap cms中的語言陣列與預設語言是沿用next.config.js中的設定，因此在next.config.js中修改語言後，decap cms會自動套用修改。
+>
+> 語言資料夾名稱需與 `next.config.js` 中的 `i18n.locales` 陣列中的語言代碼一致。
+>
+> 如果`defaultLocale`是`zh-tw`，則在`zh-tw`修改為`zh-hant`時，需要同時修改`defaultLocale`為`zh-hant`。
+>
+> 在 [`public/_redirects`](./public/_redirects) 中新增一個重新導向規則，將舊的語言代碼導向到新的語言代碼。例如，如果您將 `zh-tw` 更改為 `zh-hant`，則應在 `public/_redirects` 中添加 `/zh-tw/* /zh-hant/:splat 301!`。
+
+## 其他連結
 
 - [開源新手村 ★ 入村總綱領](https://hackmd.io/1B3eCm8sSbqDTdcMI7o85g)
 - [共用資料夾區](https://drive.google.com/drive/folders/1d2rlxRLQ_iUVhq9-ZO7BGCjTl1ES2zf6)
 
-### 開發前須知
-
-#### 系統需求
-
-| tool | version |
-| ---: | ------: |
-| node |    >=14 |
-|  npm |     >=8 |
-
-如果沒有 node，可以到[這裡](https://nodejs.org/en/)安裝
-
-### 開發建議流程
-
-#### clone 專案
-
-```shell
-git clone https://github.com/ocftw/open-star-ter-village.git
-cd open-star-ter-village
-```
-
-#### 下載開發環境所需的packages
-
-```shell
-cd homepage
-yarn
-```
-
-#### 開發專案
-
-我們以建置靜態網站為主要目的，如果要知道如何建置靜態網站請參考[連結](#建置專案)。
-
-下面的指令提供了即時監看 `src/` 與 `public/` 底下的檔案，並開啟一個本機的網頁伺服器用來測試與瀏覽建置的結果。開啟後，預設的port為3000。<http://localhost:3000>
-
-```shell
-yarn dev
-```
-
-#### 建置production專案
-
-```shell
-yarn build
-```
-
-#### serve server side專案
-
-```shell
-yarn start
-```
-
-#### 產生靜態網頁
-
-```shell
-yarn export
-```
-
-#### serve 靜態網頁
-
-```shell
-npx serve out
-```
-
-## 💫 Deploy
-
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/ocftw/open-star-ter-village/tree/homepage)
-
-## Inspired
+## 靈感來源
 
 - [RG-Portfolio gatsby starter](https://github.com/Rohitguptab/rg-portfolio.git)
 - [Creating a static website with ReactJS and renderToStaticMarkup()](https://www.codemzy.com/blog/static-website-react-rendertostaticmarkup)
@@ -152,4 +133,4 @@ npx serve out
 
 ## 特別感謝
 
-@binaryluke
+[@binaryluke](https://github.com/binaryluke) 在 v2.0.0 階段提供網站架構想法。
