@@ -11,7 +11,7 @@ export const getStaticProps = async ({ locale }) => {
   const headInfo = {
     title: {
       en: `OpenStarTerVillage - Resource`,
-      'zh-tw': `開源星手村 - 資源頁`,
+      'zh-Hant': `開源星手村 - 資源頁`,
     },
   };
 

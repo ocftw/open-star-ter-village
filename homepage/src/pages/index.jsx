@@ -12,11 +12,11 @@ export const getStaticProps = async ({ locale }) => {
   const headInfo = {
     title: {
       en: `OpenStarTerVillage`,
-      'zh-tw': `開源星手村`,
+      'zh-Hant': `開源星手村`,
     },
     description: {
       en: `How can technology change the world? Play this board game and discover the answer for yourself!`,
-      'zh-tw': `科技怎麼改變世界？玩桌遊、就知道！`,
+      'zh-Hant': `科技怎麼改變世界？玩桌遊、就知道！`,
     },
   };
 

@@ -13,7 +13,7 @@ export const getStaticProps = async ({ locale }) => {
   const headInfo = {
     title: {
       en: `OpenStarTerVillage - Card Introduction`,
-      'zh-tw': `開源星手村 - 卡片介紹`,
+      'zh-Hant': `開源星手村 - 卡片介紹`,
     },
   };
 
