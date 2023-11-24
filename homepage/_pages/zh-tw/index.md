@@ -45,13 +45,13 @@ layout_list:
     columns:
       - title: 教學教材
         text: 無論大學、高中課程，教學簡報配合桌遊，輕鬆認識開源觀念，提升公民行動力！
-        image: /images/uploads/pxl_20230508_052023298.jpg
+        image: /images/uploads/img_4712.jpg
       - title: 社群推坑
         text: 已是開源老手、社群活躍成員的你，想要不費吹灰之力吸收新血？揪團玩就對了！
-        image: /images/uploads/pxl_20230730_051310179.jpeg
+        image: /images/uploads/img_4704.jpg
       - title: 破冰團康
         text: 社團活動怎麼帶？利用星手村桌遊，輕鬆達到破冰與理念推廣。學弟學妹揪起來！
-        image: /images/uploads/img_3763.jpeg
+        image: /images/uploads/_images_uploads_img_3763.jpg
   - type: layout_section
     title: 桌遊背後的故事
     columns:
