@@ -137,6 +137,15 @@ layout_list:
 
 
           活動合作請[來信 OCF](mailto:hi@ocf.tw)，說明合作目的與時間，讓我們一起來討論如何推廣開源吧！
+
+
+          </details>
+
+
+          <details><summary>Q:：我好想擁有一盒開源星手村，請問我可以怎麼取得？</summary>
+
+
+          如果向 OCF 借用桌遊無法滿足你，你可以到這裡下載開源星手村的所有[圖像素材](https://drive.google.com/drive/u/0/folders/1s310aQt275ZfAGehaedHj7VvFubu4bqv)，自行列印製作你的開源星手村喔！
   - type: layout_section
     title: 參與專案，參與台灣的未來
     columns:
