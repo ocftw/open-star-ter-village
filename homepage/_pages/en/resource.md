@@ -155,6 +155,15 @@ layout_list:
 
 
           Certainly! [Send us an email ](mailto:hi@ocf.tw)with a brief note (proposed dates, event purposes, etc.), and someone from our office will be more than happy to discuss the details with you!
+
+
+          </details>
+
+
+          <details><summary>Q:：I would really want to own a box of Open StarTer Village. How can I get it？</summary>
+
+
+          If renting a copy of the board game couldn't satisfy you, you can [download the materials from here ](https://drive.google.com/drive/u/0/folders/1hn4R9E2q4srJX7D6dYQgAejU5sqWoh8z)to make your own Open StarTer Village.
   - type: layout_section
     title: Let's Shape  Our Future Together!
     columns:
