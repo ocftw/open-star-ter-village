@@ -212,13 +212,13 @@ h6 {
 .margin-3-percent {
   margin: 3%;
 }
-.btn {
+/* .btn {
   background: #1ea6b9 0% 0% no-repeat padding-box;
   border-radius: 10px;
   text-align: center;
   letter-spacing: 2.7px;
   color: #ffffff;
-}
+} */
 .section-main .four-items .box {
   background: #fefefe 0% 0% no-repeat padding-box;
   box-shadow: 3px 0.52px 10px #2b120229;
