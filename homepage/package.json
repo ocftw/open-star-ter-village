@@ -18,14 +18,14 @@
     "url": "https://github.com/ocftw/open-star-ter-village"
   },
   "engines": {
-    "node": ">= 14"
+    "node": ">= 18"
   },
   "bugs": {
     "url": "https://github.com/ocftw/open-star-ter-village/issues"
   },
   "packageManager": "yarn@3.4.1",
   "dependencies": {
-    "decap-cms-app": "^3.0.5",
+    "decap-cms-app": "^3.1.9",
     "next": "^13.2.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
