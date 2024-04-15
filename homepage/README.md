@@ -74,13 +74,13 @@ Decap CMS 支援 Markdown 語法，如對此不熟悉可參考以下兩個網站
 
 1. 增加語言於 [`next.config.js`](./next.config.js) 中的 `i18n.locales` 陣列中。語言代碼請參考 [BCP 47](https://www.w3.org/International/questions/qa-choosing-language-tags#question), [ISO 639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes), [ISO 639-2](https://en.wikipedia.org/wiki/List_of_ISO_639-2_codes), [ISO 639-3](https://en.wikipedia.org/wiki/List_of_ISO_639-3_codes)
 
-目前支援的語言有 `zh-tw`, `en`。
+目前支援的語言有 `zh-Hant`, `en`。
 
 ```js
 // next.config.js
 i18n: {
-  locales: ['zh-tw', 'en'],
-  defaultLocale: 'zh-tw',
+  locales: ['zh-Hant', 'en'],
+  defaultLocale: 'zh-Hant',
 },
 
 // decap-cms.config.js

@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 const languageLabelDictionary = {
   en: 'English',
-  'zh-tw': '中文',
+  'zh-Hant': '中文',
 };
 
 const LanguageDropdownMenu = () => {

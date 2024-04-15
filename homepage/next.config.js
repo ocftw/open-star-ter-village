@@ -4,8 +4,8 @@
 module.exports = {
   swcMinify: true,
   i18n: {
-    locales: ['zh-tw', 'en'],
-    defaultLocale: 'zh-tw',
+    locales: ['zh-Hant', 'en'],
+    defaultLocale: 'zh-Hant',
   },
   trailingSlash: true,
 };
