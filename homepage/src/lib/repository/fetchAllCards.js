@@ -7,7 +7,7 @@ const cardsDirectory = join(process.cwd(), '_cards');
 
 /**
  * lang ISO language and locale string
- * e.g. 'zh-tw', 'en', 'en-us', ...
+ * e.g. 'zh-Hant', 'en', 'en-us', ...
  */
 function getCardDirectoryPath(lang) {
   // return language folder path

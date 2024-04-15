@@ -9,7 +9,7 @@ export const getStaticProps = async ({ locale }) => {
   const headInfo = {
     title: {
       en: `OpenStarTerVillage - Page Not Found`,
-      'zh-tw': `開源星手村 - 找不到網頁`,
+      'zh-Hant': `開源星手村 - 找不到網頁`,
     },
   };
 
@@ -17,7 +17,7 @@ export const getStaticProps = async ({ locale }) => {
     en: `
       Bug report? Ask TwoMore. <a href="https://forms.gle/t9j8dbiKUohny8PZ8">Filling the form</a> to report a bug!
     `,
-    'zh-tw': `
+    'zh-Hant': `
       有問題？找兔摩。<a href="https://forms.gle/t9j8dbiKUohny8PZ8">填寫表單</a>回報你找到的問題吧！
     `,
   };

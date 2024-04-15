@@ -22,7 +22,7 @@ const siteDataDictionary = {
     description: `How can technology change the world? Play this board game and discover the answer for yourself!`,
     logo: `/images/logo.png`,
   },
-  'zh-tw': {
+  'zh-Hant': {
     title: `開源星手村`,
     description: `科技怎麼改變世界？玩桌遊、就知道！`,
     logo: `/images/logo.png`,
