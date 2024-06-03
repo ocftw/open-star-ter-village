@@ -1,19 +1,16 @@
-import { State } from 'boardgame.io';
+import { MoveFn } from 'boardgame.io';
 import { INVALID_MOVE } from 'boardgame.io/core';
 import { Deck } from '../deck';
 import { Cards } from '../cards';
-import { OpenStarTerVillageType as type } from '../types';
 import { isInRange } from '../utils';
 import { ActiveProject, ActiveProjects } from '../activeProjects';
 
-type WithGameState<G extends any, F extends (...args: any) => void> = (G: State<G>['G'], ctx: State<G>['ctx'], ...args: Parameters<F>) => any;
-
-export const createProject: WithGameState<type.State.Root, type.Move.CreateProject> = (G, ctx, projectCardIndex, jobCardIndex) => {
+export const createProject: MoveFn<OpenStarTerVillageType.State.Root> = ({ G, ctx, playerID }, projectCardIndex: number, jobCardIndex: number) => {
   if (!G.table.activeMoves.createProject) {
     return INVALID_MOVE;
   }
 
-  const currentPlayer = ctx.playerID!;
+  const currentPlayer = playerID!;
   const currentPlayerToken = G.players[currentPlayer].token;
   // TODO: replace hardcoded number with dynamic rules
   const createProjectActionCosts = 2;
@@ -74,12 +71,12 @@ export const createProject: WithGameState<type.State.Root, type.Move.CreateProje
   G.table.activeMoves.createProject = false;
 }
 
-export const recruit: WithGameState<type.State.Root, type.Move.Recruit> = (G, ctx, jobCardIndex, activeProjectIndex) => {
+export const recruit: MoveFn<OpenStarTerVillageType.State.Root> = ({G, ctx, playerID}, jobCardIndex: number, activeProjectIndex: number) => {
   if (!G.table.activeMoves.recruit) {
     return INVALID_MOVE;
   }
 
-  const currentPlayer = ctx.playerID!;
+  const currentPlayer = playerID!;
   const currentPlayerToken = G.players[currentPlayer].token;
   const recruitActionCosts = 1;
   if (currentPlayerToken.actions < recruitActionCosts) {
@@ -133,12 +130,12 @@ export const recruit: WithGameState<type.State.Root, type.Move.Recruit> = (G, ct
   G.table.activeMoves.recruit = false;
 };
 
-export const contributeOwnedProjects: WithGameState<type.State.Root, type.Move.ContributeOwnedProjects> = (G, ctx, contributions) => {
+export const contributeOwnedProjects: MoveFn<OpenStarTerVillageType.State.Root> = ({G, ctx, playerID}, contributions: OpenStarTerVillageType.Move.Contribution[]) => {
   if (!G.table.activeMoves.contributeOwnedProjects) {
     return INVALID_MOVE;
   }
 
-  const currentPlayer = ctx.playerID!;
+  const currentPlayer = playerID!;
   const currentPlayerToken = G.players[currentPlayer].token;
   const contributeActionCosts = 1;
   if (currentPlayerToken.actions < contributeActionCosts) {
@@ -178,12 +175,12 @@ export const contributeOwnedProjects: WithGameState<type.State.Root, type.Move.C
   G.table.activeMoves.contributeOwnedProjects = false;
 };
 
-export const contributeJoinedProjects: WithGameState<type.State.Root, type.Move.ContributeJoinedProjects> = (G, ctx, contributions) => {
+export const contributeJoinedProjects: MoveFn<OpenStarTerVillageType.State.Root> = ({G, ctx, playerID}, contributions: OpenStarTerVillageType.Move.Contribution[]) => {
   if (!G.table.activeMoves.contributeJoinedProjects) {
     return INVALID_MOVE;
   }
 
-  const currentPlayer = ctx.playerID!;
+  const currentPlayer = playerID!;
   const currentPlayerToken = G.players[currentPlayer].token;
   const contributeActionCosts = 1;
   if (currentPlayerToken.actions < contributeActionCosts) {
@@ -223,7 +220,7 @@ export const contributeJoinedProjects: WithGameState<type.State.Root, type.Move.
   G.table.activeMoves.contributeJoinedProjects = false;
 };
 
-export const removeAndRefillJobs: WithGameState<type.State.Root, type.Move.RemoveAndRefillJobs> = (G, ctx, jobCardIndices) => {
+export const removeAndRefillJobs: MoveFn<OpenStarTerVillageType.State.Root> = ({G, ctx}, jobCardIndices: number[]) => {
   if (!G.table.activeMoves.removeAndRefillJobs) {
     return INVALID_MOVE;
   }
@@ -246,7 +243,8 @@ export const removeAndRefillJobs: WithGameState<type.State.Root, type.Move.Remov
   G.table.activeMoves.removeAndRefillJobs = false;
 };
 
-export const mirror: WithGameState<type.State.Root, type.Move.Mirror> = (G, ctx, actionName, ...params) => {
+export const mirror: MoveFn<OpenStarTerVillageType.State.Root> = (context, actionName, ...params) => {
+  const { G } = context;
   if (!G.table.activeMoves.mirror) {
     return INVALID_MOVE;
   }
@@ -256,19 +254,19 @@ export const mirror: WithGameState<type.State.Root, type.Move.Mirror> = (G, ctx,
   let result = null;
   switch (actionName) {
     case 'createProject':
-      result = createProject(G, ctx, ...(params as Parameters<type.Move.CreateProject>));
+      result = createProject(context, ...(params as Parameters<OpenStarTerVillageType.Move.CreateProject>));
       break;
     case 'recruit':
-      result = recruit(G, ctx, ...(params as Parameters<type.Move.Recruit>));
+      result = recruit(context, ...(params as Parameters<OpenStarTerVillageType.Move.Recruit>));
       break;
     case 'contributeOwnedProjects':
-      result = contributeOwnedProjects(G, ctx, ...(params as Parameters<type.Move.ContributeOwnedProjects>));
+      result = contributeOwnedProjects(context, ...(params as Parameters<OpenStarTerVillageType.Move.ContributeOwnedProjects>));
       break;
     case 'contributeJoinedProjects':
-      result = contributeJoinedProjects(G, ctx, ...(params as Parameters<type.Move.ContributeJoinedProjects>));
+      result = contributeJoinedProjects(context, ...(params as Parameters<OpenStarTerVillageType.Move.ContributeJoinedProjects>));
       break;
     case 'removeAndRefillJobs':
-      result = removeAndRefillJobs(G, ctx, ...(params as Parameters<type.Move.RemoveAndRefillJobs>));
+      result = removeAndRefillJobs(context, ...(params as Parameters<OpenStarTerVillageType.Move.RemoveAndRefillJobs>));
       break;
     default:
       result = INVALID_MOVE;

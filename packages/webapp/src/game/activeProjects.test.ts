@@ -1,5 +1,4 @@
 import { ActiveProject, ActiveProjects } from './activeProjects';
-import { OpenStarTerVillageType } from './types';
 
 const mockJob1 = 'a';
 const mockJob2 = 'b';

@@ -1,5 +1,4 @@
 import { PlayerID } from 'boardgame.io';
-import { OpenStarTerVillageType } from './types';
 import { filterInplace } from './utils';
 
 type ProjectCard = OpenStarTerVillageType.Card.Project;

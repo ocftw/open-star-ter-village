@@ -1,5 +1,3 @@
-import { OpenStarTerVillageType } from './types';
-
 type StateDeck<T> = OpenStarTerVillageType.State.Deck<T>;
 
 export function newCardDeck<T>(drawPile: T[] = [], discardPile: T[] = []): StateDeck<T> {

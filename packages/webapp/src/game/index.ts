@@ -1,0 +1,1 @@
+export { OpenStarTerVillage } from './game';
