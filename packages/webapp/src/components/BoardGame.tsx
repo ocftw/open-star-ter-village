@@ -1,10 +1,9 @@
-import { OpenStarTerVillage } from '@open-star-ter-village/webapp-game';
 import { Client, BoardProps } from 'boardgame.io/react';
 import { Local } from 'boardgame.io/multiplayer';
-import { OpenStarTerVillageType } from 'packages/game/src/types';
-import Table from './features/Table/Table';
-import Players from './Players/Players';
-import DevActions from './DevActions/DevActions';
+import { OpenStarTerVillage } from '@/game';
+import Table from '@/components/Table/Table';
+import Players from '@/components/Players/Players';
+import DevActions from '@/components/DevActions/DevActions';
 
 const Board: React.FC<BoardProps<OpenStarTerVillageType.State.Root>> = (props) => {
   return (
