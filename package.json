@@ -16,11 +16,5 @@
     "all:build": "yarn workspaces foreach -pt run build",
     "all:start": "yarn workspaces foreach -pt run start",
     "all:lint": "yarn workspaces foreach -pt run lint"
-  },
-  "devDependencies": {
-    "@types/koa-static": "^4.0.2"
-  },
-  "dependencies": {
-    "koa-static": "^5.0.0"
   }
 }

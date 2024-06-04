@@ -59,9 +59,7 @@ You can join our discussions on [Discord](https://discord.gg/JnTHGnxwYS).
 | Sub-Project                                       | Description                                     |
 | ----------------------------------------------- | ----------------------------------------------- |
 | [google-spreadsheet](./google-spreadsheet/)      | Prototype - Presented using Google Spreadsheets |
-| [client](./client/)                              | Web frontend - Game interface                   |
-| [server](./server/)                              | Web backend - Handles room allocation, player state synchronization, and game logic |
-| [packages/game](./packages/game/)                | Web game logic - Manages game rules              |
+| [packages/webapp](./packages/webapp/)            | Webapp - web game website                       |
 | [homepage](./homepage/)                          | [Official Website](https://openstartervillage.ocf.tw/)
 
 ## Licensing Terms

@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "module": "commonjs",
+    "lib": ["ES2017"],
+    "outDir": "./dist",
+    "strict": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+  },
+  "include": ["./src/server.ts", "./src/game/**/*.ts"],
+  "exclude": ["node_modules"]
+}

@@ -61,9 +61,7 @@ English version: [README.en.md](./README.en.md)
 | 子專案                                        | 說明                                                |
 | --------------------------------------------- | --------------------------------------------------- |
 | [`google-spreadsheet`](./google-spreadsheet/) | 原型版本 - 以 Google Spreadsheet 呈現                 |
-| [`client`](./client/)                         | 網頁版前端 - 遊戲界面                               |
-| [`server`](./server/)                         | 網頁版後端 - 處理遊戲房間分配、同步玩家狀態和遊戲邏輯 |
-| [`packages/game`](./packages/game/)           | 網頁版遊戲邏輯 - 處理遊戲規則                    |
+| [`packages/webapp`](./packages/webapp/)       | 網頁版遊戲 - 處理遊戲規則                    |
 | [`homepage`](./homepage/)                     | [官方網站 - Official Website](https://openstartervillage.ocf.tw/)
 
 ## 授權條款
