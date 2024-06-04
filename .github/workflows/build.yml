@@ -6,8 +6,12 @@ name: Webapp CI
 on:
   push:
     branches: [ main ]
+    paths:
+      - 'packages/webapp/**'
   pull_request:
     branches: [ main ]
+    paths:
+      - 'packages/webapp/**'
 
 jobs:
   build:
@@ -16,7 +20,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14.x, 16.x]
+        node-version: [18.x, 20.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -29,5 +33,5 @@ jobs:
           cache-dependency-path: ./yarn.lock
       - run: yarn install
         working-directory: .
-      - run: yarn build:webapp
+      - run: yarn run webapp build
         working-directory: .
