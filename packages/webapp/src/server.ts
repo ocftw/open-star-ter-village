@@ -1,14 +1,9 @@
 import { Server, Origins } from "boardgame.io/server";
-import next from 'next';
-import url from "url";
 import { OpenStarTerVillage } from "./game";
 
 async function serve() {
   const port = Number(process.env.PORT) || 8000;
   const apiPort = Number(process.env.API_PORT) || 8080;
-  const dev = process.env.NODE_ENV !== 'production';
-  const app = next({ dev });
-  const handle = app.getRequestHandler();
 
   const server = Server({
     games: [OpenStarTerVillage],
@@ -26,17 +21,9 @@ async function serve() {
     apiCallback: () => console.log(`Lobby api running on port ${apiPort}`),
   };
 
-  await app.prepare();
   server.run({
     ...mainServerConfig,
     lobbyConfig,
-  }, () => {
-    server.app.use(async (ctx, next) => {
-      const parsedUrl = url.parse(ctx.req.url!, true);
-      await handle(ctx.req, ctx.res, parsedUrl);
-      ctx.respond = false;
-      await next();
-    });
   });
 }
 

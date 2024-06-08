@@ -9,7 +9,7 @@
     "build": "yarn build:next && yarn build:server",
     "build:next": "next build",
     "build:server": "tsc -P tsconfig.server.json",
-    "start": "yarn start:next && yarn start:server",
+    "start": "yarn start:next & yarn start:server",
     "start:next": "next start",
     "start:server": "node dist/server.js",
     "lint": "next lint",
