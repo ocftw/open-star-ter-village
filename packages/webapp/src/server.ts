@@ -3,7 +3,9 @@ import { OpenStarTerVillage } from "./game";
 
 async function serve() {
   const port = Number(process.env.PORT) || 8000;
-  const apiPort = Number(process.env.API_PORT) || 8080;
+  const dev = process.env.NODE_ENV !== "production";
+
+  console.log(`Starting server on port ${port} in ${dev ? 'dev' : 'production'} mode...`);
 
   const server = Server({
     games: [OpenStarTerVillage],
@@ -12,19 +14,12 @@ async function serve() {
       Origins.LOCALHOST_IN_DEVELOPMENT,
     ],
   });
-  const mainServerConfig = {
+  const config = {
     port,
     callback: () => console.log(`Main server running on port ${port}...`),
   };
-  const lobbyConfig = {
-    apiPort,
-    apiCallback: () => console.log(`Lobby api running on port ${apiPort}`),
-  };
 
-  server.run({
-    ...mainServerConfig,
-    lobbyConfig,
-  });
+  server.run(config);
 }
 
 serve();

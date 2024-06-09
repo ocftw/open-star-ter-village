@@ -1,5 +1,5 @@
 import { Client, BoardProps } from 'boardgame.io/react';
-import { SocketIO } from 'boardgame.io/multiplayer'
+import { SocketIO, Local } from 'boardgame.io/multiplayer'
 import { OpenStarTerVillage } from '@/game';
 import Table from '@/components/Table/Table';
 import Players from '@/components/Players/Players';
@@ -15,10 +15,14 @@ const Board: React.FC<BoardProps<OpenStarTerVillageType.State.Root>> = (props) =
   );
 }
 
-const Boardgame = Client({
-  game: OpenStarTerVillage,
-  board: Board,
-  multiplayer: SocketIO({ server: 'localhost:8000' }),
-});
+const Boardgame: React.FC<{ isLocal: boolean} & React.ComponentProps<ReturnType<typeof Client>>> = ({ isLocal, ...props }) => {
+  const multiplayer = isLocal ? Local() : SocketIO({ server: 'localhost:8000' });
+
+  const BoardgameComponent = Client({ game:OpenStarTerVillage,
+    board: Board,
+    multiplayer,
+  })
+  return <BoardgameComponent {...props} />;
+}
 
 export default Boardgame;
