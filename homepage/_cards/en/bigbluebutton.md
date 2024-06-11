@@ -12,6 +12,6 @@ tags:
   - engineer
   - basic
 ---
-BBB (BigBlueButton) is an open-source software, which fulfills distance learning and working through audio/video meetings. It can integrate itself with multiple learning systems, provide functions such as text messaging, group discussion, notes sharing and a digital whiteboard, and be executed on browsers directly. It's the current solution recommended by the French government to educational organizations and public sectors for organizing online meetings.
+BBB (BigBlueButton) is an open-source software, which fulfills distance learning and working through audio/video meetings. It can integrate itself with multiple learning systems, provide functions such as text messaging, group discussion, notes sharing and a digital whiteboard, and be executed on browsers directly. It's the current solution recommended by the French government to educational organizations and public sectors for organizing online meetings. DOTDOTDODTODOTTDOTDT
 
-- [Website](https://bigbluebutton.org/)
+* [Website](https://bigbluebutton.org/)
