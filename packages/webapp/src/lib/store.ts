@@ -1,8 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit'
+import { wizardReducer }from './reducers/wizard'
 
 export const makeStore = () => {
   return configureStore({
-    reducer: {}
+    reducer: {
+      wizard: wizardReducer,
+    },
   })
 }
 
