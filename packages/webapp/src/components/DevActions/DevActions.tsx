@@ -1,3 +1,4 @@
+'use client';
 import { useCallback, useState } from 'react';
 import { BoardProps } from 'boardgame.io/react';
 import {

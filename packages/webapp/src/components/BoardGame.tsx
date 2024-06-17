@@ -6,11 +6,12 @@ import Players from '@/components/Players/Players';
 import DevActions from '@/components/DevActions/DevActions';
 
 const Board: React.FC<BoardProps<OpenStarTerVillageType.State.Root>> = (props) => {
+  const { G, ctx, debug } = props;
   return (
     <div className='Board'>
-      <Table {...props} />
-      <Players {...props} />
-      <DevActions {...props} />
+      <Table table={G.table} />
+      <Players players={G.players} />
+      {debug && <DevActions {...props} />}
     </div>
   );
 }

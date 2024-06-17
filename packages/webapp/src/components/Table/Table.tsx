@@ -1,11 +1,13 @@
-import { BoardProps } from 'boardgame.io/react';
 import { Box, Grid } from '@mui/material';
 import ActiveProject from '../Project/ActiveProject';
 
-type Props = BoardProps<OpenStarTerVillageType.State.Root>;
+interface Props {
+  table: OpenStarTerVillageType.State.Root['table'];
+}
 
 const Table: React.FC<Props> = (props) => {
-  const activeProjects = [...props.G.table.activeProjects, ...Array(6)].slice(0, 6);
+  const maxActiveProjects = 6;
+  const activeProjects = [...props.table.activeProjects, ...Array(maxActiveProjects)].slice(0, maxActiveProjects);
 
   return (
     <Box>
