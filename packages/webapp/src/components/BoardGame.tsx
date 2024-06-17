@@ -18,9 +18,12 @@ const Board: React.FC<BoardProps<OpenStarTerVillageType.State.Root>> = (props) =
 const Boardgame: React.FC<{ isLocal: boolean} & React.ComponentProps<ReturnType<typeof Client>>> = ({ isLocal, ...props }) => {
   const multiplayer = isLocal ? Local() : SocketIO({ server: 'localhost:8000' });
 
-  const BoardgameComponent = Client({ game:OpenStarTerVillage,
+  const BoardgameComponent = Client({
+    game: OpenStarTerVillage,
     board: Board,
     multiplayer,
+    // @ts-ignore
+    enhancer: (window && window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()),
   })
   return <BoardgameComponent {...props} />;
 }
