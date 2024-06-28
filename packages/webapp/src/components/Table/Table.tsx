@@ -1,8 +1,9 @@
 import { Box, Grid } from '@mui/material';
 import ActiveProject from '../Project/ActiveProject';
+import { Table as TableState } from '@/game/table/table';
 
 interface Props {
-  table: OpenStarTerVillageType.State.Root['table'];
+  table: TableState;
 }
 
 const Table: React.FC<Props> = (props) => {

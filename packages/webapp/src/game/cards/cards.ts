@@ -1,4 +1,4 @@
-import { filterInplace } from './utils';
+import { filterInplace } from '../utils';
 
 export interface ICards {
   GetById<T>(cards: T[], index: number): T;

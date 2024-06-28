@@ -5,8 +5,9 @@ import Table from '@/components/Table/Table';
 import Players from '@/components/Players/Players';
 import DevActions from '@/components/DevActions/DevActions';
 import ActionBoard from './ActionBoard/ActionBoard';
+import { GameState } from '@/game/game';
 
-const Board: React.FC<BoardProps<OpenStarTerVillageType.State.Root>> = (props) => {
+const Board: React.FC<BoardProps<GameState>> = (props) => {
   const { G, ctx, debug } = props;
   return (
     <div className='Board'>

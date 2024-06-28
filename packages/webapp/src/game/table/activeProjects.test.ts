@@ -1,9 +1,11 @@
 import { ActiveProject, ActiveProjects } from './activeProjects';
+import { ProjectCard } from '../cards/card';
+import { Project } from './table'
 
 const mockJob1 = 'a';
 const mockJob2 = 'b';
 const mockJob3 = 'c';
-const mockCard: OpenStarTerVillageType.Card.Project = {
+const mockCard: ProjectCard = {
   name: 'test 1',
   requirements: { [mockJob1]: 5, [mockJob2]: 4, [mockJob3]: 8 },
 };
@@ -13,7 +15,7 @@ const mockPlayer2 = 'test player 2';
 describe('ActiveProjects', () => {
   describe('Add', () => {
     it('should append a new project', () => {
-      const activeProjects: OpenStarTerVillageType.State.Project[] = [];
+      const activeProjects: Project[] = [];
 
       const activeProjectId = ActiveProjects.Add(activeProjects, mockCard, mockPlayer1);
 
@@ -23,7 +25,7 @@ describe('ActiveProjects', () => {
 
   describe('GetById', () => {
     it('should return active project', () => {
-      const activeProjects: OpenStarTerVillageType.State.Project[] = [];
+      const activeProjects: Project[] = [];
       const activeProjectId = ActiveProjects.Add(activeProjects, mockCard, mockPlayer1);
 
       const activeProject = ActiveProjects.GetById(activeProjects, activeProjectId);
@@ -34,7 +36,7 @@ describe('ActiveProjects', () => {
 
   describe('FilterFulfilled', () => {
     it('should return fulfilled active projects', () => {
-      const activeProjects: OpenStarTerVillageType.State.Project[] = [];
+      const activeProjects: Project[] = [];
       const activeProjectId = ActiveProjects.Add(activeProjects, mockCard, mockPlayer1);
       const activeProject = ActiveProjects.GetById(activeProjects, activeProjectId);
       const initPoints = 1;
@@ -63,7 +65,7 @@ describe('ActiveProjects', () => {
   });
 
   describe('Remove', () => {
-    const activeProjects: OpenStarTerVillageType.State.Project[] = [];
+    const activeProjects: Project[] = [];
     const activeProjectId = ActiveProjects.Add(activeProjects, mockCard, mockPlayer1);
     const activeProject = ActiveProjects.GetById(activeProjects, activeProjectId);
     // job 1: 5
@@ -90,7 +92,7 @@ describe('ActiveProject', () => {
       [mockJob3, mockPlayer1],
       [mockJob3, mockPlayer2],
     ])('job %s x player %s should has no worker', (mockJob, mockPlayer) => {
-      const activeProjects: OpenStarTerVillageType.State.Project[] = [];
+      const activeProjects: Project[] = [];
 
       const activeProjectId = ActiveProjects.Add(activeProjects, mockCard, mockPlayer1);
 
@@ -104,7 +106,7 @@ describe('ActiveProject', () => {
       [mockJob2],
       [mockJob3],
     ])('job %s should has no contribution', (mockJob) => {
-      const activeProjects: OpenStarTerVillageType.State.Project[] = [];
+      const activeProjects: Project[] = [];
 
       const activeProjectId = ActiveProjects.Add(activeProjects, mockCard, mockPlayer1);
 
@@ -116,7 +118,7 @@ describe('ActiveProject', () => {
       [mockPlayer1],
       [mockPlayer2],
     ])('player %s should have no contribution', (mockPlayer) => {
-      const activeProjects: OpenStarTerVillageType.State.Project[] = [];
+      const activeProjects: Project[] = [];
 
       const activeProjectId = ActiveProjects.Add(activeProjects, mockCard, mockPlayer1);
 
@@ -125,7 +127,7 @@ describe('ActiveProject', () => {
     });
 
     test('owner should have one worker token', () => {
-      const activeProjects: OpenStarTerVillageType.State.Project[] = [];
+      const activeProjects: Project[] = [];
 
       const activeProjectId = ActiveProjects.Add(activeProjects, mockCard, mockPlayer1);
 
@@ -134,7 +136,7 @@ describe('ActiveProject', () => {
     });
 
     test('the other players should have NO worker token', () => {
-      const activeProjects: OpenStarTerVillageType.State.Project[] = [];
+      const activeProjects: Project[] = [];
 
       const activeProjectId = ActiveProjects.Add(activeProjects, mockCard, mockPlayer1);
 
@@ -145,7 +147,7 @@ describe('ActiveProject', () => {
 
   describe('AssignWorker', () => {
     it('should store inital points', () => {
-      const activeProjects: OpenStarTerVillageType.State.Project[] = [];
+      const activeProjects: Project[] = [];
       const activeProjectId = ActiveProjects.Add(activeProjects, mockCard, mockPlayer1);
       const activeProject = ActiveProjects.GetById(activeProjects, activeProjectId);
 
@@ -159,7 +161,7 @@ describe('ActiveProject', () => {
     });
 
     it('should store each initial points on same job from different players', () => {
-      const activeProjects: OpenStarTerVillageType.State.Project[] = [];
+      const activeProjects: Project[] = [];
       const activeProjectId = ActiveProjects.Add(activeProjects, mockCard, mockPlayer1);
       const activeProject = ActiveProjects.GetById(activeProjects, activeProjectId);
 
@@ -177,7 +179,7 @@ describe('ActiveProject', () => {
     });
 
     it('should store each initial points on different job from the same player', () => {
-      const activeProjects: OpenStarTerVillageType.State.Project[] = [];
+      const activeProjects: Project[] = [];
       const activeProjectId = ActiveProjects.Add(activeProjects, mockCard, mockPlayer1);
       const activeProject = ActiveProjects.GetById(activeProjects, activeProjectId);
 
@@ -195,7 +197,7 @@ describe('ActiveProject', () => {
     });
 
     it('should use one job token', () => {
-      const activeProjects: OpenStarTerVillageType.State.Project[] = [];
+      const activeProjects: Project[] = [];
 
       const activeProjectId = ActiveProjects.Add(activeProjects, mockCard, mockPlayer1);
       const activeProject = ActiveProjects.GetById(activeProjects, activeProjectId);
@@ -212,7 +214,7 @@ describe('ActiveProject', () => {
 
   describe('PushWorker', () => {
     it('Worker should has correct points after pushed', () => {
-      const activeProjects: OpenStarTerVillageType.State.Project[] = [];
+      const activeProjects: Project[] = [];
       const activeProjectId = ActiveProjects.Add(activeProjects, mockCard, mockPlayer1);
       const activeProject = ActiveProjects.GetById(activeProjects, activeProjectId);
       const initPoints = 1;
@@ -228,7 +230,7 @@ describe('ActiveProject', () => {
     });
 
     it('should NOT increase job token usage', () => {
-      const activeProjects: OpenStarTerVillageType.State.Project[] = [];
+      const activeProjects: Project[] = [];
       const activeProjectId = ActiveProjects.Add(activeProjects, mockCard, mockPlayer1);
       const activeProject = ActiveProjects.GetById(activeProjects, activeProjectId);
       const initPoints = 1;
@@ -244,7 +246,7 @@ describe('ActiveProject', () => {
 
     it('should throw error when push a non assigned worker', () => {
       try {
-        const activeProjects: OpenStarTerVillageType.State.Project[] = [];
+        const activeProjects: Project[] = [];
         const activeProjectId = ActiveProjects.Add(activeProjects, mockCard, mockPlayer1);
         const activeProject = ActiveProjects.GetById(activeProjects, activeProjectId);
         const initPoints = 1;

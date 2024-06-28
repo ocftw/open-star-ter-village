@@ -1,7 +1,8 @@
 import { List, ListItem, Typography, Stack } from '@mui/material';
+import { Players as PlayersState } from '@/game/players/players';
 
 interface Props {
-  players: OpenStarTerVillageType.State.Root['players'];
+  players: PlayersState;
 }
 
 const Players: React.FC<Props> = (props) => {

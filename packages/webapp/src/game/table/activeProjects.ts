@@ -1,22 +1,19 @@
 import { PlayerID } from 'boardgame.io';
-import { filterInplace } from './utils';
-
-type ProjectCard = OpenStarTerVillageType.Card.Project;
-type ActiveProjects = OpenStarTerVillageType.State.Table['activeProjects'];
-type ActiveProjectType = OpenStarTerVillageType.State.Project;
-type JobName = OpenStarTerVillageType.JobName;
+import { filterInplace } from '../utils';
+import { JobName, ProjectCard } from '../cards/card';
+import { Project, ProjectContribution } from './table';
 
 export interface IActiveProjects {
   // add a project card in active projects pool and assign it to the owner. Return the active project index
-  Add(activeProjects: ActiveProjects, card: ProjectCard, owner: PlayerID): number;
-  GetById(activeProjects: ActiveProjects, index: number): ActiveProjectType;
-  FilterFulfilled(activeProjects: ActiveProjects): ActiveProjects;
-  Remove(activeProjects: ActiveProjects, removedProjects: ActiveProjects): void;
+  Add(activeProjects: Project[], card: ProjectCard, owner: PlayerID): number;
+  GetById(activeProjects: Project[], index: number): Project;
+  FilterFulfilled(activeProjects: Project[]): Project[];
+  Remove(activeProjects: Project[], removedProjects: Project[]): void;
 }
 
 export const ActiveProjects: IActiveProjects = {
   Add(activeProjects, card, owner) {
-    const activeProject: ActiveProjectType = {
+    const activeProject: Project = {
       card,
       owner,
       contributions: [],
@@ -41,16 +38,16 @@ export const ActiveProjects: IActiveProjects = {
 };
 
 export interface IActiveProject {
-  HasWorker(activeProject: ActiveProjectType, jobName: JobName, playerId: PlayerID): boolean;
-  GetWorkerContribution(activeProject: ActiveProjectType, jobName: JobName, playerId: PlayerID): number;
-  GetJobContribution(activeProject: ActiveProjectType, jobName: JobName): number;
-  GetPlayerContribution(activeProject: ActiveProjectType, playerId: PlayerID): number;
-  GetPlayerWorkerTokens(activeProject: ActiveProjectType, playerId: PlayerID): number;
-  AssignWorker(activeProject: ActiveProjectType, jobName: JobName, playerId: PlayerID, points: number): void;
-  PushWorker(activeProject: ActiveProjectType, jobName: JobName, playerId: PlayerID, points: number): void;
+  HasWorker(activeProject: Project, jobName: JobName, playerId: PlayerID): boolean;
+  GetWorkerContribution(activeProject: Project, jobName: JobName, playerId: PlayerID): number;
+  GetJobContribution(activeProject: Project, jobName: JobName): number;
+  GetPlayerContribution(activeProject: Project, playerId: PlayerID): number;
+  GetPlayerWorkerTokens(activeProject: Project, playerId: PlayerID): number;
+  AssignWorker(activeProject: Project, jobName: JobName, playerId: PlayerID, points: number): void;
+  PushWorker(activeProject: Project, jobName: JobName, playerId: PlayerID, points: number): void;
 }
 
-const findContribution = (contributions: ActiveProjectType['contributions'], jobName: JobName, playerId: PlayerID) =>
+const findContribution = (contributions: ProjectContribution[], jobName: JobName, playerId: PlayerID) =>
   contributions.find(contribution => contribution.jobName === jobName && contribution.worker === playerId);
 
 export const ActiveProject: IActiveProject = {
@@ -84,7 +81,8 @@ export const ActiveProject: IActiveProject = {
     return ownerToken + jobTokens;
   },
   AssignWorker(activeProject, jobName, playerId, points) {
-    activeProject.contributions.push({ jobName, worker: playerId, value: points });
+    const contribution: ProjectContribution = { jobName, worker: playerId, value: points };
+    activeProject.contributions.push(contribution);
   },
   PushWorker(activeProject, jobName, playerId, points) {
     const contribution = findContribution(activeProject.contributions, jobName, playerId);

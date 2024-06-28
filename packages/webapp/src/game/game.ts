@@ -1,51 +1,39 @@
 import { Game, MoveFn, PlayerID } from 'boardgame.io';
 import { INVALID_MOVE } from 'boardgame.io/core';
-import { Deck, newCardDeck } from './deck';
-import { Cards } from './cards';
+import { Deck } from './decks/deck';
+import { Cards } from './cards/cards';
 import projectCards from './data/card/projects.json';
 import jobCards from './data/card/jobs.json';
 import forceCards from './data/card/forces.json';
 import eventCards from './data/card/events.json';
-import { ActiveProject, ActiveProjects } from './activeProjects';
-import { contributeJoinedProjects, contributeOwnedProjects, createProject, mirror, recruit, removeAndRefillJobs } from './moves/actionMoves';
+import { ActiveProject, ActiveProjects } from './table/activeProjects';
+import { ActionMoves, Contribution, contributeJoinedProjects, contributeOwnedProjects, createProject, mirror, recruit, removeAndRefillJobs } from './moves/actionMoves';
+import { ProjectCard } from './cards/card';
+import { Decks, setupDecks } from './decks/decks';
+import { Table, setupTable } from './table/table';
+import { Player, Players, setupPlayers } from './players/players';
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
-export const OpenStarTerVillage: Game<OpenStarTerVillageType.State.Root> = {
+export interface GameState {
+  rules: Rule;
+  decks: Decks;
+  table: Table;
+  players: Players;
+}
+
+export interface Rule {
+}
+
+export const OpenStarTerVillage: Game<GameState> = {
   setup: ({ ctx }) => {
-    const rules: OpenStarTerVillageType.State.Root['rules'] = {};
+    const rules: Rule = {};
 
-    const players: OpenStarTerVillageType.State.Root['players'] = ctx.playOrder
-      .reduce((s: Record<PlayerID, OpenStarTerVillageType.State.Player>, playerId) => {
-        s[playerId] = {
-          hand: { projects: [], forces: [] },
-          token: { workers: 0, actions: 0 },
-          completed: { projects: [] },
-          victoryPoints: 0,
-        };
-        return s;
-      }, {});
+    const players = setupPlayers(ctx.playOrder);
 
-    const decks: OpenStarTerVillageType.State.Root['decks'] = {
-      projects: newCardDeck<OpenStarTerVillageType.Card.Project>(projectCards as unknown as OpenStarTerVillageType.Card.Project[]),
-      jobs: newCardDeck<OpenStarTerVillageType.Card.Job>(jobCards),
-      forces: newCardDeck<OpenStarTerVillageType.Card.Force>(forceCards),
-      events: newCardDeck<OpenStarTerVillageType.Card.Event>(eventCards),
-    };
+    const decks = setupDecks(projectCards as unknown as ProjectCard[], jobCards, forceCards, eventCards);
 
-    const table: OpenStarTerVillageType.State.Root['table'] = {
-      activeEvent: null,
-      activeProjects: [],
-      activeJobs: [],
-      activeMoves: {
-        contributeJoinedProjects: true,
-        contributeOwnedProjects: true,
-        createProject: true,
-        recruit: true,
-        removeAndRefillJobs: true,
-        mirror: true,
-      },
-    };
+    const table = setupTable();
 
     return {
       rules,
@@ -196,14 +184,14 @@ export const OpenStarTerVillage: Game<OpenStarTerVillageType.State.Root> = {
           refillAndEnd: {
             client: false,
             move: (context) => {
-              const refillProject: MoveFn<OpenStarTerVillageType.State.Root> = (({G, ctx}) => {
+              const refillProject: MoveFn<GameState> = (({G, ctx}) => {
                 const maxProjectCards = 2;
                 const refillCardNumber = maxProjectCards - G.players[ctx.currentPlayer].hand.projects.length;
                 const projectCards = Deck.Draw(G.decks.projects, refillCardNumber);
                 Cards.Add(G.players[ctx.currentPlayer].hand.projects, projectCards);
               });
 
-              const refillForce: MoveFn<OpenStarTerVillageType.State.Root> = (({G, ctx}) => {
+              const refillForce: MoveFn<GameState> = (({G, ctx}) => {
                 const maxForceCards = 2;
                 const refillCardNumber = maxForceCards - G.players[ctx.currentPlayer].hand.forces.length;
                 const forceCards = Deck.Draw(G.decks.forces, refillCardNumber);
@@ -222,8 +210,8 @@ export const OpenStarTerVillage: Game<OpenStarTerVillageType.State.Root> = {
               G.players[ctx.currentPlayer].token.actions = 3;
 
               // reset active moves
-              Object.keys(G.table.activeMoves).forEach(move => {
-                G.table.activeMoves[move as keyof OpenStarTerVillageType.Move.ActionMoves] = true;
+              Object.keys(G.table.activeActionMoves).forEach(move => {
+                G.table.activeActionMoves[move as keyof ActionMoves] = true;
               });
               events.endTurn()
             },
@@ -235,7 +223,7 @@ export const OpenStarTerVillage: Game<OpenStarTerVillageType.State.Root> = {
   },
   playerView: ({ G, ctx, playerID}) => {
     const { decks, players, ...view } = G;
-    const publicPlayers: Record<PlayerID, PartialBy<OpenStarTerVillageType.State.Player, 'hand'>> = {};
+    const publicPlayers: Record<PlayerID, PartialBy<Player, 'hand'>> = {};
     for (let id in players) {
       if (id === playerID) {
         publicPlayers[id] = players[id];

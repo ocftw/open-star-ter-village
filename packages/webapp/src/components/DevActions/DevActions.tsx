@@ -12,10 +12,12 @@ import {
   Tab,
 } from '@mui/material';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
+import { GameState } from '@/game/game';
+import { AllMoves } from '@/game/moves/actionMoves';
 
-const DevActions: React.FC<BoardProps<OpenStarTerVillageType.State.Root>> = (props) => {
+const DevActions: React.FC<BoardProps<GameState>> = (props) => {
   const { G, playerID, moves: nonTypeMoves, events, ctx } = props;
-  const moves = nonTypeMoves as unknown as OpenStarTerVillageType.Move.AllMoves;
+  const moves = nonTypeMoves as unknown as AllMoves;
 
   const [tabValue, setTabValue] = useState('create-project');
   const onTabChange = (event: React.SyntheticEvent, newValue: string) => {

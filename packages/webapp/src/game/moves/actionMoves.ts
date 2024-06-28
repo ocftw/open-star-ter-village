@@ -1,12 +1,49 @@
-import { MoveFn } from 'boardgame.io';
+import { FnContext, PlayerID } from 'boardgame.io';
 import { INVALID_MOVE } from 'boardgame.io/core';
-import { Deck } from '../deck';
-import { Cards } from '../cards';
+import { Deck } from '../decks/deck';
+import { Cards } from '../cards/cards';
 import { isInRange } from '../utils';
-import { ActiveProject, ActiveProjects } from '../activeProjects';
+import { ActiveProject, ActiveProjects } from '../table/activeProjects';
+import { JobName } from '../cards/card';
+import { GameState } from '../game';
 
-export const createProject: MoveFn<OpenStarTerVillageType.State.Root> = ({ G, ctx, playerID }, projectCardIndex: number, jobCardIndex: number) => {
-  if (!G.table.activeMoves.createProject) {
+export type AllMoves = ActionMoves & StageMoves;
+
+export interface ActionMoves {
+  createProject: CreateProject;
+  recruit: Recruit;
+  contributeOwnedProjects: ContributeOwnedProjects;
+  contributeJoinedProjects: ContributeJoinedProjects;
+  removeAndRefillJobs: RemoveAndRefillJobs;
+  mirror: Mirror;
+};
+
+export interface StageMoves {
+  settle: Settle;
+  refillAndEnd: RefillAndEnd;
+};
+
+export type Contribution = { jobName: JobName; value: number }
+export interface ContributionAction extends Contribution {
+  activeProjectIndex: number;
+}
+
+export type CreateProject = (projectCardIndex: number, jobCardIndex: number) => void;
+export type Recruit = (resourceCardIndex: number, activeProjectIndex: number) => void;
+export type ContributeOwnedProjects = (contributions: ContributionAction[]) => void;
+export type ContributeJoinedProjects = (contributions: ContributionAction[]) => void;
+export type RemoveAndRefillJobs = (jobCardIndices: number[]) => void;
+export type Mirror = (actionName: keyof ActionMoves, ...params: any[]) => void;
+export type Settle = () => void;
+export type RefillAndEnd = () => void;
+export type RefillProject = () => void;
+export type RefillForce = () => void;
+
+// Define the type of a move to support type checking
+export type GameMove<Fn extends (...params: any[]) => void> = (context: FnContext<GameState> & { playerID: PlayerID }, ...args: Parameters<Fn>) => void | GameState | typeof INVALID_MOVE;
+
+export const createProject: GameMove<CreateProject> = ({ G, playerID }, projectCardIndex: number, jobCardIndex: number) => {
+  if (!G.table.activeActionMoves.createProject) {
     return INVALID_MOVE;
   }
 
@@ -68,11 +105,11 @@ export const createProject: MoveFn<OpenStarTerVillageType.State.Root> = ({ G, ct
   const jobCards = Deck.Draw(G.decks.jobs, refillCardNumber);
   Cards.Add(currentJobs, jobCards);
 
-  G.table.activeMoves.createProject = false;
+  G.table.activeActionMoves.createProject = false;
 }
 
-export const recruit: MoveFn<OpenStarTerVillageType.State.Root> = ({G, ctx, playerID}, jobCardIndex: number, activeProjectIndex: number) => {
-  if (!G.table.activeMoves.recruit) {
+export const recruit: GameMove<Recruit> = ({ G, playerID }, jobCardIndex: number, activeProjectIndex: number) => {
+  if (!G.table.activeActionMoves.recruit) {
     return INVALID_MOVE;
   }
 
@@ -127,11 +164,11 @@ export const recruit: MoveFn<OpenStarTerVillageType.State.Root> = ({G, ctx, play
   const jobCards = Deck.Draw(G.decks.jobs, refillCardNumber);
   Cards.Add(currentJobs, jobCards);
 
-  G.table.activeMoves.recruit = false;
+  G.table.activeActionMoves.recruit = false;
 };
 
-export const contributeOwnedProjects: MoveFn<OpenStarTerVillageType.State.Root> = ({G, ctx, playerID}, contributions: OpenStarTerVillageType.Move.Contribution[]) => {
-  if (!G.table.activeMoves.contributeOwnedProjects) {
+export const contributeOwnedProjects: GameMove<ContributeOwnedProjects> = ({ G, playerID }, contributions: ContributionAction[]) => {
+  if (!G.table.activeActionMoves.contributeOwnedProjects) {
     return INVALID_MOVE;
   }
 
@@ -172,11 +209,11 @@ export const contributeOwnedProjects: MoveFn<OpenStarTerVillageType.State.Root> 
     ActiveProject.PushWorker(activeProject, jobName, currentPlayer, value);
   });
 
-  G.table.activeMoves.contributeOwnedProjects = false;
+  G.table.activeActionMoves.contributeOwnedProjects = false;
 };
 
-export const contributeJoinedProjects: MoveFn<OpenStarTerVillageType.State.Root> = ({G, ctx, playerID}, contributions: OpenStarTerVillageType.Move.Contribution[]) => {
-  if (!G.table.activeMoves.contributeJoinedProjects) {
+export const contributeJoinedProjects: GameMove<ContributeJoinedProjects> = ({G, ctx, playerID}, contributions: ContributionAction[]) => {
+  if (!G.table.activeActionMoves.contributeJoinedProjects) {
     return INVALID_MOVE;
   }
 
@@ -217,11 +254,11 @@ export const contributeJoinedProjects: MoveFn<OpenStarTerVillageType.State.Root>
     ActiveProject.PushWorker(activeProject, jobName, currentPlayer, value);
   });
 
-  G.table.activeMoves.contributeJoinedProjects = false;
+  G.table.activeActionMoves.contributeJoinedProjects = false;
 };
 
-export const removeAndRefillJobs: MoveFn<OpenStarTerVillageType.State.Root> = ({G, ctx}, jobCardIndices: number[]) => {
-  if (!G.table.activeMoves.removeAndRefillJobs) {
+export const removeAndRefillJobs: GameMove<RemoveAndRefillJobs> = ({ G }, jobCardIndices: number[]) => {
+  if (!G.table.activeActionMoves.removeAndRefillJobs) {
     return INVALID_MOVE;
   }
 
@@ -240,12 +277,12 @@ export const removeAndRefillJobs: MoveFn<OpenStarTerVillageType.State.Root> = ({
   const jobCards = Deck.Draw(jobDeck, refillCardNumber);
   Cards.Add(currentJob, jobCards);
 
-  G.table.activeMoves.removeAndRefillJobs = false;
+  G.table.activeActionMoves.removeAndRefillJobs = false;
 };
 
-export const mirror: MoveFn<OpenStarTerVillageType.State.Root> = (context, actionName, ...params) => {
+export const mirror: GameMove<Mirror> = (context, actionName, ...params) => {
   const { G } = context;
-  if (!G.table.activeMoves.mirror) {
+  if (!G.table.activeActionMoves.mirror) {
     return INVALID_MOVE;
   }
 
@@ -254,19 +291,19 @@ export const mirror: MoveFn<OpenStarTerVillageType.State.Root> = (context, actio
   let result = null;
   switch (actionName) {
     case 'createProject':
-      result = createProject(context, ...(params as Parameters<OpenStarTerVillageType.Move.CreateProject>));
+      result = createProject(context, ...(params as Parameters<CreateProject>));
       break;
     case 'recruit':
-      result = recruit(context, ...(params as Parameters<OpenStarTerVillageType.Move.Recruit>));
+      result = recruit(context, ...(params as Parameters<Recruit>));
       break;
     case 'contributeOwnedProjects':
-      result = contributeOwnedProjects(context, ...(params as Parameters<OpenStarTerVillageType.Move.ContributeOwnedProjects>));
+      result = contributeOwnedProjects(context, ...(params as Parameters<ContributeOwnedProjects>));
       break;
     case 'contributeJoinedProjects':
-      result = contributeJoinedProjects(context, ...(params as Parameters<OpenStarTerVillageType.Move.ContributeJoinedProjects>));
+      result = contributeJoinedProjects(context, ...(params as Parameters<ContributeJoinedProjects>));
       break;
     case 'removeAndRefillJobs':
-      result = removeAndRefillJobs(context, ...(params as Parameters<OpenStarTerVillageType.Move.RemoveAndRefillJobs>));
+      result = removeAndRefillJobs(context, ...(params as Parameters<RemoveAndRefillJobs>));
       break;
     default:
       result = INVALID_MOVE;
@@ -279,5 +316,5 @@ export const mirror: MoveFn<OpenStarTerVillageType.State.Root> = (context, actio
     return INVALID_MOVE;
   }
 
-  G.table.activeMoves.mirror = false;
+  G.table.activeActionMoves.mirror = false;
 };

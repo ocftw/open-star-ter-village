@@ -1,3 +1,4 @@
+import { Project } from '@/game/table/table';
 import {
   Box,
   Table,
@@ -11,7 +12,7 @@ import {
 } from '@mui/material';
 
 type Props = {
-  project?: OpenStarTerVillageType.State.Project;
+  project?: Project;
 };
 
 const ActiveProject: React.FC<Props> = ({ project }) => {
