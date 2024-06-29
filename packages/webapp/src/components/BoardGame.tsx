@@ -26,8 +26,6 @@ const Boardgame: React.FC<{ isLocal: boolean} & React.ComponentProps<ReturnType<
     game: OpenStarTerVillage,
     board: Board,
     multiplayer,
-    // @ts-ignore
-    enhancer: (window && window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()),
   })
   return <BoardgameComponent {...props} />;
 }
