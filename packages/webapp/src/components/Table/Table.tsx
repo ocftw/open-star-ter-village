@@ -1,6 +1,6 @@
 import { Box, Grid } from '@mui/material';
 import ActiveProject from '../Project/ActiveProject';
-import { Table as TableState } from '@/game/table/table';
+import { Table as TableState } from '@/game/store/slice/table';
 
 interface Props {
   table: TableState;

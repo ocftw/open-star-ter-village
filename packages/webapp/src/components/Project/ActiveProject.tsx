@@ -1,4 +1,4 @@
-import { Project } from '@/game/table/table';
+import { Project } from '@/game/store/slice/table';
 import {
   Box,
   Table,
