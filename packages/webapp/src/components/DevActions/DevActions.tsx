@@ -14,6 +14,9 @@ import {
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { GameState } from '@/game';
 import { AllMoves } from '@/game/moves/type';
+import HandProjectCards from './HandProjectCards';
+import JobSlots from './JobSlots';
+import ProjectBoard from './ProjectBoard';
 
 const DevActions: React.FC<BoardProps<GameState>> = (props) => {
   const { G, playerID, moves: nonTypeMoves, events, ctx } = props;
@@ -57,42 +60,6 @@ const DevActions: React.FC<BoardProps<GameState>> = (props) => {
   const onRefillAndEnd = () => moves.refillAndEnd();
   const myCurrentStage = ctx.activePlayers ? ctx.activePlayers[playerID] : ''
 
-  const renderHandProjectCards = () => (
-    <Stack direction="row" spacing={2}>
-      <Box component='label'>Hand project cards</Box>
-      <RadioGroup onChange={event => setProjectCardIndex(parseInt(event.target.value))} value={projectCardIndex}>
-        {
-          G.players[playerID].hand.projects.map((project, index) =>
-            <FormControlLabel key={`${project.name}-${index}`} value={index} control={<Radio />} label={`${project.name} ${JSON.stringify(project.requirements)}`} />)
-        }
-      </RadioGroup>
-    </Stack>
-  );
-
-  const renderActiveJobCards = () => (
-    <Stack direction="row" spacing={2}>
-      <Box component='label'>Active job cards</Box>
-      <RadioGroup onChange={event => setActiveJobCardIndex(parseInt(event.target.value))} value={activeJobCardIndex}>
-        {
-          G.table.jobSlots.map((job, index) =>
-            <FormControlLabel key={`${job.name}-${index}`} value={index} control={<Radio />} label={job.name} />)
-        }
-      </RadioGroup>
-    </Stack>
-  );
-
-  const renderActiveProjectCards = () => (
-    <Stack direction="row" spacing={2}>
-      <Box component='label'>Active project cards</Box>
-      <RadioGroup onChange={event => setActiveProjectIndex(parseInt(event.target.value))} value={activeProjectIndex}>
-        {
-          G.table.projectBoard.map(activeProject => activeProject.card).map((project, index) =>
-            <FormControlLabel key={`${project.name}-${index}`} value={index} control={<Radio />} label={`${project.name} ${JSON.stringify(project.requirements)}`} />)
-        }
-      </RadioGroup>
-    </Stack>
-  );
-
   const renderActiveProjectJobName = () => (
     <Stack direction="row" spacing={2}>
       <Box component='label'>Job name</Box>
@@ -134,21 +101,41 @@ const DevActions: React.FC<BoardProps<GameState>> = (props) => {
             </TabList>
             <TabPanel value="create-project">
               <Stack direction={['column', 'row']} mt={2}>
-                {renderHandProjectCards()}
-                {renderActiveJobCards()}
+                <HandProjectCards
+                  projects={G.players[playerID].hand.projects}
+                  onChange={event => setProjectCardIndex(parseInt(event.target.value))}
+                  value={projectCardIndex}
+                />
+                <JobSlots
+                  jobSlots={G.table.jobSlots}
+                  onChange={event => setActiveJobCardIndex(parseInt(event.target.value))}
+                  value={activeJobCardIndex}
+                />
               </Stack>
               <Button onClick={onCreateProject}>Create Project</Button>
             </TabPanel>
             <TabPanel value="recruit">
               <Stack direction={['column', 'row']} mt={2}>
-                {renderActiveProjectCards()}
-                {renderActiveJobCards()}
+                <ProjectBoard
+                  projectBoard={G.table.projectBoard}
+                  onChange={event => setActiveProjectIndex(parseInt(event.target.value))}
+                  value={activeProjectIndex}
+                />
+                <JobSlots
+                  jobSlots={G.table.jobSlots}
+                  onChange={event => setActiveJobCardIndex(parseInt(event.target.value))}
+                  value={activeJobCardIndex}
+                />
               </Stack>
               <Button onClick={onRecruit}>Recruit</Button>
             </TabPanel>
             <TabPanel value="contribute-owned-projects">
               <Stack direction={['column', 'row']} mt={2}>
-                {renderActiveProjectCards()}
+                <ProjectBoard
+                  projectBoard={G.table.projectBoard}
+                  onChange={event => setActiveProjectIndex(parseInt(event.target.value))}
+                  value={activeProjectIndex}
+                />
                 {renderActiveProjectJobName()}
                 {renderValueInputBox()}
                 <Button size='small' onClick={onAddContribution}>add contribution entity</Button>
@@ -158,7 +145,11 @@ const DevActions: React.FC<BoardProps<GameState>> = (props) => {
             </TabPanel>
             <TabPanel value="contribute-joined-projects">
               <Stack direction={['column', 'row']} mt={2}>
-                {renderActiveProjectCards()}
+                <ProjectBoard
+                  projectBoard={G.table.projectBoard}
+                  onChange={event => setActiveProjectIndex(parseInt(event.target.value))}
+                  value={activeProjectIndex}
+                />
                 {renderActiveProjectJobName()}
                 {renderValueInputBox()}
                 <Button size='small' onClick={onAddContribution}>add contribution entity</Button>
@@ -168,7 +159,11 @@ const DevActions: React.FC<BoardProps<GameState>> = (props) => {
             </TabPanel>
             <TabPanel value="remove-and-refill-jobs">
               <Stack direction={['column', 'row']} mt={2}>
-                {renderActiveJobCards()}
+                <JobSlots
+                  jobSlots={G.table.jobSlots}
+                  onChange={event => setActiveJobCardIndex(parseInt(event.target.value))}
+                  value={activeJobCardIndex}
+                />
               </Stack>
               <Button >Remove and Refill Jobs</Button>
             </TabPanel>
