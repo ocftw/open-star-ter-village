@@ -5,10 +5,6 @@ import {
   Stack,
   Button,
   Box,
-  RadioGroup,
-  Radio,
-  FormControlLabel,
-  TextField,
   Tab,
 } from '@mui/material';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
@@ -17,6 +13,7 @@ import { AllMoves } from '@/game/moves/type';
 import HandProjectCards from './HandProjectCards';
 import JobSlots from './JobSlots';
 import ProjectBoard from './ProjectBoard';
+import ContributionValueInputBox from './ContributionValueInputBox';
 
 const DevActions: React.FC<BoardProps<GameState>> = (props) => {
   const { G, playerID, moves: nonTypeMoves, events, ctx } = props;
@@ -60,30 +57,6 @@ const DevActions: React.FC<BoardProps<GameState>> = (props) => {
   const onRefillAndEnd = () => moves.refillAndEnd();
   const myCurrentStage = ctx.activePlayers ? ctx.activePlayers[playerID] : ''
 
-  const renderActiveProjectJobName = () => (
-    <Stack direction="row" spacing={2}>
-      <Box component='label'>Job name</Box>
-      <RadioGroup onChange={event => setJobName(event.target.value)} value={jobName}>
-        {
-          Object.keys(G.table.projectBoard[activeProjectIndex]?.card.requirements ?? []).map((jobName) =>
-            <FormControlLabel key={`${activeProjectIndex}-${jobName}`} value={jobName} control={<Radio />} label={jobName} />)
-        }
-      </RadioGroup>
-    </Stack>
-  );
-
-  const renderValueInputBox = () => (
-    <Stack direction="row" spacing={2}>
-      <Box component='label'>Value</Box>
-      <TextField
-        type="number"
-        InputProps={{ inputProps: { min: 0, max: 5 } }}
-        value={value}
-        onChange={event => setValue(parseInt(event.target.value))}
-      />
-    </Stack>
-  );
-
   return (
     <div className='CurrentPlayer'>
       {myCurrentStage ? <div>my current stage: {myCurrentStage}</div> : null}
@@ -118,8 +91,10 @@ const DevActions: React.FC<BoardProps<GameState>> = (props) => {
               <Stack direction={['column', 'row']} mt={2}>
                 <ProjectBoard
                   projectBoard={G.table.projectBoard}
-                  onChange={event => setActiveProjectIndex(parseInt(event.target.value))}
-                  value={activeProjectIndex}
+                  onProjectSlotChange={event => setActiveProjectIndex(parseInt(event.target.value))}
+                  projectValue={activeProjectIndex}
+                  onJobNameChange={event => setJobName(event.target.value)}
+                  jobNameValue={jobName}
                 />
                 <JobSlots
                   jobSlots={G.table.jobSlots}
@@ -133,11 +108,15 @@ const DevActions: React.FC<BoardProps<GameState>> = (props) => {
               <Stack direction={['column', 'row']} mt={2}>
                 <ProjectBoard
                   projectBoard={G.table.projectBoard}
-                  onChange={event => setActiveProjectIndex(parseInt(event.target.value))}
-                  value={activeProjectIndex}
+                  onProjectSlotChange={event => setActiveProjectIndex(parseInt(event.target.value))}
+                  projectValue={activeProjectIndex}
+                  onJobNameChange={event => setJobName(event.target.value)}
+                  jobNameValue={jobName}
                 />
-                {renderActiveProjectJobName()}
-                {renderValueInputBox()}
+                <ContributionValueInputBox
+                  value={value}
+                  onChange={event => setValue(parseInt(event.target.value))}
+                />
                 <Button size='small' onClick={onAddContribution}>add contribution entity</Button>
                 <Box>current contribution entities: {JSON.stringify(contributions)}</Box>
               </Stack>
@@ -147,11 +126,15 @@ const DevActions: React.FC<BoardProps<GameState>> = (props) => {
               <Stack direction={['column', 'row']} mt={2}>
                 <ProjectBoard
                   projectBoard={G.table.projectBoard}
-                  onChange={event => setActiveProjectIndex(parseInt(event.target.value))}
-                  value={activeProjectIndex}
+                  onProjectSlotChange={event => setActiveProjectIndex(parseInt(event.target.value))}
+                  projectValue={activeProjectIndex}
+                  onJobNameChange={event => setJobName(event.target.value)}
+                  jobNameValue={jobName}
                 />
-                {renderActiveProjectJobName()}
-                {renderValueInputBox()}
+                <ContributionValueInputBox
+                  value={value}
+                  onChange={event => setValue(parseInt(event.target.value))}
+                />
                 <Button size='small' onClick={onAddContribution}>add contribution entity</Button>
                 <Box>current contribution entities: {JSON.stringify(contributions)}</Box>
               </Stack>
