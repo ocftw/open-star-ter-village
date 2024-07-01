@@ -1,7 +1,7 @@
 import { PlayerID } from "boardgame.io";
 import { findContribution } from "./projectSlot.utils";
 import { ProjectSlot } from "./projectSlot";
-import { JobName } from "@/game/card";
+import { JobName } from "../../../card";
 
 const hasWorker = (state: ProjectSlot, jobName: JobName, playerId: PlayerID): boolean => {
   const contribution = findContribution(state.contributions, jobName, playerId);
