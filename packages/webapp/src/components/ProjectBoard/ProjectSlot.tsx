@@ -1,4 +1,4 @@
-import { Project } from '@/game/store/slice/table';
+import { ProjectSlot as ProjectSlotState } from '@/game/store/slice/type';
 import {
   Box,
   Table,
@@ -12,10 +12,10 @@ import {
 } from '@mui/material';
 
 type Props = {
-  project?: Project;
+  project?: ProjectSlotState;
 };
 
-const ActiveProject: React.FC<Props> = ({ project }) => {
+const ProjectSlot: React.FC<Props> = ({ project }) => {
   const projectName = project?.card.name;
   const headRow = (
     <TableRow>
@@ -59,4 +59,4 @@ const ActiveProject: React.FC<Props> = ({ project }) => {
   )
 }
 
-export default ActiveProject;
+export default ProjectSlot;

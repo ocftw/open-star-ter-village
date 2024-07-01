@@ -5,9 +5,18 @@ import { Page, hasNextPage, isPageCancellable, wizardActions } from '@/lib/reduc
 import { connect } from 'react-redux';
 import { selectWizard } from '@/lib/selector';
 
-const getPagesByActionName = (name: string): Page[] => {
+enum ActionName {
+  CREATE_PROJECT = 'CREATE_PROJECT',
+  RECRUIT = 'RECRUIT',
+  CONTRIBUTE_JOINED_PROJECTS = 'CONTRIBUTE_JOINED_PROJECTS',
+  CONTRIBUTE_OWNED_PROJECTS = 'CONTRIBUTE_OWNED_PROJECTS',
+  REMOVE_AND_REFILL_JOBS = 'REMOVE_AND_REFILL_JOBS',
+  MIRROR = 'MIRROR',
+}
+
+const getPagesByActionName = (name: ActionName): Page[] => {
   switch (name) {
-    case 'create-project':
+    case ActionName.CREATE_PROJECT:
     return [
       {
         isCancellable: true,
@@ -74,7 +83,7 @@ const mapStateToProps = createSelector(
 
 const mapDispatchToProps = (dispatch: Dispatch) => {
   const onCreateProjectActionClick = () => {
-  dispatch(wizardActions.init(getPagesByActionName('create-project')));
+  dispatch(wizardActions.init(getPagesByActionName(ActionName.CREATE_PROJECT)));
 }
 const onConfirmBtnClick = () => {
   dispatch(wizardActions.nextPage());

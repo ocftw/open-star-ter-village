@@ -12,8 +12,8 @@ import {
   Tab,
 } from '@mui/material';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
-import { GameState } from '@/game/game';
-import { AllMoves } from '@/game/moves/actionMoves';
+import { GameState } from '@/game';
+import { AllMoves } from '@/game/moves/type';
 
 const DevActions: React.FC<BoardProps<GameState>> = (props) => {
   const { G, playerID, moves: nonTypeMoves, events, ctx } = props;
@@ -74,7 +74,7 @@ const DevActions: React.FC<BoardProps<GameState>> = (props) => {
       <Box component='label'>Active job cards</Box>
       <RadioGroup onChange={event => setActiveJobCardIndex(parseInt(event.target.value))} value={activeJobCardIndex}>
         {
-          G.table.activeJobs.map((job, index) =>
+          G.table.jobSlots.map((job, index) =>
             <FormControlLabel key={`${job.name}-${index}`} value={index} control={<Radio />} label={job.name} />)
         }
       </RadioGroup>
@@ -86,7 +86,7 @@ const DevActions: React.FC<BoardProps<GameState>> = (props) => {
       <Box component='label'>Active project cards</Box>
       <RadioGroup onChange={event => setActiveProjectIndex(parseInt(event.target.value))} value={activeProjectIndex}>
         {
-          G.table.activeProjects.map(activeProject => activeProject.card).map((project, index) =>
+          G.table.projectBoard.map(activeProject => activeProject.card).map((project, index) =>
             <FormControlLabel key={`${project.name}-${index}`} value={index} control={<Radio />} label={`${project.name} ${JSON.stringify(project.requirements)}`} />)
         }
       </RadioGroup>
@@ -98,7 +98,7 @@ const DevActions: React.FC<BoardProps<GameState>> = (props) => {
       <Box component='label'>Job name</Box>
       <RadioGroup onChange={event => setJobName(event.target.value)} value={jobName}>
         {
-          Object.keys(G.table.activeProjects[activeProjectIndex]?.card.requirements ?? []).map((jobName) =>
+          Object.keys(G.table.projectBoard[activeProjectIndex]?.card.requirements ?? []).map((jobName) =>
             <FormControlLabel key={`${activeProjectIndex}-${jobName}`} value={jobName} control={<Radio />} label={jobName} />)
         }
       </RadioGroup>

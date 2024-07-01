@@ -4,7 +4,6 @@ import projectCards from './data/card/projects.json';
 import jobCards from './data/card/jobs.json';
 import forceCards from './data/card/forces.json';
 import eventCards from './data/card/events.json';
-import { ActionMoves } from './moves/actionMoves';
 import { recruit } from './moves/recruit';
 import { contributeOwnedProjects } from './moves/contributeOwnedProjects';
 import { removeAndRefillJobs } from './moves/removeAndRefillJobs';
@@ -15,9 +14,10 @@ import { ProjectCard } from './store/slice/card';
 import { Player, PlayersMutator } from './store/slice/players';
 import GameStore, { GameState } from './store/store';
 import { DeckMutator, DeckSelector } from './store/slice/deck';
-import { ActiveProjectsMutator, ActiveProjectsSelector } from './store/slice/activeProjects';
-import { selectors } from './store/slice/activeProject/activeProject.selectors';
+import { ProjectBoardMutator, ProjectBoardSelector } from './store/slice/projectBoard';
+import { selectors } from './store/slice/projectSlot/projectSlot.selectors';
 import { CardsMutator } from './store/slice/cards';
+import { ActionSlotsMutator } from './store/slice/actionSlots';
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
@@ -68,7 +68,7 @@ export const OpenStarTerVillage: Game<GameState> = {
         const maxJobCards = 5;
         const jobCards = DeckSelector.peek(G.decks.jobs, maxJobCards);
         DeckMutator.draw(G.decks.jobs, maxJobCards);
-        CardsMutator.add(G.table.activeJobs, jobCards);
+        CardsMutator.add(G.table.jobSlots, jobCards);
 
         for (let playerId in G.players) {
           G.players[playerId].token.workers = 10;
@@ -131,8 +131,8 @@ export const OpenStarTerVillage: Game<GameState> = {
             client: false,
             // client trigger settle project and move on to next stage
             move: (({ G }) => {
-              const activeProjects = G.table.activeProjects;
-              const fulfilledProjects = ActiveProjectsSelector.filterFulfilled(activeProjects);
+              const activeProjects = G.table.projectBoard;
+              const fulfilledProjects = ProjectBoardSelector.filterFulfilled(activeProjects);
               if (fulfilledProjects.length === 0) {
                 return;
               }
@@ -150,10 +150,9 @@ export const OpenStarTerVillage: Game<GameState> = {
               });
               // Update OpenSourceTree
               // Remove from table
-              ActiveProjectsMutator.remove(activeProjects, fulfilledProjects);
+              ProjectBoardMutator.remove(activeProjects, fulfilledProjects);
               // Discard Project Card
               const projectCards = fulfilledProjects.map(project => project.card);
-              // Deck.Discard(G.decks.projects, projectCards);
               DeckMutator.discard(G.decks.projects, projectCards);
             }),
           },
@@ -208,9 +207,7 @@ export const OpenStarTerVillage: Game<GameState> = {
               G.players[ctx.currentPlayer].token.actions = 3;
 
               // reset active moves
-              Object.keys(G.table.activeActionMoves).forEach(move => {
-                G.table.activeActionMoves[move as keyof ActionMoves] = true;
-              });
+              ActionSlotsMutator.reset(G.table.actionSlots);
               events.endTurn()
             },
           }

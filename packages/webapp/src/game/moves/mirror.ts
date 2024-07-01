@@ -1,15 +1,16 @@
 import { INVALID_MOVE } from 'boardgame.io/core';
 import { CreateProject, createProject } from './createProject';
-import { GameMove, ActionMoves } from './actionMoves';
+import { GameMove, ActionMove } from './type';
 import { Recruit, recruit } from './recruit';
 import { ContributeOwnedProjects, contributeOwnedProjects } from './contributeOwnedProjects';
 import { RemoveAndRefillJobs, removeAndRefillJobs } from './removeAndRefillJobs';
 import { ContributeJoinedProjects, contributeJoinedProjects } from './contributeJoinedProjects';
+import { ActionSlotMutator, ActionSlotSelector } from '../store/slice/actionSlot';
 
-export type Mirror = (actionName: keyof ActionMoves, ...params: any[]) => void;
+export type Mirror = (actionName: ActionMove, ...params: any[]) => void;
 export const mirror: GameMove<Mirror> = (context, actionName, ...params) => {
   const { G } = context;
-  if (!G.table.activeActionMoves.mirror) {
+  if (!ActionSlotSelector.isAvailable(G.table.actionSlots.mirror)) {
     return INVALID_MOVE;
   }
 
@@ -41,5 +42,5 @@ export const mirror: GameMove<Mirror> = (context, actionName, ...params) => {
     return INVALID_MOVE;
   }
 
-  G.table.activeActionMoves.mirror = false;
+  ActionSlotMutator.occupy(G.table.actionSlots.mirror);
 };

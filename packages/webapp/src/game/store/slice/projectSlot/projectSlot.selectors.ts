@@ -1,19 +1,19 @@
 import { PlayerID } from "boardgame.io";
-import { findContribution } from "./activeProject.utils";
-import { ActiveProject } from "./activeProject";
+import { findContribution } from "./projectSlot.utils";
+import { ProjectSlot } from "./projectSlot";
 import { JobName } from "@/game/store/slice/card";
 
-const hasWorker = (state: ActiveProject, jobName: JobName, playerId: PlayerID): boolean => {
+const hasWorker = (state: ProjectSlot, jobName: JobName, playerId: PlayerID): boolean => {
   const contribution = findContribution(state.contributions, jobName, playerId);
   return contribution !== undefined;
 }
 
-const getWorkerContribution = (state: ActiveProject, jobName: JobName, playerId: PlayerID): number => {
+const getWorkerContribution = (state: ProjectSlot, jobName: JobName, playerId: PlayerID): number => {
   const contribution = findContribution(state.contributions, jobName, playerId);
   return contribution?.value ?? 0;
 }
 
-const getJobContribution = (state: ActiveProject, jobName: JobName): number => {
+const getJobContribution = (state: ProjectSlot, jobName: JobName): number => {
   const jobContribution = state.contributions
     .filter(contribution => contribution.jobName === jobName)
     .map(contribution => contribution.value)
@@ -21,7 +21,7 @@ const getJobContribution = (state: ActiveProject, jobName: JobName): number => {
   return jobContribution;
 }
 
-const getPlayerContribution = (state: ActiveProject, playerId: PlayerID): number => {
+const getPlayerContribution = (state: ProjectSlot, playerId: PlayerID): number => {
   const playerContribution = state.contributions
     .filter(contribution => contribution.worker === playerId)
     .map(contribution => contribution.value)
@@ -29,7 +29,7 @@ const getPlayerContribution = (state: ActiveProject, playerId: PlayerID): number
   return playerContribution;
 }
 
-const getPlayerWorkerTokens = (state: ActiveProject, playerId: PlayerID): number => {
+const getPlayerWorkerTokens = (state: ProjectSlot, playerId: PlayerID): number => {
   const ownerToken = state.owner === playerId ? 1 : 0;
   const jobTokens = state.contributions
     .filter(contribution => contribution.worker === playerId)

@@ -10,6 +10,7 @@ import { ContributeOwnedProjects } from './contributeOwnedProjects';
 import { Recruit } from './recruit';
 
 export type AllMoves = ActionMoves & StageMoves;
+export type AllMoveNames = keyof AllMoves;
 
 export interface ActionMoves {
   createProject: CreateProject;
@@ -19,11 +20,13 @@ export interface ActionMoves {
   removeAndRefillJobs: RemoveAndRefillJobs;
   mirror: Mirror;
 };
+export type ActionMove = keyof ActionMoves;
 
 export interface StageMoves {
   settle: Settle;
   refillAndEnd: RefillAndEnd;
 };
+export type StageMoveNames = keyof StageMoves;
 
 export type Contribution = { jobName: JobName; value: number }
 export interface ContributionAction extends Contribution {

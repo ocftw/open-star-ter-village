@@ -1,15 +1,16 @@
 import { INVALID_MOVE } from 'boardgame.io/core';
 import { isInRange } from '../utils';
-import { ActiveProjectsSelector } from '../store/slice/activeProjects';
+import { ProjectBoardSelector } from '../store/slice/projectBoard';
 import { DeckMutator, DeckSelector } from '../store/slice/deck';
-import { ActiveProjectMutator, ActiveProjectSelector } from '../store/slice/activeProject/activeProject';
-import { GameMove } from './actionMoves';
+import { ProjectSlotMutator, ProjectSlotSelector } from '../store/slice/projectSlot/projectSlot';
+import { GameMove } from './type';
 import { CardsMutator, CardsSelector } from '../store/slice/cards';
+import { ActionSlotMutator, ActionSlotSelector } from '../store/slice/actionSlot';
 
 export type Recruit = (resourceCardIndex: number, activeProjectIndex: number) => void;
 
 export const recruit: GameMove<Recruit> = ({ G, playerID }, jobCardIndex, activeProjectIndex) => {
-  if (!G.table.activeActionMoves.recruit) {
+  if (!ActionSlotSelector.isAvailable(G.table.actionSlots.recruit)) {
     return INVALID_MOVE;
   }
 
@@ -24,24 +25,24 @@ export const recruit: GameMove<Recruit> = ({ G, playerID }, jobCardIndex, active
     return INVALID_MOVE;
   }
 
-  const currentJobs = G.table.activeJobs;
+  const currentJobs = G.table.jobSlots;
   if (!isInRange(jobCardIndex, currentJobs.length)) {
     return INVALID_MOVE;
   }
 
-  const activeProjects = G.table.activeProjects;
+  const activeProjects = G.table.projectBoard;
   if (!isInRange(activeProjectIndex, activeProjects.length)) {
     return INVALID_MOVE;
   }
   const jobCard = CardsSelector.getById(currentJobs, jobCardIndex);
-  const activeProject = ActiveProjectsSelector.getById(G.table.activeProjects, activeProjectIndex);
-  const jobContribution = ActiveProjectSelector.getJobContribution(activeProject, jobCard.name);
+  const activeProject = ProjectBoardSelector.getById(G.table.projectBoard, activeProjectIndex);
+  const jobContribution = ProjectSlotSelector.getJobContribution(activeProject, jobCard.name);
   // Check job requirment is not fulfilled yet
   if (jobContribution >= activeProject.card.requirements[jobCard.name]) {
     return INVALID_MOVE;
   }
   // User cannot place more than one worker in same job
-  if (ActiveProjectSelector.hasWorker(activeProject, jobCard.name, currentPlayer)) {
+  if (ProjectSlotSelector.hasWorker(activeProject, jobCard.name, currentPlayer)) {
     return INVALID_MOVE;
   }
 
@@ -53,7 +54,7 @@ export const recruit: GameMove<Recruit> = ({ G, playerID }, jobCardIndex, active
   currentPlayerToken.workers -= recruitWorkerCosts;
   // assign worker token
   const jobInitPoints = 1;
-  ActiveProjectMutator.assignWorker(activeProject, jobCard.name, currentPlayer, jobInitPoints);
+  ProjectSlotMutator.assignWorker(activeProject, jobCard.name, currentPlayer, jobInitPoints);
 
   // discard job card
   DeckMutator.discard(G.decks.jobs, [jobCard]);
@@ -65,5 +66,5 @@ export const recruit: GameMove<Recruit> = ({ G, playerID }, jobCardIndex, active
   DeckMutator.draw(G.decks.jobs, refillCardNumber);
   CardsMutator.add(currentJobs, jobCards);
 
-  G.table.activeActionMoves.recruit = false;
+  ActionSlotMutator.occupy(G.table.actionSlots.recruit);
 };

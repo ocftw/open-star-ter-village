@@ -1,29 +1,24 @@
 import { EventCard, JobCard } from "./card";
-import { ActionMoves } from "../../moves/actionMoves";
-import ActiveProjectsSlice from "./activeProjects";
-import { ActiveProject } from "./activeProject/activeProject";
+import ProjectBoardSlice, { ProjectBoard } from "./projectBoard";
+import ActionSlotsSlice, { ActionSlots } from "./actionSlots";
 
-export type ActiveActionMoves = Record<keyof ActionMoves, boolean>;
+// TODO: move event slot into a separate slice
+export type EventSlot = EventCard | null;
+// TODO: move job slots into a separate slice
+export type JobSlots = JobCard[];
 
 export interface Table {
-  activeEvent: EventCard | null;
-  activeProjects: ActiveProject[];
-  activeJobs: JobCard[];
-  activeActionMoves: ActiveActionMoves;
+  eventSlot: EventCard | null;
+  projectBoard: ProjectBoard;
+  jobSlots: JobCard[];
+  actionSlots: ActionSlots;
 }
 
 const initialState = (): Table => ({
-  activeEvent: null,
-  activeProjects: ActiveProjectsSlice.initialState(),
-  activeJobs: [],
-  activeActionMoves: {
-    contributeJoinedProjects: true,
-    contributeOwnedProjects: true,
-    createProject: true,
-    recruit: true,
-    removeAndRefillJobs: true,
-    mirror: true,
-  },
+  eventSlot: null,
+  projectBoard: ProjectBoardSlice.initialState(),
+  jobSlots: [],
+  actionSlots: ActionSlotsSlice.initialState(),
 });
 
 const TableSlice = {

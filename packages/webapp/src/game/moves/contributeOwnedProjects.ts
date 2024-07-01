@@ -1,13 +1,14 @@
 import { INVALID_MOVE } from 'boardgame.io/core';
 import { isInRange } from '../utils';
-import { ActiveProjectsSelector } from '../store/slice/activeProjects';
-import { ActiveProjectMutator, ActiveProjectSelector } from '../store/slice/activeProject/activeProject';
-import { GameMove, ContributionAction } from './actionMoves';
+import { ProjectBoardSelector } from '../store/slice/projectBoard';
+import { ProjectSlotMutator, ProjectSlotSelector } from '../store/slice/projectSlot/projectSlot';
+import { GameMove, ContributionAction } from './type';
+import { ActionSlotMutator, ActionSlotSelector } from '../store/slice/actionSlot';
 
 export type ContributeOwnedProjects = (contributions: ContributionAction[]) => void;
 
 export const contributeOwnedProjects: GameMove<ContributeOwnedProjects> = ({ G, playerID }, contributions) => {
-  if (!G.table.activeActionMoves.contributeOwnedProjects) {
+  if (!ActionSlotSelector.isAvailable(G.table.actionSlots.contributeOwnedProjects)) {
     return INVALID_MOVE;
   }
 
@@ -17,17 +18,17 @@ export const contributeOwnedProjects: GameMove<ContributeOwnedProjects> = ({ G, 
   if (currentPlayerToken.actions < contributeActionCosts) {
     return INVALID_MOVE;
   }
-  const activeProjects = G.table.activeProjects;
+  const activeProjects = G.table.projectBoard;
   const isInvalid = contributions.map(({ activeProjectIndex, jobName }) => {
     if (!isInRange(activeProjectIndex, activeProjects.length)) {
       return true;
     }
-    const activeProject = ActiveProjectsSelector.getById(activeProjects, activeProjectIndex);
+    const activeProject = ProjectBoardSelector.getById(activeProjects, activeProjectIndex);
     if (activeProject.owner !== currentPlayer) {
       return true;
     }
 
-    if (!ActiveProjectSelector.hasWorker(activeProject, jobName, currentPlayer)) {
+    if (!ProjectSlotSelector.hasWorker(activeProject, jobName, currentPlayer)) {
       return true;
     }
   }).some(x => x);
@@ -44,9 +45,9 @@ export const contributeOwnedProjects: GameMove<ContributeOwnedProjects> = ({ G, 
   currentPlayerToken.actions -= contributeActionCosts;
   contributions.forEach(({ activeProjectIndex, jobName, value }) => {
     // update contributions to given contribution points
-    const activeProject = ActiveProjectsSelector.getById(G.table.activeProjects, activeProjectIndex);
-    ActiveProjectMutator.pushWorker(activeProject, jobName, currentPlayer, value);
+    const activeProject = ProjectBoardSelector.getById(G.table.projectBoard, activeProjectIndex);
+    ProjectSlotMutator.pushWorker(activeProject, jobName, currentPlayer, value);
   });
 
-  G.table.activeActionMoves.contributeOwnedProjects = false;
+  ActionSlotMutator.occupy(G.table.actionSlots.contributeOwnedProjects);
 };
