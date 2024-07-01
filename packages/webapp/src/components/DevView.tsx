@@ -8,15 +8,15 @@ function DevView({ isLocal }: { isLocal: boolean }) {
     <>
       <Box ml={2} mt={2}>
         <Typography variant="h4">Player 0 view</Typography>
-        <Boardgame isLocal={isLocal} playerID="0" />
+        <Boardgame isLocal={isLocal} matchID="dev" playerID="0" />
       </Box>
       <Box ml={2} mt={2}>
         <Typography variant="h4">Player 1 view</Typography>
-        <Boardgame isLocal={isLocal} playerID="1" />
+        <Boardgame isLocal={isLocal} matchID="dev" playerID="1" />
       </Box>
       <Box ml={2} mt={2}>
         <Typography variant="h4">Observer view</Typography>
-        <Boardgame isLocal={isLocal} />
+        <Boardgame isLocal={isLocal} matchID="dev" />
       </Box>
     </>
   );

@@ -1,5 +1,5 @@
 import { Server, Origins } from "boardgame.io/server";
-import { OpenStarTerVillage } from "./game";
+import { OpenStarTerVillage } from "./game/game";
 
 async function serve() {
   const port = Number(process.env.PORT) || 8000;

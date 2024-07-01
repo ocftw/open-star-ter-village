@@ -1,3 +1,4 @@
+import { ProjectSlotState } from '@/game';
 import {
   Box,
   Table,
@@ -11,10 +12,10 @@ import {
 } from '@mui/material';
 
 type Props = {
-  project?: OpenStarTerVillageType.State.Project;
+  project?: ProjectSlotState;
 };
 
-const ActiveProject: React.FC<Props> = ({ project }) => {
+const ProjectSlot: React.FC<Props> = ({ project }) => {
   const projectName = project?.card.name;
   const headRow = (
     <TableRow>
@@ -58,4 +59,4 @@ const ActiveProject: React.FC<Props> = ({ project }) => {
   )
 }
 
-export default ActiveProject;
+export default ProjectSlot;

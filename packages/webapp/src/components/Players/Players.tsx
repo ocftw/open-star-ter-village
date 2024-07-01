@@ -1,21 +1,23 @@
-import { BoardProps } from 'boardgame.io/react';
 import { List, ListItem, Typography, Stack } from '@mui/material';
+import { PlayersState } from '@/game';
 
-const Players: React.FC<BoardProps<OpenStarTerVillageType.State.Root>> = (props) => {
-  const { G } = props;
+interface Props {
+  players: PlayersState;
+}
 
-  const players = Object.keys(G.players).map(player => (
+const Players: React.FC<Props> = (props) => {
+  const players = Object.keys(props.players).map(player => (
     <Stack direction="row" spacing={2} my={2} key={player}>
       <Typography variant="h6">Player {player}</Typography>
       <List sx={{ ml: 2 }}>
         <ListItem>
-          WorkerTokens: {G.players[player].token.workers}
+          WorkerTokens: {props.players[player].token.workers}
         </ListItem>
         <ListItem>
-          ActionTokens: {G.players[player].token.actions}
+          ActionTokens: {props.players[player].token.actions}
         </ListItem>
         <ListItem>
-          CompletedProjects: {JSON.stringify(G.players[player].completed.projects)}
+          CompletedProjects: {JSON.stringify(props.players[player].completed.projects)}
         </ListItem>
       </List>
     </Stack>

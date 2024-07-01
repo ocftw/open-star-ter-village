@@ -1,58 +1,38 @@
 import { Game, MoveFn, PlayerID } from 'boardgame.io';
 import { INVALID_MOVE } from 'boardgame.io/core';
-import { Deck, newCardDeck } from './deck';
-import { Cards } from './cards';
 import projectCards from './data/card/projects.json';
 import jobCards from './data/card/jobs.json';
 import forceCards from './data/card/forces.json';
 import eventCards from './data/card/events.json';
-import { ActiveProject, ActiveProjects } from './activeProjects';
-import { contributeJoinedProjects, contributeOwnedProjects, createProject, mirror, recruit, removeAndRefillJobs } from './moves/actionMoves';
+import { recruit } from './moves/recruit';
+import { contributeOwnedProjects } from './moves/contributeOwnedProjects';
+import { removeAndRefillJobs } from './moves/removeAndRefillJobs';
+import { contributeJoinedProjects } from './moves/contributeJoinedProjects';
+import { mirror } from './moves/mirror';
+import { createProject } from './moves/createProject';
+import { ProjectCard } from './card';
+import { Player, PlayersMutator } from './store/slice/players';
+import GameStore, { GameState } from './store/store';
+import { DeckMutator, DeckSelector } from './store/slice/deck';
+import { ProjectBoardMutator, ProjectBoardSelector } from './store/slice/projectBoard';
+import { selectors } from './store/slice/projectSlot/projectSlot.selectors';
+import { CardsMutator } from './store/slice/cards';
+import { ActionSlotsMutator } from './store/slice/actionSlots';
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
-export const OpenStarTerVillage: Game<OpenStarTerVillageType.State.Root> = {
+export const OpenStarTerVillage: Game<GameState> = {
   setup: ({ ctx }) => {
-    const rules: OpenStarTerVillageType.State.Root['rules'] = {};
+    const G = GameStore.initialState();
 
-    const players: OpenStarTerVillageType.State.Root['players'] = ctx.playOrder
-      .reduce((s: Record<PlayerID, OpenStarTerVillageType.State.Player>, playerId) => {
-        s[playerId] = {
-          hand: { projects: [], forces: [] },
-          token: { workers: 0, actions: 0 },
-          completed: { projects: [] },
-          victoryPoints: 0,
-        };
-        return s;
-      }, {});
+    DeckMutator.initialize(G.decks.projects, projectCards as unknown as ProjectCard[]);
+    DeckMutator.initialize(G.decks.jobs, jobCards);
+    DeckMutator.initialize(G.decks.forces, forceCards);
+    DeckMutator.initialize(G.decks.events, eventCards);
 
-    const decks: OpenStarTerVillageType.State.Root['decks'] = {
-      projects: newCardDeck<OpenStarTerVillageType.Card.Project>(projectCards as unknown as OpenStarTerVillageType.Card.Project[]),
-      jobs: newCardDeck<OpenStarTerVillageType.Card.Job>(jobCards),
-      forces: newCardDeck<OpenStarTerVillageType.Card.Force>(forceCards),
-      events: newCardDeck<OpenStarTerVillageType.Card.Event>(eventCards),
-    };
+    PlayersMutator.initialize(G.players, ctx.playOrder);
 
-    const table: OpenStarTerVillageType.State.Root['table'] = {
-      activeEvent: null,
-      activeProjects: [],
-      activeJobs: [],
-      activeMoves: {
-        contributeJoinedProjects: true,
-        contributeOwnedProjects: true,
-        createProject: true,
-        recruit: true,
-        removeAndRefillJobs: true,
-        mirror: true,
-      },
-    };
-
-    return {
-      rules,
-      decks,
-      table,
-      players,
-    };
+    return G;
   },
   moves: {
 
@@ -63,29 +43,32 @@ export const OpenStarTerVillage: Game<OpenStarTerVillageType.State.Root> = {
       onBegin: ({ random, G }) => {
         // shuffle cards
         const shuffler = random.Shuffle;
-        Deck.ShuffleDrawPile(G.decks.events, shuffler);
+        DeckMutator.shuffleDrawPile(G.decks.events, shuffler);
 
-        Deck.ShuffleDrawPile(G.decks.projects, shuffler);
+        DeckMutator.shuffleDrawPile(G.decks.projects, shuffler);
         const maxProjectCards = 2;
         for (let playerId in G.players) {
-          const projectCards = Deck.Draw(G.decks.projects, maxProjectCards);
-          Cards.Add(G.players[playerId].hand.projects, projectCards);
+          const projectCards = DeckSelector.peek(G.decks.projects, maxProjectCards);
+          DeckMutator.draw(G.decks.projects, maxProjectCards);
+          CardsMutator.add(G.players[playerId].hand.projects, projectCards);
         }
 
         const isForceCardsEnabled = false;
         if (isForceCardsEnabled) {
-          Deck.ShuffleDrawPile(G.decks.forces, shuffler);
+          DeckMutator.shuffleDrawPile(G.decks.forces, shuffler);
           const maxForceCards = 2;
           for (let playerId in G.players) {
-            const forceCards = Deck.Draw(G.decks.forces, maxForceCards);
-            Cards.Add(G.players[playerId].hand.forces, forceCards);
+            const forceCards = DeckSelector.peek(G.decks.forces, maxForceCards);
+            DeckMutator.draw(G.decks.forces, maxForceCards);
+            CardsMutator.add(G.players[playerId].hand.forces, forceCards);
           }
         }
 
-        Deck.ShuffleDrawPile(G.decks.jobs, shuffler);
+        DeckMutator.shuffleDrawPile(G.decks.jobs, shuffler);
         const maxJobCards = 5;
-        const jobCards = Deck.Draw(G.decks.jobs, maxJobCards);
-        Cards.Add(G.table.activeJobs, jobCards);
+        const jobCards = DeckSelector.peek(G.decks.jobs, maxJobCards);
+        DeckMutator.draw(G.decks.jobs, maxJobCards);
+        CardsMutator.add(G.table.jobSlots, jobCards);
 
         for (let playerId in G.players) {
           G.players[playerId].token.workers = 10;
@@ -148,29 +131,29 @@ export const OpenStarTerVillage: Game<OpenStarTerVillageType.State.Root> = {
             client: false,
             // client trigger settle project and move on to next stage
             move: (({ G }) => {
-              const activeProjects = G.table.activeProjects;
-              const fulfilledProjects = ActiveProjects.FilterFulfilled(activeProjects);
+              const activeProjects = G.table.projectBoard;
+              const fulfilledProjects = ProjectBoardSelector.filterFulfilled(activeProjects);
               if (fulfilledProjects.length === 0) {
                 return;
               }
               fulfilledProjects.forEach(project => {
                 // Update Score
                 Object.keys(G.players).forEach(playerId => {
-                  const victoryPoints = ActiveProject.GetPlayerContribution(project, playerId);
+                  const victoryPoints = selectors.getPlayerContribution(project, playerId);
                   G.players[playerId].victoryPoints += victoryPoints;
                 });
                 // Return Tokens
                 Object.keys(G.players).forEach(playerId => {
-                  const workerTokens = ActiveProject.GetPlayerWorkerTokens(project, playerId);
+                  const workerTokens = selectors.getPlayerWorkerTokens(project, playerId);
                   G.players[playerId].token.workers += workerTokens;
                 });
               });
               // Update OpenSourceTree
               // Remove from table
-              ActiveProjects.Remove(activeProjects, fulfilledProjects);
+              ProjectBoardMutator.remove(activeProjects, fulfilledProjects);
               // Discard Project Card
               const projectCards = fulfilledProjects.map(project => project.card);
-              Deck.Discard(G.decks.projects, projectCards);
+              DeckMutator.discard(G.decks.projects, projectCards);
             }),
           },
         },
@@ -196,18 +179,20 @@ export const OpenStarTerVillage: Game<OpenStarTerVillageType.State.Root> = {
           refillAndEnd: {
             client: false,
             move: (context) => {
-              const refillProject: MoveFn<OpenStarTerVillageType.State.Root> = (({G, ctx}) => {
+              const refillProject: MoveFn<GameState> = (({G, ctx}) => {
                 const maxProjectCards = 2;
                 const refillCardNumber = maxProjectCards - G.players[ctx.currentPlayer].hand.projects.length;
-                const projectCards = Deck.Draw(G.decks.projects, refillCardNumber);
-                Cards.Add(G.players[ctx.currentPlayer].hand.projects, projectCards);
+                const projectCards = DeckSelector.peek(G.decks.projects, refillCardNumber);
+                DeckMutator.draw(G.decks.projects, refillCardNumber);
+                CardsMutator.add(G.players[ctx.currentPlayer].hand.projects, projectCards);
               });
 
-              const refillForce: MoveFn<OpenStarTerVillageType.State.Root> = (({G, ctx}) => {
+              const refillForce: MoveFn<GameState> = (({G, ctx}) => {
                 const maxForceCards = 2;
                 const refillCardNumber = maxForceCards - G.players[ctx.currentPlayer].hand.forces.length;
-                const forceCards = Deck.Draw(G.decks.forces, refillCardNumber);
-                Cards.Add(G.players[ctx.currentPlayer].hand.forces, forceCards);
+                const forceCards = DeckSelector.peek(G.decks.forces, refillCardNumber);
+                DeckMutator.draw(G.decks.forces, refillCardNumber);
+                CardsMutator.add(G.players[ctx.currentPlayer].hand.forces, forceCards);
               });
 
               // refill cards
@@ -222,9 +207,7 @@ export const OpenStarTerVillage: Game<OpenStarTerVillageType.State.Root> = {
               G.players[ctx.currentPlayer].token.actions = 3;
 
               // reset active moves
-              Object.keys(G.table.activeMoves).forEach(move => {
-                G.table.activeMoves[move as keyof OpenStarTerVillageType.Move.ActionMoves] = true;
-              });
+              ActionSlotsMutator.reset(G.table.actionSlots);
               events.endTurn()
             },
           }
@@ -235,7 +218,7 @@ export const OpenStarTerVillage: Game<OpenStarTerVillageType.State.Root> = {
   },
   playerView: ({ G, ctx, playerID}) => {
     const { decks, players, ...view } = G;
-    const publicPlayers: Record<PlayerID, PartialBy<OpenStarTerVillageType.State.Player, 'hand'>> = {};
+    const publicPlayers: Record<PlayerID, PartialBy<Player, 'hand'>> = {};
     for (let id in players) {
       if (id === playerID) {
         publicPlayers[id] = players[id];

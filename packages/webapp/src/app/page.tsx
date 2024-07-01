@@ -1,4 +1,5 @@
 import DevView from "@/components/DevView";
+import StoreProvider from "./StoreProvider";
 
 const getIsLocal = async () => {
   'use server'
@@ -9,8 +10,10 @@ const getIsLocal = async () => {
 export default async function Home() {
   const isLocal = await getIsLocal();
   return (
-    <main>
-      <DevView isLocal={isLocal} />
-    </main>
+    <StoreProvider>
+      <main>
+        <DevView isLocal={isLocal} />
+      </main>
+    </StoreProvider>
   );
 }
