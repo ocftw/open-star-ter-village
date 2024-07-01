@@ -1,4 +1,4 @@
-import { ProjectSlot as ProjectSlotState } from '@/game/store/slice/type';
+import { ProjectSlotState } from '@/game';
 import {
   Box,
   Table,

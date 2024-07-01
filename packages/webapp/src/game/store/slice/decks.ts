@@ -1,4 +1,4 @@
-import { EventCard, ForceCard, JobCard, ProjectCard } from "./card";
+import { EventCard, ForceCard, JobCard, ProjectCard } from "../../card";
 import DeckSlice, { Deck } from "./deck";
 
 export type Decks = {

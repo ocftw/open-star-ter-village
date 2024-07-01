@@ -1,6 +1,6 @@
 import { PlayerID } from 'boardgame.io';
 import { filterInplace } from '../../utils';
-import { ProjectCard } from './card';
+import { ProjectCard } from '../../card';
 import { ProjectSlot, ProjectSlotSelector } from './projectSlot/projectSlot';
 
 export type ProjectBoard = ProjectSlot[];

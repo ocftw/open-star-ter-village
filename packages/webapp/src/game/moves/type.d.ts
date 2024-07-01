@@ -1,6 +1,6 @@
 import { FnContext, PlayerID } from 'boardgame.io';
 import { INVALID_MOVE } from 'boardgame.io/core';
-import { JobName } from '../store/slice/card';
+import { JobName } from '../card';
 import { GameState } from '../store/store';
 import { CreateProject } from './createProject';
 import { Mirror } from './mirror';

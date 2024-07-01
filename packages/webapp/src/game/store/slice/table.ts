@@ -1,4 +1,4 @@
-import { EventCard, JobCard } from "./card";
+import { EventCard, JobCard } from "../../card";
 import ProjectBoardSlice, { ProjectBoard } from "./projectBoard";
 import ActionSlotsSlice, { ActionSlots } from "./actionSlots";
 

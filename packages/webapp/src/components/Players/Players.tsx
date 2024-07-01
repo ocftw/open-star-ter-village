@@ -1,5 +1,5 @@
 import { List, ListItem, Typography, Stack } from '@mui/material';
-import { Players as PlayersState } from '@/game/store/slice/type';
+import { PlayersState } from '@/game';
 
 interface Props {
   players: PlayersState;

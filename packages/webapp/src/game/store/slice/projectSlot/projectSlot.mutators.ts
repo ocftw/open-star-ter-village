@@ -1,5 +1,5 @@
 import { PlayerID } from "boardgame.io";
-import { JobName } from "../card";
+import { JobName } from "../../../card";
 import { findContribution } from "./projectSlot.utils";
 import { ProjectSlot, ProjectContribution } from "./projectSlot";
 

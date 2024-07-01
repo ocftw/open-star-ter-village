@@ -1,5 +1,5 @@
 import { PlayerID } from "boardgame.io";
-import { ForceCard, ProjectCard } from "./card";
+import { ForceCard, ProjectCard } from "../../card";
 
 export interface Hand {
   projects: ProjectCard[];

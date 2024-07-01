@@ -10,7 +10,7 @@ import { removeAndRefillJobs } from './moves/removeAndRefillJobs';
 import { contributeJoinedProjects } from './moves/contributeJoinedProjects';
 import { mirror } from './moves/mirror';
 import { createProject } from './moves/createProject';
-import { ProjectCard } from './store/slice/card';
+import { ProjectCard } from './card';
 import { Player, PlayersMutator } from './store/slice/players';
 import GameStore, { GameState } from './store/store';
 import { DeckMutator, DeckSelector } from './store/slice/deck';
