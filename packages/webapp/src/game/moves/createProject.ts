@@ -6,6 +6,7 @@ import { ProjectSlotMutator } from '../store/slice/projectSlot/projectSlot';
 import { GameMove } from './type';
 import { CardsMutator, CardsSelector } from '../store/slice/cards';
 import { ActionSlotMutator, ActionSlotSelector } from '../store/slice/actionSlot';
+import { ScoreBoardMutator } from '../store/slice/scoreBoard';
 
 export type CreateProject = (projectCardIndex: number, jobCardIndex: number) => void;
 
@@ -60,8 +61,8 @@ export const createProject: GameMove<CreateProject> = ({ G, playerID }, projectC
   const jobInitPoints = 1;
   ProjectSlotMutator.assignWorker(activeProject, jobCard.name, currentPlayer, jobInitPoints);
   // score victory points
-  const createProjectVictoryPoints = 1;
-  G.players[currentPlayer].victoryPoints += createProjectVictoryPoints;
+  const createProjectVictoryPoints = 2;
+  ScoreBoardMutator.add(G.table.scoreBoard, currentPlayer, createProjectVictoryPoints);
 
   // discard job card
   DeckMutator.discard(G.decks.jobs, [jobCard]);

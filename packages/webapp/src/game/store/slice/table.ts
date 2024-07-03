@@ -1,6 +1,7 @@
 import { EventCard, JobCard } from "../../card";
 import ProjectBoardSlice, { ProjectBoard } from "./projectBoard";
 import ActionSlotsSlice, { ActionSlots } from "./actionSlots";
+import ScoreBoardSlice, { ScoreBoard } from "./scoreBoard";
 
 // TODO: move event slot into a separate slice
 export type EventSlot = EventCard | null;
@@ -12,6 +13,7 @@ export interface Table {
   projectBoard: ProjectBoard;
   jobSlots: JobCard[];
   actionSlots: ActionSlots;
+  scoreBoard: ScoreBoard;
 }
 
 const initialState = (): Table => ({
@@ -19,6 +21,7 @@ const initialState = (): Table => ({
   projectBoard: ProjectBoardSlice.initialState(),
   jobSlots: [],
   actionSlots: ActionSlotsSlice.initialState(),
+  scoreBoard: ScoreBoardSlice.initialState(),
 });
 
 const TableSlice = {

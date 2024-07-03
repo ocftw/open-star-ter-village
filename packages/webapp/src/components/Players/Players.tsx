@@ -16,9 +16,6 @@ const Players: React.FC<Props> = (props) => {
         <ListItem>
           ActionTokens: {props.players[player].token.actions}
         </ListItem>
-        <ListItem>
-          CompletedProjects: {JSON.stringify(props.players[player].completed.projects)}
-        </ListItem>
       </List>
     </Stack>
   ));

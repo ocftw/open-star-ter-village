@@ -12,6 +12,7 @@ export interface ProjectSlot {
   card: ProjectCard;
   owner: PlayerID;
   contributions: ProjectContribution[];
+  lastContributor?: PlayerID;
 }
 
 const initialState = (): ProjectSlot => ({
