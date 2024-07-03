@@ -1,8 +1,6 @@
 import { Game, MoveFn, PlayerID } from 'boardgame.io';
-import { INVALID_MOVE } from 'boardgame.io/core';
 import projectCards from './data/card/projects.json';
 import jobCards from './data/card/jobs.json';
-import forceCards from './data/card/forces.json';
 import eventCards from './data/card/events.json';
 import { recruit } from './moves/recruit';
 import { contributeOwnedProjects } from './moves/contributeOwnedProjects';
@@ -15,67 +13,51 @@ import { Player, PlayersMutator } from './store/slice/players';
 import GameStore, { GameState } from './store/store';
 import { DeckMutator, DeckSelector } from './store/slice/deck';
 import { ProjectBoardMutator, ProjectBoardSelector } from './store/slice/projectBoard';
-import { selectors } from './store/slice/projectSlot/projectSlot.selectors';
 import { CardsMutator } from './store/slice/cards';
 import { ActionSlotsMutator } from './store/slice/actionSlots';
+import { ScoreBoardMutator } from "./store/slice/scoreBoard";
+import { ProjectSlotSelector } from './store/slice/projectSlot/projectSlot';
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 export const OpenStarTerVillage: Game<GameState> = {
-  setup: ({ ctx }) => {
+  setup: ({ ctx, random }) => {
+    const shuffler = random.Shuffle;
+
+    // get default game state
     const G = GameStore.initialState();
 
     DeckMutator.initialize(G.decks.projects, projectCards as unknown as ProjectCard[]);
     DeckMutator.initialize(G.decks.jobs, jobCards);
-    DeckMutator.initialize(G.decks.forces, forceCards);
     DeckMutator.initialize(G.decks.events, eventCards);
 
     PlayersMutator.initialize(G.players, ctx.playOrder);
+    ScoreBoardMutator.initialize(G.table.scoreBoard, ctx.playOrder);
+
+    // shuffle cards
+    DeckMutator.shuffleDrawPile(G.decks.events, shuffler);
+
+    DeckMutator.shuffleDrawPile(G.decks.projects, shuffler);
+
+    const maxProjectCards = 2;
+    ctx.playOrder.forEach(playerId => {
+      const projectCards = DeckSelector.peek(G.decks.projects, maxProjectCards);
+      DeckMutator.draw(G.decks.projects, maxProjectCards);
+      CardsMutator.add(G.players[playerId].hand.projects, projectCards);
+    });
+
+    DeckMutator.shuffleDrawPile(G.decks.jobs, shuffler);
+    const maxJobCards = 5;
+    const jobCardsInPlay = DeckSelector.peek(G.decks.jobs, maxJobCards);
+    DeckMutator.draw(G.decks.jobs, maxJobCards);
+    CardsMutator.add(G.table.jobSlots, jobCardsInPlay);
+
+    ctx.playOrder.forEach(playerId => {
+      G.players[playerId].token.workers = 12;
+      G.players[playerId].token.actions = 3;
+    });
 
     return G;
-  },
-  moves: {
-
-  },
-  phases: {
-    play: {
-      start: true,
-      onBegin: ({ random, G }) => {
-        // shuffle cards
-        const shuffler = random.Shuffle;
-        DeckMutator.shuffleDrawPile(G.decks.events, shuffler);
-
-        DeckMutator.shuffleDrawPile(G.decks.projects, shuffler);
-        const maxProjectCards = 2;
-        for (let playerId in G.players) {
-          const projectCards = DeckSelector.peek(G.decks.projects, maxProjectCards);
-          DeckMutator.draw(G.decks.projects, maxProjectCards);
-          CardsMutator.add(G.players[playerId].hand.projects, projectCards);
-        }
-
-        const isForceCardsEnabled = false;
-        if (isForceCardsEnabled) {
-          DeckMutator.shuffleDrawPile(G.decks.forces, shuffler);
-          const maxForceCards = 2;
-          for (let playerId in G.players) {
-            const forceCards = DeckSelector.peek(G.decks.forces, maxForceCards);
-            DeckMutator.draw(G.decks.forces, maxForceCards);
-            CardsMutator.add(G.players[playerId].hand.forces, forceCards);
-          }
-        }
-
-        DeckMutator.shuffleDrawPile(G.decks.jobs, shuffler);
-        const maxJobCards = 5;
-        const jobCards = DeckSelector.peek(G.decks.jobs, maxJobCards);
-        DeckMutator.draw(G.decks.jobs, maxJobCards);
-        CardsMutator.add(G.table.jobSlots, jobCards);
-
-        for (let playerId in G.players) {
-          G.players[playerId].token.workers = 10;
-          G.players[playerId].token.actions = 3;
-        }
-      },
-    },
   },
   turn: {
     onBegin: () => {
@@ -130,7 +112,7 @@ export const OpenStarTerVillage: Game<GameState> = {
           settle: {
             client: false,
             // client trigger settle project and move on to next stage
-            move: (({ G }) => {
+            move: (({ G, ctx }) => {
               const activeProjects = G.table.projectBoard;
               const fulfilledProjects = ProjectBoardSelector.filterFulfilled(activeProjects);
               if (fulfilledProjects.length === 0) {
@@ -138,13 +120,21 @@ export const OpenStarTerVillage: Game<GameState> = {
               }
               fulfilledProjects.forEach(project => {
                 // Update Score
-                Object.keys(G.players).forEach(playerId => {
-                  const victoryPoints = selectors.getPlayerContribution(project, playerId);
-                  G.players[playerId].victoryPoints += victoryPoints;
-                });
-                // Return Tokens
-                Object.keys(G.players).forEach(playerId => {
-                  const workerTokens = selectors.getPlayerWorkerTokens(project, playerId);
+                ctx.playOrder.forEach(playerId => {
+                  const victoryPoints = ProjectSlotSelector.getPlayerContribution(project, playerId);
+                  ScoreBoardMutator.add(G.table.scoreBoard, playerId, victoryPoints);
+
+                  // bonus points
+                  const ownerBonusPoints = 2;
+                  const owner = project.owner;
+                  ScoreBoardMutator.add(G.table.scoreBoard, owner, ownerBonusPoints);
+
+                  const lastContributorBonusPoints = 2;
+                  const lastContributor = project.lastContributor;
+                  ScoreBoardMutator.add(G.table.scoreBoard, lastContributor!, lastContributorBonusPoints);
+
+                  // Return Tokens
+                  const workerTokens = ProjectSlotSelector.getPlayerWorkerTokens(project, playerId);
                   G.players[playerId].token.workers += workerTokens;
                 });
               });
@@ -155,21 +145,6 @@ export const OpenStarTerVillage: Game<GameState> = {
               const projectCards = fulfilledProjects.map(project => project.card);
               DeckMutator.discard(G.decks.projects, projectCards);
             }),
-          },
-        },
-        next: 'discard',
-      },
-      discard: {
-        moves: {
-          discardProjects: {
-            noLimit: true,
-            move: () => { },
-          },
-          discardForces: () => {
-            const isForceCardsEnabled = false;
-            if (!isForceCardsEnabled) {
-              return INVALID_MOVE;
-            }
           },
         },
         next: 'refill',
@@ -187,20 +162,8 @@ export const OpenStarTerVillage: Game<GameState> = {
                 CardsMutator.add(G.players[ctx.currentPlayer].hand.projects, projectCards);
               });
 
-              const refillForce: MoveFn<GameState> = (({G, ctx}) => {
-                const maxForceCards = 2;
-                const refillCardNumber = maxForceCards - G.players[ctx.currentPlayer].hand.forces.length;
-                const forceCards = DeckSelector.peek(G.decks.forces, refillCardNumber);
-                DeckMutator.draw(G.decks.forces, refillCardNumber);
-                CardsMutator.add(G.players[ctx.currentPlayer].hand.forces, forceCards);
-              });
-
               // refill cards
               refillProject(context);
-              const isForceCardsEnabled = false;
-              if (isForceCardsEnabled) {
-                refillForce(context);
-              }
 
               const { G, ctx, events} = context;
               // refill action points

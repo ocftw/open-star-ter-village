@@ -1,9 +1,8 @@
 import { PlayerID } from "boardgame.io";
-import { ForceCard, ProjectCard } from "../../card";
+import { ProjectCard } from "../../card";
 
 export interface Hand {
   projects: ProjectCard[];
-  forces: ForceCard[];
 }
 
 export interface Player {
@@ -12,33 +11,59 @@ export interface Player {
     workers: number;
     actions: number;
   };
-  completed: {
-    projects: ProjectCard[];
-  };
-  victoryPoints: number;
 }
 
 const playerInitialState = (): Player => ({
-  hand: { projects: [], forces: [] },
+  hand: { projects: [] },
   token: { workers: 0, actions: 0 },
-  completed: { projects: [] },
-  victoryPoints: 0,
 });
 
 export type Players = Record<PlayerID, Player>;
 
 const initialState = (): Players => ({});
 
-export const initialize = (state: Players, playerNames: string[]): void => {
+const initialize = (state: Players, playerNames: PlayerID[]): void => {
   playerNames.forEach(player => {
     state[player] = playerInitialState();
   });
 }
 
+const addProjects = (state: Players, playerId: PlayerID, projects: ProjectCard[]): void => {
+  state[playerId].hand.projects.push(...projects);
+};
+
+const useProject = (state: Players, playerId: PlayerID, project: ProjectCard): void => {
+  // remove the first project that matches the project card
+  const index = state[playerId].hand.projects.findIndex(p => p.name === project.name);
+  state[playerId].hand.projects.splice(index, 1);
+};
+
+const useWorker = (state: Players, playerId: PlayerID, numWorkers: number): void => {
+  state[playerId].token.workers -= numWorkers;
+};
+
+const resetWorkers = (state: Players, playerId: PlayerID, numWorkers: number): void => {
+  state[playerId].token.workers = numWorkers;
+};
+
+const useAction = (state: Players, playerId: PlayerID, numActions: number): void => {
+  state[playerId].token.actions -= numActions;
+};
+
+const resetActions = (state: Players, playerId: PlayerID, numActions: number): void => {
+  state[playerId].token.actions = numActions;
+};
+
 const PlayersSlice = {
   initialState,
   mutators: {
     initialize,
+    addProjects,
+    useProject,
+    useWorker,
+    resetWorkers,
+    useAction,
+    resetActions,
   },
 };
 
