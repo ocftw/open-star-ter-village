@@ -7,6 +7,4 @@ export type ProjectCard = BaseCard & {
 export type JobCard = BaseCard;
 export type JobName = string;
 
-export type ForceCard = BaseCard;
-
 export type EventCard = BaseCard;
