@@ -1,19 +1,16 @@
-import { PlayerID } from 'boardgame.io';
 import { filterInplace } from '../../utils';
 import { ProjectCard } from '../../card';
-import { ProjectSlot, ProjectSlotSelector } from './projectSlot/projectSlot';
+import ProjectSlotSlice, { ProjectSlot, ProjectSlotSelector } from './projectSlot/projectSlot';
 
 export type ProjectBoard = ProjectSlot[];
 
 const initialState = (): ProjectSlot[] => [];
 
-const add = (state: ProjectSlot[], card: ProjectCard, owner: PlayerID): void => {
-  const activeProject: ProjectSlot = {
-    card,
-    owner,
-    contributions: [],
-  };
-  state.push(activeProject);
+const add = (state: ProjectSlot[], card: ProjectCard): void => {
+  const projectSlot = ProjectSlotSlice.initialState();
+  projectSlot.card = card;
+
+  state.push(projectSlot);
 }
 
 const remove = (state: ProjectSlot[], removedProjects: ProjectSlot[]): void => {

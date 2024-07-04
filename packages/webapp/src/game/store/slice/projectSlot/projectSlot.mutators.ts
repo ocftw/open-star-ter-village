@@ -1,24 +1,38 @@
 import { PlayerID } from "boardgame.io";
 import { JobName } from "../../../card";
 import { findContribution } from "./projectSlot.utils";
-import { ProjectSlot, ProjectContribution } from "./projectSlot";
-
-const assignWorker = (state: ProjectSlot, jobName: JobName, playerId: PlayerID, points: number): void => {
-  const contribution: ProjectContribution = { jobName, worker: playerId, value: points };
-  state.contributions.push(contribution);
-  state.lastContributor = playerId;
-};
+import { ProjectSlot } from "./projectSlot";
 
 const pushWorker = (state: ProjectSlot, jobName: JobName, playerId: PlayerID, points: number): void => {
   const contribution = findContribution(state.contributions, jobName, playerId);
   if (!contribution) {
-    throw new Error(`${jobName} work played by ${playerId} not found in ${state.card.name}`);
+    state.contributions.push({ jobName, worker: playerId, value: points });
+  } else {
+    contribution.value += points;
   }
-  contribution.value += points;
   state.lastContributor = playerId;
+};
+
+const assignWorker = pushWorker;
+
+const removeContributor = (state: ProjectSlot, playerId: PlayerID): void => {
+  state.contributions = state.contributions.filter(contribution => contribution.worker !== playerId);
+};
+
+const assignOwner = (state: ProjectSlot, playerId: PlayerID, numWorkerTokens: number): void => {
+  state.owner = playerId;
+  state.ownerToken = numWorkerTokens;
+};
+
+const unassignOwner = (state: ProjectSlot): void => {
+  state.owner = '';
+  state.ownerToken = 0;
 };
 
 export const mutators = {
   assignWorker,
   pushWorker,
+  removeContributor,
+  assignOwner,
+  unassignOwner,
 };
