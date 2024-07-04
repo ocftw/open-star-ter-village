@@ -41,8 +41,11 @@ const ProjectSlot: React.FC<Props> = ({ project }) => {
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell colSpan={4}>
+              <TableCell colSpan={3}>
                 <Typography variant="h6">{projectName}</Typography>
+              </TableCell>
+              <TableCell>
+                <Typography variant="h6">{project?.owner}</Typography>
               </TableCell>
             </TableRow>
             {headRow}
