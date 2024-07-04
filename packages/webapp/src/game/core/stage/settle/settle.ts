@@ -3,7 +3,7 @@ import { settleProjects } from "./move/settleProjects";
 
 export const settle: GameStageConfig = {
   moves: {
-    settle: {
+    settleProjects: {
       client: false,
       // client trigger settle project and move on to next stage
       move: settleProjects,

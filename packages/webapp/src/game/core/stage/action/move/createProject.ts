@@ -7,36 +7,51 @@ import { GameMove } from '@/game/core/type';
 import { CardsMutator, CardsSelector } from '@/game/store/slice/cards';
 import { ActionSlotMutator, ActionSlotSelector } from '@/game/store/slice/actionSlot';
 import { ScoreBoardMutator } from '@/game/store/slice/scoreBoard';
-import { PlayersMutator } from '@/game/store/slice/players';
+import { PlayersMutator, PlayersSelector } from '@/game/store/slice/players';
 import { JobSlotsMutator } from '@/game/store/slice/jobSlots';
 
 export type CreateProject = (projectCardIndex: number, jobCardIndex: number) => void;
 
-export const createProject: GameMove<CreateProject> = ({ G, playerID }, projectCardIndex, jobCardIndex) => {
+export const createProject: GameMove<CreateProject> = ({ G, playerID, events }, projectCardIndex, jobCardIndex) => {
   if (!ActionSlotSelector.isAvailable(G.table.actionSlots.createProject)) {
     return INVALID_MOVE;
   }
 
-  const currentPlayer = playerID;
-  const currentPlayerToken = G.players[currentPlayer].token;
+  console.log('use action tokens')
+  const actionTokens = PlayersSelector.getNumActionTokens(G.players, playerID);
   // TODO: replace hardcoded number with dynamic rules
   const createProjectActionCosts = 2;
-  if (currentPlayerToken.actions < createProjectActionCosts) {
+  if (actionTokens < createProjectActionCosts) {
     return INVALID_MOVE;
   }
+  ActionSlotMutator.occupy(G.table.actionSlots.createProject);
+  PlayersMutator.useActionTokens(G.players, playerID, createProjectActionCosts);
+
+  console.log('use worker tokens')
   const createProjectWorkerCosts = 1;
   const recruitWorkerCosts = 1;
   const totalWorkerCosts = createProjectWorkerCosts + recruitWorkerCosts;
-  if (currentPlayerToken.workers < totalWorkerCosts) {
+  const workerTokens = PlayersSelector.getNumWorkerTokens(G.players, playerID);
+  if (workerTokens < totalWorkerCosts) {
     return INVALID_MOVE;
   }
+  PlayersMutator.useWorkerTokens(G.players, playerID, createProjectWorkerCosts);
 
+  console.log('use project card')
   // check project card in in hand
-  const currentHandProjects = G.players[currentPlayer].hand.projects;
+  const currentHandProjects = G.players[playerID].hand.projects;
   if (!isInRange(projectCardIndex, currentHandProjects.length)) {
     return INVALID_MOVE;
   }
+  const projectCard = CardsSelector.getById(currentHandProjects, projectCardIndex);
+  PlayersMutator.useProject(G.players, playerID, projectCard);
+  ProjectBoardMutator.add(G.table.projectBoard, projectCard);
 
+  // assign worker token to owner slot
+  const projectSlot = ProjectBoardSelector.getLast(G.table.projectBoard);
+  ProjectSlotMutator.assignOwner(projectSlot, playerID, createProjectWorkerCosts);
+
+  console.log('use job card')
   // check job card is on the table
   const currentJobs = G.table.jobSlots;
   if (!isInRange(jobCardIndex, currentJobs.length)) {
@@ -44,34 +59,20 @@ export const createProject: GameMove<CreateProject> = ({ G, playerID }, projectC
   }
 
   // check job card is required in project
-  const projectCard = CardsSelector.getById(currentHandProjects, projectCardIndex);
   const jobCard = CardsSelector.getById(currentJobs, jobCardIndex);
   if (!Object.keys(projectCard.requirements).includes(jobCard.name)) {
     return INVALID_MOVE;
   }
-
-  // reduce action tokens
-  PlayersMutator.useActionTokens(G.players, currentPlayer, createProjectActionCosts);
-
-  // create project
-  PlayersMutator.useProject(G.players, currentPlayer, projectCard);
-  // assign worker token to owner slot
-  PlayersMutator.useWorkerTokens(G.players, currentPlayer, createProjectWorkerCosts);
-  ProjectBoardMutator.add(G.table.projectBoard, projectCard);
-
-  const projectSlot = ProjectBoardSelector.getLast(G.table.projectBoard);
-  ProjectSlotMutator.assignOwner(projectSlot, currentPlayer, createProjectWorkerCosts);
-
-
   JobSlotsMutator.removeJobCard(currentJobs, jobCard);
   // assign worker token to job slot
-  PlayersMutator.useWorkerTokens(G.players, currentPlayer, recruitWorkerCosts);
+  PlayersMutator.useWorkerTokens(G.players, playerID, recruitWorkerCosts);
   const jobInitPoints = 1;
-  ProjectSlotMutator.assignWorker(projectSlot, jobCard.name, currentPlayer, jobInitPoints);
+  ProjectSlotMutator.assignWorker(projectSlot, jobCard.name, playerID, jobInitPoints);
 
   const createProjectVictoryPoints = 2;
-  ScoreBoardMutator.add(G.table.scoreBoard, currentPlayer, createProjectVictoryPoints);
+  ScoreBoardMutator.add(G.table.scoreBoard, playerID, createProjectVictoryPoints);
 
+  console.log('discard and refill job card')
   // discard job card
   DeckMutator.discard(G.decks.jobs, [jobCard]);
 
@@ -82,5 +83,9 @@ export const createProject: GameMove<CreateProject> = ({ G, playerID }, projectC
   DeckMutator.draw(G.decks.jobs, refillCardNumber);
   CardsMutator.add(currentJobs, jobCards);
 
-  ActionSlotMutator.occupy(G.table.actionSlots.createProject);
+  console.log('end create project')
+  // end stage if no action tokens left
+  if (PlayersSelector.getNumActionTokens(G.players, playerID) === 0) {
+    events.endStage();
+  }
 };

@@ -1,12 +1,12 @@
 import { INVALID_MOVE } from 'boardgame.io/core';
 import { GameMove } from '@/game/core/type';
 import { ActionSlotMutator, ActionSlotSelector } from '@/game/store/slice/actionSlot';
-import { CreateProject, createProject } from './createProject';
 import { Recruit, recruit } from './recruit';
 import { ContributeOwnedProjects, contributeOwnedProjects } from './contributeOwnedProjects';
 import { RemoveAndRefillJobs, removeAndRefillJobs } from './removeAndRefillJobs';
 import { ContributeJoinedProjects, contributeJoinedProjects } from './contributeJoinedProjects';
 import { ActionMoveName } from './type';
+import { PlayersMutator, PlayersSelector } from '@/game/store/slice/players';
 
 export type Mirror = (actionName: ActionMoveName, ...params: any[]) => void;
 export const mirror: GameMove<Mirror> = (context, actionName, ...params) => {
@@ -15,12 +15,17 @@ export const mirror: GameMove<Mirror> = (context, actionName, ...params) => {
     return INVALID_MOVE;
   }
 
+  const mirrorActionCosts = 1;
+  const actionTokens = PlayersSelector.getNumActionTokens(G.players, context.playerID);
+  if (actionTokens < mirrorActionCosts) {
+    return INVALID_MOVE;
+  }
+  PlayersMutator.useActionTokens(G.players, context.playerID, mirrorActionCosts);
+  ActionSlotMutator.occupy(G.table.actionSlots.mirror);
+
   // TODO: add token to bypass the active moves check when its inactive
   let result = null;
   switch (actionName) {
-    case 'createProject':
-      result = createProject(context, ...(params as Parameters<CreateProject>));
-      break;
     case 'recruit':
       result = recruit(context, ...(params as Parameters<Recruit>));
       break;
@@ -42,6 +47,4 @@ export const mirror: GameMove<Mirror> = (context, actionName, ...params) => {
   if (result === INVALID_MOVE) {
     return INVALID_MOVE;
   }
-
-  ActionSlotMutator.occupy(G.table.actionSlots.mirror);
 };

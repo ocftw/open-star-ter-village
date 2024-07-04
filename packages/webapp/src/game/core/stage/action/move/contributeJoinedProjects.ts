@@ -4,10 +4,11 @@ import { ProjectBoardSelector } from '@/game/store/slice/projectBoard';
 import { ProjectSlotMutator, ProjectSlotSelector } from '@/game/store/slice/projectSlot/projectSlot';
 import { GameMove, ContributionAction } from '@/game/core/type';
 import { ActionSlotMutator, ActionSlotSelector } from '@/game/store/slice/actionSlot';
+import { PlayersSelector } from '@/game/store/slice/players';
 
 export type ContributeJoinedProjects = (contributions: ContributionAction[]) => void;
 
-export const contributeJoinedProjects: GameMove<ContributeJoinedProjects> = ({ G, ctx, playerID }, contributions) => {
+export const contributeJoinedProjects: GameMove<ContributeJoinedProjects> = ({ G, playerID, events }, contributions) => {
   if (!ActionSlotSelector.isAvailable(G.table.actionSlots.contributeJoinedProjects)) {
     return INVALID_MOVE;
   }
@@ -21,6 +22,8 @@ export const contributeJoinedProjects: GameMove<ContributeJoinedProjects> = ({ G
   if (currentPlayerToken.actions < contributeActionCosts) {
     return INVALID_MOVE;
   }
+  ActionSlotMutator.occupy(G.table.actionSlots.contributeJoinedProjects);
+
   const activeProjects = G.table.projectBoard;
   const isInvalid = contributions.map(({ activeProjectIndex, jobName }) => {
     if (!isInRange(activeProjectIndex, activeProjects.length)) {
@@ -52,5 +55,9 @@ export const contributeJoinedProjects: GameMove<ContributeJoinedProjects> = ({ G
     ProjectSlotMutator.pushWorker(activeProject, jobName, currentPlayer, value);
   });
 
-  ActionSlotMutator.occupy(G.table.actionSlots.contributeJoinedProjects);
+
+  // end stage if no action tokens left
+  if (PlayersSelector.getNumActionTokens(G.players, playerID) === 0) {
+    events.endStage();
+  }
 };

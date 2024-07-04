@@ -6,10 +6,15 @@ import { ProjectSlotMutator, ProjectSlotSelector } from "@/game/store/slice/proj
 import { ScoreBoardMutator } from "@/game/store/slice/scoreBoard";
 
 export type SettleProjects = () => void;
-export const settleProjects: GameMove<SettleProjects> = (({ G }) => {
+export const settleProjects: GameMove<SettleProjects> = (({ G, events }) => {
+  console.log('settle projects')
+
   const activeProjects = G.table.projectBoard;
   const fulfilledProjects = ProjectBoardSelector.filterFulfilled(activeProjects);
+
   if (fulfilledProjects.length === 0) {
+    console.log('no fulfilled projects, end stage early')
+    events.endStage();
     return;
   }
   fulfilledProjects.forEach(project => {
@@ -52,4 +57,9 @@ export const settleProjects: GameMove<SettleProjects> = (({ G }) => {
     // Update OpenSourceTree in full version
     // TODO: implement OpenSourceTree
   }
+
+  console.log('end settle projects')
+
+  console.log('end stage')
+  events.endStage();
 })
