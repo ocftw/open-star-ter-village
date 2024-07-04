@@ -1,12 +1,14 @@
 import { INVALID_MOVE } from 'boardgame.io/core';
-import { isInRange } from '../utils';
-import { ProjectBoardMutator, ProjectBoardSelector } from '../store/slice/projectBoard';
-import { DeckMutator, DeckSelector } from '../store/slice/deck';
-import { ProjectSlotMutator } from '../store/slice/projectSlot/projectSlot';
-import { GameMove } from './type';
-import { CardsMutator, CardsSelector } from '../store/slice/cards';
-import { ActionSlotMutator, ActionSlotSelector } from '../store/slice/actionSlot';
-import { ScoreBoardMutator } from '../store/slice/scoreBoard';
+import { isInRange } from '@/game/utils';
+import { ProjectBoardMutator, ProjectBoardSelector } from '@/game/store/slice/projectBoard';
+import { DeckMutator, DeckSelector } from '@/game/store/slice/deck';
+import { ProjectSlotMutator } from '@/game/store/slice/projectSlot/projectSlot';
+import { GameMove } from '@/game/core/type';
+import { CardsMutator, CardsSelector } from '@/game/store/slice/cards';
+import { ActionSlotMutator, ActionSlotSelector } from '@/game/store/slice/actionSlot';
+import { ScoreBoardMutator } from '@/game/store/slice/scoreBoard';
+import { PlayersMutator } from '@/game/store/slice/players';
+import { JobSlotsMutator } from '@/game/store/slice/jobSlots';
 
 export type CreateProject = (projectCardIndex: number, jobCardIndex: number) => void;
 
@@ -23,7 +25,9 @@ export const createProject: GameMove<CreateProject> = ({ G, playerID }, projectC
     return INVALID_MOVE;
   }
   const createProjectWorkerCosts = 1;
-  if (currentPlayerToken.workers < createProjectWorkerCosts) {
+  const recruitWorkerCosts = 1;
+  const totalWorkerCosts = createProjectWorkerCosts + recruitWorkerCosts;
+  if (currentPlayerToken.workers < totalWorkerCosts) {
     return INVALID_MOVE;
   }
 
@@ -47,20 +51,24 @@ export const createProject: GameMove<CreateProject> = ({ G, playerID }, projectC
   }
 
   // reduce action tokens
-  currentPlayerToken.actions -= createProjectActionCosts;
-  CardsMutator.removeOne(currentHandProjects, projectCard);
-  CardsMutator.removeOne(currentJobs, jobCard);
+  PlayersMutator.useActionTokens(G.players, currentPlayer, createProjectActionCosts);
 
-  // initial active project
-  ProjectBoardMutator.add(G.table.projectBoard, projectCard, currentPlayer);
-  const activeProject = ProjectBoardSelector.getLast(G.table.projectBoard);
+  // create project
+  PlayersMutator.useProject(G.players, currentPlayer, projectCard);
+  // assign worker token to owner slot
+  PlayersMutator.useWorkerTokens(G.players, currentPlayer, createProjectWorkerCosts);
+  ProjectBoardMutator.add(G.table.projectBoard, projectCard);
 
-  // reduce worker token
-  currentPlayerToken.workers -= createProjectWorkerCosts;
-  // assign worker token
+  const projectSlot = ProjectBoardSelector.getLast(G.table.projectBoard);
+  ProjectSlotMutator.assignOwner(projectSlot, currentPlayer, createProjectWorkerCosts);
+
+
+  JobSlotsMutator.removeJobCard(currentJobs, jobCard);
+  // assign worker token to job slot
+  PlayersMutator.useWorkerTokens(G.players, currentPlayer, recruitWorkerCosts);
   const jobInitPoints = 1;
-  ProjectSlotMutator.assignWorker(activeProject, jobCard.name, currentPlayer, jobInitPoints);
-  // score victory points
+  ProjectSlotMutator.assignWorker(projectSlot, jobCard.name, currentPlayer, jobInitPoints);
+
   const createProjectVictoryPoints = 2;
   ScoreBoardMutator.add(G.table.scoreBoard, currentPlayer, createProjectVictoryPoints);
 
@@ -68,7 +76,7 @@ export const createProject: GameMove<CreateProject> = ({ G, playerID }, projectC
   DeckMutator.discard(G.decks.jobs, [jobCard]);
 
   // Refill job card
-  const maxJobCards = 5;
+  const maxJobCards = 6;
   const refillCardNumber = maxJobCards - currentJobs.length;
   const jobCards = DeckSelector.peek(G.decks.jobs, refillCardNumber);
   DeckMutator.draw(G.decks.jobs, refillCardNumber);

@@ -1,14 +1,18 @@
 import { INVALID_MOVE } from 'boardgame.io/core';
-import { isInRange } from '../utils';
-import { ProjectBoardSelector } from '../store/slice/projectBoard';
-import { ProjectSlotMutator, ProjectSlotSelector } from '../store/slice/projectSlot/projectSlot';
-import { GameMove, ContributionAction } from './type';
-import { ActionSlotMutator, ActionSlotSelector } from '../store/slice/actionSlot';
+import { isInRange } from '@/game/utils';
+import { ProjectBoardSelector } from '@/game/store/slice/projectBoard';
+import { ProjectSlotMutator, ProjectSlotSelector } from '@/game/store/slice/projectSlot/projectSlot';
+import { GameMove, ContributionAction } from '@/game/core/type';
+import { ActionSlotMutator, ActionSlotSelector } from '@/game/store/slice/actionSlot';
 
-export type ContributeJoinedProjects = (contributions: ContributionAction[]) => void;
+export type ContributeOwnedProjects = (contributions: ContributionAction[]) => void;
 
-export const contributeJoinedProjects: GameMove<ContributeJoinedProjects> = ({ G, ctx, playerID }, contributions) => {
-  if (!ActionSlotSelector.isAvailable(G.table.actionSlots.contributeJoinedProjects)) {
+export const contributeOwnedProjects: GameMove<ContributeOwnedProjects> = ({ G, playerID }, contributions) => {
+  if (!ActionSlotSelector.isAvailable(G.table.actionSlots.contributeOwnedProjects)) {
+    return INVALID_MOVE;
+  }
+
+  if (contributions.length < 1) {
     return INVALID_MOVE;
   }
 
@@ -24,7 +28,7 @@ export const contributeJoinedProjects: GameMove<ContributeJoinedProjects> = ({ G
       return true;
     }
     const activeProject = ProjectBoardSelector.getById(activeProjects, activeProjectIndex);
-    if (activeProject.owner === currentPlayer) {
+    if (activeProject.owner !== currentPlayer) {
       return true;
     }
 
@@ -36,18 +40,19 @@ export const contributeJoinedProjects: GameMove<ContributeJoinedProjects> = ({ G
     return INVALID_MOVE;
   }
   const totalContributions = contributions.map(({ value }) => value).reduce((a, b) => a + b, 0);
-  const maxJoinedContributions = 3;
-  if (totalContributions > maxJoinedContributions) {
+  const maxOwnedContributions = 4;
+  if (totalContributions > maxOwnedContributions) {
     return INVALID_MOVE;
   }
 
   // deduct action tokens
   currentPlayerToken.actions -= contributeActionCosts;
+
   contributions.forEach(({ activeProjectIndex, jobName, value }) => {
     // update contributions to given contribution points
     const activeProject = ProjectBoardSelector.getById(G.table.projectBoard, activeProjectIndex);
     ProjectSlotMutator.pushWorker(activeProject, jobName, currentPlayer, value);
   });
 
-  ActionSlotMutator.occupy(G.table.actionSlots.contributeJoinedProjects);
+  ActionSlotMutator.occupy(G.table.actionSlots.contributeOwnedProjects);
 };
