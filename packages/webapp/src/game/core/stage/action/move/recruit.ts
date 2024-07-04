@@ -15,8 +15,7 @@ export const recruit: GameMove<Recruit> = ({ G, playerID, events }, jobCardIndex
     return INVALID_MOVE;
   }
 
-  const currentPlayer = playerID;
-  const currentPlayerToken = G.players[currentPlayer].token;
+  const currentPlayerToken = G.players[playerID].token;
   const recruitActionCosts = 1;
   if (currentPlayerToken.actions < recruitActionCosts) {
     return INVALID_MOVE;
@@ -28,8 +27,7 @@ export const recruit: GameMove<Recruit> = ({ G, playerID, events }, jobCardIndex
     return INVALID_MOVE;
   }
 
-  const currentJobs = G.table.jobSlots;
-  if (!isInRange(jobCardIndex, currentJobs.length)) {
+  if (!isInRange(jobCardIndex, G.table.jobSlots.length)) {
     return INVALID_MOVE;
   }
 
@@ -37,7 +35,7 @@ export const recruit: GameMove<Recruit> = ({ G, playerID, events }, jobCardIndex
   if (!isInRange(activeProjectIndex, activeProjects.length)) {
     return INVALID_MOVE;
   }
-  const jobCard = CardsSelector.getById(currentJobs, jobCardIndex);
+  const jobCard = CardsSelector.getById(G.table.jobSlots, jobCardIndex);
   const activeProject = ProjectBoardSelector.getById(G.table.projectBoard, activeProjectIndex);
   const jobContribution = ProjectSlotSelector.getJobContribution(activeProject, jobCard.name);
   // Check job requirment is not fulfilled yet
@@ -45,29 +43,29 @@ export const recruit: GameMove<Recruit> = ({ G, playerID, events }, jobCardIndex
     return INVALID_MOVE;
   }
   // User cannot place more than one worker in same job
-  if (ProjectSlotSelector.hasWorker(activeProject, jobCard.name, currentPlayer)) {
+  if (ProjectSlotSelector.hasWorker(activeProject, jobCard.name, playerID)) {
     return INVALID_MOVE;
   }
 
   // reduce action
   currentPlayerToken.actions -= recruitActionCosts;
-  CardsMutator.removeOne(currentJobs, jobCard);
+  CardsMutator.removeOne(G.table.jobSlots, jobCard);
 
   // reduce worker tokens
   currentPlayerToken.workers -= recruitWorkerCosts;
   // assign worker token
   const jobInitPoints = 1;
-  ProjectSlotMutator.assignWorker(activeProject, jobCard.name, currentPlayer, jobInitPoints);
+  ProjectSlotMutator.assignWorker(activeProject, jobCard.name, playerID, jobInitPoints);
 
   // discard job card
   DeckMutator.discard(G.decks.jobs, [jobCard]);
 
   // Refill job card
-  const maxJobCards = 5;
-  const refillCardNumber = maxJobCards - currentJobs.length;
+  const maxJobCards = 8;
+  const refillCardNumber = maxJobCards - G.table.jobSlots.length;
   const jobCards = DeckSelector.peek(G.decks.jobs, refillCardNumber);
   DeckMutator.draw(G.decks.jobs, refillCardNumber);
-  CardsMutator.add(currentJobs, jobCards);
+  CardsMutator.add(G.table.jobSlots, jobCards);
 
 
   // end stage if no action tokens left

@@ -25,7 +25,7 @@ export const removeAndRefillJobs: GameMove<RemoveAndRefillJobs> = ({ G, playerID
   CardsMutator.remove(currentJob, removedJobCards);
   DeckMutator.discard(jobDeck, removedJobCards);
 
-  const maxJobCards = 5;
+  const maxJobCards = 8;
   const refillCardNumber = maxJobCards - currentJob.length;
   const jobCards = DeckSelector.peek(jobDeck, refillCardNumber);
   DeckMutator.draw(jobDeck, refillCardNumber);

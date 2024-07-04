@@ -53,35 +53,35 @@ export const createProject: GameMove<CreateProject> = ({ G, playerID, events }, 
 
   console.log('use job card')
   // check job card is on the table
-  const currentJobs = G.table.jobSlots;
-  if (!isInRange(jobCardIndex, currentJobs.length)) {
+  if (!isInRange(jobCardIndex, G.table.jobSlots.length)) {
     return INVALID_MOVE;
   }
 
   // check job card is required in project
-  const jobCard = CardsSelector.getById(currentJobs, jobCardIndex);
+  const jobCard = CardsSelector.getById(G.table.jobSlots, jobCardIndex);
   if (!Object.keys(projectCard.requirements).includes(jobCard.name)) {
     return INVALID_MOVE;
   }
-  JobSlotsMutator.removeJobCard(currentJobs, jobCard);
+  JobSlotsMutator.removeJobCard(G.table.jobSlots, jobCard);
   // assign worker token to job slot
   PlayersMutator.useWorkerTokens(G.players, playerID, recruitWorkerCosts);
   const jobInitPoints = 1;
   ProjectSlotMutator.assignWorker(projectSlot, jobCard.name, playerID, jobInitPoints);
-
-  const createProjectVictoryPoints = 2;
-  ScoreBoardMutator.add(G.table.scoreBoard, playerID, createProjectVictoryPoints);
 
   console.log('discard and refill job card')
   // discard job card
   DeckMutator.discard(G.decks.jobs, [jobCard]);
 
   // Refill job card
-  const maxJobCards = 6;
-  const refillCardNumber = maxJobCards - currentJobs.length;
+  const maxJobCards = 8;
+  const refillCardNumber = maxJobCards - G.table.jobSlots.length;
   const jobCards = DeckSelector.peek(G.decks.jobs, refillCardNumber);
   DeckMutator.draw(G.decks.jobs, refillCardNumber);
-  CardsMutator.add(currentJobs, jobCards);
+  CardsMutator.add(G.table.jobSlots, jobCards);
+
+  console.log('add victory points to initiator')
+  const createProjectVictoryPoints = 2;
+  ScoreBoardMutator.add(G.table.scoreBoard, playerID, createProjectVictoryPoints);
 
   console.log('end create project')
   // end stage if no action tokens left
