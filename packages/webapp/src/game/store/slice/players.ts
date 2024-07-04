@@ -28,6 +28,18 @@ const initialize = (state: Players, playerNames: PlayerID[]): void => {
   });
 }
 
+const getNumWorkerTokens = (state: Players, playerId: PlayerID): number => {
+  return state[playerId].token.workers;
+};
+
+const getNumActionTokens = (state: Players, playerId: PlayerID): number => {
+  return state[playerId].token.actions;
+};
+
+const getNumProjects = (state: Players, playerId: PlayerID): number => {
+  return state[playerId].hand.projects.length;
+};
+
 const addProjects = (state: Players, playerId: PlayerID, projects: ProjectCard[]): void => {
   state[playerId].hand.projects.push(...projects);
 };
@@ -38,19 +50,23 @@ const useProject = (state: Players, playerId: PlayerID, project: ProjectCard): v
   state[playerId].hand.projects.splice(index, 1);
 };
 
-const useWorker = (state: Players, playerId: PlayerID, numWorkers: number): void => {
+const addWorkerTokens = (state: Players, playerId: PlayerID, numWorkers: number): void => {
+  state[playerId].token.workers += numWorkers;
+};
+
+const useWorkerTokens = (state: Players, playerId: PlayerID, numWorkers: number): void => {
   state[playerId].token.workers -= numWorkers;
 };
 
-const resetWorkers = (state: Players, playerId: PlayerID, numWorkers: number): void => {
+const resetWorkerTokens = (state: Players, playerId: PlayerID, numWorkers: number): void => {
   state[playerId].token.workers = numWorkers;
 };
 
-const useAction = (state: Players, playerId: PlayerID, numActions: number): void => {
+const useActionTokens = (state: Players, playerId: PlayerID, numActions: number): void => {
   state[playerId].token.actions -= numActions;
 };
 
-const resetActions = (state: Players, playerId: PlayerID, numActions: number): void => {
+const resetActionTokens = (state: Players, playerId: PlayerID, numActions: number): void => {
   state[playerId].token.actions = numActions;
 };
 
@@ -60,12 +76,19 @@ const PlayersSlice = {
     initialize,
     addProjects,
     useProject,
-    useWorker,
-    resetWorkers,
-    useAction,
-    resetActions,
+    addWorkerTokens,
+    useWorkerTokens,
+    resetWorkerTokens,
+    useActionTokens,
+    resetActionTokens,
+  },
+  selectors: {
+    getNumWorkerTokens,
+    getNumActionTokens,
+    getNumProjects,
   },
 };
 
 export const PlayersMutator = PlayersSlice.mutators;
+export const PlayersSelector = PlayersSlice.selectors;
 export default PlayersSlice;
