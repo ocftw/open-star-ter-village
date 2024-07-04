@@ -13,9 +13,10 @@ interface Props {
   projectValue: number;
   onJobNameChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   jobNameValue: string;
+  isJobNameSelectable?: boolean;
 }
 
-const ProjectBoard: React.FC<Props> = ({ projectBoard, onProjectSlotChange, projectValue, onJobNameChange, jobNameValue }) => (
+const ProjectBoard: React.FC<Props> = ({ projectBoard, onProjectSlotChange, projectValue, onJobNameChange, jobNameValue, isJobNameSelectable = false }) => (
   <Stack direction="row" spacing={2}>
     <Box component='label'>Active project cards</Box>
     <RadioGroup onChange={onProjectSlotChange} value={projectValue}>
@@ -30,7 +31,7 @@ const ProjectBoard: React.FC<Props> = ({ projectBoard, onProjectSlotChange, proj
             />
             Job requirements:
             {
-              (projectValue === index) && (
+              isJobNameSelectable && (projectValue === index) && (
                 <RadioGroup onChange={onJobNameChange} value={jobNameValue}>
                 {
                   Object.keys(projectCard.requirements).map((jobName) =>
@@ -38,7 +39,7 @@ const ProjectBoard: React.FC<Props> = ({ projectBoard, onProjectSlotChange, proj
                       key={`${index}-${jobName}`}
                       value={jobName}
                       control={<Radio />}
-                      label={jobName}
+                      label={`${jobName}: ${projectCard.requirements[jobName]}`}
                     />
                   )
                 }

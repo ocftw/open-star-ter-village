@@ -112,6 +112,7 @@ const DevActions: React.FC<BoardProps<GameState>> = (props) => {
                   projectValue={activeProjectIndex}
                   onJobNameChange={event => setJobName(event.target.value)}
                   jobNameValue={jobName}
+                  isJobNameSelectable={true}
                 />
                 <ContributionValueInputBox
                   value={value}
@@ -128,6 +129,7 @@ const DevActions: React.FC<BoardProps<GameState>> = (props) => {
                   projectBoard={G.table.projectBoard}
                   onProjectSlotChange={event => setActiveProjectIndex(parseInt(event.target.value))}
                   projectValue={activeProjectIndex}
+                  isJobNameSelectable={true}
                   onJobNameChange={event => setJobName(event.target.value)}
                   jobNameValue={jobName}
                 />
