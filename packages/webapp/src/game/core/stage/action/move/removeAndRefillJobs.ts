@@ -1,9 +1,9 @@
 import { INVALID_MOVE } from 'boardgame.io/core';
-import { isInRange } from '../utils';
-import { DeckMutator, DeckSelector } from '../store/slice/deck';
-import { GameMove } from './type';
-import { CardsMutator } from '../store/slice/cards';
-import { ActionSlotMutator, ActionSlotSelector } from '../store/slice/actionSlot';
+import { isInRange } from '@/game/utils';
+import { DeckMutator, DeckSelector } from '@/game/store/slice/deck';
+import { GameMove } from '@/game/core/type';
+import { CardsMutator } from '@/game/store/slice/cards';
+import { ActionSlotMutator, ActionSlotSelector } from '@/game/store/slice/actionSlot';
 
 export type RemoveAndRefillJobs = (jobCardIndices: number[]) => void;
 export const removeAndRefillJobs: GameMove<RemoveAndRefillJobs> = ({ G }, jobCardIndices) => {

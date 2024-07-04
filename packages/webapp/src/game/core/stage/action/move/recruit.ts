@@ -1,11 +1,11 @@
 import { INVALID_MOVE } from 'boardgame.io/core';
-import { isInRange } from '../utils';
-import { ProjectBoardSelector } from '../store/slice/projectBoard';
-import { DeckMutator, DeckSelector } from '../store/slice/deck';
-import { ProjectSlotMutator, ProjectSlotSelector } from '../store/slice/projectSlot/projectSlot';
-import { GameMove } from './type';
-import { CardsMutator, CardsSelector } from '../store/slice/cards';
-import { ActionSlotMutator, ActionSlotSelector } from '../store/slice/actionSlot';
+import { isInRange } from '@/game/utils';
+import { ProjectBoardSelector } from '@/game/store/slice/projectBoard';
+import { DeckMutator, DeckSelector } from '@/game/store/slice/deck';
+import { ProjectSlotMutator, ProjectSlotSelector } from '@/game/store/slice/projectSlot/projectSlot';
+import { GameMove } from '@/game/core/type';
+import { CardsMutator, CardsSelector } from '@/game/store/slice/cards';
+import { ActionSlotMutator, ActionSlotSelector } from '@/game/store/slice/actionSlot';
 
 export type Recruit = (resourceCardIndex: number, activeProjectIndex: number) => void;
 

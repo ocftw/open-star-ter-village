@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
 import { GameState } from '@/game';
-import { AllMoves } from '@/game/moves/type';
+import { AllMoves } from '@/game/core/type';
 import HandProjectCards from './HandProjectCards';
 import JobSlots from './JobSlots';
 import ProjectBoard from './ProjectBoard';

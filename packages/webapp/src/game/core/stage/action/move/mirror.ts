@@ -1,13 +1,14 @@
 import { INVALID_MOVE } from 'boardgame.io/core';
+import { GameMove } from '@/game/core/type';
+import { ActionSlotMutator, ActionSlotSelector } from '@/game/store/slice/actionSlot';
 import { CreateProject, createProject } from './createProject';
-import { GameMove, ActionMove } from './type';
 import { Recruit, recruit } from './recruit';
 import { ContributeOwnedProjects, contributeOwnedProjects } from './contributeOwnedProjects';
 import { RemoveAndRefillJobs, removeAndRefillJobs } from './removeAndRefillJobs';
 import { ContributeJoinedProjects, contributeJoinedProjects } from './contributeJoinedProjects';
-import { ActionSlotMutator, ActionSlotSelector } from '../store/slice/actionSlot';
+import { ActionMoveName } from './type';
 
-export type Mirror = (actionName: ActionMove, ...params: any[]) => void;
+export type Mirror = (actionName: ActionMoveName, ...params: any[]) => void;
 export const mirror: GameMove<Mirror> = (context, actionName, ...params) => {
   const { G } = context;
   if (!ActionSlotSelector.isAvailable(G.table.actionSlots.mirror)) {
