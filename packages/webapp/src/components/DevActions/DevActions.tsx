@@ -17,7 +17,7 @@ import ContributionValueInputBox from './ContributionValueInputBox';
 
 const DevActions: React.FC<BoardProps<GameState>> = (props) => {
   const { G, playerID, moves: nonTypeMoves, events, ctx } = props;
-  const moves = nonTypeMoves as unknown as AllMoves;
+  const moves: AllMoves = nonTypeMoves as unknown as AllMoves;
 
   const [tabValue, setTabValue] = useState('create-project');
   const onTabChange = (event: React.SyntheticEvent, newValue: string) => {
@@ -53,7 +53,7 @@ const DevActions: React.FC<BoardProps<GameState>> = (props) => {
     setContributions([]);
   };
   const onEndAction = () => events.endStage!();
-  const onEndSettle = () => events.endStage!();
+  const onSettleProjects = () => moves.settleProjects();
   const onRefillAndEnd = () => moves.refillAndEnd();
   const myCurrentStage = ctx.activePlayers ? ctx.activePlayers[playerID] : ''
 
@@ -161,15 +161,7 @@ const DevActions: React.FC<BoardProps<GameState>> = (props) => {
         myCurrentStage === 'settle' &&
           <Stack direction={['column', 'row']} mt={1}>
             <div className='group settles'>
-              <Button color='primary' onClick={onEndSettle}>End Settle</Button>
-            </div>
-          </Stack>
-      }
-      {
-        myCurrentStage === 'discard' &&
-          <Stack direction={['column', 'row']} mt={1}>
-            <div className='group discards'>
-              <Button color='primary' onClick={() => events.endStage!()}>End Discard</Button>
+              <Button color='primary' onClick={onSettleProjects}>Settle Projects</Button>
             </div>
           </Stack>
       }
