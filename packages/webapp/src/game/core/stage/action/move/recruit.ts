@@ -6,10 +6,11 @@ import { ProjectSlotMutator, ProjectSlotSelector } from '@/game/store/slice/proj
 import { GameMove } from '@/game/core/type';
 import { CardsMutator, CardsSelector } from '@/game/store/slice/cards';
 import { ActionSlotMutator, ActionSlotSelector } from '@/game/store/slice/actionSlot';
+import { PlayersSelector } from '@/game/store/slice/players';
 
 export type Recruit = (resourceCardIndex: number, activeProjectIndex: number) => void;
 
-export const recruit: GameMove<Recruit> = ({ G, playerID }, jobCardIndex, activeProjectIndex) => {
+export const recruit: GameMove<Recruit> = ({ G, playerID, events }, jobCardIndex, activeProjectIndex) => {
   if (!ActionSlotSelector.isAvailable(G.table.actionSlots.recruit)) {
     return INVALID_MOVE;
   }
@@ -20,6 +21,8 @@ export const recruit: GameMove<Recruit> = ({ G, playerID }, jobCardIndex, active
   if (currentPlayerToken.actions < recruitActionCosts) {
     return INVALID_MOVE;
   }
+  ActionSlotMutator.occupy(G.table.actionSlots.recruit);
+
   const recruitWorkerCosts = 1;
   if (currentPlayerToken.workers < recruitWorkerCosts) {
     return INVALID_MOVE;
@@ -66,5 +69,9 @@ export const recruit: GameMove<Recruit> = ({ G, playerID }, jobCardIndex, active
   DeckMutator.draw(G.decks.jobs, refillCardNumber);
   CardsMutator.add(currentJobs, jobCards);
 
-  ActionSlotMutator.occupy(G.table.actionSlots.recruit);
+
+  // end stage if no action tokens left
+  if (PlayersSelector.getNumActionTokens(G.players, playerID) === 0) {
+    events.endStage();
+  }
 };

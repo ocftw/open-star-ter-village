@@ -5,6 +5,7 @@ import { PlayersMutator, PlayersSelector } from "@/game/store/slice/players";
 
 export type RefillAndEnd = () => void;
 export const refillAndEnd: GameMove<RefillAndEnd> = ({ G, ctx, events }) => {
+  console.log('refill stage')
   // refill project cards
   const maxProjectCards = 2;
   const numProjectsInHand = PlayersSelector.getNumProjects(G.players, ctx.currentPlayer);
@@ -19,5 +20,9 @@ export const refillAndEnd: GameMove<RefillAndEnd> = ({ G, ctx, events }) => {
 
   // reset active moves
   ActionSlotsMutator.reset(G.table.actionSlots);
+
+  console.log('end refill stage')
+
+  console.log('end turn')
   events.endTurn()
 }
