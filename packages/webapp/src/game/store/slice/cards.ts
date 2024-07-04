@@ -44,6 +44,9 @@ const CardsSlice = {
   },
 };
 
+/** @deprecated */
 export const CardsMutator = CardsSlice.mutators;
+/** @deprecated */
 export const CardsSelector = CardsSlice.selectors;
+/** @deprecated */
 export default CardsSlice;
