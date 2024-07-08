@@ -1,9 +1,7 @@
 import PlayersSlice, { Players } from "./slice/players";
 import TableSlice, { Table } from "./slice/table";
 import DecksSlice, { Decks } from "./slice/decks";
-
-export interface Rule {
-}
+import RuleSlice, { Rule } from "./slice/rule";
 
 export interface GameState {
   rules: Rule;
@@ -13,7 +11,7 @@ export interface GameState {
 }
 
 const initialState = (): GameState => ({
-  rules: {},
+  rules: RuleSlice.initialState(),
   decks: DecksSlice.initialState(),
   table: TableSlice.initialState(),
   players: PlayersSlice.initialState(),
