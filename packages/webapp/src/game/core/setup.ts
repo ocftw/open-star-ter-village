@@ -8,6 +8,7 @@ import GameStore, { GameState } from '../store/store';
 import { DeckMutator, DeckSelector } from '../store/slice/deck';
 import { ScoreBoardMutator } from "../store/slice/scoreBoard";
 import { JobSlotsMutator } from '../store/slice/jobSlots';
+import { RuleSelector } from '../store/slice/rule';
 
 type SetupFn<G extends any = any,
   PluginAPIs extends Record<string, unknown> = Record<string, unknown>,
@@ -41,7 +42,7 @@ export const setup: SetupFn<GameState> = ({ ctx, random }) => {
 
   console.log('setup table')
   // setup job slots
-  const maxJobCards = 8;
+  const maxJobCards = RuleSelector.getTableMaxJobSlots(G.rules);
   const jobCardsInPlay = DeckSelector.peek(G.decks.jobs, maxJobCards);
   DeckMutator.draw(G.decks.jobs, maxJobCards);
   JobSlotsMutator.addJobCards(G.table.jobSlots, jobCardsInPlay);
@@ -53,7 +54,7 @@ export const setup: SetupFn<GameState> = ({ ctx, random }) => {
 
   console.log('setup player hands')
   // setup player hands
-  const maxProjectCards = 2;
+  const maxProjectCards = RuleSelector.getPlayerMaxProjectCards(G.rules);
   ctx.playOrder.forEach(playerId => {
     const projectCards = DeckSelector.peek(G.decks.projects, maxProjectCards);
     DeckMutator.draw(G.decks.projects, maxProjectCards);
@@ -62,8 +63,8 @@ export const setup: SetupFn<GameState> = ({ ctx, random }) => {
 
   console.log('setup player tokens')
   // setup player tokens
-  const numWorkerTokens = 12;
-  const numActionTokens = 4;
+  const numWorkerTokens = RuleSelector.getPlayerMaxWorkerTokens(G.rules);
+  const numActionTokens = RuleSelector.getPlayerMaxActionTokens(G.rules);
   ctx.playOrder.forEach(playerId => {
     PlayersMutator.resetWorkerTokens(G.players, playerId, numWorkerTokens);
     PlayersMutator.resetActionTokens(G.players, playerId, numActionTokens);
