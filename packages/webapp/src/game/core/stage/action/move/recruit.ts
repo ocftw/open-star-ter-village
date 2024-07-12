@@ -6,26 +6,26 @@ import { ProjectSlotMutator, ProjectSlotSelector } from '@/game/store/slice/proj
 import { GameMove } from '@/game/core/type';
 import { CardsMutator, CardsSelector } from '@/game/store/slice/cards';
 import { ActionSlotMutator, ActionSlotSelector } from '@/game/store/slice/actionSlot';
-import { PlayersSelector } from '@/game/store/slice/players';
+import { PlayersMutator, PlayersSelector } from '@/game/store/slice/players';
+import { RuleSelector } from '@/game/store/slice/rule';
 
 export type Recruit = (resourceCardIndex: number, activeProjectIndex: number) => void;
 
 export const recruit: GameMove<Recruit> = ({ G, playerID, events }, jobCardIndex, activeProjectIndex) => {
+  if (!RuleSelector.isActionSlotAvailable(G.rules, 'recruit')) {
+    return INVALID_MOVE;
+  }
   if (!ActionSlotSelector.isAvailable(G.table.actionSlots.recruit)) {
     return INVALID_MOVE;
   }
 
-  const currentPlayerToken = G.players[playerID].token;
-  const recruitActionCosts = 1;
-  if (currentPlayerToken.actions < recruitActionCosts) {
+  console.log('use action tokens')
+  const actionTokenCosts = RuleSelector.getActionTokenCost(G.rules, 'recruit');
+  PlayersMutator.useActionTokens(G.players, playerID, actionTokenCosts);
+  if (PlayersSelector.getNumActionTokens(G.players, playerID) < 0) {
     return INVALID_MOVE;
   }
   ActionSlotMutator.occupy(G.table.actionSlots.recruit);
-
-  const recruitWorkerCosts = 1;
-  if (currentPlayerToken.workers < recruitWorkerCosts) {
-    return INVALID_MOVE;
-  }
 
   if (!isInRange(jobCardIndex, G.table.jobSlots.length)) {
     return INVALID_MOVE;
@@ -47,22 +47,24 @@ export const recruit: GameMove<Recruit> = ({ G, playerID, events }, jobCardIndex
     return INVALID_MOVE;
   }
 
-  // reduce action
-  currentPlayerToken.actions -= recruitActionCosts;
-  CardsMutator.removeOne(G.table.jobSlots, jobCard);
+  console.log('use worker tokens')
+  const assignWorkerTokenCosts = RuleSelector.getAssignWorkerTokenCost(G.rules, 'recruit');
+  PlayersMutator.useWorkerTokens(G.players, playerID, assignWorkerTokenCosts);
+  if (PlayersSelector.getNumWorkerTokens(G.players, playerID) < 0) {
+    return INVALID_MOVE;
+  }
 
-  // reduce worker tokens
-  currentPlayerToken.workers -= recruitWorkerCosts;
   // assign worker token
-  const jobInitPoints = 1;
-  ProjectSlotMutator.assignWorker(activeProject, jobCard.name, playerID, jobInitPoints);
+  const initialContributionValue = RuleSelector.getAssignWorkerInitialContributionValue(G.rules, 'recruit');
+  ProjectSlotMutator.assignWorker(activeProject, jobCard.name, playerID, initialContributionValue);
 
   // discard job card
+  CardsMutator.removeOne(G.table.jobSlots, jobCard);
   DeckMutator.discard(G.decks.jobs, [jobCard]);
 
   // Refill job card
-  const maxJobCards = 8;
-  const refillCardNumber = maxJobCards - G.table.jobSlots.length;
+  const maxJobSlots = RuleSelector.getTableMaxJobSlots(G.rules);
+  const refillCardNumber = maxJobSlots - G.table.jobSlots.length;
   const jobCards = DeckSelector.peek(G.decks.jobs, refillCardNumber);
   DeckMutator.draw(G.decks.jobs, refillCardNumber);
   CardsMutator.add(G.table.jobSlots, jobCards);
@@ -71,5 +73,6 @@ export const recruit: GameMove<Recruit> = ({ G, playerID, events }, jobCardIndex
   // end stage if no action tokens left
   if (PlayersSelector.getNumActionTokens(G.players, playerID) === 0) {
     events.endStage();
+    return;
   }
 };
