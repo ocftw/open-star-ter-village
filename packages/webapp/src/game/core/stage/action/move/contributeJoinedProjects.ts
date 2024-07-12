@@ -4,11 +4,15 @@ import { ProjectBoardSelector } from '@/game/store/slice/projectBoard';
 import { ProjectSlotMutator, ProjectSlotSelector } from '@/game/store/slice/projectSlot/projectSlot';
 import { GameMove, ContributionAction } from '@/game/core/type';
 import { ActionSlotMutator, ActionSlotSelector } from '@/game/store/slice/actionSlot';
-import { PlayersSelector } from '@/game/store/slice/players';
+import { PlayersMutator, PlayersSelector } from '@/game/store/slice/players';
+import { RuleSelector } from '@/game/store/slice/rule';
 
 export type ContributeJoinedProjects = (contributions: ContributionAction[]) => void;
 
 export const contributeJoinedProjects: GameMove<ContributeJoinedProjects> = ({ G, playerID, events }, contributions) => {
+  if (!RuleSelector.isActionSlotAvailable(G.rules, 'contributeJoinedProjects')) {
+    return INVALID_MOVE;
+  }
   if (!ActionSlotSelector.isAvailable(G.table.actionSlots.contributeJoinedProjects)) {
     return INVALID_MOVE;
   }
@@ -16,10 +20,10 @@ export const contributeJoinedProjects: GameMove<ContributeJoinedProjects> = ({ G
     return INVALID_MOVE;
   }
 
-  const currentPlayer = playerID;
-  const currentPlayerToken = G.players[currentPlayer].token;
-  const contributeActionCosts = 1;
-  if (currentPlayerToken.actions < contributeActionCosts) {
+  console.log('use action tokens')
+  const actionCosts = RuleSelector.getActionTokenCost(G.rules, 'contributeJoinedProjects');
+  PlayersMutator.useActionTokens(G.players, playerID, actionCosts);
+  if (PlayersSelector.getNumActionTokens(G.players, playerID) < 0) {
     return INVALID_MOVE;
   }
   ActionSlotMutator.occupy(G.table.actionSlots.contributeJoinedProjects);
@@ -30,11 +34,11 @@ export const contributeJoinedProjects: GameMove<ContributeJoinedProjects> = ({ G
       return true;
     }
     const activeProject = ProjectBoardSelector.getById(activeProjects, activeProjectIndex);
-    if (activeProject.owner === currentPlayer) {
+    if (activeProject.owner === playerID) {
       return true;
     }
 
-    if (!ProjectSlotSelector.hasWorker(activeProject, jobName, currentPlayer)) {
+    if (!ProjectSlotSelector.hasWorker(activeProject, jobName, playerID)) {
       return true;
     }
   }).some(x => x);
@@ -42,22 +46,22 @@ export const contributeJoinedProjects: GameMove<ContributeJoinedProjects> = ({ G
     return INVALID_MOVE;
   }
   const totalContributions = contributions.map(({ value }) => value).reduce((a, b) => a + b, 0);
-  const maxJoinedContributions = 5;
-  if (totalContributions > maxJoinedContributions) {
+  const maxContributions = RuleSelector.getMaxContributionValue(G.rules, 'contributeJoinedProjects');
+  if (totalContributions > maxContributions) {
     return INVALID_MOVE;
   }
 
-  // deduct action tokens
-  currentPlayerToken.actions -= contributeActionCosts;
+  console.log('update contributions')
   contributions.forEach(({ activeProjectIndex, jobName, value }) => {
     // update contributions to given contribution points
     const activeProject = ProjectBoardSelector.getById(G.table.projectBoard, activeProjectIndex);
-    ProjectSlotMutator.pushWorker(activeProject, jobName, currentPlayer, value);
+    ProjectSlotMutator.pushWorker(activeProject, jobName, playerID, value);
   });
 
 
   // end stage if no action tokens left
   if (PlayersSelector.getNumActionTokens(G.players, playerID) === 0) {
     events.endStage();
+    return;
   }
 };

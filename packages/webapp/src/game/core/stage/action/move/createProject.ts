@@ -9,33 +9,33 @@ import { ActionSlotMutator, ActionSlotSelector } from '@/game/store/slice/action
 import { ScoreBoardMutator } from '@/game/store/slice/scoreBoard';
 import { PlayersMutator, PlayersSelector } from '@/game/store/slice/players';
 import { JobSlotsMutator } from '@/game/store/slice/jobSlots';
+import { RuleSelector } from '@/game/store/slice/rule';
 
 export type CreateProject = (projectCardIndex: number, jobCardIndex: number) => void;
 
 export const createProject: GameMove<CreateProject> = ({ G, playerID, events }, projectCardIndex, jobCardIndex) => {
+  if (!RuleSelector.isActionSlotAvailable(G.rules, 'createProject')) {
+    return INVALID_MOVE;
+  }
   if (!ActionSlotSelector.isAvailable(G.table.actionSlots.createProject)) {
     return INVALID_MOVE;
   }
 
   console.log('use action tokens')
-  const actionTokens = PlayersSelector.getNumActionTokens(G.players, playerID);
   // TODO: replace hardcoded number with dynamic rules
-  const createProjectActionCosts = 2;
-  if (actionTokens < createProjectActionCosts) {
+  const actionTokenCosts = RuleSelector.getActionTokenCost(G.rules, 'createProject');
+  PlayersMutator.useActionTokens(G.players, playerID, actionTokenCosts);
+  if (PlayersSelector.getNumActionTokens(G.players, playerID) < 0) {
     return INVALID_MOVE;
   }
   ActionSlotMutator.occupy(G.table.actionSlots.createProject);
-  PlayersMutator.useActionTokens(G.players, playerID, createProjectActionCosts);
 
   console.log('use worker tokens')
-  const createProjectWorkerCosts = 1;
-  const recruitWorkerCosts = 1;
-  const totalWorkerCosts = createProjectWorkerCosts + recruitWorkerCosts;
-  const workerTokens = PlayersSelector.getNumWorkerTokens(G.players, playerID);
-  if (workerTokens < totalWorkerCosts) {
+  const projectOwnerWorkerTokenCosts = RuleSelector.getProjectOwnerWorkerTokenCost(G.rules, 'createProject');
+  PlayersMutator.useWorkerTokens(G.players, playerID, projectOwnerWorkerTokenCosts);
+  if (PlayersSelector.getNumWorkerTokens(G.players, playerID) < 0) {
     return INVALID_MOVE;
   }
-  PlayersMutator.useWorkerTokens(G.players, playerID, createProjectWorkerCosts);
 
   console.log('use project card')
   // check project card in in hand
@@ -49,7 +49,7 @@ export const createProject: GameMove<CreateProject> = ({ G, playerID, events }, 
 
   // assign worker token to owner slot
   const projectSlot = ProjectBoardSelector.getLast(G.table.projectBoard);
-  ProjectSlotMutator.assignOwner(projectSlot, playerID, createProjectWorkerCosts);
+  ProjectSlotMutator.assignOwner(projectSlot, playerID, projectOwnerWorkerTokenCosts);
 
   console.log('use job card')
   // check job card is on the table
@@ -64,28 +64,33 @@ export const createProject: GameMove<CreateProject> = ({ G, playerID, events }, 
   }
   JobSlotsMutator.removeJobCard(G.table.jobSlots, jobCard);
   // assign worker token to job slot
-  PlayersMutator.useWorkerTokens(G.players, playerID, recruitWorkerCosts);
-  const jobInitPoints = 1;
-  ProjectSlotMutator.assignWorker(projectSlot, jobCard.name, playerID, jobInitPoints);
+  const assignWorkerTokenCosts = RuleSelector.getAssignWorkerTokenCost(G.rules, 'createProject');
+  PlayersMutator.useWorkerTokens(G.players, playerID, assignWorkerTokenCosts);
+  if (PlayersSelector.getNumWorkerTokens(G.players, playerID) < 0) {
+    return INVALID_MOVE;
+  }
+  const initialContributionValue = RuleSelector.getAssignWorkerInitialContributionValue(G.rules, 'createProject');
+  ProjectSlotMutator.assignWorker(projectSlot, jobCard.name, playerID, initialContributionValue);
 
   console.log('discard and refill job card')
   // discard job card
   DeckMutator.discard(G.decks.jobs, [jobCard]);
 
   // Refill job card
-  const maxJobCards = 8;
-  const refillCardNumber = maxJobCards - G.table.jobSlots.length;
+  const maxJobSlots = RuleSelector.getTableMaxJobSlots(G.rules);
+  const refillCardNumber = maxJobSlots - G.table.jobSlots.length;
   const jobCards = DeckSelector.peek(G.decks.jobs, refillCardNumber);
   DeckMutator.draw(G.decks.jobs, refillCardNumber);
   CardsMutator.add(G.table.jobSlots, jobCards);
 
-  console.log('add victory points to initiator')
-  const createProjectVictoryPoints = 2;
-  ScoreBoardMutator.add(G.table.scoreBoard, playerID, createProjectVictoryPoints);
+  console.log('score victory points')
+  const victoryPoints = RuleSelector.getActionVictoryPoints(G.rules, 'createProject');
+  ScoreBoardMutator.add(G.table.scoreBoard, playerID, victoryPoints);
 
   console.log('end create project')
   // end stage if no action tokens left
   if (PlayersSelector.getNumActionTokens(G.players, playerID) === 0) {
     events.endStage();
+    return;
   }
 };
