@@ -2,31 +2,40 @@ import { ActionMoveName } from "@/game/core/stage/action/move/type";
 
 interface ActionSlotRule {
   available: boolean;
-  actionCost: number;
-  workerCost: number;
 }
 
 interface ActionRule {
+  actionCost: number;
+}
+
+interface ScoreWhenAction {
   victoryPoints: number;
 }
 
-interface InitialContribution {
+interface InitialProject {
+  projectOwnerWorkerCost: number;
+}
+
+interface AssignWorker {
+  assignWorkerCost: number;
   initialContributionValue: number;
 }
 
-interface MaxContribution {
+interface WorkerContribution {
   maxContributionValue: number;
 }
 
+interface ActionRules {
+  createProject: ActionRule & InitialProject & AssignWorker & ScoreWhenAction;
+  recruit: ActionRule & AssignWorker;
+  contributeOwnedProjects: ActionRule & WorkerContribution;
+  contributeJoinedProjects: ActionRule & WorkerContribution;
+  removeAndRefillJobs: ActionRule & ScoreWhenAction;
+  mirror: ActionRule;
+}
+
 export interface Rule {
-  action: {
-    createProject: ActionRule & InitialContribution,
-    recruit: ActionRule & InitialContribution,
-    contributeOwnedProjects: ActionRule & MaxContribution,
-    contributeJoinedProjects: ActionRule & MaxContribution,
-    removeAndRefillJobs: ActionRule,
-    mirror: ActionRule,
-  },
+  action: ActionRules,
   table: {
     maxJobSlots: number;
     maxProjectSlots: number;
@@ -40,38 +49,43 @@ export interface Rule {
 }
 
 const initialState = (): Rule => {
-  const actionRules = {
+  const actionRules: ActionRules = {
     createProject: {
+      actionCost: 2,
       victoryPoints: 2,
+      projectOwnerWorkerCost: 1,
+      assignWorkerCost: 1,
       initialContributionValue: 1,
     },
     recruit: {
-      victoryPoints: 0,
+      actionCost: 1,
+      assignWorkerCost: 1,
       initialContributionValue: 2,
     },
     contributeOwnedProjects: {
-      victoryPoints: 0,
+      actionCost: 1,
       maxContributionValue: 4,
     },
     contributeJoinedProjects: {
-      victoryPoints: 0,
+      actionCost: 1,
       maxContributionValue: 5,
     },
     removeAndRefillJobs: {
+      actionCost: 1,
       victoryPoints: 1,
     },
     mirror: {
-      victoryPoints: 0,
+      actionCost: 1,
     },
   };
 
   const actionSlots: Record<ActionMoveName, ActionSlotRule> = {
-    createProject: { available: true, actionCost: 2, workerCost: 2 },
-    recruit: { available: true, actionCost: 1, workerCost: 1 },
-    contributeOwnedProjects: { available: true, actionCost: 1, workerCost: 1 },
-    contributeJoinedProjects: { available: true, actionCost: 1, workerCost: 1 },
-    removeAndRefillJobs: { available: true, actionCost: 1, workerCost: 1 },
-    mirror: { available: true, actionCost: 1, workerCost: 1 },
+    createProject: { available: true },
+    recruit: { available: true },
+    contributeOwnedProjects: { available: true },
+    contributeJoinedProjects: { available: true },
+    removeAndRefillJobs: { available: true },
+    mirror: { available: false },
   };
 
   return {
@@ -94,31 +108,58 @@ const isActionSlotAvailable = (rule: Rule, actionName: ActionMoveName): boolean 
 }
 
 const getActionTokenCost = (rule: Rule, actionName: ActionMoveName): number => {
-  return rule.table.actionSlots[actionName].actionCost;
+  return rule.action[actionName].actionCost;
 }
 
-const getWorkerTokenCost = (rule: Rule, actionName: ActionMoveName): number => {
-  return rule.table.actionSlots[actionName].workerCost;
+const IsScoreWhenAction = (actionRule: any): actionRule is ScoreWhenAction => {
+  return actionRule.victoryPoints !== undefined;
 }
 
 const getActionVictoryPoints = (rule: Rule, actionName: ActionMoveName): number => {
+  if (!IsScoreWhenAction(rule.action[actionName])) {
+    throw new Error(`Score when action rule is not defined in ${actionName}`);
+  }
   return rule.action[actionName].victoryPoints;
 }
 
-const getCreateProjectInitialContributionValue = (rule: Rule): number => {
-  return rule.action.createProject.initialContributionValue;
+const IsInitialProject = (actionRule: any): actionRule is InitialProject => {
+  return actionRule.projectOwnerWorkerCost !== undefined;
 }
 
-const getRecruitInitialContributionValue = (rule: Rule): number => {
-  return rule.action.recruit.initialContributionValue;
+const getProjectOwnerWorkerTokenCost = (rule: Rule, actionName: ActionMoveName): number => {
+  if (!IsInitialProject(rule.action[actionName])) {
+    throw new Error(`Initial project rule is not defined in ${actionName}`);
+  }
+  return rule.action[actionName].projectOwnerWorkerCost;
 }
 
-const getContributeOwnedProjectsMaxContributionValue = (rule: Rule): number => {
-  return rule.action.contributeOwnedProjects.maxContributionValue;
+const IsAssignWorker = (actionRule: any): actionRule is AssignWorker => {
+  return actionRule.assignWorkerCost !== undefined && actionRule.initialContributionValue !== undefined;
 }
 
-const getContributeJoinedProjectsMaxContributionValue = (rule: Rule): number => {
-  return rule.action.contributeJoinedProjects.maxContributionValue;
+const getAssignWorkerTokenCost = (rule: Rule, actionName: ActionMoveName): number => {
+  if (!IsAssignWorker(rule.action[actionName])) {
+    throw new Error(`Assign worker rule is not defined in ${actionName}`);
+  }
+  return rule.action[actionName].assignWorkerCost;
+}
+
+const getAssignWorkerInitialContributionValue = (rule: Rule, actionName: ActionMoveName): number => {
+  if (!IsAssignWorker(rule.action[actionName])) {
+    throw new Error(`Assign worker rule is not defined in ${actionName}`);
+  }
+  return rule.action[actionName].initialContributionValue;
+}
+
+const IsWorkerContribution = (actionRule: any): actionRule is WorkerContribution => {
+  return actionRule.maxContributionValue !== undefined;
+}
+
+const getMaxContributionValue = (rule: Rule, actionName: ActionMoveName): number => {
+  if (!IsWorkerContribution(rule.action[actionName])) {
+    throw new Error('Worker contribution rule is not defined');
+  }
+  return rule.action[actionName].maxContributionValue;
 }
 
 const getTableMaxJobSlots = (rule: Rule): number => {
@@ -146,12 +187,11 @@ const RuleSlice = {
   selectors: {
     isActionSlotAvailable,
     getActionTokenCost,
-    getWorkerTokenCost,
     getActionVictoryPoints,
-    getCreateProjectInitialContributionValue,
-    getRecruitInitialContributionValue,
-    getContributeOwnedProjectsMaxContributionValue,
-    getContributeJoinedProjectsMaxContributionValue,
+    getProjectOwnerWorkerTokenCost,
+    getAssignWorkerTokenCost,
+    getAssignWorkerInitialContributionValue,
+    getMaxContributionValue,
     getTableMaxJobSlots,
     getTableMaxProjectSlots,
     getPlayerMaxActionTokens,
