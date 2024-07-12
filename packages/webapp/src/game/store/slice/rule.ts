@@ -35,16 +35,21 @@ interface ActionRules {
 }
 
 export interface Rule {
-  action: ActionRules,
+  type: 'simple' | 'standard';
+  action: ActionRules;
   table: {
     maxJobSlots: number;
     maxProjectSlots: number;
-    actionSlots: Record<ActionMoveName, ActionSlotRule>,
+    actionSlots: Record<ActionMoveName, ActionSlotRule>;
   },
   player: {
     maxActionTokens: number;
     maxWorkerTokens: number;
     maxProjectCards: number;
+  },
+  settlement: {
+    projectOwnerVictoryPoints: number;
+    lastContributorVictoryPoints: number;
   },
 }
 
@@ -89,6 +94,7 @@ const initialState = (): Rule => {
   };
 
   return {
+    type: 'simple',
     action: actionRules,
     table: {
       maxJobSlots: 8,
@@ -100,7 +106,15 @@ const initialState = (): Rule => {
       maxWorkerTokens: 12,
       maxProjectCards: 2,
     },
+    settlement: {
+      projectOwnerVictoryPoints: 2,
+      lastContributorVictoryPoints: 2,
+    },
   };
+}
+
+const isStandardRule = (rule: Rule): boolean => {
+  return rule.type === 'standard';
 }
 
 const isActionSlotAvailable = (rule: Rule, actionName: ActionMoveName): boolean => {
@@ -182,9 +196,18 @@ const getPlayerMaxProjectCards = (rule: Rule): number => {
   return rule.player.maxProjectCards;
 }
 
+const getSettlementProjectOwnerVictoryPoints = (rule: Rule): number => {
+  return rule.settlement.projectOwnerVictoryPoints;
+};
+
+const getSettlementLastContributorVictoryPoints = (rule: Rule): number => {
+  return rule.settlement.lastContributorVictoryPoints;
+};
+
 const RuleSlice = {
   initialState,
   selectors: {
+    isStandardRule,
     isActionSlotAvailable,
     getActionTokenCost,
     getActionVictoryPoints,
@@ -197,6 +220,8 @@ const RuleSlice = {
     getPlayerMaxActionTokens,
     getPlayerMaxWorkerTokens,
     getPlayerMaxProjectCards,
+    getSettlementProjectOwnerVictoryPoints,
+    getSettlementLastContributorVictoryPoints,
   },
 };
 

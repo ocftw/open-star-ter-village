@@ -3,14 +3,13 @@ import { DeckMutator } from "@/game/store/slice/deck";
 import { PlayersMutator } from "@/game/store/slice/players";
 import { ProjectBoardMutator, ProjectBoardSelector } from "@/game/store/slice/projectBoard";
 import { ProjectSlotMutator, ProjectSlotSelector } from "@/game/store/slice/projectSlot/projectSlot";
+import { RuleSelector } from "@/game/store/slice/rule";
 import { ScoreBoardMutator } from "@/game/store/slice/scoreBoard";
 
 export type SettleProjects = () => void;
 export const settleProjects: GameMove<SettleProjects> = (({ G, events }) => {
   console.log('settle projects')
-
-  const activeProjects = G.table.projectBoard;
-  const fulfilledProjects = ProjectBoardSelector.filterFulfilled(activeProjects);
+  const fulfilledProjects = ProjectBoardSelector.filterFulfilled(G.table.projectBoard);
 
   if (fulfilledProjects.length === 0) {
     console.log('no fulfilled projects, end stage early')
@@ -33,12 +32,11 @@ export const settleProjects: GameMove<SettleProjects> = (({ G, events }) => {
 
     // score bonus points
     // last contributor bonus
-    const lastContributorBonusPoints = 2;
-    const lastContributor = project.lastContributor;
-    ScoreBoardMutator.add(G.table.scoreBoard, lastContributor!, lastContributorBonusPoints);
+    const lastContributorBonusPoints = RuleSelector.getSettlementLastContributorVictoryPoints(G.rules);
+    ScoreBoardMutator.add(G.table.scoreBoard, project.lastContributor!, lastContributorBonusPoints);
 
     // owner bonus
-    const ownerBonusPoints = 2;
+    const ownerBonusPoints = RuleSelector.getSettlementProjectOwnerVictoryPoints(G.rules);
     const { owner, numWorkerToken } = ProjectSlotSelector.getOwner(project);
     ScoreBoardMutator.add(G.table.scoreBoard, owner, ownerBonusPoints);
     // return owner token
@@ -46,16 +44,15 @@ export const settleProjects: GameMove<SettleProjects> = (({ G, events }) => {
     ProjectSlotMutator.unassignOwner(project);
   });
   // Remove from table
-  ProjectBoardMutator.remove(activeProjects, fulfilledProjects);
+  ProjectBoardMutator.remove(G.table.projectBoard, fulfilledProjects);
 
-  const version: 'simple' | 'full' = 'simple';
-  if (version === 'simple') {
+  if (RuleSelector.isStandardRule(G.rules)) {
+    // Update OpenSourceTree in standard version
+    // TODO: implement OpenSourceTree
+  } else {
     // Discard Project Card in simple version
     const projectCards = fulfilledProjects.map(project => project.card);
     DeckMutator.discard(G.decks.projects, projectCards);
-  } else if (version === 'full') {
-    // Update OpenSourceTree in full version
-    // TODO: implement OpenSourceTree
   }
 
   console.log('end settle projects')
