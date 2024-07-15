@@ -1,14 +1,15 @@
 import { Ctx, DefaultPluginAPIs } from 'boardgame.io';
-import projectCards from '../data/card/projects.json';
-import jobCards from '../data/card/jobs.json';
-import eventCards from '../data/card/events.json';
-import { ProjectCard } from '../card';
+import rawProjectCards from '../data/card/projects.json';
+import rawJobCards from '../data/card/jobs.json';
+import rawEventCards from '../data/card/events.json';
+import { EventCard, JobCard, ProjectCard } from '../card';
 import { PlayersMutator } from '../store/slice/players';
 import GameStore, { GameState } from '../store/store';
 import { DeckMutator, DeckSelector } from '../store/slice/deck';
 import { ScoreBoardMutator } from "../store/slice/scoreBoard";
 import { JobSlotsMutator } from '../store/slice/jobSlots';
 import { RuleSelector } from '../store/slice/rule';
+import { reservoirSampling } from '../utils';
 
 type SetupFn<G extends any = any,
   PluginAPIs extends Record<string, unknown> = Record<string, unknown>,
@@ -17,28 +18,45 @@ type SetupFn<G extends any = any,
     setupData?: SetupData
   ) => G;
 
+const getUuid = (randomFn: () => number = Math.random ) => {
+  return randomFn().toString(32).slice(2);
+}
+
 export const setup: SetupFn<GameState> = ({ ctx, random }) => {
   console.log('setup game')
-
-  const shuffler = random.Shuffle;
 
   console.log('init state')
   // get default game state
   const G = GameStore.initialState();
 
-  // TODO: initialize rules
+  // TODO: initialize rule by difficulty and number of players
+  // RuleMutator.setupNumPlayers(G.rules, ctx.numPlayers);
 
   console.log('setup decks')
   // add cards to decks
-  DeckMutator.initialize(G.decks.projects, projectCards as unknown as ProjectCard[]);
-  DeckMutator.initialize(G.decks.jobs, jobCards);
-  DeckMutator.initialize(G.decks.events, eventCards);
+  const projectCards = rawProjectCards.map(rawProjectCard => ({ id: getUuid(random.Number), ...rawProjectCard }) as unknown as ProjectCard);
+  random.Shuffle(projectCards);
+  DeckMutator.initialize(G.decks.projects, projectCards);
 
-  console.log('shuffle decks')
-  // shuffle decks
-  DeckMutator.shuffleDrawPile(G.decks.projects, shuffler);
-  DeckMutator.shuffleDrawPile(G.decks.events, shuffler);
-  DeckMutator.shuffleDrawPile(G.decks.jobs, shuffler);
+  const jobCards = rawJobCards.map(rawJobCard => ({ id: getUuid(random.Number), ...rawJobCard }) as unknown as JobCard);
+  random.Shuffle(jobCards);
+  DeckMutator.initialize(G.decks.jobs, jobCards);
+
+  const eventCards = rawEventCards.map(rawEventCard => ({ id: getUuid(random.Number), ...rawEventCard }) as unknown as EventCard);
+  // find end game event card
+  // pick N random event cards based on rule and shuffle them
+  // add end game event card to the end
+  const endGameEvent = eventCards.find(card => card.function_name === 'end_game_after_this_round');
+  if (!endGameEvent) {
+    throw new Error('end_game_after_this_round event card not found');
+  }
+  const restEventCards = eventCards.filter(card => card.function_name !== 'end_game_after_this_round');
+  const nonEndGameEventCardCount = RuleSelector.getNonEndGameNumberOfEventCards(G.rules);
+  const eventCardsWithoutEndGame = reservoirSampling(restEventCards, nonEndGameEventCardCount, random.Number);
+  random.Shuffle(eventCardsWithoutEndGame);
+  eventCardsWithoutEndGame.push(endGameEvent);
+  // initialize event deck
+  DeckMutator.initialize(G.decks.events, eventCardsWithoutEndGame);
 
   console.log('setup table')
   // setup job slots

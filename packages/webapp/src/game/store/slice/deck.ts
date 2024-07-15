@@ -8,19 +8,9 @@ const initialState = <T>(): Deck<T> => ({
   discardPile: [],
 });
 
-type Shuffler<T> = (pile: T[]) => T[];
-
 const initialize = <T>(state: Deck<T>, cards: T[]): void => {
   state.drawPile = cards;
   state.discardPile = [];
-}
-
-const shuffleDrawPile = <T>(state: Deck<T>, shuffler: Shuffler<T>): void => {
-  state.drawPile = shuffler(state.drawPile);
-}
-
-const shuffleDiscardPile = <T>(state: Deck<T>, shuffler: Shuffler<T>): void => {
-  state.discardPile = shuffler(state.discardPile);
 }
 
 const moveDiscardPileUnderDrawPile = <T>(state: Deck<T>): void => {
@@ -44,8 +34,6 @@ const DeckSlice = {
   initialState,
   mutators: {
     initialize,
-    shuffleDrawPile,
-    shuffleDiscardPile,
     moveDiscardPileUnderDrawPile,
     draw,
     discard,

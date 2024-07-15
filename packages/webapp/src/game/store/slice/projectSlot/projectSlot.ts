@@ -18,7 +18,7 @@ export interface ProjectSlot {
 }
 
 const initialState = (): ProjectSlot => ({
-  card: { name: '', requirements: {} },
+  card: { id: '', name: '', requirements: {} },
   owner: '',
   ownerToken: 0,
   contributions: [],
