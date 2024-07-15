@@ -1,5 +1,5 @@
 import { Server, Origins } from "boardgame.io/server";
-import { OpenStarTerVillage } from "./game/game";
+import game from "./game";
 
 async function serve() {
   const port = Number(process.env.PORT) || 8000;
@@ -8,7 +8,7 @@ async function serve() {
   console.log(`Starting server on port ${port} in ${dev ? 'dev' : 'production'} mode...`);
 
   const server = Server({
-    games: [OpenStarTerVillage],
+    games: [game],
     origins: [
       // Allow localhost to connect, except when NODE_ENV is 'production'.
       Origins.LOCALHOST_IN_DEVELOPMENT,

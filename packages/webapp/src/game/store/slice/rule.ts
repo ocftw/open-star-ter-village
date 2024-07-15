@@ -37,6 +37,7 @@ interface ActionRules {
 export interface Rule {
   type: 'simple' | 'standard';
   action: ActionRules;
+  numNonEndGameEventCards: number;
   table: {
     maxJobSlots: number;
     maxProjectSlots: number;
@@ -96,6 +97,7 @@ const initialState = (): Rule => {
   return {
     type: 'simple',
     action: actionRules,
+    numNonEndGameEventCards: 5,
     table: {
       maxJobSlots: 8,
       maxProjectSlots: 8,
@@ -115,6 +117,10 @@ const initialState = (): Rule => {
 
 const isStandardRule = (rule: Rule): boolean => {
   return rule.type === 'standard';
+}
+
+const getNonEndGameNumberOfEventCards = (rule: Rule): number => {
+  return rule.numNonEndGameEventCards;
 }
 
 const isActionSlotAvailable = (rule: Rule, actionName: ActionMoveName): boolean => {
@@ -208,6 +214,7 @@ const RuleSlice = {
   initialState,
   selectors: {
     isStandardRule,
+    getNonEndGameNumberOfEventCards,
     isActionSlotAvailable,
     getActionTokenCost,
     getActionVictoryPoints,

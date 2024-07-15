@@ -1,10 +1,21 @@
-export type BaseCard = { name: string };
-
-export type ProjectCard = BaseCard & {
+export type ProjectName = string;
+export type ProjectCard = {
+  id: string;
+  name: ProjectName;
   requirements: Record<JobName, number>;
 };
 
-export type JobCard = BaseCard;
+export type JobCard = {
+  id: string;
+  name: JobName;
+};
 export type JobName = string;
 
-export type EventCard = BaseCard;
+export type EventName = string;
+export type EventFunctionName = string;
+export type EventCard = {
+  id: string;
+  name: EventName;
+  description: string;
+  function_name: EventFunctionName;
+};
