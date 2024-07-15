@@ -6,6 +6,7 @@ import {
   FormControlLabel,
 } from '@mui/material';
 import { ProjectBoardState } from "@/game";
+import { ProjectSlot } from '@/game/store/slice/projectSlot/projectSlot';
 
 interface Props {
   projectBoard: ProjectBoardState;
@@ -13,45 +14,55 @@ interface Props {
   projectValue: number;
   onJobNameChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   jobNameValue: string;
+  isProjectSlotSelectable?: (projectSlot: ProjectSlot) => boolean;
   isJobNameSelectable?: boolean;
 }
 
-const ProjectBoard: React.FC<Props> = ({ projectBoard, onProjectSlotChange, projectValue, onJobNameChange, jobNameValue, isJobNameSelectable = false }) => (
+const ProjectBoard: React.FC<Props> = ({
+  projectBoard,
+  onProjectSlotChange,
+  projectValue,
+  onJobNameChange,
+  jobNameValue,
+  isProjectSlotSelectable = () => true,
+  isJobNameSelectable = false,
+}) => (
   <Stack direction="row" spacing={2}>
-    <Box component='label'>Active project cards</Box>
+    <Box component='label'>Project slots</Box>
     <RadioGroup onChange={onProjectSlotChange} value={projectValue}>
       {
-        projectBoard.map(project => project.card).map((projectCard, index) =>
-          <>
+        projectBoard.map((project, index) =>
+          (project.card !== undefined) && <>
             <FormControlLabel
-              key={`${projectCard.name}-${index}`}
+              key={`${project.card.name}-${index}`}
               value={index}
               control={<Radio />}
-              label={projectCard.name}
+              label={project.card.name}
+              disabled={!isProjectSlotSelectable(project)}
             />
             Job requirements:
             {
-              isJobNameSelectable && (projectValue === index) && (
+              isProjectSlotSelectable(project) && isJobNameSelectable && (projectValue === index) && (
                 <RadioGroup onChange={onJobNameChange} value={jobNameValue}>
                 {
-                  Object.keys(projectCard.requirements).map((jobName) =>
+                  Object.keys(project.card.requirements).map((jobName) =>
                     <FormControlLabel
                       key={`${index}-${jobName}`}
                       value={jobName}
                       control={<Radio />}
-                      label={`${jobName}: ${projectCard.requirements[jobName]}`}
+                      label={`${jobName}: ${project.card!.requirements[jobName]}`}
                     />
                   )
                 }
                 </RadioGroup>
               )
               ||
-              Object.keys(projectCard.requirements).map(jobName => (
+              Object.keys(project.card.requirements).map(jobName => (
                 <Box
-                  key={`${projectCard.name}-${jobName}`}
+                  key={`${project.card!.name}-${jobName}`}
                   component='label'
                 >
-                  {jobName}: {projectCard.requirements[jobName]}
+                  {jobName}: {project.card!.requirements[jobName]}
                 </Box>
               ))
             }

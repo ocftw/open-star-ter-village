@@ -7,15 +7,12 @@ interface Props {
 }
 
 const Table: React.FC<Props> = (props) => {
-  const maxActiveProjects = 6;
-  const activeProjects = [...props.table.projectBoard, ...Array(maxActiveProjects)].slice(0, maxActiveProjects);
-
   return (
     <Box>
       <Grid container spacing={2}>
-        {activeProjects.map((p, pIndex) => (
+        {props.table.projectBoard.map((p, pIndex) => (
           <Grid item xs={12} sm={6} md={4} key={`active-project-${pIndex}`}>
-            <ProjectSlot project={p} />
+            <ProjectSlot slot={p} />
           </Grid>
         ))}
       </Grid>

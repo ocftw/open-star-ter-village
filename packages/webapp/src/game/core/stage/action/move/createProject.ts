@@ -48,7 +48,7 @@ export const createProject: GameMove<CreateProject> = ({ G, playerID, events }, 
   ProjectBoardMutator.add(G.table.projectBoard, projectCard);
 
   // assign worker token to owner slot
-  const projectSlot = ProjectBoardSelector.getLast(G.table.projectBoard);
+  const projectSlot = ProjectBoardSelector.getSlotByCard(G.table.projectBoard, projectCard);
   ProjectSlotMutator.assignOwner(projectSlot, playerID, projectOwnerWorkerTokenCosts);
 
   console.log('use job card')

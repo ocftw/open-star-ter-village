@@ -15,7 +15,7 @@ interface Props {
 
 const JobSlots: React.FC<Props> = ({ jobSlots, onChange, value }) => (
   <Stack direction="row" spacing={2}>
-    <Box component='label'>Active job cards</Box>
+    <Box component='label'>Job slots</Box>
     <RadioGroup onChange={onChange} value={value}>
       {
         jobSlots.map((job, index) =>
