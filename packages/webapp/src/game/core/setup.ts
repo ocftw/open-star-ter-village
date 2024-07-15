@@ -36,12 +36,12 @@ export const setup: SetupFn<GameState> = ({ ctx, random }) => {
   console.log('setup decks')
   // add cards to decks
   const projectCards = rawProjectCards.map(rawProjectCard => ({ id: getUuid(random.Number), ...rawProjectCard }) as unknown as ProjectCard);
-  random.Shuffle(projectCards);
-  DeckMutator.initialize(G.decks.projects, projectCards);
+  const shuffledProjectCards = random.Shuffle(projectCards);
+  DeckMutator.initialize(G.decks.projects, shuffledProjectCards);
 
   const jobCards = rawJobCards.map(rawJobCard => ({ id: getUuid(random.Number), ...rawJobCard }) as unknown as JobCard);
-  random.Shuffle(jobCards);
-  DeckMutator.initialize(G.decks.jobs, jobCards);
+  const shuffledJobCards = random.Shuffle(jobCards);
+  DeckMutator.initialize(G.decks.jobs, shuffledJobCards);
 
   const eventCards = rawEventCards.map(rawEventCard => ({ id: getUuid(random.Number), ...rawEventCard }) as unknown as EventCard);
   // find end game event card
@@ -54,10 +54,10 @@ export const setup: SetupFn<GameState> = ({ ctx, random }) => {
   const restEventCards = eventCards.filter(card => card.function_name !== 'end_game_after_this_round');
   const nonEndGameEventCardCount = RuleSelector.getNonEndGameNumberOfEventCards(G.rules);
   const eventCardsWithoutEndGame = reservoirSampling(restEventCards, nonEndGameEventCardCount, random.Number);
-  random.Shuffle(eventCardsWithoutEndGame);
-  eventCardsWithoutEndGame.push(endGameEvent);
+  const shuffledEventCards = random.Shuffle(eventCardsWithoutEndGame);
+  shuffledEventCards.push(endGameEvent);
   // initialize event deck
-  DeckMutator.initialize(G.decks.events, eventCardsWithoutEndGame);
+  DeckMutator.initialize(G.decks.events, shuffledEventCards);
 
   console.log('setup table')
   // setup job slots
