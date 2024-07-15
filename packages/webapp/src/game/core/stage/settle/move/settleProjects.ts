@@ -9,49 +9,49 @@ import { ScoreBoardMutator } from "@/game/store/slice/scoreBoard";
 export type SettleProjects = () => void;
 export const settleProjects: GameMove<SettleProjects> = (({ G, events }) => {
   console.log('settle projects')
-  const fulfilledProjects = ProjectBoardSelector.filterFulfilled(G.table.projectBoard);
+  const fulfilledProjectSlots = ProjectBoardSelector.getRequirementFulfilled(G.table.projectBoard);
 
-  if (fulfilledProjects.length === 0) {
+  if (fulfilledProjectSlots.length === 0) {
     console.log('no fulfilled projects, end stage early')
     events.endStage();
     return;
   }
-  fulfilledProjects.forEach(project => {
-    const contributors = ProjectSlotSelector.getContributors(project);
+  fulfilledProjectSlots.forEach(projectSlot => {
+    const contributors = ProjectSlotSelector.getContributors(projectSlot);
 
     contributors.forEach(contributor => {
       // score points
-      const victoryPoints = ProjectSlotSelector.getPlayerContribution(project, contributor);
+      const victoryPoints = ProjectSlotSelector.getPlayerContribution(projectSlot, contributor);
       ScoreBoardMutator.add(G.table.scoreBoard, contributor, victoryPoints);
 
       // return worker tokens
-      const workerTokens = ProjectSlotSelector.getPlayerWorkerTokens(project, contributor);
-      ProjectSlotMutator.removeContributor(project, contributor);
+      const workerTokens = ProjectSlotSelector.getPlayerWorkerTokens(projectSlot, contributor);
+      ProjectSlotMutator.removeContributor(projectSlot, contributor);
       PlayersMutator.addWorkerTokens(G.players, contributor, workerTokens);
     });
 
     // score bonus points
     // last contributor bonus
     const lastContributorBonusPoints = RuleSelector.getSettlementLastContributorVictoryPoints(G.rules);
-    ScoreBoardMutator.add(G.table.scoreBoard, project.lastContributor!, lastContributorBonusPoints);
+    ScoreBoardMutator.add(G.table.scoreBoard, projectSlot.lastContributor!, lastContributorBonusPoints);
 
     // owner bonus
     const ownerBonusPoints = RuleSelector.getSettlementProjectOwnerVictoryPoints(G.rules);
-    const { owner, numWorkerToken } = ProjectSlotSelector.getOwner(project);
+    const { owner, numWorkerToken } = ProjectSlotSelector.getOwner(projectSlot);
     ScoreBoardMutator.add(G.table.scoreBoard, owner, ownerBonusPoints);
     // return owner token
     PlayersMutator.addWorkerTokens(G.players, owner, numWorkerToken);
-    ProjectSlotMutator.unassignOwner(project);
+    ProjectSlotMutator.unassignOwner(projectSlot);
   });
   // Remove from table
-  ProjectBoardMutator.remove(G.table.projectBoard, fulfilledProjects);
+  ProjectBoardMutator.remove(G.table.projectBoard, fulfilledProjectSlots);
 
   if (RuleSelector.isStandardRule(G.rules)) {
     // Update OpenSourceTree in standard version
     // TODO: implement OpenSourceTree
   } else {
     // Discard Project Card in simple version
-    const projectCards = fulfilledProjects.map(project => project.card);
+    const projectCards = fulfilledProjectSlots.map(project => project.card);
     DeckMutator.discard(G.decks.projects, projectCards);
   }
 

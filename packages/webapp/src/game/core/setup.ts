@@ -10,6 +10,7 @@ import { ScoreBoardMutator } from "../store/slice/scoreBoard";
 import { JobSlotsMutator } from '../store/slice/jobSlots';
 import { RuleSelector } from '../store/slice/rule';
 import { reservoirSampling } from '../utils';
+import { ProjectBoardMutator } from '../store/slice/projectBoard';
 
 type SetupFn<G extends any = any,
   PluginAPIs extends Record<string, unknown> = Record<string, unknown>,
@@ -64,6 +65,9 @@ export const setup: SetupFn<GameState> = ({ ctx, random }) => {
   const jobCardsInPlay = DeckSelector.peek(G.decks.jobs, maxJobCards);
   DeckMutator.draw(G.decks.jobs, maxJobCards);
   JobSlotsMutator.addJobCards(G.table.jobSlots, jobCardsInPlay);
+  // setup project slots
+  const maxProjectSlots = RuleSelector.getTableMaxProjectSlots(G.rules);
+  ProjectBoardMutator.initialize(G.table.projectBoard, maxProjectSlots);
 
   console.log('setup players')
   // initialize players and score board

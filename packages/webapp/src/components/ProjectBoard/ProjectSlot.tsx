@@ -12,11 +12,11 @@ import {
 } from '@mui/material';
 
 type Props = {
-  project?: ProjectSlotState;
+  slot: ProjectSlotState;
 };
 
-const ProjectSlot: React.FC<Props> = ({ project }) => {
-  const projectName = project?.card.name;
+const ProjectSlot: React.FC<Props> = ({ slot }) => {
+  const projectName = slot.card?.name;
   const headRow = (
     <TableRow>
       <TableCell>玩家</TableCell>
@@ -26,12 +26,12 @@ const ProjectSlot: React.FC<Props> = ({ project }) => {
     </TableRow>
   );
 
-  const workerRows = project?.contributions.map(worker =>
+  const workerRows = slot.contributions.map(worker =>
     <TableRow key={`job-${worker.jobName}-${worker.worker}`}>
       <TableCell>{worker.worker}</TableCell>
       <TableCell>{worker.jobName}</TableCell>
       <TableCell>{worker.value}</TableCell>
-      <TableCell>{project.card.requirements[worker.jobName]}</TableCell>
+      <TableCell>{slot.card?.requirements[worker.jobName]}</TableCell>
     </TableRow>
   )
 
@@ -45,7 +45,7 @@ const ProjectSlot: React.FC<Props> = ({ project }) => {
                 <Typography variant="h6">{projectName}</Typography>
               </TableCell>
               <TableCell>
-                <Typography variant="h6">{project?.owner}</Typography>
+                <Typography variant="h6">{slot.owner}</Typography>
               </TableCell>
             </TableRow>
             {headRow}
