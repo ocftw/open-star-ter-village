@@ -23,8 +23,29 @@ const initialState = (): Table => ({
   scoreBoard: ScoreBoardSlice.initialState(),
 });
 
-const TableSlice = {
-  initialState,
+const playEvent = (state: Table, eventCard: EventCard): void => {
+  state.eventSlot = eventCard;
 };
 
+const removeEvent = (state: Table): void => {
+  state.eventSlot = null;
+};
+
+const getCurrentEvent = (state: Table): EventCard | null => {
+  return state.eventSlot;
+}
+
+const TableSlice = {
+  initialState,
+  mutators: {
+    playEvent,
+    removeEvent,
+  },
+  selectors: {
+    getCurrentEvent,
+  },
+};
+
+export const TableMutator = TableSlice.mutators;
+export const TableSelector = TableSlice.selectors;
 export default TableSlice;
