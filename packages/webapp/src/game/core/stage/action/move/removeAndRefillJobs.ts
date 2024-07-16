@@ -44,10 +44,4 @@ export const removeAndRefillJobs: GameMove<RemoveAndRefillJobs> = ({ G, playerID
   console.log('score victory points')
   const victoryPoints = RuleSelector.getActionVictoryPoints(G.rules, 'removeAndRefillJobs');
   ScoreBoardMutator.add(G.table.scoreBoard, playerID, victoryPoints);
-
-  // end stage if no action tokens left
-  if (PlayersSelector.getNumActionTokens(G.players, playerID) === 0) {
-    events.endStage();
-    return;
-  }
 };

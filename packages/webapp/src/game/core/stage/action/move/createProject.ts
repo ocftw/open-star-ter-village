@@ -88,9 +88,4 @@ export const createProject: GameMove<CreateProject> = ({ G, playerID, events }, 
   ScoreBoardMutator.add(G.table.scoreBoard, playerID, victoryPoints);
 
   console.log('end create project')
-  // end stage if no action tokens left
-  if (PlayersSelector.getNumActionTokens(G.players, playerID) === 0) {
-    events.endStage();
-    return;
-  }
 };

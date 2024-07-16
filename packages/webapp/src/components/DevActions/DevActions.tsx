@@ -52,9 +52,7 @@ const DevActions: React.FC<BoardProps<GameState>> = (props) => {
     moves.contributeOwnedProjects(contributions);
     setContributions([]);
   };
-  const onEndAction = () => events.endStage!();
-  const onSettleProjects = () => moves.settleProjects();
-  const onRefillAndEnd = () => moves.refillAndEnd();
+  const onEndAction = () => events.endTurn!();
   const myCurrentStage = ctx.activePlayers ? ctx.activePlayers[playerID] : ''
 
   return (
@@ -156,20 +154,6 @@ const DevActions: React.FC<BoardProps<GameState>> = (props) => {
               <Button >Mirror</Button>
             </TabPanel>
           </TabContext>
-      }
-      {
-        myCurrentStage === 'settle' &&
-          <Stack direction={['column', 'row']} mt={1}>
-            <div className='group settles'>
-              <Button color='primary' onClick={onSettleProjects}>Settle Projects</Button>
-            </div>
-          </Stack>
-      }
-      {
-        myCurrentStage === 'refill' &&
-          <Stack direction={['column', 'row']} mt={1}>
-            <Button color='primary' onClick={onRefillAndEnd}>Refill and End turn</Button>
-          </Stack>
       }
     </div>
   );

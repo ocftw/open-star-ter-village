@@ -3,11 +3,12 @@ import { GameState } from './store/store';
 import { setup } from './core/setup';
 import { playerView } from './core/playerView';
 import { action } from './core/stage/action/action';
-import { settle } from './core/stage/settle/settle';
-import { refill } from './core/stage/refill/refill';
 import { playEventCard } from './core/handler/playEventCard';
 import { removeEventCard } from './core/handler/removeEventCard';
 import { passStartPlayerToken } from './core/handler/passStartPlayerToken';
+import { PlayersSelector } from './store/slice/players';
+import { settleProjects } from './core/handler/settleProjects';
+import { refill } from './core/handler/refill';
 
 export const OpenStarTerVillage: Game<GameState> = {
   setup: setup,
@@ -34,11 +35,14 @@ export const OpenStarTerVillage: Game<GameState> = {
     },
     stages: {
       action,
-      settle,
-      refill,
+    },
+    endIf: ({ G, ctx }) => {
+      return PlayersSelector.getNumActionTokens(G.players, ctx.currentPlayer) === 0;
     },
     onEnd: (context) => {
       const { ctx } = context;
+      settleProjects(context);
+      refill(context);
       if (ctx.playOrderPos === ctx.numPlayers - 1) {
         console.log('last player ends');
         removeEventCard(context);

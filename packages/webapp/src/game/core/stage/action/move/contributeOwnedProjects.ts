@@ -59,11 +59,4 @@ export const contributeOwnedProjects: GameMove<ContributeOwnedProjects> = ({ G, 
     const activeProject = ProjectBoardSelector.getById(G.table.projectBoard, activeProjectIndex);
     ProjectSlotMutator.pushWorker(activeProject, jobName, playerID, value);
   });
-
-
-  // end stage if no action tokens left
-  if (PlayersSelector.getNumActionTokens(G.players, playerID) === 0) {
-    events.endStage();
-    return;
-  }
 };
