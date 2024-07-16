@@ -5,13 +5,19 @@ import { playerView } from './core/playerView';
 import { action } from './core/stage/action/action';
 import { settle } from './core/stage/settle/settle';
 import { refill } from './core/stage/refill/refill';
+import { playEventCard } from './core/handler/playEventCard';
+import { removeEventCard } from './core/handler/removeEventCard';
+import { passStartPlayerToken } from './core/handler/passStartPlayerToken';
 
 export const OpenStarTerVillage: Game<GameState> = {
   setup: setup,
   turn: {
-    onBegin: () => {
-      // roundStart do something
-      console.log('turn begin')
+    onBegin: (context) => {
+      const { ctx } = context;
+      if (ctx.playOrderPos === 0) {
+        console.log('first player starts');
+        playEventCard(context);
+      }
     },
     /**
      * send current player to action stage.
@@ -31,7 +37,15 @@ export const OpenStarTerVillage: Game<GameState> = {
       settle,
       refill,
     },
-    onEnd: () => { },
+    onEnd: (context) => {
+      const { ctx } = context;
+      if (ctx.playOrderPos === ctx.numPlayers - 1) {
+        console.log('last player ends');
+        removeEventCard(context);
+
+        passStartPlayerToken(context);
+      }
+    },
   },
   playerView,
 };
