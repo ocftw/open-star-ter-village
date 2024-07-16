@@ -68,11 +68,4 @@ export const recruit: GameMove<Recruit> = ({ G, playerID, events }, jobCardIndex
   const jobCards = DeckSelector.peek(G.decks.jobs, refillCardNumber);
   DeckMutator.draw(G.decks.jobs, refillCardNumber);
   CardsMutator.add(G.table.jobSlots, jobCards);
-
-
-  // end stage if no action tokens left
-  if (PlayersSelector.getNumActionTokens(G.players, playerID) === 0) {
-    events.endStage();
-    return;
-  }
 };

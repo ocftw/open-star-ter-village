@@ -1,4 +1,4 @@
-import { GameMove } from "@/game/core/type";
+import { GameHookHandler } from "@/game/core/type";
 import { DeckMutator } from "@/game/store/slice/deck";
 import { PlayersMutator } from "@/game/store/slice/players";
 import { ProjectBoardMutator, ProjectBoardSelector } from "@/game/store/slice/projectBoard";
@@ -6,14 +6,12 @@ import { ProjectSlotMutator, ProjectSlotSelector } from "@/game/store/slice/proj
 import { RuleSelector } from "@/game/store/slice/rule";
 import { ScoreBoardMutator } from "@/game/store/slice/scoreBoard";
 
-export type SettleProjects = () => void;
-export const settleProjects: GameMove<SettleProjects> = (({ G, events }) => {
+export const settleProjects: GameHookHandler = (({ G }) => {
   console.log('settle projects')
   const fulfilledProjectSlots = ProjectBoardSelector.getRequirementFulfilled(G.table.projectBoard);
 
   if (fulfilledProjectSlots.length === 0) {
-    console.log('no fulfilled projects, end stage early')
-    events.endStage();
+    console.log('no fulfilled projects. skip settle projects')
     return;
   }
   fulfilledProjectSlots.forEach(projectSlot => {
@@ -56,7 +54,4 @@ export const settleProjects: GameMove<SettleProjects> = (({ G, events }) => {
   }
 
   console.log('end settle projects')
-
-  console.log('end stage')
-  events.endStage();
 })

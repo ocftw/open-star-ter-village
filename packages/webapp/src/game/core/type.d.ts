@@ -9,11 +9,9 @@ import { ContributeJoinedProjects } from './stage/action/move/contributeJoinedPr
 import { ContributeOwnedProjects } from './stage/action/move/contributeOwnedProjects';
 import { Recruit } from './stage/action/move/recruit';
 import { ActionMoves, ActionMoveName } from './stage/action/move/type';
-import { SettleMoveNames, SettleMoves } from './stage/settle/move/type';
-import { RefillMoveNames, RefillMoves } from './stage/refill/move/type';
 
-export type AllMoves = ActionMoves & SettleMoves & RefillMoves;
-export type AllMoveNames = ActionMoveName | SettleMoveNames | RefillMoveNames;
+export type AllMoves = ActionMoves;
+export type AllMoveNames = ActionMoveName;
 
 export interface ContributionAction {
   jobName: JobName;

@@ -34,5 +34,4 @@ export const action: GameStageConfig = {
       move: mirror,
     },
   },
-  next: 'settle',
 };
