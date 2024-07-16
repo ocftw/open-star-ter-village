@@ -39,7 +39,7 @@ export const recruit: GameMove<Recruit> = ({ G, playerID, events }, jobCardIndex
   const activeProject = ProjectBoardSelector.getById(G.table.projectBoard, activeProjectIndex);
   const jobContribution = ProjectSlotSelector.getJobContribution(activeProject, jobCard.name);
   // Check job requirment is not fulfilled yet
-  if (jobContribution >= activeProject.card.requirements[jobCard.name]) {
+  if (jobContribution >= activeProject.card!.requirements[jobCard.name]) {
     return INVALID_MOVE;
   }
   // User cannot place more than one worker in same job
