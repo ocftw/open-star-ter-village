@@ -2,6 +2,9 @@ export type ProjectName = string;
 export type ProjectCard = {
   id: string;
   name: ProjectName;
+  type: string;
+  difficulty: number;
+  description: string;
   requirements: Record<JobName, number>;
 };
 
@@ -18,4 +21,5 @@ export type EventCard = {
   name: EventName;
   description: string;
   function_name: EventFunctionName;
+  type: string;
 };

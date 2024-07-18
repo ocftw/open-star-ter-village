@@ -2,36 +2,43 @@
   {
     "name": "是芥末日",
     "description": "翻開此卡，本輪結束後，遊戲結束。在回合中可不將行動點用完，剩餘一個行動點數 +1 分",
-    "function_name": "end_game_after_this_round"
+    "function_name": "end_game_after_this_round",
+    "type": "last_round"
   },
   {
     "name": "人力釋出",
     "description": "立即將人力資源區的人力卡全部棄掉，並重新補滿",
-    "function_name": "discard_and_refill_all_worker_slots"
+    "function_name": "discard_and_refill_all_worker_slots",
+    "type": "basic"
   },
   {
     "name": "斜槓青年",
     "description": "本輪所有玩家在發起專案行動或招募人力行動時，使用的第一張人力卡可以無視人力需求招募至專案",
-    "function_name": "ignore_first_worker_requirement"
+    "function_name": "ignore_first_worker_requirement",
+    "type": "basic"
   },
   {
     "name": "四大自由",
     "description": "立即多翻開兩張人力卡至人力資源區，即人力資源區上限 +2。本輪結束時由尾家選擇兩張棄掉",
-    "function_name": "add_two_worker_slots"
+    "function_name": "add_two_worker_slots",
+    "type": "basic"
   },
   {
     "name": "會計年度結算",
     "description": "本輪結案的專案，發起者額外獲得 2分",
-    "function_name": "project_owner_gets_two_points"
+    "function_name": "project_owner_gets_two_points",
+    "type": "basic"
   },
   {
     "name": "青年補助",
     "description": "本輪目前影響力分數最低的玩家，可多使用一個灰色行動點指示物，若最低分不只一位，則無人可以使用",
-    "function_name": "the_only_player_with_the_lowest_victory_points_gets_one_extra_action_token"
+    "function_name": "the_only_player_with_the_lowest_victory_points_gets_one_extra_action_token",
+    "type": "basic"
   },
   {
     "name": "番茄醬工作法",
     "description": "本輪執行發起人貢獻時可分配的貢獻值 +1",
-    "function_name": "increase_one_owned_project_contribution_value"
+    "function_name": "increase_one_owned_project_contribution_value",
+    "type": "basic"
   }
 ]
