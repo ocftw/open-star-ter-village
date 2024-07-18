@@ -7,7 +7,8 @@ const initialState = (): ProjectSlot[] => [];
 
 const initialize = (state: ProjectSlot[], maxProjectSlots: number): void => {
   for (let i = 0; i < maxProjectSlots; i++) {
-    state.push(ProjectSlotSlice.initialState());
+    const slotId = `project-slot-${i}`;
+    state.push(ProjectSlotSlice.initialState(slotId));
   }
 }
 
@@ -21,11 +22,11 @@ const add = (state: ProjectSlot[], card: ProjectCard): void => {
 
 const remove = (state: ProjectSlot[], removedSlots: ProjectSlot[]): void => {
   removedSlots.forEach(removeSlot => {
-  let slotToBeRemoved = state.find(slot => slot.card?.id === removeSlot.card?.id && slot.owner === removeSlot.owner);
-    if (!slotToBeRemoved) {
+    const slotIndexToBeRemoved = state.findIndex(slot => slot.id === removeSlot.id);
+    if (slotIndexToBeRemoved === -1) {
       throw new Error('Project slot not found');
     }
-    slotToBeRemoved = ProjectSlotSlice.initialState();
+    state[slotIndexToBeRemoved] = ProjectSlotSlice.initialState(removeSlot.id);
   });
 }
 
