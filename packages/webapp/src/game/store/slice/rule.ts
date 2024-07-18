@@ -136,10 +136,11 @@ const IsScoreWhenAction = (actionRule: any): actionRule is ScoreWhenAction => {
 }
 
 const getActionVictoryPoints = (rule: Rule, actionName: ActionMoveName): number => {
-  if (!IsScoreWhenAction(rule.action[actionName])) {
+  const mayScoreWhenAction = rule.action[actionName];
+  if (!IsScoreWhenAction(mayScoreWhenAction)) {
     throw new Error(`Score when action rule is not defined in ${actionName}`);
   }
-  return rule.action[actionName].victoryPoints;
+  return mayScoreWhenAction.victoryPoints;
 }
 
 const IsInitialProject = (actionRule: any): actionRule is InitialProject => {
@@ -147,10 +148,11 @@ const IsInitialProject = (actionRule: any): actionRule is InitialProject => {
 }
 
 const getProjectOwnerWorkerTokenCost = (rule: Rule, actionName: ActionMoveName): number => {
-  if (!IsInitialProject(rule.action[actionName])) {
+  const mayInitialProject = rule.action[actionName];
+  if (!IsInitialProject(mayInitialProject)) {
     throw new Error(`Initial project rule is not defined in ${actionName}`);
   }
-  return rule.action[actionName].projectOwnerWorkerCost;
+  return mayInitialProject.projectOwnerWorkerCost;
 }
 
 const IsAssignWorker = (actionRule: any): actionRule is AssignWorker => {
@@ -158,17 +160,19 @@ const IsAssignWorker = (actionRule: any): actionRule is AssignWorker => {
 }
 
 const getAssignWorkerTokenCost = (rule: Rule, actionName: ActionMoveName): number => {
-  if (!IsAssignWorker(rule.action[actionName])) {
+  const mayAssignWorker = rule.action[actionName];
+  if (!IsAssignWorker(mayAssignWorker)) {
     throw new Error(`Assign worker rule is not defined in ${actionName}`);
   }
-  return rule.action[actionName].assignWorkerCost;
+  return mayAssignWorker.assignWorkerCost;
 }
 
 const getAssignWorkerInitialContributionValue = (rule: Rule, actionName: ActionMoveName): number => {
-  if (!IsAssignWorker(rule.action[actionName])) {
+  const mayAssignWorker = rule.action[actionName];
+  if (!IsAssignWorker(mayAssignWorker)) {
     throw new Error(`Assign worker rule is not defined in ${actionName}`);
   }
-  return rule.action[actionName].initialContributionValue;
+  return mayAssignWorker.initialContributionValue;
 }
 
 const IsWorkerContribution = (actionRule: any): actionRule is WorkerContribution => {
@@ -176,10 +180,11 @@ const IsWorkerContribution = (actionRule: any): actionRule is WorkerContribution
 }
 
 const getMaxContributionValue = (rule: Rule, actionName: ActionMoveName): number => {
-  if (!IsWorkerContribution(rule.action[actionName])) {
+  const mayWorkerContribution = rule.action[actionName];
+  if (!IsWorkerContribution(mayWorkerContribution)) {
     throw new Error('Worker contribution rule is not defined');
   }
-  return rule.action[actionName].maxContributionValue;
+  return mayWorkerContribution.maxContributionValue;
 }
 
 const getTableMaxJobSlots = (rule: Rule): number => {

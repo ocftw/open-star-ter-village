@@ -23,6 +23,19 @@ const getUuid = (randomFn: () => number = Math.random ) => {
   return randomFn().toString(32).slice(2);
 }
 
+interface RawProjectCard {
+  name: string;
+  type: string;
+  difficulty: number;
+  description: string;
+  requirements: Record<string, number>;
+}
+
+interface RawJobCard {
+  name: string;
+  number_of_cards: number;
+}
+
 export const setup: SetupFn<GameState> = ({ ctx, random }) => {
   console.log('setup game')
 
@@ -35,27 +48,57 @@ export const setup: SetupFn<GameState> = ({ ctx, random }) => {
 
   console.log('setup decks')
   // add cards to decks
-  const projectCards = rawProjectCards.map(rawProjectCard => ({ id: getUuid(random.Number), ...rawProjectCard }) as unknown as ProjectCard);
+  console.log('setup project cards')
+  const mapToProjectCards = (rawProjectCards: RawProjectCard[]): ProjectCard[] => {
+    return rawProjectCards.map(rawProjectCard => ({
+      id: getUuid(random.Number),
+      ...rawProjectCard,
+    }));
+  };
+
+  const projectCards = mapToProjectCards(rawProjectCards as unknown as RawProjectCard[]);
   const shuffledProjectCards = random.Shuffle(projectCards);
   DeckMutator.initialize(G.decks.projects, shuffledProjectCards);
 
-  const jobCards = rawJobCards.map(rawJobCard => ({ id: getUuid(random.Number), ...rawJobCard }) as unknown as JobCard);
+  console.log('setup job cards')
+  const mapToJobCards = (rawJobCards: RawJobCard[]): JobCard[] => {
+    const jobCards: JobCard[] = [];
+    rawJobCards.forEach(rawJobCard => {
+      const jobCardCreator = () => ({
+        id: getUuid(random.Number),
+        name: rawJobCard.name,
+      });
+      for (let i = 0; i < rawJobCard.number_of_cards; i++) {
+        jobCards.push(jobCardCreator());
+      }
+    })
+    return jobCards;
+  };
+
+  const jobCards = mapToJobCards(rawJobCards);
   const shuffledJobCards = random.Shuffle(jobCards);
   DeckMutator.initialize(G.decks.jobs, shuffledJobCards);
 
+  console.log('setup event cards');
+  // TODO: Validate event card function names
   const eventCards = rawEventCards.map(rawEventCard => ({ id: getUuid(random.Number), ...rawEventCard }) as unknown as EventCard);
   // find end game event card
   // pick N random event cards based on rule and shuffle them
   // add end game event card to the end
-  const endGameEvent = eventCards.find(card => card.function_name === 'end_game_after_this_round');
-  if (!endGameEvent) {
-    throw new Error('end_game_after_this_round event card not found');
+  const lastRoundEventCards = eventCards.filter(card => card.type === 'last_round');
+  if (lastRoundEventCards.length === 0) {
+    throw new Error('last round event card not found');
   }
-  const restEventCards = eventCards.filter(card => card.function_name !== 'end_game_after_this_round');
+  if (lastRoundEventCards.length > 1) {
+    throw new Error('multiple last round event cards found');
+  }
+  const endGameEventCard = lastRoundEventCards[0];
+
+  const basicEventCards = eventCards.filter(card => card.type === 'basic');
   const nonEndGameEventCardCount = RuleSelector.getNonEndGameNumberOfEventCards(G.rules);
-  const eventCardsWithoutEndGame = reservoirSampling(restEventCards, nonEndGameEventCardCount, random.Number);
+  const eventCardsWithoutEndGame = reservoirSampling(basicEventCards, nonEndGameEventCardCount, random.Number);
   const shuffledEventCards = random.Shuffle(eventCardsWithoutEndGame);
-  shuffledEventCards.push(endGameEvent);
+  shuffledEventCards.push(endGameEventCard);
   // initialize event deck
   DeckMutator.initialize(G.decks.events, shuffledEventCards);
 
