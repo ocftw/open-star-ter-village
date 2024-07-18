@@ -10,6 +10,7 @@ export interface ProjectContribution {
 }
 
 export interface ProjectSlot {
+  id: string;
   card?: ProjectCard;
   owner: PlayerID;
   ownerToken: number;
@@ -17,7 +18,8 @@ export interface ProjectSlot {
   lastContributor: PlayerID;
 }
 
-const initialState = (): ProjectSlot => ({
+const initialState = (id: string): ProjectSlot => ({
+  id,
   owner: '',
   ownerToken: 0,
   contributions: [],
