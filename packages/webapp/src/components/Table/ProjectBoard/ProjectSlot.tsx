@@ -4,7 +4,7 @@ import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import Chip from '@mui/material/Chip';
 import { styled } from '@mui/material/styles';
-import { playerNameMap } from '../playerNameMap';
+import { playerNameMap } from '../../playerNameMap';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { getSelectedProjectSlots, toggleProjectSlotSelection } from '@/lib/reducers/projectSlotSlice';
 
