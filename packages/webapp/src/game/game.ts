@@ -8,6 +8,7 @@ import { removeEventCard } from './core/handler/removeEventCard';
 import { passStartPlayerToken } from './core/handler/passStartPlayerToken';
 import { PlayersSelector } from './store/slice/players';
 import { settleProjects } from './core/handler/settleProjects';
+import { scoreLeftoverActionTokens } from './core/handler/scoreLeftoverActionTokens';
 import { refill } from './core/handler/refill';
 
 export const OpenStarTerVillage: Game<GameState> = {
@@ -42,6 +43,7 @@ export const OpenStarTerVillage: Game<GameState> = {
     onEnd: (context) => {
       const { ctx } = context;
       settleProjects(context);
+      scoreLeftoverActionTokens(context);
       refill(context);
       if (ctx.playOrderPos === ctx.numPlayers - 1) {
         console.log('last player ends');
