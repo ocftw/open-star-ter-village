@@ -1,65 +1,78 @@
 import { ProjectSlotState } from '@/game';
-import {
-  Box,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Typography,
-  Paper,
-} from '@mui/material';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import Chip from '@mui/material/Chip';
+import { styled } from '@mui/material/styles';
+import { playerNameMap } from '../playerNameMap';
+import { useState } from 'react';
 
 type Props = {
   slot: ProjectSlotState;
 };
 
-const ProjectSlot: React.FC<Props> = ({ slot }) => {
-  const projectName = slot.card?.name;
-  const headRow = (
-    <TableRow>
-      <TableCell>玩家</TableCell>
-      <TableCell>職業</TableCell>
-      <TableCell>貢獻</TableCell>
-      <TableCell>進度</TableCell>
-    </TableRow>
-  );
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  border: '1px solid black',
+  cursor: 'pointer',
+  padding: '16px',
+  position: 'relative',
+  '&:hover': {
+    backgroundColor: theme.palette.action.hover,
+  },
+  '&.selected': {
+    backgroundColor: theme.palette.action.selected,
+  },
+}));
 
-  const workerRows = slot.contributions.map(worker =>
-    <TableRow key={`job-${worker.jobName}-${worker.worker}`}>
-      <TableCell>{worker.worker}</TableCell>
-      <TableCell>{worker.jobName}</TableCell>
-      <TableCell>{worker.value}</TableCell>
-      <TableCell>{slot.card?.requirements[worker.jobName]}</TableCell>
-    </TableRow>
-  )
+const ProjectSlot: React.FC<Props> = ({ slot }) => {
+  const [selected, setSelected] = useState(false);
+
+  const handleSelect = () => {
+    setSelected((prevSelected) => !prevSelected);
+  };
+
+  const projectName = slot.card?.name;
+  const projectType = slot.card?.type;
+  const owner = playerNameMap[slot.owner];
+  const requirements = slot.card?.requirements || {};
+  const requiredJobs = Object.keys(slot.card?.requirements || []);
 
   return (
-    <Box m={2} p={2} border={1} borderRadius="borderRadius" borderColor="grey.300">
-      <TableContainer component={Paper}>
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell colSpan={3}>
-                <Typography variant="h6">{projectName}</Typography>
-              </TableCell>
-              <TableCell>
-                <Typography variant="h6">{slot.owner}</Typography>
-              </TableCell>
-            </TableRow>
-            {headRow}
-          </TableHead>
-          <TableBody>
-            {workerRows}
-          </TableBody>
-          <TableHead>
-            {headRow}
-          </TableHead>
-        </Table>
-      </TableContainer>
-    </Box>
-  )
+    <Grid container spacing={3}>
+      <Grid item xs={12}>
+        <StyledPaper
+          onClick={handleSelect}
+          className={selected ? 'selected' : ''}
+        >
+          <Grid container direction="column" alignItems="center" justifyContent="center" style={{ minHeight: '200px' }}>
+            {!!projectType && (
+              <Chip label={projectType} color="primary" style={{ position: 'absolute', top: '16px', right: '16px' }} />
+            )}
+            <Typography variant="h6" style={{ position: 'absolute', top: '16px', left: '16px' }}>
+              {projectName}
+            </Typography>
+            <Grid container justifyContent="center" style={{ marginTop: '40px' }}>
+              {requiredJobs.map((jobName) => (
+                <Grid item key={`${slot.id}-${jobName}`} style={{ textAlign: 'center', margin: '8px' }}>
+                  <Typography>{requirements[jobName]} {jobName}</Typography>
+                  {slot.contributions
+                    .filter((contribution) => contribution.jobName === jobName)
+                    .map((contribution) => (
+                      <Typography key={`${jobName}-${contribution.worker}`}>
+                        {contribution.value}: {contribution.worker}
+                      </Typography>
+                    ))}
+                </Grid>
+              ))}
+            </Grid>
+            <Typography variant="body2" style={{ position: 'absolute', bottom: '16px', right: '16px' }}>
+              Owner: {owner}
+            </Typography>
+          </Grid>
+        </StyledPaper>
+      </Grid>
+    </Grid>
+  );
 }
 
 export default ProjectSlot;
