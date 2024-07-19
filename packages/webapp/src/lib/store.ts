@@ -1,10 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { wizardReducer }from './reducers/wizard'
+import projectSlotSlice from './reducers/projectSlotSlice'
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
       wizard: wizardReducer,
+      projectSlot: projectSlotSlice,
     },
   })
 }
