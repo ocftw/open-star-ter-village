@@ -14,10 +14,29 @@ const mutators = {
   },
 };
 
+const selectors = {
+  getPlayerPoints: (state: ScoreBoard, playerId: PlayerID): number => {
+    return state[playerId];
+  },
+  getWinner: (state: ScoreBoard): PlayerID => {
+    let winner: PlayerID = '';
+    let maxPoints = -Infinity;
+    Object.entries(state).forEach(([playerId, points]) => {
+      if (points > maxPoints) {
+        maxPoints = points;
+        winner = playerId;
+      }
+    });
+    return winner;
+  },
+};
+
 const ScoreBoardSlice = {
   initialState,
+  selectors,
   mutators,
 };
 
 export const ScoreBoardMutator = ScoreBoardSlice.mutators;
+export const ScoreBoardSelector = ScoreBoardSlice.selectors;
 export default ScoreBoardSlice;

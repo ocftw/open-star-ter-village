@@ -49,6 +49,7 @@ export interface Rule {
     maxProjectCards: number;
   },
   settlement: {
+    leftoverActionTokensVictoryPoints: number;
     projectOwnerVictoryPoints: number;
     lastContributorVictoryPoints: number;
   },
@@ -109,11 +110,16 @@ const initialState = (): Rule => {
       maxProjectCards: 2,
     },
     settlement: {
+      leftoverActionTokensVictoryPoints: 0,
       projectOwnerVictoryPoints: 2,
       lastContributorVictoryPoints: 2,
     },
   };
 }
+
+const setSettlementLastContributorVictoryPoints = (rule: Rule, victoryPoints: number): void => {
+  rule.settlement.lastContributorVictoryPoints = victoryPoints;
+};
 
 const isStandardRule = (rule: Rule): boolean => {
   return rule.type === 'standard';
@@ -207,6 +213,10 @@ const getPlayerMaxProjectCards = (rule: Rule): number => {
   return rule.player.maxProjectCards;
 }
 
+const getSettlementLeftoverActionTokensVictoryPoints = (rule: Rule): number => {
+  return rule.settlement.leftoverActionTokensVictoryPoints;
+}
+
 const getSettlementProjectOwnerVictoryPoints = (rule: Rule): number => {
   return rule.settlement.projectOwnerVictoryPoints;
 };
@@ -217,6 +227,9 @@ const getSettlementLastContributorVictoryPoints = (rule: Rule): number => {
 
 const RuleSlice = {
   initialState,
+  mutators: {
+    setSettlementLastContributorVictoryPoints,
+  },
   selectors: {
     isStandardRule,
     getNonEndGameNumberOfEventCards,
@@ -232,10 +245,12 @@ const RuleSlice = {
     getPlayerMaxActionTokens,
     getPlayerMaxWorkerTokens,
     getPlayerMaxProjectCards,
+    getSettlementLeftoverActionTokensVictoryPoints,
     getSettlementProjectOwnerVictoryPoints,
     getSettlementLastContributorVictoryPoints,
   },
 };
 
+export const RuleMutator = RuleSlice.mutators;
 export const RuleSelector = RuleSlice.selectors;
 export default RuleSlice;

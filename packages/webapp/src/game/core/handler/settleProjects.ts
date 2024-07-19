@@ -31,7 +31,7 @@ export const settleProjects: GameHookHandler = (({ G }) => {
     // score bonus points
     // last contributor bonus
     const lastContributorBonusPoints = RuleSelector.getSettlementLastContributorVictoryPoints(G.rules);
-    ScoreBoardMutator.add(G.table.scoreBoard, projectSlot.lastContributor!, lastContributorBonusPoints);
+    ScoreBoardMutator.add(G.table.scoreBoard, projectSlot.lastContributor, lastContributorBonusPoints);
 
     // owner bonus
     const ownerBonusPoints = RuleSelector.getSettlementProjectOwnerVictoryPoints(G.rules);
