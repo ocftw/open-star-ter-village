@@ -62,7 +62,7 @@ const ProjectSlot: React.FC<Props> = ({ slot }) => {
                     .filter((contribution) => contribution.jobName === jobName)
                     .map((contribution) => (
                       <Typography key={`${jobName}-${contribution.worker}`}>
-                        {contribution.value}: {contribution.worker}
+                        {contribution.value}: {playerNameMap[contribution.worker]}
                       </Typography>
                     ))}
                 </Grid>
