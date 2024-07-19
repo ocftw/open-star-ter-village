@@ -6,7 +6,7 @@ import Chip from '@mui/material/Chip';
 import { styled } from '@mui/material/styles';
 import { playerNameMap } from '../playerNameMap';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { getSelectedSlots, toggleProjectSlotSelection } from '@/lib/reducers/projectSlotSlice';
+import { getSelectedProjectSlots, toggleProjectSlotSelection } from '@/lib/reducers/projectSlotSlice';
 
 type Props = {
   slot: ProjectSlotState;
@@ -27,7 +27,7 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
 
 const ProjectSlot: React.FC<Props> = ({ slot }) => {
   const dispath = useAppDispatch();
-  const selectedSlots = useAppSelector(getSelectedSlots);
+  const selectedSlots = useAppSelector(getSelectedProjectSlots);
   const selected = !!selectedSlots[slot.id];
 
   const handleSelect = () => {
