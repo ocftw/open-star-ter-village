@@ -25,6 +25,7 @@ const Boardgame: React.FC<{ isLocal: boolean} & React.ComponentProps<ReturnType<
     game,
     board: Board,
     multiplayer,
+    numPlayers: 3,
   })
   return <BoardgameComponent {...props} />;
 }
