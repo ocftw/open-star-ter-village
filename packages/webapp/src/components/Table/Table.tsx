@@ -1,6 +1,7 @@
 import { Box, Grid } from '@mui/material';
 import ProjectSlot from '@/components/ProjectBoard/ProjectSlot';
 import { TableState } from '@/game';
+import JobSlots from './JobBoard/JobSlots';
 
 interface Props {
   table: TableState;
@@ -15,6 +16,7 @@ const Table: React.FC<Props> = (props) => {
             <ProjectSlot slot={p} />
           </Grid>
         ))}
+        <JobSlots jobs={props.table.jobSlots} />
       </Grid>
     </Box>
   )
