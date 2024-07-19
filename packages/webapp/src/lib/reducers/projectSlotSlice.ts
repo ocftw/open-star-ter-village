@@ -9,7 +9,7 @@ const initialState: ProjectSlotState = {
 };
 
 const projectSlotSlice = createSlice({
-  name: 'projectSlot',
+  name: 'projectSlots',
   initialState,
   reducers: {
     toggleProjectSlotSelection: (state, action: PayloadAction<string>) => {
@@ -21,10 +21,10 @@ const projectSlotSlice = createSlice({
     },
   },
   selectors: {
-    getSelectedSlots: (state: ProjectSlotState) => state.selectedSlots,
+    getSelectedProjectSlots: (state: ProjectSlotState) => state.selectedSlots,
   }
 });
 
 export const { toggleProjectSlotSelection } = projectSlotSlice.actions;
-export const { getSelectedSlots } = projectSlotSlice.selectors;
+export const { getSelectedProjectSlots } = projectSlotSlice.selectors;
 export default projectSlotSlice.reducer;

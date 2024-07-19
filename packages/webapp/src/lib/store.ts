@@ -6,7 +6,7 @@ export const makeStore = () => {
   return configureStore({
     reducer: {
       wizard: wizardReducer,
-      projectSlot: projectSlotSlice,
+      projectSlots: projectSlotSlice,
     },
   })
 }
