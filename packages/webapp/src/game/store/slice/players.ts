@@ -40,6 +40,10 @@ const getNumProjects = (state: Players, playerId: PlayerID): number => {
   return state[playerId].hand.projects.length;
 };
 
+const getProjectCards = (state: Players, playerId: PlayerID): ProjectCard[] => {
+  return state[playerId].hand.projects;
+}
+
 const addProjects = (state: Players, playerId: PlayerID, projects: ProjectCard[]): void => {
   state[playerId].hand.projects.push(...projects);
 };
@@ -86,6 +90,7 @@ const PlayersSlice = {
     getNumWorkerTokens,
     getNumActionTokens,
     getNumProjects,
+    getProjectCards,
   },
 };
 
