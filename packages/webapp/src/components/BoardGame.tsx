@@ -5,9 +5,6 @@ import Table from '@/components/Table/Table';
 import DevActions from '@/components/DevActions/DevActions';
 import ActionBar from './ActionBoard/ActionBar';
 import GameHeader from './GameHeader/GameHeader';
-import { playerNameMap } from './playerNameMap';
-import { PlayersSelector } from '@/game/store/slice/players';
-import { ScoreBoardSelector } from '@/game/store/slice/scoreBoard';
 import UserPanel from './UserPanel/UserPanel';
 import { Box } from '@mui/material';
 import { GameContext } from './GameContextHelpers';
@@ -18,13 +15,7 @@ const Board: React.FC<GameContext> = (gameContext) => {
   return (
     <Box sx={{ display: 'flex' }}>
       {!!playerID &&
-        <UserPanel
-          userName={playerNameMap[playerID]}
-          actionTokens={PlayersSelector.getNumActionTokens(G.players, playerID)}
-          workerTokens={PlayersSelector.getNumWorkerTokens(G.players, playerID)}
-          score={ScoreBoardSelector.getPlayerPoints(G.table.scoreBoard, playerID)}
-          projectCards={PlayersSelector.getProjectCards(G.players, playerID)}
-        />
+        <UserPanel gameContext={gameContext}/>
       }
       <Box sx={{ flex: 1, padding: '16px', marginLeft: { xs: 0 } }}>
         <GameHeader players={G.players} scoreBoard={G.table.scoreBoard}  />

@@ -7,6 +7,10 @@ import { styled } from '@mui/material/styles';
 import { ProjectCard } from '@/game';
 import { getSelectedHandProjectCards, toggleHandProjectCardSelection } from '@/lib/reducers/handProjectCardSlice';
 import { Chip } from '@mui/material';
+import { GameContext, connectGameContext } from '../GameContextHelpers';
+import { playerNameMap } from '../playerNameMap';
+import { PlayersSelector } from '@/game/store/slice/players';
+import { ScoreBoardSelector } from '@/game/store/slice/scoreBoard';
 
 type UserPanelProps = {
   userName: string;
@@ -93,4 +97,23 @@ const UserPanel: React.FC<UserPanelProps> = ({ userName, workerTokens, actionTok
   );
 };
 
-export default UserPanel;
+const mapGameContextToProps = ({ G, playerID }: GameContext): UserPanelProps => {
+  // only player will see user panel
+  playerID = playerID!;
+
+  const userName = playerNameMap[playerID];
+  const actionTokens = PlayersSelector.getNumActionTokens(G.players, playerID);
+  const workerTokens=PlayersSelector.getNumWorkerTokens(G.players, playerID);
+  const score=ScoreBoardSelector.getPlayerPoints(G.table.scoreBoard, playerID);
+  const projectCards= PlayersSelector.getProjectCards(G.players, playerID);
+
+  return {
+    userName,
+    workerTokens,
+    actionTokens,
+    score,
+    projectCards,
+  };
+}
+
+export default connectGameContext(mapGameContextToProps)(UserPanel);
