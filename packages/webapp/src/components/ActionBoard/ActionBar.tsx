@@ -43,7 +43,7 @@ const EndActionButton = styled(Button)(({ theme }) => ({
 
 const ActionBar: React.FC<ActionBarProps> = ({ actionsState, onActionClick }) => {
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'center', padding: '8px', backgroundColor: '#f0f0f0' }}>
+    <Box sx={{ display: 'flex', justifyContent: 'center', padding: '8px', backgroundColor: '#f0f0f0', marginTop: '16px' }}>
       <Grid container spacing={1} justifyContent="center">
         {Object.entries(actionsState).map(([action, state]) => (
           action === UserActionMoves.EndActionTurn ? (

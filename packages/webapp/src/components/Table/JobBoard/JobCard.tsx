@@ -1,10 +1,10 @@
 import React from 'react';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-import Avatar from '@mui/material/Avatar';
 import { styled } from '@mui/material/styles';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { getSelectedJobSlots, toggleJobSlotSelection } from '@/lib/reducers/jobSlotSlice';
+import { Avatar } from '../../common/Avatar';
 
 type JobCardProps = {
   id: string;
@@ -37,8 +37,8 @@ const JobCard: React.FC<JobCardProps> = ({ id, title }) => {
 
   return (
     <StyledPaper onClick={handleSelect} className={selected ? 'selected' : ''}>
-      <Avatar alt={title} style={{ marginRight: '16px' }}>{title.slice(0,2)}</Avatar>
-      <Typography variant="h6">{title}</Typography>
+      <Avatar title={title} />
+      <Typography style={{ marginLeft: '16px' }} variant="h6">{title}</Typography>
     </StyledPaper>
   );
 };
