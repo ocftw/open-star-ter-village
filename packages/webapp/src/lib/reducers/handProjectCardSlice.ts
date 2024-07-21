@@ -19,12 +19,15 @@ const handProjectCardSlice = createSlice({
         state.selectedCards[action.payload] = true;
       }
     },
+    resetHandProjectCardSelection: (state) => {
+      state.selectedCards = {};
+    },
   },
   selectors: {
     getSelectedHandProjectCards: (state: HandProjectCardState) => state.selectedCards,
   },
 });
 
-export const { toggleHandProjectCardSelection } = handProjectCardSlice.actions;
+export const { toggleHandProjectCardSelection, resetHandProjectCardSelection } = handProjectCardSlice.actions;
 export const { getSelectedHandProjectCards } = handProjectCardSlice.selectors;
 export default handProjectCardSlice.reducer;

@@ -19,12 +19,15 @@ const jobSlotSlice = createSlice({
         state.selectedSlots[action.payload] = true;
       }
     },
+    resetJobSlotSelection: (state) => {
+      state.selectedSlots = {};
+    },
   },
   selectors: {
     getSelectedJobSlots: (state: JobSlotState) => state.selectedSlots,
   }
 });
 
-export const { toggleJobSlotSelection } = jobSlotSlice.actions;
+export const { toggleJobSlotSelection, resetJobSlotSelection } = jobSlotSlice.actions;
 export const { getSelectedJobSlots } = jobSlotSlice.selectors;
 export default jobSlotSlice.reducer;
