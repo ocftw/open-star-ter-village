@@ -3,7 +3,7 @@ import { Box, Button, Grid } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { connectGameContext } from '../GameContextHelpers';
 import { connect } from 'react-redux';
-import { UserActionMoves, ActionMoveState, mapStateToProps, mapGameContextToProps } from './ActionBar.selectors';
+import { UserActionMoves, ActionMoveState, mapStateToProps, mapGameContextToProps, mapDispatchToProps } from './ActionBar.selectors';
 
 type ActionBarProps = {
   actionsState: Record<UserActionMoves, ActionMoveState>;
@@ -69,4 +69,4 @@ const ActionBar: React.FC<ActionBarProps> = ({ actionsState, onActionClick }) =>
   );
 };
 
-export default connect(mapStateToProps)(connectGameContext(mapGameContextToProps)(ActionBar));
+export default connect(mapStateToProps, mapDispatchToProps)(connectGameContext(mapGameContextToProps)(ActionBar));

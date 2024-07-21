@@ -19,12 +19,15 @@ const projectSlotSlice = createSlice({
         state.selectedSlots[action.payload] = true;
       }
     },
+    resetProjectSlotSelection: (state) => {
+      state.selectedSlots = {};
+    },
   },
   selectors: {
     getSelectedProjectSlots: (state: ProjectSlotState) => state.selectedSlots,
   }
 });
 
-export const { toggleProjectSlotSelection } = projectSlotSlice.actions;
+export const { toggleProjectSlotSelection, resetProjectSlotSelection } = projectSlotSlice.actions;
 export const { getSelectedProjectSlots } = projectSlotSlice.selectors;
 export default projectSlotSlice.reducer;

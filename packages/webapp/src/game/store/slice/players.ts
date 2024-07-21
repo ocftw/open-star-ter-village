@@ -44,14 +44,20 @@ const getProjectCards = (state: Players, playerId: PlayerID): ProjectCard[] => {
   return state[playerId].hand.projects;
 }
 
+const getProjectCardById = (state: Players, playerId: PlayerID, projectId: string): ProjectCard | undefined => {
+  return state[playerId].hand.projects.find(p => p.id === projectId);
+}
+
 const addProjects = (state: Players, playerId: PlayerID, projects: ProjectCard[]): void => {
   state[playerId].hand.projects.push(...projects);
 };
 
 const useProject = (state: Players, playerId: PlayerID, project: ProjectCard): void => {
   // remove the first project that matches the project card
-  const index = state[playerId].hand.projects.findIndex(p => p.name === project.name);
-  state[playerId].hand.projects.splice(index, 1);
+  const index = state[playerId].hand.projects.findIndex(p => p.id === project.id);
+  if (index !== -1) {
+    state[playerId].hand.projects.splice(index, 1);
+  }
 };
 
 const addWorkerTokens = (state: Players, playerId: PlayerID, numWorkers: number): void => {
@@ -91,6 +97,7 @@ const PlayersSlice = {
     getNumActionTokens,
     getNumProjects,
     getProjectCards,
+    getProjectCardById,
   },
 };
 
