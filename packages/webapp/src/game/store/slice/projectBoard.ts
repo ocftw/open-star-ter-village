@@ -34,6 +34,11 @@ const getById = (state: ProjectSlot[], index: number): ProjectSlot => {
   return state[index];
 }
 
+const getBySlotId = (state: ProjectSlot[], id: string): ProjectSlot | undefined => {
+  const slot = state.find(project => project.id === id);
+  return slot;
+}
+
 const getSlotByCard = (state: ProjectSlot[], card: ProjectCard): ProjectSlot => {
   const slot = state.find(project => project.card?.id === card.id);
   if (!slot) {
@@ -65,6 +70,7 @@ const ProjectBoardSlice = {
   },
   selectors: {
     getById,
+    getBySlotId,
     getSlotByCard,
     getRequirementFulfilled,
   },
