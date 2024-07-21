@@ -1,6 +1,6 @@
-import { Client, BoardProps } from 'boardgame.io/react';
+import { Client } from 'boardgame.io/react';
 import { SocketIO, Local } from 'boardgame.io/multiplayer'
-import game, { GameState } from '@/game';
+import game from '@/game';
 import Table from '@/components/Table/Table';
 import DevActions from '@/components/DevActions/DevActions';
 import ActionBoard from './ActionBoard/ActionBoard';
@@ -10,9 +10,10 @@ import { PlayersSelector } from '@/game/store/slice/players';
 import { ScoreBoardSelector } from '@/game/store/slice/scoreBoard';
 import UserPanel from './UserPanel/UserPanel';
 import { Box } from '@mui/material';
+import { GameContext } from './GameContextHelpers';
 
-const Board: React.FC<BoardProps<GameState>> = (props) => {
-  const { G, debug, playerID } = props;
+const Board: React.FC<GameContext> = (gameContext) => {
+  const { G, debug, playerID } = gameContext;
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -29,7 +30,7 @@ const Board: React.FC<BoardProps<GameState>> = (props) => {
         <GameHeader players={G.players} scoreBoard={G.table.scoreBoard}  />
         <ActionBoard />
         <Table table={G.table} />
-        {debug && <DevActions {...props} />}
+        {debug && <DevActions {...gameContext} />}
       </Box>
     </Box>
   );
