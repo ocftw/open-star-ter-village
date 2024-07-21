@@ -114,6 +114,15 @@ export const mapGameContextToProps = (gameContext: GameContext, reduxProps: Redu
     }
   }
 
+  const onRemoveAndRefillJobs = () => {
+    if (selectedJobSlots.length > 0) {
+      moves.removeAndRefillJobs(selectedJobSlots);
+      resetJobSlotSelection();
+    } else {
+      // show error message
+    }
+  }
+
   const onEndActionTurn = () => {
     events.endTurn!();
   };
@@ -125,6 +134,9 @@ export const mapGameContextToProps = (gameContext: GameContext, reduxProps: Redu
         break;
       case UserActionMoves.Recruit:
         onRecruit();
+        break;
+      case UserActionMoves.RemoveAndRefillJobs:
+        onRemoveAndRefillJobs();
         break;
       case UserActionMoves.EndActionTurn:
         onEndActionTurn();
