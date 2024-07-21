@@ -1,24 +1,17 @@
 export interface ActionSlot {
-  isActive: boolean;
   isOccupied: boolean;
 }
 export const initialState = (): ActionSlot => ({
-  isActive: true,
   isOccupied: false,
 });
 
 const reset = (state: ActionSlot) => {
-  state.isActive = true;
   state.isOccupied = false;
 };
 
 const occupy = (state: ActionSlot) => {
   state.isOccupied = true;
 }
-
-const isAvailable = (state: ActionSlot) => {
-  return state.isActive && !state.isOccupied;
-};
 
 const ActionSlotSlice = {
   initialState,
@@ -27,7 +20,8 @@ const ActionSlotSlice = {
     reset,
   },
   selectors: {
-    isAvailable,
+    isAvailable: (state: ActionSlot) => !state.isOccupied,
+    isOccupied: (state: ActionSlot) => state.isOccupied,
   },
 };
 

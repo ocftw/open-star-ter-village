@@ -1,7 +1,7 @@
-import { ActionMove } from "../../moves/type";
+import { ActionMoveName } from "@/game/core/stage/action/move/type";
 import ActionSlotSlice, { ActionSlot, ActionSlotMutator } from "./actionSlot";
 
-export type ActionSlots = Record<ActionMove, ActionSlot>;
+export type ActionSlots = Record<ActionMoveName, ActionSlot>;
 
 const initialState = (): ActionSlots => ({
   contributeJoinedProjects: ActionSlotSlice.initialState(),

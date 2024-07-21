@@ -3,7 +3,7 @@ import { SocketIO, Local } from 'boardgame.io/multiplayer'
 import game from '@/game';
 import Table from '@/components/Table/Table';
 import DevActions from '@/components/DevActions/DevActions';
-import ActionBoard from './ActionBoard/ActionBoard';
+import ActionBar from './ActionBoard/ActionBar';
 import GameHeader from './GameHeader/GameHeader';
 import { playerNameMap } from './playerNameMap';
 import { PlayersSelector } from '@/game/store/slice/players';
@@ -28,7 +28,7 @@ const Board: React.FC<GameContext> = (gameContext) => {
       }
       <Box sx={{ flex: 1, padding: '16px', marginLeft: { xs: 0 } }}>
         <GameHeader players={G.players} scoreBoard={G.table.scoreBoard}  />
-        <ActionBoard />
+        <ActionBar gameContext={gameContext} />
         <Table table={G.table} />
         {debug && <DevActions {...gameContext} />}
       </Box>
