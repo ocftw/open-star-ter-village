@@ -75,7 +75,14 @@ const getActionMoveState = (state: GameState, actionMove: ActionMoveName): Actio
 export const mapGameContextToProps = (gameContext: GameContext, reduxProps: ReduxProps) => {
   // cast moves to ActionMoves
   const { G, events, moves } = gameContext as GameContext & { moves: ActionMoves };
-  const { selectedHandProjectCards, selectedJobSlots, resetHandProjectCardSelection, resetJobSlotSelection } = reduxProps;
+  const {
+    selectedHandProjectCards,
+    resetHandProjectCardSelection,
+    selectedJobSlots,
+    resetJobSlotSelection,
+    selectedProjectSlots,
+    resetProjectSlotSelection,
+  } = reduxProps;
 
   const actionsState: Record<UserActionMoves, ActionMoveState> = {
     [UserActionMoves.CreateProject]: getActionMoveState(G, UserActionMoves.CreateProject),
@@ -97,6 +104,16 @@ export const mapGameContextToProps = (gameContext: GameContext, reduxProps: Redu
     }
   }
 
+  const onRecruit = () => {
+    if (selectedJobSlots.length === 1 && selectedProjectSlots.length === 1) {
+      moves.recruit(selectedJobSlots[0], selectedProjectSlots[0]);
+      resetJobSlotSelection();
+      resetProjectSlotSelection();
+    } else {
+      // show error message
+    }
+  }
+
   const onEndActionTurn = () => {
     events.endTurn!();
   };
@@ -105,6 +122,9 @@ export const mapGameContextToProps = (gameContext: GameContext, reduxProps: Redu
     switch (action) {
       case UserActionMoves.CreateProject:
         onCreateProject();
+        break;
+      case UserActionMoves.Recruit:
+        onRecruit();
         break;
       case UserActionMoves.EndActionTurn:
         onEndActionTurn();
