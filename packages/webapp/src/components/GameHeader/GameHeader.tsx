@@ -13,7 +13,7 @@ type GameHeaderProps = {
 
 const GameHeader: React.FC<GameHeaderProps> = ({ players, scoreBoard }) => {
   return (
-    <Grid container justifyContent="space-between" alignItems="center" spacing={1} style={{ padding: '8px 16px', backgroundColor: '#f5f5f5', borderBottom: '1px solid #ddd' }}>
+    <Grid container justifyContent="space-between" alignItems="center" spacing={1} sx={{ padding: '8px 16px', backgroundColor: '#f5f5f5', borderBottom: '1px solid #ddd' }}>
       {Object.keys(players).map((id) => (
         <Grid item key={id}>
           <PlayerStatus

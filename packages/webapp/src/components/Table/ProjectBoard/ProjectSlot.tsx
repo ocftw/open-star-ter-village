@@ -7,6 +7,7 @@ import { styled } from '@mui/material/styles';
 import { playerNameMap } from '../../playerNameMap';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { getSelectedProjectSlots, toggleProjectSlotSelection } from '@/lib/reducers/projectSlotSlice';
+import { AvatarWithBadge } from '../../common/AvatarWithBadge';
 
 type Props = {
   slot: ProjectSlotState;
@@ -49,7 +50,7 @@ const ProjectSlot: React.FC<Props> = ({ slot }) => {
         >
           <Grid container direction="column" alignItems="center" justifyContent="center" style={{ minHeight: '200px' }}>
             {!!projectType && (
-              <Chip label={projectType} color="primary" style={{ position: 'absolute', top: '16px', right: '16px' }} />
+              <Chip label={projectType} color="primary" size='small' style={{ position: 'absolute', top: '16px', right: '16px' }} />
             )}
             <Typography variant="h6" style={{ position: 'absolute', top: '16px', left: '16px' }}>
               {projectName}
@@ -57,7 +58,7 @@ const ProjectSlot: React.FC<Props> = ({ slot }) => {
             <Grid container justifyContent="center" style={{ marginTop: '40px' }}>
               {requiredJobs.map((jobName) => (
                 <Grid item key={`${slot.id}-${jobName}`} style={{ textAlign: 'center', margin: '8px' }}>
-                  <Typography>{requirements[jobName]} {jobName}</Typography>
+                  <AvatarWithBadge avatarSize='large' avatarTitle={jobName} badgeContent={requirements[jobName]} />
                   {slot.contributions
                     .filter((contribution) => contribution.jobName === jobName)
                     .map((contribution) => (
