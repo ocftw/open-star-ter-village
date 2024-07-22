@@ -17,15 +17,17 @@ interface ActionStepState {
     handProjectCards: boolean;
     jobSlots: boolean;
     projectSlots: boolean;
-    contribution: boolean
+    onwedContribution: boolean;
+    joinedContribution: boolean;
   };
 }
 
-const initialInteractiveState = {
+const initialInteractiveState: ActionStepState['interactiveState'] = {
   handProjectCards: false,
   jobSlots: false,
   projectSlots: false,
-  contribution: false,
+  onwedContribution: false,
+  joinedContribution: false,
 };
 
 const initialState: ActionStepState = {
@@ -49,30 +51,52 @@ const actionStepSlice = createSlice({
       state.currentAction = null;
       state.interactiveState = initialInteractiveState;
     },
-    setHandPorjectCardsInteractiveState: (state, action: PayloadAction<boolean>) => {
-      state.interactiveState.handProjectCards = action.payload;
+    setHandPorjectCardsInteractive: (state) => {
+      state.interactiveState.handProjectCards = true;
     },
-    setJobSlotsInteractiveState: (state, action: PayloadAction<boolean>) => {
-      state.interactiveState.jobSlots = action.payload;
+    setJobSlotsInteractive: (state) => {
+      state.interactiveState.jobSlots = true;
     },
-    setProjectSlotsInteractiveState: (state, action: PayloadAction<boolean>) => {
-      state.interactiveState.projectSlots = action.payload;
+    setProjectSlotsInteractive: (state) => {
+      state.interactiveState.projectSlots = true;
     },
-    setContributionInteractiveState: (state, action: PayloadAction<boolean>) => {
-      state.interactiveState.contribution = action.payload;
+    setOwnedContributionInteractive: (state) => {
+      state.interactiveState.onwedContribution = true;
     },
+    setJoinedContributionInteractive: (state) => {
+      state.interactiveState.joinedContribution = true;
+    }
   },
   selectors: {
     getCurrentStep: (state: ActionStepState) => state.currentStep,
     getCurrentAction: (state: ActionStepState) => state.currentAction,
-    isProjectCardsInteractive: (state: ActionStepState) => state.interactiveState.handProjectCards,
+    isHandProjectCardsInteractive: (state: ActionStepState) => state.interactiveState.handProjectCards,
     isJobSlotsInteractive: (state: ActionStepState) => state.interactiveState.jobSlots,
     isProjectSlotsInteractive: (state: ActionStepState) => state.interactiveState.projectSlots,
-    isContributionInteractive: (state: ActionStepState) => state.interactiveState.contribution,
+    isOwnedContributionInteractive: (state: ActionStepState) => state.interactiveState.onwedContribution,
+    isJoinedContributionInteractive: (state: ActionStepState) => state.interactiveState.joinedContribution,
   }
 });
 
-export const { setActionStep, setCurrentAction, resetAction, setHandPorjectCardsInteractiveState, setJobSlotsInteractiveState, setProjectSlotsInteractiveState, setContributionInteractiveState} = actionStepSlice.actions;
-export const { getCurrentStep, getCurrentAction, isProjectCardsInteractive, isJobSlotsInteractive, isProjectSlotsInteractive, isContributionInteractive } = actionStepSlice.selectors;
+export const {
+  setActionStep,
+  setCurrentAction,
+  resetAction,
+  setHandPorjectCardsInteractive,
+  setJobSlotsInteractive,
+  setProjectSlotsInteractive,
+  setOwnedContributionInteractive,
+  setJoinedContributionInteractive,
+} = actionStepSlice.actions;
+
+export const {
+  getCurrentStep,
+  getCurrentAction,
+  isHandProjectCardsInteractive,
+  isJobSlotsInteractive,
+  isProjectSlotsInteractive,
+  isOwnedContributionInteractive,
+  isJoinedContributionInteractive,
+} = actionStepSlice.selectors;
 
 export default actionStepSlice.reducer;

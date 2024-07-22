@@ -5,6 +5,7 @@ import { styled } from '@mui/material/styles';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { getSelectedJobSlots, toggleJobSlotSelection } from '@/lib/reducers/jobSlotSlice';
 import { Avatar } from '../../common/Avatar';
+import { isJobSlotsInteractive } from '@/lib/reducers/actionStepSlice';
 
 type JobCardProps = {
   id: string;
@@ -28,10 +29,12 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
 
 const JobCard: React.FC<JobCardProps> = ({ id, title }) => {
   const dispatch = useAppDispatch();
+  const isInteractive = useAppSelector(isJobSlotsInteractive);
   const selectedCards = useAppSelector(getSelectedJobSlots);
-  const selected = !!selectedCards[id];
+  const selected = isInteractive && !!selectedCards[id];
 
   const handleSelect = () => {
+    if (!isInteractive) return;
     dispatch(toggleJobSlotSelection(id));
   };
 

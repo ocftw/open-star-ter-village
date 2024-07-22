@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { use, useEffect } from 'react';
 import { Box, Button, Step, StepLabel, Stepper, Typography } from '@mui/material';
 import { connect } from 'react-redux';
 import { StateProps, DispatchProps, GameContextProps, mapStateToProps, mapDispatchToProps, mapGameContextToProps } from './ActionStepper.selectors';
@@ -23,10 +23,51 @@ const ActionStepper: React.FC<Props> = ({
   selectedHandProjectCards,
   selectedJobSlots,
   selectedProjectSlots,
+  setHandPorjectCardsInteractive,
+  setJobSlotsInteractive,
+  setProjectSlotsInteractive,
+  setOwnedContributionInteractive,
+  setJoinedContributionInteractive,
   resetHandProjectCardSelection,
   resetJobSlotSelection,
   resetProjectSlotSelection,
 }) => {
+  useEffect(() => {
+    if (currentAction === null) {
+      resetAction();
+    } else {
+      switch (currentAction) {
+        case UserActionMoves.CreateProject:
+          if (currentStep === 0) {
+            setHandPorjectCardsInteractive();
+            setJobSlotsInteractive();
+          }
+          break;
+        case UserActionMoves.Recruit:
+          if (currentStep === 0) {
+            setJobSlotsInteractive();
+            setProjectSlotsInteractive();
+          }
+          break;
+        case UserActionMoves.ContributeOwnedProjects:
+          if (currentStep === 0) {
+            setOwnedContributionInteractive();
+          }
+          break;
+        case UserActionMoves.ContributeJoinedProjects:
+          if (currentStep === 0) {
+            setJoinedContributionInteractive();
+          }
+          break;
+        case UserActionMoves.RemoveAndRefillJobs:
+          if (currentStep === 0) {
+            setJobSlotsInteractive();
+          }
+          break;
+      }
+    }
+  }, [currentAction, currentStep]);
+
   const handleNext = () => {
     if (currentStep === steps.length - 1) {
       switch (currentAction) {

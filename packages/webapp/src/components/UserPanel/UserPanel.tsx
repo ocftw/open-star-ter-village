@@ -1,17 +1,14 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
 import { ProjectCard } from '@/game';
-import { getSelectedHandProjectCards, toggleHandProjectCardSelection } from '@/lib/reducers/handProjectCardSlice';
-import { Chip } from '@mui/material';
 import { GameContext, connectGameContext } from '../GameContextHelpers';
 import { playerNameMap } from '../playerNameMap';
 import { PlayersSelector } from '@/game/store/slice/players';
 import { ScoreBoardSelector } from '@/game/store/slice/scoreBoard';
-import JobNameAvatarWithContributionBadges from '../common/JobNameAvatarWithContributionBadges';
+import HandProjectCard from './HandProjectCard';
 
 type UserPanelProps = {
   userName: string;
@@ -28,7 +25,7 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   width: '300px', // Fixed width
 }));
 
-const SelectablePaper = styled(Paper)(({ theme }) => ({
+export const SelectablePaper = styled(Paper)(({ theme }) => ({
   padding: '16px',
   display: 'flex',
   flexDirection: 'column', // Ensures children are stacked vertically
@@ -43,12 +40,6 @@ const SelectablePaper = styled(Paper)(({ theme }) => ({
 }));
 
 const UserPanel: React.FC<UserPanelProps> = ({ userName, workerTokens, actionTokens, score, projectCards }) => {
-  const dispatch = useDispatch();
-  const selectedProjectCards = useSelector(getSelectedHandProjectCards);
-
-  const handleSelect = (cardId: string) => {
-    dispatch(toggleHandProjectCardSelection(cardId));
-  };
 
   return (
     <StyledPaper>
@@ -70,31 +61,7 @@ const UserPanel: React.FC<UserPanelProps> = ({ userName, workerTokens, actionTok
         </Grid>
         <Grid container direction="column" spacing={2}>
           {projectCards.map((card) => (
-            <Grid item key={card.id}>
-              <SelectablePaper
-                onClick={() => handleSelect(card.id)}
-                className={selectedProjectCards[card.id] ? 'selected' : ''}
-              >
-                <Grid container justifyContent="space-between" alignItems="center">
-                  <Typography variant="h6" style={{ flexGrow: 1 }}>{card.name}</Typography> {/* Emphasized title */}
-                  {!!card.type && (
-                    <Chip
-                      label={card.type}
-                      color="primary"
-                      size="small"
-                      style={{ marginLeft: '8px' }}
-                    />
-                  )}
-                </Grid>
-                <Grid container spacing={1}>
-                  {Object.keys(card.requirements).map((jobName) => (
-                    <Grid item key={jobName} margin='4px'>
-                      <JobNameAvatarWithContributionBadges key={jobName} jobTitle={jobName} requirements={card.requirements[jobName]} />
-                    </Grid>
-                  ))}
-                </Grid>
-              </SelectablePaper>
-            </Grid>
+            <HandProjectCard key={card.id} card={card} />
           ))}
         </Grid>
       </Grid>

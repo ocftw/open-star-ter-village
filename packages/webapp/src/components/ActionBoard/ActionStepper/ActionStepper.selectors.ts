@@ -1,6 +1,6 @@
 import { AppDispatch } from '@/lib/store';
 import { createSelector } from '@reduxjs/toolkit';
-import { UserActionMoves, getCurrentAction, getCurrentStep, resetAction, setActionStep, setCurrentAction } from '@/lib/reducers/actionStepSlice';
+import { UserActionMoves, getCurrentAction, getCurrentStep, resetAction, setActionStep, setOwnedContributionInteractive, setHandPorjectCardsInteractive, setJobSlotsInteractive, setProjectSlotsInteractive, setJoinedContributionInteractive } from '@/lib/reducers/actionStepSlice';
 import { GameContext } from '../../GameContextHelpers';
 import { getSelectedHandProjectCards, resetHandProjectCardSelection } from '@/lib/reducers/handProjectCardSlice';
 import { getSelectedJobSlots, resetJobSlotSelection } from '@/lib/reducers/jobSlotSlice';
@@ -77,7 +77,11 @@ export const mapStateToProps = createSelector(
 
 export interface DispatchProps {
   setActionStep: (step: number) => void;
-  // setCurrentAction: (action: UserActionMoves | null) => void;
+  setHandPorjectCardsInteractive: () => void;
+  setJobSlotsInteractive: () => void;
+  setProjectSlotsInteractive: () => void;
+  setOwnedContributionInteractive: () => void;
+  setJoinedContributionInteractive: () => void;
   resetAction: () => void;
   resetHandProjectCardSelection: () => void;
   resetJobSlotSelection: () => void;
@@ -86,7 +90,11 @@ export interface DispatchProps {
 
 export const mapDispatchToProps = (dispatch: AppDispatch): DispatchProps => ({
   setActionStep: (step: number) => dispatch(setActionStep(step)),
-  // setCurrentAction: (action: UserActionMoves | null) => dispatch(setCurrentAction(action)),
+  setHandPorjectCardsInteractive: () => dispatch(setHandPorjectCardsInteractive()),
+  setJobSlotsInteractive: () => dispatch(setJobSlotsInteractive()),
+  setProjectSlotsInteractive: () => dispatch(setProjectSlotsInteractive()),
+  setOwnedContributionInteractive: () => dispatch(setOwnedContributionInteractive()),
+  setJoinedContributionInteractive: () => dispatch(setJoinedContributionInteractive()),
   resetAction: () => dispatch(resetAction()),
   resetHandProjectCardSelection: () => dispatch(resetHandProjectCardSelection()),
   resetJobSlotSelection: () => dispatch(resetJobSlotSelection()),
