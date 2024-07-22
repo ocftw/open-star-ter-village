@@ -11,7 +11,7 @@ import { GameContext, connectGameContext } from '../GameContextHelpers';
 import { playerNameMap } from '../playerNameMap';
 import { PlayersSelector } from '@/game/store/slice/players';
 import { ScoreBoardSelector } from '@/game/store/slice/scoreBoard';
-import { AvatarWithBadge } from '../common/AvatarWithBadge';
+import JobNameAvatarWithContributionBadges from '../common/JobNameAvatarWithContributionBadges';
 
 type UserPanelProps = {
   userName: string;
@@ -89,7 +89,7 @@ const UserPanel: React.FC<UserPanelProps> = ({ userName, workerTokens, actionTok
                 <Grid container spacing={1}>
                   {Object.keys(card.requirements).map((jobName) => (
                     <Grid item key={jobName} margin='4px'>
-                      <AvatarWithBadge key={jobName} avatarTitle={jobName} badgeContent={card.requirements[jobName]} />
+                      <JobNameAvatarWithContributionBadges key={jobName} jobTitle={jobName} requirements={card.requirements[jobName]} />
                     </Grid>
                   ))}
                 </Grid>
