@@ -11,6 +11,7 @@ import { playerNameMap } from '../../playerNameMap';
 import { JobAndContributions } from './JobAndContributions';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { getSelectedProjectSlots, toggleProjectSlotSelection } from '@/lib/reducers/projectSlotSlice';
+import { isProjectSlotsInteractive } from '@/lib/reducers/actionStepSlice';
 
 type Props = {
   slot: ProjectSlotState;
@@ -32,10 +33,12 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
 
 const ProjectSlot: React.FC<Props> = ({ slot }) => {
   const dispatch = useAppDispatch();
+  const isInteractive = useAppSelector(isProjectSlotsInteractive);
   const selectedSlots = useAppSelector(getSelectedProjectSlots);
-  const selected = !!selectedSlots[slot.id];
+  const selected = isInteractive && !!selectedSlots[slot.id];
 
   const handleSelect = () => {
+    if (!isInteractive) return;
     dispatch(toggleProjectSlotSelection(slot.id));
   };
 
