@@ -1,14 +1,12 @@
 import React from 'react';
 import { Box, Button, Grid } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { connectGameContext } from '../GameContextHelpers';
+import { connectGameContext } from '../../GameContextHelpers';
 import { connect } from 'react-redux';
-import { UserActionMoves, ActionMoveState, mapStateToProps, mapGameContextToProps, mapDispatchToProps } from './ActionBar.selectors';
+import { ActionMoveState, mapGameContextToProps, mapDispatchToProps, GameContextProps, StateProps, DispatchProps, mapStateToProps } from './ActionBar.selectors';
+import { UserActionMoves } from '@/lib/reducers/actionStepSlice';
 
-type ActionBarProps = {
-  actionsState: Record<UserActionMoves, ActionMoveState>;
-  onActionClick: (action: UserActionMoves) => void;
-};
+type Props = GameContextProps & StateProps & DispatchProps;
 
 const StyledButton = styled(Button)(({ theme }) => ({
   margin: theme.spacing(1),
@@ -41,7 +39,10 @@ const EndActionButton = styled(Button)(({ theme }) => ({
   },
 }));
 
-const ActionBar: React.FC<ActionBarProps> = ({ actionsState, onActionClick }) => {
+const ActionBar: React.FC<Props> = ({ isActionBarVisible, actionsState, onActionClick }) => {
+  if (!isActionBarVisible) {
+    return null;
+  }
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center', padding: '8px', backgroundColor: '#f0f0f0', marginTop: '16px' }}>
       <Grid container spacing={1} justifyContent="center">
@@ -69,4 +70,4 @@ const ActionBar: React.FC<ActionBarProps> = ({ actionsState, onActionClick }) =>
   );
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(connectGameContext(mapGameContextToProps)(ActionBar));
+export default connectGameContext(mapGameContextToProps)(connect(mapStateToProps, mapDispatchToProps)(ActionBar));

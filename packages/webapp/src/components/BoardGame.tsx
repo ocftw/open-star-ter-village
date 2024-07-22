@@ -2,30 +2,29 @@ import { Client } from 'boardgame.io/react';
 import { SocketIO, Local } from 'boardgame.io/multiplayer'
 import game from '@/game';
 import Table from '@/components/Table/Table';
-import DevActions from '@/components/DevActions/DevActions';
-import ActionBar from './ActionBoard/ActionBar';
+import ActionBar from './ActionBoard/ActionBar/ActionBar';
 import GameHeader from './GameHeader/GameHeader';
 import UserPanel from './UserPanel/UserPanel';
 import { Box } from '@mui/material';
 import { GameContext } from './GameContextHelpers';
+import ActionStepper from './ActionBoard/ActionStepper/ActionStepper';
 
 const Board: React.FC<GameContext> = (gameContext) => {
-  const { G, debug, playerID } = gameContext;
+  const { G, playerID, ctx } = gameContext;
 
   return (
     <Box sx={{ display: 'flex' }}>
-      {!!playerID &&
-        <UserPanel gameContext={gameContext}/>
-      }
+      {!!playerID && <UserPanel gameContext={gameContext} />}
       <Box sx={{ flex: 1, padding: '16px', marginLeft: { xs: 0 } }}>
-        <GameHeader players={G.players} scoreBoard={G.table.scoreBoard}  />
-        <ActionBar gameContext={gameContext} />
-        <Table table={G.table} />
-        {debug && <DevActions {...gameContext} />}
+        <GameHeader players={G.players} scoreBoard={G.table.scoreBoard} />
+        {playerID === ctx.currentPlayer && <><ActionBar gameContext={gameContext} /><ActionStepper gameContext={gameContext} /></>}
+        <Box sx={{ marginTop: '16px' }}>
+          <Table table={G.table} />
+        </Box>
       </Box>
     </Box>
   );
-}
+};
 
 type OwnProps = {
   isLocal: boolean;

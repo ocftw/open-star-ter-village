@@ -1,16 +1,16 @@
 import { configureStore } from '@reduxjs/toolkit'
-import { wizardReducer }from './reducers/wizard'
 import projectSlotSlice from './reducers/projectSlotSlice'
 import jobSlotSlice from './reducers/jobSlotSlice'
 import handProjectCardSlice from './reducers/handProjectCardSlice'
+import actionStepSlice from './reducers/actionStepSlice'
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
-      wizard: wizardReducer,
       projectSlots: projectSlotSlice,
       jobSlots: jobSlotSlice,
       handProjectCards: handProjectCardSlice,
+      actionSteps: actionStepSlice,
     },
   })
 }
