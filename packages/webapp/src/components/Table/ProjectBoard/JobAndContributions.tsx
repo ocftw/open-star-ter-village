@@ -1,17 +1,19 @@
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import JobNameAvatarWithContributionBadges from '@/components/common/JobNameAvatarWithContributionBadges';
-import ContributionAvatarWithPlayerBadge from '@/components/common/ContributionAvatarWithPlayerBadge';
 import { ProjectContribution } from '@/game/store/slice/projectSlot/projectSlot';
-import { playerNameMap } from '../../playerNameMap';
+import { PlayerID } from 'boardgame.io';
+import Contribution from './Contribution';
 
 interface Props {
   jobName: string;
   requirements: number;
   contributions: ProjectContribution[];
+  interactivePlayers: Record<PlayerID, boolean>;
+  onContributionChange: (jobName: string, diffAmount: number) => void;
 }
 
-export const JobAndContributions: React.FC<Props> = ({ jobName, requirements, contributions }) => {
+export const JobAndContributions: React.FC<Props> = ({ jobName, requirements, contributions, interactivePlayers, onContributionChange }) => {
   const totalJobContributions = contributions.filter((contribution) => contribution.jobName === jobName).reduce((acc, contribution) => acc + contribution.value, 0);
 
   return (
@@ -20,14 +22,18 @@ export const JobAndContributions: React.FC<Props> = ({ jobName, requirements, co
       <Box marginX="8px">
         <JobNameAvatarWithContributionBadges size='large' jobTitle={jobName} requirements={requirements} totalContributions={totalJobContributions} />
       </Box>
-      {contributions
-        .filter((contribution) => contribution.jobName === jobName)
-        .map((contribution) => (
-          <>
-            <Box margin='8px' key={`${jobName}-${contribution.worker}`}>
-              <ContributionAvatarWithPlayerBadge sizes='medium' contributions={contribution.value} playerID={playerNameMap[contribution.worker]} />
-            </Box>
-          </>
+      {contributions.map((contribution) => (
+        <Contribution
+          key={`${jobName}-${contribution.worker}`}
+          worker={contribution.worker}
+          initialValue={contribution.value}
+          min={contribution.value}
+          max={requirements - totalJobContributions + contribution.value}
+          isInteractive={interactivePlayers[contribution.worker]}
+          onChange={(value) => {
+            const diffAmount = value - contribution.value;
+            onContributionChange(jobName, diffAmount);
+          }} />
         ))}
     </Grid>
   );

@@ -9,13 +9,16 @@ import Chip from '@mui/material/Chip';
 import { styled } from '@mui/material/styles';
 import { playerNameMap } from '../../playerNameMap';
 import { JobAndContributions } from './JobAndContributions';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { getSelectedProjectSlots, toggleProjectSlotSelection } from '@/lib/reducers/projectSlotSlice';
-import { isProjectSlotsInteractive } from '@/lib/reducers/actionStepSlice';
+import { PlayerID } from 'boardgame.io';
+import { DispatchProps, mapDispatchToProps, mapStateToProps, StateProps } from './ProjectSlot.selectors';
+import { connect } from 'react-redux';
 
-type Props = {
+type OwnProps = {
   slot: ProjectSlotState;
+  playerID: PlayerID | null;
 };
+
+type Props = OwnProps & StateProps & DispatchProps;
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   minHeight: '200px',
@@ -31,15 +34,21 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   },
 }));
 
-const ProjectSlot: React.FC<Props> = ({ slot }) => {
-  const dispatch = useAppDispatch();
-  const isInteractive = useAppSelector(isProjectSlotsInteractive);
-  const selectedSlots = useAppSelector(getSelectedProjectSlots);
+const ProjectSlot: React.FC<Props> = ({
+  slot,
+  playerID,
+  isInteractive,
+  isJoinedInteractive,
+  isOwnedInteractive,
+  selectedSlots,
+  toggleProjectSlotSelection,
+  updateContribution,
+}) => {
   const selected = isInteractive && !!selectedSlots[slot.id];
 
-  const handleSelect = () => {
+  const onProjectSlotClick = () => {
     if (!isInteractive) return;
-    dispatch(toggleProjectSlotSelection(slot.id));
+    toggleProjectSlotSelection(slot.id);
   };
 
   const projectName = slot.card?.name;
@@ -48,10 +57,18 @@ const ProjectSlot: React.FC<Props> = ({ slot }) => {
   const requirements = slot.card?.requirements || {};
   const requiredJobs = Object.keys(slot.card?.requirements || []);
 
+  const interactivePlayers = playerID === null ? {} : {
+    [playerID!]: (isOwnedInteractive && slot.owner === playerID) || (isJoinedInteractive && slot.owner !== playerID),
+  };
+
+  const onContributionChange = (jobName: string, diffAmount: number) => {
+    updateContribution(slot.id, jobName, diffAmount);
+  };
+
   return (
     <Grid spacing={3} xs={12}>
       <StyledPaper
-        onClick={handleSelect}
+        onClick={onProjectSlotClick}
         className={selected ? 'selected' : ''}
       >
         <Box display="flex" alignItems="center">
@@ -61,7 +78,14 @@ const ProjectSlot: React.FC<Props> = ({ slot }) => {
         {!!projectType && (<Chip label={projectType} color="primary" size="small" />)}
         <Grid container direction="column" justifyContent="center" alignItems="flex-start" width='100%'>
           {requiredJobs.map((jobName) => (
-            <JobAndContributions key={`${slot.id}-${jobName}`} jobName={jobName} requirements={requirements[jobName]} contributions={slot.contributions} />
+            <JobAndContributions
+              key={`${slot.id}-${jobName}`}
+              jobName={jobName}
+              requirements={requirements[jobName]}
+              contributions={slot.contributions.filter((contribution) => contribution.jobName === jobName)}
+              interactivePlayers={interactivePlayers}
+              onContributionChange={onContributionChange}
+            />
           ))}
         </Grid>
       </StyledPaper>
@@ -69,4 +93,4 @@ const ProjectSlot: React.FC<Props> = ({ slot }) => {
   );
 };
 
-export default ProjectSlot;
+export default connect(mapStateToProps, mapDispatchToProps)(ProjectSlot);
