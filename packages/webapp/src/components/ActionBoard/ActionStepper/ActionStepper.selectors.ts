@@ -5,9 +5,13 @@ import { GameContext } from '../../GameContextHelpers';
 import { getSelectedHandProjectCards, resetHandProjectCardSelection } from '@/lib/reducers/handProjectCardSlice';
 import { getSelectedJobSlots, resetJobSlotSelection } from '@/lib/reducers/jobSlotSlice';
 import { getSelectedProjectSlots, resetProjectSlotSelection } from '@/lib/reducers/projectSlotSlice';
-import { ActionMoves } from '@/game/core/stage/action/move/type';
+import { ActionMoveName, ActionMoves } from '@/game/core/stage/action/move/type';
+import { getContributions, resetContribution } from '@/lib/reducers/contributionSlice';
+import { ContributionAction, getTotalContributionValue } from '@/game/core/ContributionAction';
+import { RuleSelector } from '@/game/store/slice/rule';
 
 export interface GameContextProps {
+  getMaxContributionValue: (actionName: ActionMoveName) => number;
   onCreateProject: ActionMoves['createProject'];
   onRecruit: ActionMoves['recruit'];
   onContributeOwnedProjects: ActionMoves['contributeOwnedProjects'];
@@ -18,8 +22,11 @@ export interface GameContextProps {
 }
 
 export const mapGameContextToProps = (gameContext: GameContext): GameContextProps => {
-  const { events, moves } = gameContext as GameContext & { moves: ActionMoves };
+  const { G, events, moves } = gameContext as GameContext & { moves: ActionMoves };
+  const getMaxContributionValue = (actionName: ActionMoveName) => RuleSelector.getMaxContributionValue(G.rules, actionName);
+
   return {
+    getMaxContributionValue,
     onCreateProject: moves.createProject,
     onRecruit: moves.recruit,
     onContributeOwnedProjects: moves.contributeOwnedProjects,
@@ -41,6 +48,8 @@ export interface StateProps {
   selectedHandProjectCards: string[];
   selectedJobSlots: string[];
   selectedProjectSlots: string[];
+  contributions: ContributionAction[];
+  totalContributionValue: number;
 }
 
 const stepsMap: Record<UserActionMoves, Step[]> = {
@@ -59,11 +68,13 @@ export const mapStateToProps = createSelector(
   getSelectedHandProjectCards,
   getSelectedJobSlots,
   getSelectedProjectSlots,
-  (currentStep, currentAction, handProjectCards, jobSlots, projectSlots): StateProps => {
+  getContributions,
+  (currentStep, currentAction, handProjectCards, jobSlots, projectSlots, contributions): StateProps => {
   const steps = currentAction ? stepsMap[currentAction] : [];
   const selectedHandProjectCards = Object.keys(handProjectCards).filter(cardId => handProjectCards[cardId]);
   const selectedJobSlots = Object.keys(jobSlots).filter(slotId => jobSlots[slotId]);
   const selectedProjectSlots = Object.keys(projectSlots).filter(slotId => projectSlots[slotId]);
+  const totalContributionValue = getTotalContributionValue(contributions);
 
   return {
     steps,
@@ -72,6 +83,8 @@ export const mapStateToProps = createSelector(
     selectedHandProjectCards,
     selectedJobSlots,
     selectedProjectSlots,
+    contributions,
+    totalContributionValue,
   };
 });
 
@@ -86,6 +99,7 @@ export interface DispatchProps {
   resetHandProjectCardSelection: () => void;
   resetJobSlotSelection: () => void;
   resetProjectSlotSelection: () => void;
+  resetContribution: () => void;
 }
 
 export const mapDispatchToProps = (dispatch: AppDispatch): DispatchProps => ({
@@ -99,4 +113,5 @@ export const mapDispatchToProps = (dispatch: AppDispatch): DispatchProps => ({
   resetHandProjectCardSelection: () => dispatch(resetHandProjectCardSelection()),
   resetJobSlotSelection: () => dispatch(resetJobSlotSelection()),
   resetProjectSlotSelection: () => dispatch(resetProjectSlotSelection()),
+  resetContribution: () => dispatch(resetContribution()),
 });
