@@ -25,20 +25,6 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
   width: '300px', // Fixed width
 }));
 
-export const SelectablePaper = styled(Paper)(({ theme }) => ({
-  padding: '16px',
-  display: 'flex',
-  flexDirection: 'column', // Ensures children are stacked vertically
-  alignItems: 'flex-start', // Align children to the start
-  cursor: 'pointer',
-  '&:hover': {
-    backgroundColor: theme.palette.action.hover,
-  },
-  '&.selected': {
-    backgroundColor: theme.palette.action.selected,
-  },
-}));
-
 const UserPanel: React.FC<UserPanelProps> = ({ userName, workerTokens, actionTokens, score, projectCards }) => {
 
   return (
