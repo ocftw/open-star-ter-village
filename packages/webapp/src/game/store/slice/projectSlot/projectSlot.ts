@@ -9,8 +9,10 @@ export interface ProjectContribution {
   worker: PlayerID;
 }
 
+export type ProjectSlotID = string;
+
 export interface ProjectSlot {
-  id: string;
+  id: ProjectSlotID;
   card?: ProjectCard;
   owner: PlayerID;
   ownerToken: number;
