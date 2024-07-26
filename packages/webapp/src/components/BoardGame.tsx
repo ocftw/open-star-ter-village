@@ -19,7 +19,7 @@ const Board: React.FC<GameContext> = (gameContext) => {
         <GameHeader players={G.players} scoreBoard={G.table.scoreBoard} />
         {playerID === ctx.currentPlayer && <><ActionBar gameContext={gameContext} /><ActionStepper gameContext={gameContext} /></>}
         <Box sx={{ marginTop: '16px' }}>
-          <Table table={G.table} />
+          <Table table={G.table} playerID={playerID} />
         </Box>
       </Box>
     </Box>
