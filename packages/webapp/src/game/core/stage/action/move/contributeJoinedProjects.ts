@@ -1,60 +1,54 @@
-import { INVALID_MOVE } from 'boardgame.io/core';
-import { isInRange } from '@/game/utils';
 import { ProjectBoardSelector } from '@/game/store/slice/projectBoard';
 import { ProjectSlotMutator, ProjectSlotSelector } from '@/game/store/slice/projectSlot/projectSlot';
-import { GameMove, ContributionAction } from '@/game/core/type';
+import { GameMove } from '@/game/core/type';
+import { ContributionAction, getTotalContributionValue } from '@/game/core/ContributionAction';
 import { ActionSlotMutator, ActionSlotSelector } from '@/game/store/slice/actionSlot';
 import { PlayersMutator, PlayersSelector } from '@/game/store/slice/players';
 import { RuleSelector } from '@/game/store/slice/rule';
 
 export type ContributeJoinedProjects = (contributions: ContributionAction[]) => void;
 
-export const contributeJoinedProjects: GameMove<ContributeJoinedProjects> = ({ G, playerID, events }, contributions) => {
+export const contributeJoinedProjects: GameMove<ContributeJoinedProjects> = ({ G, playerID }, contributions) => {
   if (!RuleSelector.isActionSlotAvailable(G.rules, 'contributeJoinedProjects')) {
-    return INVALID_MOVE;
+    throw new Error('Action slot is not available');
   }
-  if (!ActionSlotSelector.isAvailable(G.table.actionSlots.contributeJoinedProjects)) {
-    return INVALID_MOVE;
-  }
-  if (contributions.length < 1) {
-    return INVALID_MOVE;
+  if (ActionSlotSelector.isOccupied(G.table.actionSlots.contributeJoinedProjects)) {
+    throw new Error('Action slot is occupied');
   }
 
   console.log('use action tokens')
   const actionCosts = RuleSelector.getActionTokenCost(G.rules, 'contributeJoinedProjects');
   PlayersMutator.useActionTokens(G.players, playerID, actionCosts);
   if (PlayersSelector.getNumActionTokens(G.players, playerID) < 0) {
-    return INVALID_MOVE;
+    throw new Error('Not enough action tokens');
   }
   ActionSlotMutator.occupy(G.table.actionSlots.contributeJoinedProjects);
 
-  const activeProjects = G.table.projectBoard;
-  const isInvalid = contributions.map(({ activeProjectIndex, jobName }) => {
-    if (!isInRange(activeProjectIndex, activeProjects.length)) {
-      return true;
+  contributions.forEach(({ projectSlotId, jobName }) => {
+    const projectSlot = ProjectBoardSelector.getBySlotId(G.table.projectBoard, projectSlotId);
+    if (!projectSlot) {
+      throw new Error('Project slot not found');
     }
-    const activeProject = ProjectBoardSelector.getById(activeProjects, activeProjectIndex);
-    if (activeProject.owner === playerID) {
-      return true;
+    const projectOwner = ProjectSlotSelector.getOwner(projectSlot);
+    if (projectOwner.owner === playerID) {
+      throw new Error('Project slot is owned by player');
     }
 
-    if (!ProjectSlotSelector.hasWorker(activeProject, jobName, playerID)) {
-      return true;
+    if (!ProjectSlotSelector.hasWorker(projectSlot, jobName, playerID)) {
+      throw new Error('No worker token');
     }
-  }).some(x => x);
-  if (isInvalid) {
-    return INVALID_MOVE;
-  }
-  const totalContributions = contributions.map(({ value }) => value).reduce((a, b) => a + b, 0);
+  });
+
+  const totalContributions = getTotalContributionValue(contributions);
   const maxContributions = RuleSelector.getMaxContributionValue(G.rules, 'contributeJoinedProjects');
   if (totalContributions > maxContributions) {
-    return INVALID_MOVE;
+    throw new Error('Exceed maximum contribution value');
   }
 
   console.log('update contributions')
-  contributions.forEach(({ activeProjectIndex, jobName, value }) => {
+  contributions.forEach(({ projectSlotId, jobName, value }) => {
     // update contributions to given contribution points
-    const activeProject = ProjectBoardSelector.getById(G.table.projectBoard, activeProjectIndex);
-    ProjectSlotMutator.pushWorker(activeProject, jobName, playerID, value);
+    const projectSlot = ProjectBoardSelector.getBySlotId(G.table.projectBoard, projectSlotId);
+    ProjectSlotMutator.pushWorker(projectSlot!, jobName, playerID, value);
   });
 };
