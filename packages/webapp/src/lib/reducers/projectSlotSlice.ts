@@ -1,7 +1,8 @@
+import { ProjectSlotID } from '@/game';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface ProjectSlotState {
-  selectedSlots: { [key: string]: boolean };
+  selectedSlots: Record<ProjectSlotID, boolean>;
 }
 
 const initialState: ProjectSlotState = {

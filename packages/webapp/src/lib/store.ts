@@ -3,6 +3,7 @@ import projectSlotSlice from './reducers/projectSlotSlice'
 import jobSlotSlice from './reducers/jobSlotSlice'
 import handProjectCardSlice from './reducers/handProjectCardSlice'
 import actionStepSlice from './reducers/actionStepSlice'
+import contributionSlice from './reducers/contributionSlice'
 
 export const makeStore = () => {
   return configureStore({
@@ -11,6 +12,7 @@ export const makeStore = () => {
       jobSlots: jobSlotSlice,
       handProjectCards: handProjectCardSlice,
       actionSteps: actionStepSlice,
+      contributions: contributionSlice,
     },
   })
 }
