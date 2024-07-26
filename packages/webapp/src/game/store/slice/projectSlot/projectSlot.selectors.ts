@@ -30,12 +30,21 @@ const getPlayerContribution = (state: ProjectSlot, playerId: PlayerID): number =
 }
 
 const getPlayerWorkerTokens = (state: ProjectSlot, playerId: PlayerID): number => {
-  const ownerToken = state.owner === playerId ? 1 : 0;
   const jobTokens = state.contributions
     .filter(contribution => contribution.worker === playerId)
     .length;
-  return ownerToken + jobTokens;
+  return jobTokens;
 }
+
+const getContributors = (state: ProjectSlot): PlayerID[] => {
+  const contributors = state.contributions.map(contribution => contribution.worker);
+  const uniqueContributors = Array.from(new Set(contributors));
+  return uniqueContributors;
+};
+
+const getOwner = (state: ProjectSlot): { owner: PlayerID, numWorkerToken: number } => {
+  return { owner: state.owner, numWorkerToken: state.ownerToken };
+};
 
 export const selectors = {
   hasWorker,
@@ -43,4 +52,6 @@ export const selectors = {
   getJobContribution,
   getPlayerContribution,
   getPlayerWorkerTokens,
+  getContributors,
+  getOwner,
 };

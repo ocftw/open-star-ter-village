@@ -1,30 +1,45 @@
-import { Client, BoardProps } from 'boardgame.io/react';
+import { Client } from 'boardgame.io/react';
 import { SocketIO, Local } from 'boardgame.io/multiplayer'
-import game, { GameState } from '@/game';
+import game from '@/game';
 import Table from '@/components/Table/Table';
-import Players from '@/components/Players/Players';
-import DevActions from '@/components/DevActions/DevActions';
-import ActionBoard from './ActionBoard/ActionBoard';
+import ActionBar from './ActionBoard/ActionBar/ActionBar';
+import GameHeader from './GameHeader/GameHeader';
+import UserPanel from './UserPanel/UserPanel';
+import { Box } from '@mui/material';
+import { GameContext } from './GameContextHelpers';
+import ActionStepper from './ActionBoard/ActionStepper/ActionStepper';
 
-const Board: React.FC<BoardProps<GameState>> = (props) => {
-  const { G, ctx, debug } = props;
+const Board: React.FC<GameContext> = (gameContext) => {
+  const { G, playerID, ctx } = gameContext;
+
   return (
-    <div className='Board'>
-      <ActionBoard />
-      <Table table={G.table} />
-      <Players players={G.players} />
-      {debug && <DevActions {...props} />}
-    </div>
+    <Box sx={{ display: 'flex' }}>
+      {!!playerID && <UserPanel gameContext={gameContext} />}
+      <Box sx={{ flex: 1, padding: '16px', marginLeft: { xs: 0 } }}>
+        <GameHeader players={G.players} scoreBoard={G.table.scoreBoard} />
+        {playerID === ctx.currentPlayer && <><ActionBar gameContext={gameContext} /><ActionStepper gameContext={gameContext} /></>}
+        <Box sx={{ marginTop: '16px' }}>
+          <Table table={G.table} playerID={playerID} />
+        </Box>
+      </Box>
+    </Box>
   );
+};
+
+type OwnProps = {
+  isLocal: boolean;
 }
 
-const Boardgame: React.FC<{ isLocal: boolean} & React.ComponentProps<ReturnType<typeof Client>>> = ({ isLocal, ...props }) => {
+type Props = OwnProps & React.ComponentProps<ReturnType<typeof Client>>;
+
+const Boardgame: React.FC<Props> = ({ isLocal, ...props }) => {
   const multiplayer = isLocal ? Local() : SocketIO({ server: 'localhost:8000' });
 
   const BoardgameComponent = Client({
     game,
     board: Board,
     multiplayer,
+    numPlayers: 3,
   })
   return <BoardgameComponent {...props} />;
 }
