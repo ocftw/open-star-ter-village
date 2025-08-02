@@ -1,7 +1,7 @@
 ---
 image: ""
 title: BigBlueButton
-description: 開源線上會議系統，免下載，可與多種學習管理系統整合。
+description: "開源線上會議系統，免下載，可與多種學習管理系統整合。 "
 draft: false
 type: project
 tags:
