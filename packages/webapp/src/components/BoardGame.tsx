@@ -1,6 +1,9 @@
 import { Client } from 'boardgame.io/react';
 import { SocketIO, Local } from 'boardgame.io/multiplayer'
 import game from '@/game';
+import React from 'react';
+import { Game } from 'boardgame.io';
+import { GameState } from '@/game';
 import Table from '@/components/Table/Table';
 import ActionBar from './ActionBoard/ActionBar/ActionBar';
 import GameHeader from './GameHeader/GameHeader';
@@ -76,20 +79,23 @@ const Board: React.FC<GameContext> = (gameContext) => {
 
 type OwnProps = {
   isLocal: boolean;
+  /** Optional game config override. Must be a stable reference — all instances sharing
+   *  a matchID should pass the SAME object so boardgame.io's LocalMaster is shared. */
+  gameConfig?: Game<GameState>;
 }
 
 type Props = OwnProps & React.ComponentProps<ReturnType<typeof Client>>;
 
-const Boardgame: React.FC<Props> = ({ isLocal, ...props }) => {
-  const multiplayer = isLocal ? Local() : SocketIO({ server: 'localhost:8000' });
+const Boardgame: React.FC<Props> = ({ isLocal, gameConfig, ...props }) => {
+  // Memoize so Client() is called once per mount, not every render.
+  // Creating a new class from Client() on every render causes React to see a new component
+  // type, unmounting and remounting — which resets the game state.
+  const BoardgameComponent = React.useMemo(() => {
+    const multiplayer = isLocal ? Local() : SocketIO({ server: 'localhost:8000' });
+    return Client({ game: gameConfig ?? game, board: Board, multiplayer, numPlayers: 3, debug: false });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const BoardgameComponent = Client({
-    game,
-    board: Board,
-    multiplayer,
-    numPlayers: 3,
-    debug: false,
-  })
   return <BoardgameComponent {...props} />;
 }
 

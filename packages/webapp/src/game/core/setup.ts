@@ -36,7 +36,12 @@ interface RawJobCard {
   number_of_cards: number;
 }
 
-export const setup: SetupFn<GameState> = ({ ctx, random }) => {
+export interface GameSetupData {
+  /** Forces a specific event card to appear first in the event deck (for demos/tests). */
+  forcedFirstEvent?: string;
+}
+
+export const setup: SetupFn<GameState> = ({ ctx, random }, setupData?: GameSetupData) => {
   console.log('setup game')
 
   console.log('init state')
@@ -97,8 +102,27 @@ export const setup: SetupFn<GameState> = ({ ctx, random }) => {
 
   const basicEventCards = eventCards.filter(card => card.type === 'basic');
   const nonEndGameEventCardCount = RuleSelector.getNonEndGameNumberOfEventCards(G.rules);
-  const eventCardsWithoutEndGame = reservoirSampling(basicEventCards, nonEndGameEventCardCount, random.Number);
-  const shuffledEventCards = random.Shuffle(eventCardsWithoutEndGame);
+
+  // Support a demo/test mode: when the URL contains ?demo=four-freedoms, force
+  // 四大自由 as the first event card so screenshots can be captured deterministically.
+  // This is only active in development (Local transport runs in the browser).
+  const demoParam = typeof window !== 'undefined'
+    ? new URLSearchParams(window.location.search).get('demo')
+    : null;
+  const forcedFirstEvent = setupData?.forcedFirstEvent
+    ?? (demoParam === 'four-freedoms' ? 'add_two_worker_slots' : undefined);
+
+  let shuffledEventCards: EventCard[];
+  if (forcedFirstEvent) {
+    const forced = basicEventCards.find(c => c.function_name === forcedFirstEvent);
+    const rest = forced ? basicEventCards.filter(c => c.function_name !== forcedFirstEvent) : basicEventCards;
+    const count = forced ? nonEndGameEventCardCount - 1 : nonEndGameEventCardCount;
+    const selected = reservoirSampling(rest, count, random.Number);
+    shuffledEventCards = forced ? [forced, ...random.Shuffle(selected)] : random.Shuffle(selected);
+  } else {
+    const eventCardsWithoutEndGame = reservoirSampling(basicEventCards, nonEndGameEventCardCount, random.Number);
+    shuffledEventCards = random.Shuffle(eventCardsWithoutEndGame);
+  }
   shuffledEventCards.push(endGameEventCard);
   // initialize event deck
   DeckMutator.initialize(G.decks.events, shuffledEventCards);

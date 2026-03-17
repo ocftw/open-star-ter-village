@@ -1,7 +1,7 @@
 import { Game } from 'boardgame.io';
 import { TurnOrder } from 'boardgame.io/core';
 import { GameState } from './store/store';
-import { setup } from './core/setup';
+import { setup, GameSetupData } from './core/setup';
 import { playerView } from './core/playerView';
 import { action } from './core/stage/action/action';
 import { playEventCard } from './core/handler/playEventCard';
@@ -12,7 +12,7 @@ import { settleProjects } from './core/handler/settleProjects';
 import { scoreLeftoverActionTokens } from './core/handler/scoreLeftoverActionTokens';
 import { refill } from './core/handler/refill';
 
-export const OpenStarTerVillage: Game<GameState> = {
+export const OpenStarTerVillage: Game<GameState, Record<string, unknown>, GameSetupData> = {
   setup: setup,
   turn: {
     /**

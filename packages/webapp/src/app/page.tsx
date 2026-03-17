@@ -7,12 +7,13 @@ const getIsLocal = async () => {
   return process.env.NODE_ENV === 'production';
 }
 
-export default async function Home() {
+export default async function Home({ searchParams }: { searchParams: Promise<{ demo?: string }> }) {
   const isLocal = await getIsLocal();
+  const { demo } = await searchParams;
   return (
     <StoreProvider>
       <main>
-        <DevView isLocal={isLocal} />
+        <DevView isLocal={isLocal} demo={demo} />
       </main>
     </StoreProvider>
   );
