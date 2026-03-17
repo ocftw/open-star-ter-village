@@ -60,37 +60,25 @@ Also added: `Rule.event` field, `addActionTokens` mutator, `getAllPlayerPoints` 
 
 ---
 
-### Task 5 — Verify rule values against released game specs ⚠️ Needs rulebook
+### Task 5 — Verify rule values against released game specs 🔲 In Progress
 **File:** `packages/webapp/src/game/store/slice/rule.ts`
+**Rulebook:** [Rulebook of Open StarTer Village](https://drive.google.com/file/d/1gBGKhavLdDQ-J1elxQNN6E7Sdz0ZBTeO/view?usp=drive_link)
 
-Values to verify with physical rulebook:
+Verified values from rulebook (pages 2–4):
 
-| Setting | Current value |
-|---|---|
-| player.maxActionTokens | 4 |
-| player.maxWorkerTokens | 12 |
-| player.maxProjectCards | 2 |
-| table.maxJobSlots | 8 |
-| table.maxProjectSlots | 8 |
-| numNonEndGameEventCards | 5 |
-| createProject.actionCost | 2 |
-| createProject.victoryPoints | 2 |
-| createProject.projectOwnerWorkerCost | 1 |
-| createProject.assignWorkerCost | 1 |
-| createProject.initialContributionValue | 1 |
-| recruit.actionCost | 1 |
-| recruit.assignWorkerCost | 1 |
-| recruit.initialContributionValue | 2 |
-| contributeOwnedProjects.actionCost | 1 |
-| contributeOwnedProjects.maxContributionValue | 4 |
-| contributeJoinedProjects.actionCost | 1 |
-| contributeJoinedProjects.maxContributionValue | 5 |
-| removeAndRefillJobs.actionCost | 1 |
-| removeAndRefillJobs.victoryPoints | 1 |
-| settlement.projectOwnerVictoryPoints | 2 |
-| settlement.lastContributorVictoryPoints | 2 |
+| Setting | Current value | Rulebook | Status |
+|---|---|---|---|
+| player.maxActionTokens | 4 | 4 | ✅ |
+| player.maxWorkerTokens | 12 | 12 | ✅ |
+| player.maxProjectCards | 2 | 2 | ✅ |
+| table.maxJobSlots | 8 | **6** | ❌ Fix needed |
+| table.maxProjectSlots | 8 | TBD | — |
+| numNonEndGameEventCards | 5 | Player-count dependent: 2p=6, 3p=5, 4p=4 | ⚠️ Hardcoded to 5 (correct for 3p only) |
+| settlement.projectOwnerVictoryPoints | 2 | TBD | — |
+| settlement.lastContributorVictoryPoints | 2 | TBD | — |
+| All action costs | various | TBD (need deeper rulebook read) | — |
 
-**Blocked by:** access to the physical rulebook.
+**Known fix required:** `table.maxJobSlots` should be **6**, not 8. Rulebook setup step 4 shows 6 labor cards placed face-up.
 
 ---
 
