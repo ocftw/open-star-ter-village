@@ -246,6 +246,9 @@ describe('JobSlotsSlice', () => {
 import { eventCardHandlers } from './core/handler/eventCardHandlers';
 import GameStore from './store/store';
 import DeckSlice, { DeckMutator } from './store/slice/deck';
+import { ActionSlotMutator, ActionSlotSelector } from './store/slice/actionSlot';
+import { INVALID_MOVE } from 'boardgame.io/core';
+import { mirror } from './core/stage/action/move/mirror';
 
 /** Minimal context factory for testing handlers */
 const makeContext = () => {
@@ -475,5 +478,60 @@ describe('四大自由 — add_two_worker_slots', () => {
     addedCards.forEach(c => {
       expect(JobSlotsSelector.getJobCardById(ctx.G.table.jobSlots, c.id)).toBeUndefined();
     });
+  });
+});
+
+// ─── mirror (Doin' Overtime) move ─────────────────────────────────────────────
+
+describe('mirror — Doin\' Overtime', () => {
+  // Helper: context with a playerID so moves can deduct tokens
+  const makeMirrorContext = () => {
+    const ctx = makeContext();
+    return { ...ctx, playerID: 'alice' };
+  };
+
+  it('repeats a 1-AP action that was already done this turn', () => {
+    const ctx = makeMirrorContext();
+    // Put a job card on the table and seed the deck for the sub-move refill
+    const jobCard = makeJobCard('j1', '工程師');
+    JobSlotsMutator.addJobCards(ctx.G.table.jobSlots, [jobCard]);
+    DeckMutator.initialize(ctx.G.decks.jobs, [makeJobCard('d1', '美術設計')]);
+
+    // Simulate removeAndRefillJobs was already done this turn
+    ActionSlotMutator.occupy(ctx.G.table.actionSlots.removeAndRefillJobs);
+    // Deduct the 1 AP that was spent on removeAndRefillJobs
+    PlayersMutator.useActionTokens(ctx.G.players, 'alice', 1);
+
+    const apBefore = PlayersSelector.getNumActionTokens(ctx.G.players, 'alice');
+    mirror(ctx, 'removeAndRefillJobs', ['j1']);
+
+    // mirror itself costs 1 AP; the sub-move costs another 1 AP
+    expect(PlayersSelector.getNumActionTokens(ctx.G.players, 'alice')).toBe(apBefore - 2);
+    // j1 should be gone from the table (removed by sub-move)
+    expect(JobSlotsSelector.getJobCardById(ctx.G.table.jobSlots, 'j1')).toBeUndefined();
+  });
+
+  it('returns INVALID_MOVE when the target action has not been done this turn', () => {
+    const ctx = makeMirrorContext();
+    // removeAndRefillJobs slot is NOT occupied — action hasn't been used yet
+    expect(ActionSlotSelector.isOccupied(ctx.G.table.actionSlots.removeAndRefillJobs)).toBe(false);
+    const result = mirror(ctx, 'removeAndRefillJobs', ['j1']);
+    expect(result).toBe(INVALID_MOVE);
+  });
+
+  it('returns INVALID_MOVE when the target action costs more than 1 AP', () => {
+    const ctx = makeMirrorContext();
+    // createProject costs 2 AP; mirror only allows 1-AP actions
+    ActionSlotMutator.occupy(ctx.G.table.actionSlots.createProject);
+    const result = mirror(ctx, 'createProject', 'cardId', 'jobId');
+    expect(result).toBe(INVALID_MOVE);
+  });
+
+  it('returns INVALID_MOVE when mirror itself has already been used this turn', () => {
+    const ctx = makeMirrorContext();
+    ActionSlotMutator.occupy(ctx.G.table.actionSlots.mirror);
+    ActionSlotMutator.occupy(ctx.G.table.actionSlots.removeAndRefillJobs);
+    const result = mirror(ctx, 'removeAndRefillJobs', ['j1']);
+    expect(result).toBe(INVALID_MOVE);
   });
 });

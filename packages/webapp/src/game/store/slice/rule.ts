@@ -96,7 +96,7 @@ const initialState = (): Rule => {
     contributeOwnedProjects: { available: true },
     contributeJoinedProjects: { available: true },
     removeAndRefillJobs: { available: true },
-    mirror: { available: false },
+    mirror: { available: true },
   };
 
   return {

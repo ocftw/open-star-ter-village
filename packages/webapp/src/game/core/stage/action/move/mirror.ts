@@ -28,11 +28,21 @@ export const mirror: GameMove<Mirror> = (context, actionName, ...params) => {
   }
   ActionSlotMutator.occupy(G.table.actionSlots.mirror);
 
-  if (RuleSelector.getActionTokenCost(G.rules, actionName) <= mirrorActionCost) {
+  // Only 1-AP actions can be mirrored (Doin' Overtime rule)
+  if (RuleSelector.getActionTokenCost(G.rules, actionName) > mirrorActionCost) {
     return INVALID_MOVE;
   }
 
-  // TODO: add token to bypass the active moves check when its inactive
+  // The target action must have already been completed this turn (slot is occupied)
+  const targetSlot = G.table.actionSlots[actionName];
+  if (!ActionSlotSelector.isOccupied(targetSlot)) {
+    return INVALID_MOVE;
+  }
+
+  // Temporarily free the target slot so the sub-move's isOccupied guard passes;
+  // the sub-move will re-occupy it when it runs.
+  ActionSlotMutator.reset(targetSlot);
+
   let result = null;
   switch (actionName) {
     case 'createProject':
@@ -55,7 +65,6 @@ export const mirror: GameMove<Mirror> = (context, actionName, ...params) => {
       break;
   }
 
-  // TODO: remove the token
   if (result === INVALID_MOVE) {
     return INVALID_MOVE;
   }
