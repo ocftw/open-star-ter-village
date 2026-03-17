@@ -167,6 +167,10 @@ const setEventIgnoreFirstWorkerRequirement = (rule: Rule, value: boolean): void 
   rule.event.ignoreFirstWorkerRequirement = value;
 };
 
+const setTableMaxJobSlots = (rule: Rule, value: number): void => {
+  rule.table.maxJobSlots = value;
+};
+
 const isStandardRule = (rule: Rule): boolean => {
   return rule.type === 'standard';
 }
@@ -281,6 +285,7 @@ const RuleSlice = {
     decrementContributeOwnedProjectsMaxContributionValue,
     setEventExtraOwnerVictoryPoints,
     setEventIgnoreFirstWorkerRequirement,
+    setTableMaxJobSlots,
   },
   selectors: {
     isStandardRule,

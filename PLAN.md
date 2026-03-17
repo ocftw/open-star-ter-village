@@ -146,13 +146,19 @@ ctx.playOrder = ctx.playOrder.slice(1).concat(ctx.playOrder[0]);
 
 ---
 
-### Task 9 — Implement `四大自由` event card handler 🔲 Pending
-**File:** `packages/webapp/src/game/core/handler/eventCardHandlers.ts`
+### Task 9 — Implement `四大自由` event card handler ✅ Done
+**Files:** `packages/webapp/src/game/store/slice/rule.ts`, `packages/webapp/src/game/core/handler/eventCardHandlers.ts`
 
 **Rule:** 立即多翻開兩張人力卡至人力資源區，即人力資源區上限 +2。本輪結束時由尾家選擇兩張棄掉
 *(Immediately reveal 2 more labor cards to the labor section, max job slots +2. At end of round, the last player chooses 2 to discard.)*
 
-**Open question:** Does the last player interactively choose which 2 to discard, or do we auto-discard? Needs product decision before implementation.
+**Implementation (MVP simplification):**
+- `start`: Increases `maxJobSlots` from 8→10, draws 2 job cards from deck and adds to table
+- `end`: Auto-discards last 2 job cards (excess beyond normal max), restores `maxJobSlots` to 8
+- Added `setTableMaxJobSlots` mutator to `rule.ts`
+- 2 unit tests added — 45/45 passing
+
+**Simplification note:** The rulebook says "last player chooses 2 to discard" interactively. MVP auto-discards the last 2 cards (the ones just added) to avoid requiring interactive selection UI.
 
 ---
 

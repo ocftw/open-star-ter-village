@@ -74,6 +74,27 @@ const theOnlyPlayerWithTheLowestVictoryPointsGetsOneExtraActionToken: EventCardH
   },
 };
 
+// 四大自由: Immediately add 2 more job cards; at end of round, remove 2 (auto-discard last 2 for MVP)
+const addTwoWorkerSlots: EventCardHandler = {
+  start: ({ G }) => {
+    const extendedMax = RuleSelector.getTableMaxJobSlots(G.rules) + 2;
+    RuleMutator.setTableMaxJobSlots(G.rules, extendedMax);
+    const newCards = DeckSelector.peek(G.decks.jobs, 2);
+    DeckMutator.draw(G.decks.jobs, 2);
+    JobSlotsMutator.addJobCards(G.table.jobSlots, newCards);
+  },
+  end: ({ G }) => {
+    const normalMax = RuleSelector.getTableMaxJobSlots(G.rules) - 2;
+    RuleMutator.setTableMaxJobSlots(G.rules, normalMax);
+    // Auto-discard the last 2 job cards (simplification; rulebook says last player chooses)
+    const excess = G.table.jobSlots.slice(normalMax);
+    if (excess.length > 0) {
+      JobSlotsMutator.removeJobCards(G.table.jobSlots, excess);
+      DeckMutator.discard(G.decks.jobs, excess);
+    }
+  },
+};
+
 // 斜槓青年: This round, the first job card used in createProject or recruit ignores job type matching
 const ignoreFirstWorkerRequirement: EventCardHandler = {
   start: ({ G }) => {
@@ -91,4 +112,5 @@ export const eventCardHandlers: Record<string, EventCardHandler> = {
   project_owner_gets_two_points: projectOwnerGetsTwoPoints,
   the_only_player_with_the_lowest_victory_points_gets_one_extra_action_token: theOnlyPlayerWithTheLowestVictoryPointsGetsOneExtraActionToken,
   ignore_first_worker_requirement: ignoreFirstWorkerRequirement,
+  add_two_worker_slots: addTwoWorkerSlots,
 };

@@ -439,3 +439,41 @@ describe('eventCardHandlers - discard_and_refill_all_worker_slots', () => {
     });
   });
 });
+
+describe('四大自由 — add_two_worker_slots', () => {
+  it('start: adds 2 cards from deck and increases maxJobSlots to 10', () => {
+    const ctx = makeContext();
+    const deckCards = Array.from({ length: 10 }, (_, i) => makeJobCard(`deck-${i}`, '工程師'));
+    DeckMutator.initialize(ctx.G.decks.jobs, deckCards);
+    const tableCards = [makeJobCard('t1', '美術設計'), makeJobCard('t2', '議題工作者')];
+    JobSlotsMutator.addJobCards(ctx.G.table.jobSlots, tableCards);
+    expect(JobSlotsSelector.getNumFilledSlots(ctx.G.table.jobSlots)).toBe(2);
+
+    eventCardHandlers.add_two_worker_slots.start(ctx);
+
+    expect(RuleSelector.getTableMaxJobSlots(ctx.G.rules)).toBe(10);
+    expect(JobSlotsSelector.getNumFilledSlots(ctx.G.table.jobSlots)).toBe(4);
+  });
+
+  it('end: removes last 2 cards and restores maxJobSlots', () => {
+    const ctx = makeContext();
+    const deckCards = Array.from({ length: 10 }, (_, i) => makeJobCard(`deck-${i}`, '工程師'));
+    DeckMutator.initialize(ctx.G.decks.jobs, deckCards);
+    const tableCards = Array.from({ length: 8 }, (_, i) => makeJobCard(`t${i}`, '美術設計'));
+    JobSlotsMutator.addJobCards(ctx.G.table.jobSlots, tableCards);
+
+    // simulate start having already run
+    eventCardHandlers.add_two_worker_slots.start(ctx);
+    expect(JobSlotsSelector.getNumFilledSlots(ctx.G.table.jobSlots)).toBe(10);
+
+    const addedCards = ctx.G.table.jobSlots.slice(8); // the 2 cards added by start
+    eventCardHandlers.add_two_worker_slots.end!(ctx);
+
+    expect(RuleSelector.getTableMaxJobSlots(ctx.G.rules)).toBe(8);
+    expect(JobSlotsSelector.getNumFilledSlots(ctx.G.table.jobSlots)).toBe(8);
+    // the 2 added cards should be gone
+    addedCards.forEach(c => {
+      expect(JobSlotsSelector.getJobCardById(ctx.G.table.jobSlots, c.id)).toBeUndefined();
+    });
+  });
+});
