@@ -32,7 +32,23 @@ describe('reservoirSampling', () => {
 
 // ─── Rule Slice ───────────────────────────────────────────────────────────────
 
-import RuleSlice, { RuleMutator, RuleSelector } from './store/slice/rule';
+import RuleSlice, { RuleMutator, RuleSelector, getNumNonEndGameEventCardsByPlayerCount } from './store/slice/rule';
+
+describe('getNumNonEndGameEventCardsByPlayerCount', () => {
+  it('returns 6 for 2 players', () => {
+    expect(getNumNonEndGameEventCardsByPlayerCount(2)).toBe(6);
+  });
+  it('returns 5 for 3 players', () => {
+    expect(getNumNonEndGameEventCardsByPlayerCount(3)).toBe(5);
+  });
+  it('returns 4 for 4 players', () => {
+    expect(getNumNonEndGameEventCardsByPlayerCount(4)).toBe(4);
+  });
+  it('returns 4 for 5 or more players', () => {
+    expect(getNumNonEndGameEventCardsByPlayerCount(5)).toBe(4);
+    expect(getNumNonEndGameEventCardsByPlayerCount(6)).toBe(4);
+  });
+});
 
 describe('RuleSlice', () => {
   it('initialises with correct defaults', () => {
@@ -80,6 +96,16 @@ describe('RuleSlice', () => {
     expect(rule.event?.extraOwnerVictoryPoints).toBe(2);
     RuleMutator.setEventExtraOwnerVictoryPoints(rule, 0);
     expect(rule.event?.extraOwnerVictoryPoints).toBe(0);
+  });
+
+  it('setNumNonEndGameEventCards updates based on player count', () => {
+    const rule = RuleSlice.initialState();
+    RuleMutator.setNumNonEndGameEventCards(rule, 2);
+    expect(rule.numNonEndGameEventCards).toBe(6);
+    RuleMutator.setNumNonEndGameEventCards(rule, 3);
+    expect(rule.numNonEndGameEventCards).toBe(5);
+    RuleMutator.setNumNonEndGameEventCards(rule, 4);
+    expect(rule.numNonEndGameEventCards).toBe(4);
   });
 
   it('setEventIgnoreFirstWorkerRequirement sets and resets', () => {

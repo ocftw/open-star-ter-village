@@ -121,6 +121,22 @@ const initialState = (): Rule => {
   };
 }
 
+/**
+ * Returns the number of non-end-game event cards based on player count.
+ * Per Simplified Mode rulebook:
+ *   2 players → 6 cards, 3 players → 5 cards, 4 players → 4 cards
+ */
+export const getNumNonEndGameEventCardsByPlayerCount = (numPlayers: number): number => {
+  if (numPlayers <= 2) return 6;
+  if (numPlayers === 3) return 5;
+  // 4+ players
+  return 4;
+};
+
+const setNumNonEndGameEventCards = (rule: Rule, numPlayers: number): void => {
+  rule.numNonEndGameEventCards = getNumNonEndGameEventCardsByPlayerCount(numPlayers);
+};
+
 const setSettlementLastContributorVictoryPoints = (rule: Rule, victoryPoints: number): void => {
   rule.settlement.lastContributorVictoryPoints = victoryPoints;
 };
@@ -258,6 +274,7 @@ const getSettlementLastContributorVictoryPoints = (rule: Rule): number => {
 const RuleSlice = {
   initialState,
   mutators: {
+    setNumNonEndGameEventCards,
     setSettlementLastContributorVictoryPoints,
     setSettlementLeftoverActionTokensVictoryPoints,
     incrementContributeOwnedProjectsMaxContributionValue,

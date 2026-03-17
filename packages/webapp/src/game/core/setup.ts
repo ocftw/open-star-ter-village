@@ -8,7 +8,7 @@ import GameStore, { GameState } from '../store/store';
 import { DeckMutator, DeckSelector } from '../store/slice/deck';
 import { ScoreBoardMutator } from "../store/slice/scoreBoard";
 import { JobSlotsMutator } from '../store/slice/jobSlots';
-import { RuleSelector } from '../store/slice/rule';
+import { RuleMutator, RuleSelector } from '../store/slice/rule';
 import { reservoirSampling } from '../utils';
 import { ProjectBoardMutator } from '../store/slice/projectBoard';
 
@@ -43,8 +43,9 @@ export const setup: SetupFn<GameState> = ({ ctx, random }) => {
   // get default game state
   const G = GameStore.initialState();
 
-  // TODO: initialize rule by difficulty and number of players
-  // RuleMutator.setupNumPlayers(G.rules, ctx.numPlayers);
+  // Set event card count based on player count (Simplified Mode rulebook):
+  // 2 players → 6 cards, 3 players → 5 cards, 4+ players → 4 cards
+  RuleMutator.setNumNonEndGameEventCards(G.rules, ctx.numPlayers);
 
   console.log('setup decks')
   // add cards to decks
@@ -134,6 +135,11 @@ export const setup: SetupFn<GameState> = ({ ctx, random }) => {
     PlayersMutator.resetWorkerTokens(G.players, playerId, numWorkerTokens);
     PlayersMutator.resetActionTokens(G.players, playerId, numActionTokens);
   });
+
+  console.log('setup play order')
+  // Initialize G.playOrder from ctx.playOrder so it can be rotated each round
+  // via passStartPlayerToken without mutating the read-only ctx.
+  G.playOrder = [...ctx.playOrder];
 
   console.log('end setup game')
   return G;

@@ -1,4 +1,5 @@
 import { Game } from 'boardgame.io';
+import { TurnOrder } from 'boardgame.io/core';
 import { GameState } from './store/store';
 import { setup } from './core/setup';
 import { playerView } from './core/playerView';
@@ -14,6 +15,13 @@ import { refill } from './core/handler/refill';
 export const OpenStarTerVillage: Game<GameState> = {
   setup: setup,
   turn: {
+    /**
+     * Use CUSTOM_FROM so boardgame.io re-reads G.playOrder at the start of
+     * each turn. This lets passStartPlayerToken rotate the starting player by
+     * mutating G.playOrder (which is safe) rather than ctx.playOrder (which
+     * is read-only in hooks and would be silently ignored).
+     */
+    order: TurnOrder.CUSTOM_FROM('playOrder'),
     onBegin: (context) => {
       const { ctx } = context;
       if (ctx.playOrderPos === 0) {

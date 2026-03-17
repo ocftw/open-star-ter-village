@@ -9,7 +9,17 @@
 
 The feature branch has 63 commits ahead of `main`. It built out the full game flow (setup, action moves, settlement, event card infrastructure). The goal is to align the implementation with the officially released board game rules.
 
-**Limitation:** No physical rulebook is available. Rule values in `rule.ts` are inferred from code and cannot be verified without the rulebook. See Task #5.
+**Rulebook:** [docs/rulebook.md](./docs/rulebook.md) (extracted from the official PDF)
+
+**MVP Scope: Simplified Mode (B-side)**
+The game has two modes — Simplified and Standard. The MVP target is **Simplified Mode** only.
+- Score & action board B-side
+- Entry-level project cards only (29 cards)
+- 8 labor cards in section
+- 4 action points per turn
+- 5 event cards ("B" labeled only + "The End of the World!")
+- No Open Source Tree mechanics
+- Initiator contribution: 4 points | Facilitator contribution: 5 points
 
 ---
 
@@ -60,29 +70,41 @@ Also added: `Rule.event` field, `addActionTokens` mutator, `getAllPlayerPoints` 
 
 ---
 
-### Task 5 — Verify rule values against released game specs 🔲 In Progress
+### Task 5 — Verify rule values against released game specs ✅ Done
 **File:** `packages/webapp/src/game/store/slice/rule.ts`
-**Rulebook:** [Rulebook of Open StarTer Village](https://drive.google.com/file/d/1gBGKhavLdDQ-J1elxQNN6E7Sdz0ZBTeO/view?usp=drive_link)
+**Rulebook:** [docs/rulebook.md](./docs/rulebook.md)
 
-Verified values from rulebook (pages 2–4):
+Full rulebook now available. Verified against Simplified Mode (MVP target):
 
-| Setting | Current value | Rulebook | Status |
-|---|---|---|---|
-| player.maxActionTokens | 4 | 4 | ✅ |
-| player.maxWorkerTokens | 12 | 12 | ✅ |
-| player.maxProjectCards | 2 | 2 | ✅ |
-| table.maxJobSlots | 8 | **6** | ❌ Fix needed |
-| table.maxProjectSlots | 8 | TBD | — |
-| numNonEndGameEventCards | 5 | Player-count dependent: 2p=6, 3p=5, 4p=4 | ⚠️ Hardcoded to 5 (correct for 3p only) |
-| settlement.projectOwnerVictoryPoints | 2 | TBD | — |
-| settlement.lastContributorVictoryPoints | 2 | TBD | — |
-| All action costs | various | TBD (need deeper rulebook read) | — |
+| Setting | Current value | Simplified Mode | Standard Mode | Status |
+|---|---|---|---|---|
+| player.maxActionTokens | 4 | **4** | 3 (upgradeable) | ✅ Correct for Simplified |
+| player.maxWorkerTokens | 12 | 12 | 12 | ✅ |
+| player.maxProjectCards | 2 | 2 | 2 | ✅ |
+| table.maxJobSlots | 8 | **8** | 6 | ✅ Correct for Simplified |
+| numNonEndGameEventCards | 5 | 5 (suggested; 2p=6, 3p=5, 4p=4) | same | ⚠️ Hardcoded to 5, correct for 3p |
+| settlement.projectOwnerVictoryPoints | 2 | **2** | 2 | ✅ |
+| settlement.lastContributorVictoryPoints | 2 | **2** | 2 | ✅ |
+| action.createProject.actionCost | 2 | **2** | 2 | ✅ |
+| action.recruit.actionCost | 1 | **1** | 1 | ✅ |
+| contributeOwnedProjects (initiator) | ? | **4** points | 3 points | ❓ Verify in code |
+| contributeFacilitator | ? | **5** points | 4 points | ❓ Verify in code |
 
-**Known fix required:** `table.maxJobSlots` should be **6**, not 8. Rulebook setup step 4 shows 6 labor cards placed face-up.
+**Key findings for Simplified Mode:**
+- `table.maxJobSlots = 8` is **correct** for Simplified Mode (8 labor cards)
+- `player.maxActionTokens = 4` is **correct** for Simplified Mode
+- Initiator contribution should give **4 points** (not 3)
+- Facilitator contribution should give **5 points** (not 4)
+- Need to verify contribution point values in move files
+
+**Remaining fixes:**
+- [ ] Verify `contributeOwnedProjects` gives 4 pts (Simplified) in `src/game/core/stage/action/move/`
+- [ ] Verify `contributeFacilitatorProjects` gives 5 pts (Simplified)
+- [ ] `numNonEndGameEventCards`: make player-count dependent or document as 3-player default
 
 ---
 
-### Task 6 — Investigate and fix `passStartPlayerToken` ctx mutation ✅ Ready
+### Task 6 — Investigate and fix `passStartPlayerToken` ctx mutation ✅ Done
 **File:** `packages/webapp/src/game/core/handler/passStartPlayerToken.ts`
 
 Current code directly mutates `ctx.playOrder` which may be read-only in boardgame.io hooks:
@@ -90,10 +112,13 @@ Current code directly mutates `ctx.playOrder` which may be read-only in boardgam
 ctx.playOrder = ctx.playOrder.slice(1).concat(ctx.playOrder[0]);
 ```
 
-Steps:
-- [ ] Verify if this mutation works in boardgame.io (check boardgame.io docs)
-- [ ] If unsafe: use the correct boardgame.io API (turn order config or events API)
-- [ ] Verify start player token rotates correctly each round
+**Root cause found:** `ctx.playOrder` mutation in `turn.onEnd` was a **silent no-op**. boardgame.io rebuilds `ctx` from `state.ctx` after the hook returns, discarding any direct mutations.
+
+**Fix applied:**
+- Added `G.playOrder: PlayerID[]` to `GameState` in `store.ts`
+- `setup.ts` now initialises `G.playOrder` from `ctx.playOrder`
+- `passStartPlayerToken.ts` now mutates `G.playOrder` (processed by Immer, persisted)
+- `game.ts` now uses `order: TurnOrder.CUSTOM_FROM('playOrder')` so boardgame.io reads the rotated order each turn
 
 ---
 
