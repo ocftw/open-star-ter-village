@@ -1,6 +1,6 @@
 import { AppDispatch } from '@/lib/store';
 import { createSelector } from '@reduxjs/toolkit';
-import { UserActionMoves, getCurrentAction, getCurrentStep, resetAction, setActionStep, setOwnedContributionInteractive, setHandPorjectCardsInteractive, setJobSlotsInteractive, setProjectSlotsInteractive, setJoinedContributionInteractive } from '@/lib/reducers/actionStepSlice';
+import { UserActionMoves, getCurrentAction, getCurrentStep, getMirrorTarget, resetAction, setActionStep, setMirrorTarget, setOwnedContributionInteractive, setHandPorjectCardsInteractive, setJobSlotsInteractive, setProjectSlotsInteractive, setJoinedContributionInteractive } from '@/lib/reducers/actionStepSlice';
 import { GameContext } from '../../GameContextHelpers';
 import { getSelectedHandProjectCards, resetHandProjectCardSelection } from '@/lib/reducers/handProjectCardSlice';
 import { getSelectedJobSlots, resetJobSlotSelection } from '@/lib/reducers/jobSlotSlice';
@@ -9,6 +9,7 @@ import { ActionMoveName, ActionMoves } from '@/game/core/stage/action/move/type'
 import { getContributions, resetContribution } from '@/lib/reducers/contributionSlice';
 import { ContributionAction, getTotalContributionValue } from '@/game/core/ContributionAction';
 import { RuleSelector } from '@/game/store/slice/rule';
+import { ActionSlotSelector } from '@/game/store/slice/actionSlot';
 
 export interface GameContextProps {
   getMaxContributionValue: (actionName: ActionMoveName) => number;
@@ -19,11 +20,17 @@ export interface GameContextProps {
   onRemoveAndRefillJobs: ActionMoves['removeAndRefillJobs'];
   onMirror: ActionMoves['mirror'];
   onEndActionTurn: () => void;
+  occupiedMirrorableActions: ActionMoveName[];
 }
 
 export const mapGameContextToProps = (gameContext: GameContext): GameContextProps => {
   const { G, events, moves } = gameContext as GameContext & { moves: ActionMoves };
   const getMaxContributionValue = (actionName: ActionMoveName) => RuleSelector.getMaxContributionValue(G.rules, actionName);
+
+  const mirrorableNames: ActionMoveName[] = ['createProject', 'recruit', 'contributeOwnedProjects', 'contributeJoinedProjects', 'removeAndRefillJobs'];
+  const occupiedMirrorableActions = mirrorableNames.filter(
+    (name) => ActionSlotSelector.isOccupied(G.table.actionSlots[name])
+  );
 
   return {
     getMaxContributionValue,
@@ -34,6 +41,7 @@ export const mapGameContextToProps = (gameContext: GameContext): GameContextProp
     onRemoveAndRefillJobs: moves.removeAndRefillJobs,
     onMirror: moves.mirror,
     onEndActionTurn: events.endTurn!,
+    occupiedMirrorableActions,
   };
 }
 
@@ -45,6 +53,7 @@ export interface StateProps {
   steps: Step[];
   currentStep: number;
   currentAction: UserActionMoves | null;
+  mirrorTarget: ActionMoveName | null;
   selectedHandProjectCards: string[];
   selectedJobSlots: string[];
   selectedProjectSlots: string[];
@@ -58,18 +67,19 @@ const stepsMap: Record<UserActionMoves, Step[]> = {
   contributeOwnedProjects: [{name: 'Contribute to Owned Projects'}],
   contributeJoinedProjects: [{name: 'Contribute to Joined Projects'}],
   removeAndRefillJobs: [{name: 'Select At least One Job Slot'}],
-  mirror: [{name: 'Select One Action Slot'}, {name: 'TBD'}],
+  mirror: [{name: 'Select Action to Repeat'}, {name: 'Configure Action'}],
   endActionTurn: [{name: 'Confirm End Action Turn'}],
 }
 
 export const mapStateToProps = createSelector(
   getCurrentStep,
   getCurrentAction,
+  getMirrorTarget,
   getSelectedHandProjectCards,
   getSelectedJobSlots,
   getSelectedProjectSlots,
   getContributions,
-  (currentStep, currentAction, handProjectCards, jobSlots, projectSlots, contributions): StateProps => {
+  (currentStep, currentAction, mirrorTarget, handProjectCards, jobSlots, projectSlots, contributions): StateProps => {
   const steps = currentAction ? stepsMap[currentAction] : [];
   const selectedHandProjectCards = Object.keys(handProjectCards).filter(cardId => handProjectCards[cardId]);
   const selectedJobSlots = Object.keys(jobSlots).filter(slotId => jobSlots[slotId]);
@@ -80,6 +90,7 @@ export const mapStateToProps = createSelector(
     steps,
     currentStep,
     currentAction,
+    mirrorTarget,
     selectedHandProjectCards,
     selectedJobSlots,
     selectedProjectSlots,
@@ -90,6 +101,7 @@ export const mapStateToProps = createSelector(
 
 export interface DispatchProps {
   setActionStep: (step: number) => void;
+  setMirrorTarget: (target: ActionMoveName | null) => void;
   setHandPorjectCardsInteractive: () => void;
   setJobSlotsInteractive: () => void;
   setProjectSlotsInteractive: () => void;
@@ -104,6 +116,7 @@ export interface DispatchProps {
 
 export const mapDispatchToProps = (dispatch: AppDispatch): DispatchProps => ({
   setActionStep: (step: number) => dispatch(setActionStep(step)),
+  setMirrorTarget: (target: ActionMoveName | null) => dispatch(setMirrorTarget(target)),
   setHandPorjectCardsInteractive: () => dispatch(setHandPorjectCardsInteractive()),
   setJobSlotsInteractive: () => dispatch(setJobSlotsInteractive()),
   setProjectSlotsInteractive: () => dispatch(setProjectSlotsInteractive()),

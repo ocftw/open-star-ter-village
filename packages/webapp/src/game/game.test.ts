@@ -475,7 +475,7 @@ describe('四大自由 — add_two_worker_slots', () => {
     expect(RuleSelector.getTableMaxJobSlots(ctx.G.rules)).toBe(8);
     expect(JobSlotsSelector.getNumFilledSlots(ctx.G.table.jobSlots)).toBe(8);
     // the 2 added cards should be gone
-    addedCards.forEach(c => {
+    addedCards.forEach((c: { id: string }) => {
       expect(JobSlotsSelector.getJobCardById(ctx.G.table.jobSlots, c.id)).toBeUndefined();
     });
   });

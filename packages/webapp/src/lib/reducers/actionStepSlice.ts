@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { ActionMoveName } from '@/game/core/stage/action/move/type';
 
 export enum UserActionMoves {
   CreateProject = 'createProject',
@@ -13,6 +14,7 @@ export enum UserActionMoves {
 interface ActionStepState {
   currentStep: number;
   currentAction: UserActionMoves | null;
+  mirrorTarget: ActionMoveName | null;
   interactiveState: {
     handProjectCards: boolean;
     jobSlots: boolean;
@@ -33,6 +35,7 @@ const initialInteractiveState: ActionStepState['interactiveState'] = {
 const initialState: ActionStepState = {
   currentStep: 0,
   currentAction: null,
+  mirrorTarget: null,
   interactiveState: initialInteractiveState,
 };
 
@@ -49,7 +52,11 @@ const actionStepSlice = createSlice({
     resetAction: (state) => {
       state.currentStep = 0;
       state.currentAction = null;
+      state.mirrorTarget = null;
       state.interactiveState = initialInteractiveState;
+    },
+    setMirrorTarget: (state, action: PayloadAction<ActionMoveName | null>) => {
+      state.mirrorTarget = action.payload;
     },
     setHandPorjectCardsInteractive: (state) => {
       state.interactiveState.handProjectCards = true;
@@ -70,6 +77,7 @@ const actionStepSlice = createSlice({
   selectors: {
     getCurrentStep: (state: ActionStepState) => state.currentStep,
     getCurrentAction: (state: ActionStepState) => state.currentAction,
+    getMirrorTarget: (state: ActionStepState) => state.mirrorTarget,
     isHandProjectCardsInteractive: (state: ActionStepState) => state.interactiveState.handProjectCards,
     isJobSlotsInteractive: (state: ActionStepState) => state.interactiveState.jobSlots,
     isProjectSlotsInteractive: (state: ActionStepState) => state.interactiveState.projectSlots,
@@ -82,6 +90,7 @@ export const {
   setActionStep,
   setCurrentAction,
   resetAction,
+  setMirrorTarget,
   setHandPorjectCardsInteractive,
   setJobSlotsInteractive,
   setProjectSlotsInteractive,
@@ -92,6 +101,7 @@ export const {
 export const {
   getCurrentStep,
   getCurrentAction,
+  getMirrorTarget,
   isHandProjectCardsInteractive,
   isJobSlotsInteractive,
   isProjectSlotsInteractive,

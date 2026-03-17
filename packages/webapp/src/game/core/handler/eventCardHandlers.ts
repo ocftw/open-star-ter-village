@@ -16,9 +16,10 @@ const endGameAfterThisRound: EventCardHandler = {
     // Leftover action tokens are converted to 1 victory points
     RuleMutator.setSettlementLeftoverActionTokensVictoryPoints(G.rules, 1);
   },
-  end: ({ G, events }) => {
+  end: (context) => {
+    const { G, events } = context;
     RuleMutator.setSettlementLeftoverActionTokensVictoryPoints(G.rules, 0);
-    scoreUnfinishedProjects({ G, events });
+    scoreUnfinishedProjects(context);
     events.endGame({ winner: ScoreBoardSelector.getWinner(G.table.scoreBoard) });
   },
 }
