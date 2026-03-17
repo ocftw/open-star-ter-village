@@ -130,9 +130,35 @@ ctx.playOrder = ctx.playOrder.slice(1).concat(ctx.playOrder[0]);
 
 ---
 
+### Task 8 — End-game scoring for unfinished projects 🔲 In Progress
+**Files:** `packages/webapp/src/game/store/slice/projectBoard.ts`, `packages/webapp/src/game/core/handler/scoreUnfinishedProjects.ts`, `packages/webapp/src/game/core/handler/eventCardHandlers.ts`
+
+**Rule:** When the game ends, each player scores VP from their contribution points on unfinished projects:
+- Sum each player's contribution points across all unfinished project slots
+- Every 2 contribution points = 1 VP (floor division)
+- Remainder (fewer than 2) is discarded
+
+**Implementation steps:**
+- [ ] Add `getUnfinished` selector to `projectBoard.ts` — returns project slots that have a card but are not yet requirement-fulfilled
+- [ ] Create `packages/webapp/src/game/core/handler/scoreUnfinishedProjects.ts` — iterates unfinished slots, accumulates each player's contribution points, scores `Math.floor(total / 2)` VP per player
+- [ ] Call `scoreUnfinishedProjects` inside `endGameAfterThisRound.end` in `eventCardHandlers.ts`, before `events.endGame()`
+- [ ] Add unit tests covering: no unfinished projects, one unfinished project with contributors, multiple unfinished projects, remainder discarded
+- [ ] Run tests, lint, build, commit
+
+---
+
+### Task 9 — Implement `四大自由` event card handler 🔲 Pending
+**File:** `packages/webapp/src/game/core/handler/eventCardHandlers.ts`
+
+**Rule:** 立即多翻開兩張人力卡至人力資源區，即人力資源區上限 +2。本輪結束時由尾家選擇兩張棄掉
+*(Immediately reveal 2 more labor cards to the labor section, max job slots +2. At end of round, the last player chooses 2 to discard.)*
+
+**Open question:** Does the last player interactively choose which 2 to discard, or do we auto-discard? Needs product decision before implementation.
+
+---
+
 ## Open Questions
 
-1. **Rulebook** — do we have access to the physical game rulebook to verify rule values (Task #5)?
-2. **四大自由 (add_two_worker_slots)** — does the last player choose which 2 job cards to remove, or is it auto (e.g., oldest)?
-3. **mirror action** — currently disabled (`available: false`). Is this intentional for now, or should it be enabled?
-4. **Standard mode** — `settleProjects.ts` has a TODO for OpenSourceTree in standard mode. Is standard mode in scope for this branch?
+1. **四大自由 (add_two_worker_slots)** — does the last player interactively choose which 2 job cards to remove, or should we auto-discard (e.g. the 2 newest)?
+2. **mirror action** — currently disabled (`available: false`). Is this intentional for now, or should it be enabled?
+3. **Standard mode** — out of scope for MVP (Simplified Mode only).

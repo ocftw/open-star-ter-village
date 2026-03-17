@@ -347,6 +347,77 @@ describe('eventCardHandlers - ignore_first_worker_requirement', () => {
   });
 });
 
+// ─── scoreUnfinishedProjects ──────────────────────────────────────────────────
+
+import { scoreUnfinishedProjects } from './core/handler/scoreUnfinishedProjects';
+import { ProjectBoardMutator } from './store/slice/projectBoard';
+import { ProjectSlotMutator } from './store/slice/projectSlot/projectSlot';
+import { ProjectCard } from './card';
+
+const makeProjectCard = (id: string, requirements: Record<string, number>): ProjectCard =>
+  ({ id, name: id, type: 'open_source', difficulty: 1, requirements } as unknown as ProjectCard);
+
+describe('scoreUnfinishedProjects', () => {
+  const makeCtx = () => {
+    const G = GameStore.initialState();
+    PlayersMutator.initialize(G.players, ['alice', 'bob', 'charlie']);
+    ScoreBoardMutator.initialize(G.table.scoreBoard, ['alice', 'bob', 'charlie']);
+    ProjectBoardMutator.initialize(G.table.projectBoard, 4);
+    return { G, events: { endGame: jest.fn() } } as any;
+  };
+
+  it('does nothing when no unfinished projects', () => {
+    const ctx = makeCtx();
+    scoreUnfinishedProjects(ctx);
+    expect(ScoreBoardSelector.getPlayerPoints(ctx.G.table.scoreBoard, 'alice')).toBe(0);
+  });
+
+  it('scores floor(contributionPoints / 2) VP per player', () => {
+    const ctx = makeCtx();
+    // requirement is 12 so project stays unfinished (alice 4 + bob 3 = 7 < 12)
+    const card = makeProjectCard('p1', { Engineer: 12 });
+    ProjectBoardMutator.add(ctx.G.table.projectBoard, card);
+    const slot = ctx.G.table.projectBoard[0];
+    // alice contributes 4 pts → 2 VP; bob contributes 3 pts → 1 VP
+    ProjectSlotMutator.pushWorker(slot, 'Engineer', 'alice', 4);
+    ProjectSlotMutator.pushWorker(slot, 'Engineer', 'bob', 3);
+
+    scoreUnfinishedProjects(ctx);
+
+    expect(ScoreBoardSelector.getPlayerPoints(ctx.G.table.scoreBoard, 'alice')).toBe(2);
+    expect(ScoreBoardSelector.getPlayerPoints(ctx.G.table.scoreBoard, 'bob')).toBe(1);
+  });
+
+  it('discards remainder (1 contribution point = 0 VP)', () => {
+    const ctx = makeCtx();
+    const card = makeProjectCard('p2', { Advocator: 3 });
+    ProjectBoardMutator.add(ctx.G.table.projectBoard, card);
+    const slot = ctx.G.table.projectBoard[0];
+    ProjectSlotMutator.pushWorker(slot, 'Advocator', 'charlie', 1);
+
+    scoreUnfinishedProjects(ctx);
+
+    expect(ScoreBoardSelector.getPlayerPoints(ctx.G.table.scoreBoard, 'charlie')).toBe(0);
+  });
+
+  it('accumulates points across multiple unfinished projects', () => {
+    const ctx = makeCtx();
+    const card1 = makeProjectCard('p3', { Engineer: 5 });
+    const card2 = makeProjectCard('p4', { Advocator: 5 });
+    ProjectBoardMutator.add(ctx.G.table.projectBoard, card1);
+    ProjectBoardMutator.add(ctx.G.table.projectBoard, card2);
+    const slot1 = ctx.G.table.projectBoard[0];
+    const slot2 = ctx.G.table.projectBoard[1];
+    // alice has 3 pts on project1 and 1 pt on project2 = 4 total → 2 VP
+    ProjectSlotMutator.pushWorker(slot1, 'Engineer', 'alice', 3);
+    ProjectSlotMutator.pushWorker(slot2, 'Advocator', 'alice', 1);
+
+    scoreUnfinishedProjects(ctx);
+
+    expect(ScoreBoardSelector.getPlayerPoints(ctx.G.table.scoreBoard, 'alice')).toBe(2);
+  });
+});
+
 describe('eventCardHandlers - discard_and_refill_all_worker_slots', () => {
   it('discards all job cards and refills to maxJobSlots', () => {
     const ctx = makeContext();

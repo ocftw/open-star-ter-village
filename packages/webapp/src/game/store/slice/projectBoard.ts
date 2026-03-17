@@ -61,6 +61,20 @@ const getRequirementFulfilled = (state: ProjectSlot[]): ProjectSlot[] => {
   });
 }
 
+const getUnfinished = (state: ProjectSlot[]): ProjectSlot[] => {
+  return state.filter(project => {
+    if (!project.card) {
+      return false;
+    }
+    for (const jobName in project.card.requirements) {
+      if (ProjectSlotSelector.getJobContribution(project, jobName) < project.card.requirements[jobName]) {
+        return true;
+      }
+    }
+    return false;
+  });
+}
+
 const ProjectBoardSlice = {
   initialState,
   mutators: {
@@ -73,6 +87,7 @@ const ProjectBoardSlice = {
     getBySlotId,
     getSlotByCard,
     getRequirementFulfilled,
+    getUnfinished,
   },
 };
 

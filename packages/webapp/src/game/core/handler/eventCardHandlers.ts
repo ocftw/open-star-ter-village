@@ -4,6 +4,7 @@ import { ScoreBoardSelector } from "@/game/store/slice/scoreBoard";
 import { JobSlotsMutator } from "@/game/store/slice/jobSlots";
 import { DeckMutator, DeckSelector } from "@/game/store/slice/deck";
 import { PlayersMutator } from "@/game/store/slice/players";
+import { scoreUnfinishedProjects } from "./scoreUnfinishedProjects";
 
 type EventCardHandler = {
   start: GameHookHandler;
@@ -17,6 +18,7 @@ const endGameAfterThisRound: EventCardHandler = {
   },
   end: ({ G, events }) => {
     RuleMutator.setSettlementLeftoverActionTokensVictoryPoints(G.rules, 0);
+    scoreUnfinishedProjects({ G, events });
     events.endGame({ winner: ScoreBoardSelector.getWinner(G.table.scoreBoard) });
   },
 }
