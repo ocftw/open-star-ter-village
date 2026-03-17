@@ -44,13 +44,13 @@ const Contribution: React.FC<Props> = ({ worker, initialValue, min, max, isInter
   return (
     <Box margin='8px'>
       {isInteractive && (
-        <IconButton size="medium" color="primary" onClick={handleDecrement}>
+        <IconButton size="medium" color="primary" data-testid="contribution-decrement" onClick={handleDecrement}>
           <RemoveCircleOutlinedIcon />
         </IconButton>
       )}
       <ContributionAvatarWithPlayerBadge sizes='medium' contributions={displayValue} playerID={playerNameMap[worker]} />
       {isInteractive &&(
-        <IconButton size="small" color="primary" onClick={handleIncrement}>
+        <IconButton size="small" color="primary" data-testid="contribution-increment" data-remaining={max - value} onClick={handleIncrement}>
           <AddCircleOutlinedIcon />
         </IconButton>
       )}

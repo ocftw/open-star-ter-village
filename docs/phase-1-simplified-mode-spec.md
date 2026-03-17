@@ -3,7 +3,7 @@
 **Branch:** `feature/align-game-rule-to-released-version`
 **PR:** #335 (DRAFT)
 **Last updated:** 2026-03-17
-**Commit:** `12caa1a`
+**Commit:** `1952446` (Task 14 added after)
 
 ## Context
 
@@ -70,7 +70,7 @@ Also added: `Rule.event` field, `addActionTokens` mutator, `getAllPlayerPoints` 
 
 ---
 
-### Task 5 — Verify rule values against released game specs ✅ Done
+### Task 5 — Verify rule values against released game specs ✅ Done (fully verified 2026-03-17)
 **File:** `packages/webapp/src/game/store/slice/rule.ts`
 **Rulebook:** [docs/rulebook.md](./docs/rulebook.md)
 
@@ -97,10 +97,11 @@ Full rulebook now available. Verified against Simplified Mode (MVP target):
 - Facilitator contribution should give **5 points** (not 4)
 - Need to verify contribution point values in move files
 
-**Remaining fixes:**
-- [ ] Verify `contributeOwnedProjects` gives 4 pts (Simplified) in `src/game/core/stage/action/move/`
-- [ ] Verify `contributeFacilitatorProjects` gives 5 pts (Simplified)
-- [ ] `numNonEndGameEventCards`: make player-count dependent or document as 3-player default
+**Verification result (2026-03-17):**
+- `contributeOwnedProjects.maxContributionValue = 4` ✅ correct for Simplified Mode (`rule.ts:78`)
+- `contributeJoinedProjects.maxContributionValue = 5` ✅ correct for Simplified Mode (`rule.ts:82`)
+- Both values are enforced as contribution-point caps in the move guards, not VP awards
+- `numNonEndGameEventCards` is now player-count dependent via `getNumNonEndGameEventCardsByPlayerCount` (`rule.ts:129`) ✅
 
 ---
 
@@ -146,19 +147,46 @@ ctx.playOrder = ctx.playOrder.slice(1).concat(ctx.playOrder[0]);
 
 ---
 
-### Task 9 — Implement `四大自由` event card handler ✅ Done
+### Task 9 — Implement `四大自由` event card handler ✅ Done (interactive discard added in Task 14)
 **Files:** `packages/webapp/src/game/store/slice/rule.ts`, `packages/webapp/src/game/core/handler/eventCardHandlers.ts`
 
 **Rule:** 立即多翻開兩張人力卡至人力資源區，即人力資源區上限 +2。本輪結束時由尾家選擇兩張棄掉
 *(Immediately reveal 2 more labor cards to the labor section, max job slots +2. At end of round, the last player chooses 2 to discard.)*
 
-**Implementation (MVP simplification):**
+**Initial implementation:**
 - `start`: Increases `maxJobSlots` from 8→10, draws 2 job cards from deck and adds to table
 - `end`: Auto-discards last 2 job cards (excess beyond normal max), restores `maxJobSlots` to 8
 - Added `setTableMaxJobSlots` mutator to `rule.ts`
 - 2 unit tests added — 45/45 passing
 
-**Simplification note:** The rulebook says "last player chooses 2 to discard" interactively. MVP auto-discards the last 2 cards (the ones just added) to avoid requiring interactive selection UI.
+See Task 14 for the full interactive discard implementation.
+
+---
+
+### Task 14 — `四大自由` interactive discard ✅ Done
+**Files:** `table.ts`, `eventCardHandlers.ts`, `endActionTurn.ts` (new), `discardExcessJobCards.ts` (new), `action.ts`, `game.ts`, `ActionStepper.selectors.ts`, `BoardGame.tsx`, `DiscardJobCards/DiscardJobCardsPanel.tsx` (new)
+
+**Rule fulfilled:** At end of round the last player interactively selects any 2 job cards from the 10-card board to discard, returning to 8.
+
+**Game state additions** (`table.ts`):
+- `fourFreedomsPendingDiscards: string[]` — IDs of the 2 added cards; non-empty signals a discard is required
+- `actionPhaseDone: boolean` — set when the last player calls End Action Turn early (still has AP) to signal they are ready to discard
+
+**New moves** (both `client: false`):
+- `endActionTurn` — if last player + pending discard: sets `actionPhaseDone = true` (keeps turn alive); otherwise calls `events.endTurn()`
+- `discardExcessJobCards(cardIds)` — validates exactly 2 IDs on the table, removes them, discards to deck, clears pending state, calls `events.endTurn()`
+
+**`game.ts` — modified `endIf`:**
+Blocks auto-end when last player has `fourFreedomsPendingDiscards.length > 0` (AP=0 no longer auto-ends their turn until they discard).
+
+**UI flow:**
+- `ActionStepper.selectors.ts` — `onEndActionTurn` now calls `moves.endActionTurn` (game move) instead of `events.endTurn` directly
+- `BoardGame.tsx` — computes `showDiscardPanel = isLastPlayer && hasPendingDiscard && (outOfAP || actionPhaseDone)` and renders `DiscardJobCardsPanel` in place of the action bar
+- `DiscardJobCardsPanel` — activates job slot selection on mount, requires exactly 2 selected, confirm calls `discardExcessJobCards`
+
+**Fallback:** `addTwoWorkerSlots.end()` still auto-discards if `fourFreedomsPendingDiscards` is somehow non-empty at round end (safety net only; should not occur in normal play).
+
+49/49 unit tests passing. 10/10 E2E scenarios passing.
 
 ---
 
@@ -213,7 +241,32 @@ One config object per mirrorable action in `ACTION_CONFIGS: Record<MirrorableAct
 
 ---
 
+### Task 13 — E2E test coverage for all actions ✅ Done
+**File:** `packages/webapp/e2e/game-flow.spec.ts`
+
+Extended the E2E suite from 4 scenarios to 10. All 10 pass.
+
+| Scenario | Coverage |
+|---|---|
+| 1 | Turn start: Alice has 4 AP |
+| 2 | createProject: costs 2 AP, awards 2 VP |
+| 3 | recruit: costs 1 AP, places worker token |
+| 4 | removeAndRefillJobs (Talent Scouting): costs 1 AP, awards 1 VP |
+| 5 | Event card banner visible at game start |
+| 6 | Turn indicator: non-active players see waiting alert |
+| 7 | endActionTurn: Alice ends early, Bob's action bar appears |
+| 8 | contributeOwnedProjects: costs 1 AP, records contribution delta |
+| 9 | mirror (Doin' Overtime): repeats removeAndRefillJobs, costs 2 AP total |
+| 10 | contributeJoinedProjects: recruit + contribute on another player's project |
+
+Also added:
+- `data-testid="event-card-banner"` to `Table.tsx`
+- `data-testid="waiting-for-player-alert"` to `BoardGame.tsx`
+- `data-testid="contribution-decrement/increment"` + `data-remaining` to `Contribution.tsx`
+- `data-job-requirements` (JSON) to `ProjectSlot.tsx` to expose per-job numeric requirements for test targeting
+
+---
+
 ## Open Questions
 
-1. **四大自由 (add_two_worker_slots)** — MVP auto-discards last 2 cards; full rule requires last player to interactively choose. Needs product decision.
-2. **Standard mode** — out of scope for MVP (Simplified Mode only).
+1. **Standard mode** — out of scope for MVP (Simplified Mode only).

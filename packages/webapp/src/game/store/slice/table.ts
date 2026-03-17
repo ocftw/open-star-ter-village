@@ -13,6 +13,11 @@ export interface Table {
   jobSlots: JobSlots;
   actionSlots: ActionSlots;
   scoreBoard: ScoreBoard;
+  /** IDs of the 2 job cards added by 四大自由 that the last player must choose to discard. */
+  fourFreedomsPendingDiscards: string[];
+  /** Set to true by endActionTurn when the last player still has AP but signals they are done
+   *  with their action phase and need to proceed to the 四大自由 discard step. */
+  actionPhaseDone: boolean;
 }
 
 const initialState = (): Table => ({
@@ -21,6 +26,8 @@ const initialState = (): Table => ({
   jobSlots: JobSlotsSlice.initialState(),
   actionSlots: ActionSlotsSlice.initialState(),
   scoreBoard: ScoreBoardSlice.initialState(),
+  fourFreedomsPendingDiscards: [],
+  actionPhaseDone: false,
 });
 
 const playEvent = (state: Table, eventCard: EventCard): void => {

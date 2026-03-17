@@ -16,7 +16,7 @@ const Table: React.FC<Props> = (props) => {
     <Grid container spacing={2} sx={{ marginTop: '16px' }}>
       {activeEvent && (
         <Grid item xs={12}>
-          <Alert severity="info" icon={false}>
+          <Alert severity="info" icon={false} data-testid="event-card-banner">
             <Typography variant="subtitle2" component="span" sx={{ fontWeight: 'bold', mr: 1 }}>
               Event: {activeEvent.name}
             </Typography>

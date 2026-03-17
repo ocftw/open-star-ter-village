@@ -46,7 +46,12 @@ export const OpenStarTerVillage: Game<GameState> = {
       action,
     },
     endIf: ({ G, ctx }) => {
-      return PlayersSelector.getNumActionTokens(G.players, ctx.currentPlayer) === 0;
+      const outOfAP = PlayersSelector.getNumActionTokens(G.players, ctx.currentPlayer) === 0;
+      if (!outOfAP) return undefined;
+      // Last player must discard 2 job cards (四大自由) before the turn can end.
+      const isLastPlayer = ctx.playOrderPos === ctx.numPlayers - 1;
+      if (isLastPlayer && G.table.fourFreedomsPendingDiscards.length > 0) return undefined;
+      return true;
     },
     onEnd: (context) => {
       const { ctx } = context;

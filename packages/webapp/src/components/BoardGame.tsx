@@ -8,6 +8,7 @@ import UserPanel from './UserPanel/UserPanel';
 import { Alert, Box, Button, Dialog, DialogContent, DialogTitle, List, ListItem, ListItemText, Typography } from '@mui/material';
 import { GameContext } from './GameContextHelpers';
 import ActionStepper from './ActionBoard/ActionStepper/ActionStepper';
+import DiscardJobCardsPanel from './DiscardJobCards/DiscardJobCardsPanel';
 import { ScoreBoardSelector } from '@/game/store/slice/scoreBoard';
 
 const Board: React.FC<GameContext> = (gameContext) => {
@@ -15,15 +16,26 @@ const Board: React.FC<GameContext> = (gameContext) => {
   const isMyTurn = playerID === ctx.currentPlayer;
   const gameover = ctx.gameover as { winner: string } | undefined;
 
+  const isLastPlayer = ctx.playOrderPos === ctx.numPlayers - 1;
+  const hasPendingDiscard = G.table.fourFreedomsPendingDiscards.length > 0;
+  const outOfAP = playerID != null && (G.players[playerID]?.token?.actions ?? 1) === 0;
+  // Show the discard panel instead of the action bar when it's the last player's turn and
+  // they need to remove 2 job cards (四大自由), either because AP is exhausted or they have
+  // explicitly signalled they are done with their action phase (actionPhaseDone).
+  const showDiscardPanel = isMyTurn && isLastPlayer && hasPendingDiscard &&
+    (outOfAP || G.table.actionPhaseDone);
+
   return (
     <Box sx={{ display: 'flex' }}>
       {!!playerID && <UserPanel gameContext={gameContext} />}
       <Box sx={{ flex: 1, padding: '16px', marginLeft: { xs: 0 } }}>
         <GameHeader players={G.players} scoreBoard={G.table.scoreBoard} />
         {isMyTurn
-          ? <><ActionBar gameContext={gameContext} /><ActionStepper gameContext={gameContext} /></>
+          ? showDiscardPanel
+            ? <DiscardJobCardsPanel gameContext={gameContext} />
+            : <><ActionBar gameContext={gameContext} /><ActionStepper gameContext={gameContext} /></>
           : !!playerID && (
-            <Alert severity="info" sx={{ mt: 1 }}>
+            <Alert severity="info" sx={{ mt: 1 }} data-testid="waiting-for-player-alert">
               Waiting for Player {ctx.currentPlayer}…
             </Alert>
           )

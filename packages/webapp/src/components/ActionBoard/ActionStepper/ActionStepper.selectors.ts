@@ -22,16 +22,27 @@ export interface GameContextProps {
   onMirror: ActionMoves['mirror'];
   onEndActionTurn: () => void;
   occupiedMirrorableActions: MirrorableActionName[];
+  /** True when 四大自由 is active and the last player still needs to discard 2 job cards. */
+  hasPendingDiscard: boolean;
+  /** True when the current player is the last in this round. */
+  isLastPlayerInRound: boolean;
 }
 
+type ExtendedMoves = ActionMoves & {
+  endActionTurn: () => void;
+};
+
 export const mapGameContextToProps = (gameContext: GameContext): GameContextProps => {
-  const { G, events, moves } = gameContext as GameContext & { moves: ActionMoves };
+  const { G, ctx, moves } = gameContext as GameContext & { moves: ExtendedMoves };
   const getMaxContributionValue = (actionName: MirrorableActionName) => RuleSelector.getMaxContributionValue(G.rules, actionName);
 
   const mirrorableNames: MirrorableActionName[] = ['createProject', 'recruit', 'contributeOwnedProjects', 'contributeJoinedProjects', 'removeAndRefillJobs'];
   const occupiedMirrorableActions = mirrorableNames.filter(
     (name) => ActionSlotSelector.isOccupied(G.table.actionSlots[name])
   );
+
+  const isLastPlayerInRound = ctx.playOrderPos === ctx.numPlayers - 1;
+  const hasPendingDiscard = G.table.fourFreedomsPendingDiscards.length > 0;
 
   return {
     getMaxContributionValue,
@@ -41,8 +52,11 @@ export const mapGameContextToProps = (gameContext: GameContext): GameContextProp
     onContributeJoinedProjects: moves.contributeJoinedProjects,
     onRemoveAndRefillJobs: moves.removeAndRefillJobs,
     onMirror: moves.mirror,
-    onEndActionTurn: events.endTurn!,
+    // Routes through the game move so the server can intercept when a discard is pending.
+    onEndActionTurn: moves.endActionTurn,
     occupiedMirrorableActions,
+    hasPendingDiscard,
+    isLastPlayerInRound,
   };
 }
 

@@ -75,7 +75,7 @@ const theOnlyPlayerWithTheLowestVictoryPointsGetsOneExtraActionToken: EventCardH
   },
 };
 
-// 四大自由: Immediately add 2 more job cards; at end of round, remove 2 (auto-discard last 2 for MVP)
+// 四大自由: Immediately add 2 more job cards; at end of round, last player chooses 2 to discard.
 const addTwoWorkerSlots: EventCardHandler = {
   start: ({ G }) => {
     const extendedMax = RuleSelector.getTableMaxJobSlots(G.rules) + 2;
@@ -83,16 +83,23 @@ const addTwoWorkerSlots: EventCardHandler = {
     const newCards = DeckSelector.peek(G.decks.jobs, 2);
     DeckMutator.draw(G.decks.jobs, 2);
     JobSlotsMutator.addJobCards(G.table.jobSlots, newCards);
+    // Record the added card IDs so the UI can prompt the last player to choose 2 to discard.
+    G.table.fourFreedomsPendingDiscards = newCards.map(c => c.id);
   },
   end: ({ G }) => {
     const normalMax = RuleSelector.getTableMaxJobSlots(G.rules) - 2;
     RuleMutator.setTableMaxJobSlots(G.rules, normalMax);
-    // Auto-discard the last 2 job cards (simplification; rulebook says last player chooses)
-    const excess = G.table.jobSlots.slice(normalMax);
-    if (excess.length > 0) {
-      JobSlotsMutator.removeJobCards(G.table.jobSlots, excess);
-      DeckMutator.discard(G.decks.jobs, excess);
+    // Normally the last player discards via discardExcessJobCards move (fourFreedomsPendingDiscards
+    // already cleared). Fallback: auto-discard last 2 cards if somehow still pending.
+    if (G.table.fourFreedomsPendingDiscards.length > 0) {
+      const excess = G.table.jobSlots.slice(normalMax);
+      if (excess.length > 0) {
+        JobSlotsMutator.removeJobCards(G.table.jobSlots, excess);
+        DeckMutator.discard(G.decks.jobs, excess);
+      }
+      G.table.fourFreedomsPendingDiscards = [];
     }
+    G.table.actionPhaseDone = false;
   },
 };
 

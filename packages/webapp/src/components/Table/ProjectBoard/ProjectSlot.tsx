@@ -70,6 +70,7 @@ const ProjectSlot: React.FC<Props> = ({
       <StyledPaper
         data-testid={slot.id}
         data-requirements={requiredJobs.join(',')}
+        data-job-requirements={JSON.stringify(requirements)}
         onClick={onProjectSlotClick}
         className={selected ? 'selected' : ''}
       >

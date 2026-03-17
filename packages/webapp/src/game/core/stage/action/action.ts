@@ -4,6 +4,8 @@ import { contributeOwnedProjects } from "./move/contributeOwnedProjects";
 import { contributeJoinedProjects } from "./move/contributeJoinedProjects";
 import { removeAndRefillJobs } from "./move/removeAndRefillJobs";
 import { mirror } from "./move/mirror";
+import { endActionTurn } from "./move/endActionTurn";
+import { discardExcessJobCards } from "./move/discardExcessJobCards";
 import { GameStageConfig } from "@/game/core/type";
 import { INVALID_MOVE } from 'boardgame.io/core';
 
@@ -42,6 +44,14 @@ export const action: GameStageConfig = {
     mirror: {
       client: false,
       move: withErrorBoundary(mirror, INVALID_MOVE),
+    },
+    endActionTurn: {
+      client: false,
+      move: withErrorBoundary(endActionTurn, INVALID_MOVE),
+    },
+    discardExcessJobCards: {
+      client: false,
+      move: withErrorBoundary(discardExcessJobCards, INVALID_MOVE),
     },
   },
 };
