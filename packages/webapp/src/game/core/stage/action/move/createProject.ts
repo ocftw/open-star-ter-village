@@ -59,8 +59,12 @@ export const createProject: GameMove<CreateProject> = ({ G, playerID }, projectC
   DeckMutator.discard(G.decks.jobs, [jobCard]);
 
   // check job card is required in project
-  if (!Object.keys(projectCard.requirements).includes(jobCard.name)) {
+  const ignoreRequirement = G.rules.event?.ignoreFirstWorkerRequirement ?? false;
+  if (!ignoreRequirement && !Object.keys(projectCard.requirements).includes(jobCard.name)) {
     throw new Error('Job card is not required in project');
+  }
+  if (ignoreRequirement) {
+    G.rules.event!.ignoreFirstWorkerRequirement = false;
   }
 
   // assign worker token to job slot

@@ -37,6 +37,10 @@ export const settleProjects: GameHookHandler = (({ G }) => {
     const ownerBonusPoints = RuleSelector.getSettlementProjectOwnerVictoryPoints(G.rules);
     const { owner, numWorkerToken } = ProjectSlotSelector.getOwner(projectSlot);
     ScoreBoardMutator.add(G.table.scoreBoard, owner, ownerBonusPoints);
+    const extraOwnerPoints = G.rules.event?.extraOwnerVictoryPoints ?? 0;
+    if (extraOwnerPoints > 0) {
+      ScoreBoardMutator.add(G.table.scoreBoard, owner, extraOwnerPoints);
+    }
     // return owner token
     PlayersMutator.addWorkerTokens(G.players, owner, numWorkerToken);
     ProjectSlotMutator.unassignOwner(projectSlot);

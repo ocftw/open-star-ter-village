@@ -18,6 +18,9 @@ const selectors = {
   getPlayerPoints: (state: ScoreBoard, playerId: PlayerID): number => {
     return state[playerId];
   },
+  getAllPlayerPoints: (state: ScoreBoard): Record<PlayerID, number> => {
+    return { ...state };
+  },
   getWinner: (state: ScoreBoard): PlayerID => {
     let winner: PlayerID = '';
     let maxPoints = -Infinity;

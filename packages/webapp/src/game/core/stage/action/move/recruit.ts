@@ -46,6 +46,14 @@ export const recruit: GameMove<Recruit> = ({ G, playerID }, jobCardId, projectSl
   JobSlotsMutator.removeJobCard(G.table.jobSlots, jobCard);
   DeckMutator.discard(G.decks.jobs, [jobCard]);
 
+  const ignoreRequirement = G.rules.event?.ignoreFirstWorkerRequirement ?? false;
+  if (!ignoreRequirement && !Object.keys(activeProject.card!.requirements).includes(jobCard.name)) {
+    throw new Error('Job card is not required in project');
+  }
+  if (ignoreRequirement) {
+    G.rules.event!.ignoreFirstWorkerRequirement = false;
+  }
+
   const jobContribution = ProjectSlotSelector.getJobContribution(activeProject, jobCard.name);
   // Check job requirment is not fulfilled yet
   if (jobContribution >= activeProject.card!.requirements[jobCard.name]) {

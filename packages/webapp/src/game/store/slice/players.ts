@@ -80,6 +80,10 @@ const resetActionTokens = (state: Players, playerId: PlayerID, numActions: numbe
   state[playerId].token.actions = numActions;
 };
 
+const addActionTokens = (state: Players, playerId: PlayerID, numActions: number): void => {
+  state[playerId].token.actions += numActions;
+};
+
 const PlayersSlice = {
   initialState,
   mutators: {
@@ -91,6 +95,7 @@ const PlayersSlice = {
     resetWorkerTokens,
     useActionTokens,
     resetActionTokens,
+    addActionTokens,
   },
   selectors: {
     getNumWorkerTokens,

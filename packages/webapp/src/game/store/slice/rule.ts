@@ -53,6 +53,10 @@ export interface Rule {
     projectOwnerVictoryPoints: number;
     lastContributorVictoryPoints: number;
   },
+  event?: {
+    extraOwnerVictoryPoints?: number;
+    ignoreFirstWorkerRequirement?: boolean;
+  },
 }
 
 const initialState = (): Rule => {
@@ -119,6 +123,32 @@ const initialState = (): Rule => {
 
 const setSettlementLastContributorVictoryPoints = (rule: Rule, victoryPoints: number): void => {
   rule.settlement.lastContributorVictoryPoints = victoryPoints;
+};
+
+const setSettlementLeftoverActionTokensVictoryPoints = (rule: Rule, victoryPoints: number): void => {
+  rule.settlement.leftoverActionTokensVictoryPoints = victoryPoints;
+};
+
+const incrementContributeOwnedProjectsMaxContributionValue = (rule: Rule): void => {
+  rule.action.contributeOwnedProjects.maxContributionValue += 1;
+};
+
+const decrementContributeOwnedProjectsMaxContributionValue = (rule: Rule): void => {
+  rule.action.contributeOwnedProjects.maxContributionValue -= 1;
+};
+
+const setEventExtraOwnerVictoryPoints = (rule: Rule, points: number): void => {
+  if (!rule.event) {
+    rule.event = {};
+  }
+  rule.event.extraOwnerVictoryPoints = points;
+};
+
+const setEventIgnoreFirstWorkerRequirement = (rule: Rule, value: boolean): void => {
+  if (!rule.event) {
+    rule.event = {};
+  }
+  rule.event.ignoreFirstWorkerRequirement = value;
 };
 
 const isStandardRule = (rule: Rule): boolean => {
@@ -229,6 +259,11 @@ const RuleSlice = {
   initialState,
   mutators: {
     setSettlementLastContributorVictoryPoints,
+    setSettlementLeftoverActionTokensVictoryPoints,
+    incrementContributeOwnedProjectsMaxContributionValue,
+    decrementContributeOwnedProjectsMaxContributionValue,
+    setEventExtraOwnerVictoryPoints,
+    setEventIgnoreFirstWorkerRequirement,
   },
   selectors: {
     isStandardRule,
