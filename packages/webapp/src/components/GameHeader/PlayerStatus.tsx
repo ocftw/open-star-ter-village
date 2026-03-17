@@ -11,7 +11,7 @@ type PlayerStatusProps = {
 
 const PlayerStatus: React.FC<PlayerStatusProps> = ({ name, workerTokens, actionTokens, score }) => {
   return (
-    <Grid container direction="row" alignItems="center" spacing={1}>
+    <Grid container direction="row" alignItems="center" spacing={1} data-testid={`player-status-${name}`}>
       <Grid item>
         <Typography variant="body2" style={{ marginRight: '8px' }}>{name}</Typography>
       </Grid>

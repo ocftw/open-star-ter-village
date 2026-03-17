@@ -13,7 +13,9 @@
     "start:next": "next start",
     "start:server": "node -r tsconfig-paths/register dist/server.js",
     "lint": "next lint",
-    "test": "jest"
+    "test": "jest",
+    "e2e": "PLAYWRIGHT_BROWSERS_PATH=/tmp/pw-browsers playwright test",
+    "e2e:report": "PLAYWRIGHT_BROWSERS_PATH=/tmp/pw-browsers playwright show-report"
   },
   "dependencies": {
     "@emotion/cache": "^11.11.0",
@@ -32,6 +34,7 @@
     "tsconfig-paths": "^4.2.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.14.0",
     "@types/react": "^18",

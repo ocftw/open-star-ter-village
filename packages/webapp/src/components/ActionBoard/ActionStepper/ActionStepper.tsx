@@ -162,11 +162,11 @@ const ActionStepper: React.FC<Props> = ({
         ))}
       </Stepper>
       <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
-        <Button color="inherit" onClick={handleBack} sx={{ mr: 1 }}>
+        <Button data-testid="stepper-back" color="inherit" onClick={handleBack} sx={{ mr: 1 }}>
           {currentStep === 0 ? 'Cancel' : 'Back'}
         </Button>
-        <Box sx={{ flex: '1 1 auto' }}>{progressMessage}</Box>
-        <Button disabled={!isNextEnabled} onClick={handleNext}>
+        <Box data-testid="stepper-progress" sx={{ flex: '1 1 auto' }}>{progressMessage}</Box>
+        <Button data-testid="stepper-next" disabled={!isNextEnabled} onClick={handleNext}>
           {currentStep === steps.length - 1 ? 'Confirm' : 'Next'}
         </Button>
       </Box>

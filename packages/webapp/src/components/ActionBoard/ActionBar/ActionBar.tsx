@@ -50,6 +50,7 @@ const ActionBar: React.FC<Props> = ({ isActionBarVisible, actionsState, onAction
           action === UserActionMoves.EndActionTurn ? (
             <EndActionButton
               key={action}
+              data-testid={`action-btn-${action}`}
               onClick={() => onActionClick(action)}
             >
               End Action Turn
@@ -57,6 +58,7 @@ const ActionBar: React.FC<Props> = ({ isActionBarVisible, actionsState, onAction
           ) : (
             <StyledButton
               key={action}
+              data-testid={`action-btn-${action}`}
               className={state}
               onClick={() => state === ActionMoveState.Available && onActionClick(action as UserActionMoves)}
               disabled={state === ActionMoveState.Disabled}

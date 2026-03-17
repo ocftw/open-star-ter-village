@@ -36,6 +36,8 @@ const HandProjectCard: React.FC<{ card: ProjectCard; }> = ({ card }) => {
   return (
     <Grid item>
       <SelectablePaper
+        data-testid={`hand-card-${card.id}`}
+        data-requirements={Object.keys(card.requirements).join(',')}
         onClick={() => handleSelect(card.id)}
         className={selected ? 'selected' : ''}
       >

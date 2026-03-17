@@ -17,6 +17,9 @@
     "all:start": "yarn workspaces foreach -pt run start",
     "all:lint": "yarn workspaces foreach -pt run lint"
   },
+  "resolutions": {
+    "reselect": "^5.1.0"
+  },
   "devDependencies": {
     "@babel/preset-env": "^7.29.2",
     "@babel/preset-typescript": "^7.28.5",

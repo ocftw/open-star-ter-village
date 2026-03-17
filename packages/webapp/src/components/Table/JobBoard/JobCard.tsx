@@ -39,7 +39,7 @@ const JobCard: React.FC<JobCardProps> = ({ id, title }) => {
   };
 
   return (
-    <StyledPaper onClick={handleSelect} className={selected ? 'selected' : ''}>
+    <StyledPaper data-testid={`job-card-${id}`} onClick={handleSelect} className={selected ? 'selected' : ''}>
       <Avatar title={title} />
       <Typography style={{ marginLeft: '16px' }} variant="h6">{title}</Typography>
     </StyledPaper>

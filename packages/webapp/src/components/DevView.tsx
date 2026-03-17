@@ -15,6 +15,8 @@ function a11yProps(index: number) {
 
 const DevView: React.FC<{ isLocal: boolean }> = ({ isLocal }) => {
   const [value, setValue] = useState(0);
+  // Use a unique matchID per page load so each navigation starts a fresh game.
+  const [matchID] = useState(() => `dev-${Date.now()}`);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -31,16 +33,16 @@ const DevView: React.FC<{ isLocal: boolean }> = ({ isLocal }) => {
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>
-        <Boardgame isLocal={isLocal} matchID="dev" playerID="0" />
+        <Boardgame isLocal={isLocal} matchID={matchID} playerID="0" />
       </TabPanel>
       <TabPanel value={value} index={1}>
-        <Boardgame isLocal={isLocal} matchID="dev" playerID="1" />
+        <Boardgame isLocal={isLocal} matchID={matchID} playerID="1" />
       </TabPanel>
       <TabPanel value={value} index={2}>
-        <Boardgame isLocal={isLocal} matchID="dev" playerID="2" />
+        <Boardgame isLocal={isLocal} matchID={matchID} playerID="2" />
       </TabPanel>
       <TabPanel value={value} index={3}>
-        <Boardgame isLocal={isLocal} matchID="dev" />
+        <Boardgame isLocal={isLocal} matchID={matchID} />
       </TabPanel>
     </>
   );

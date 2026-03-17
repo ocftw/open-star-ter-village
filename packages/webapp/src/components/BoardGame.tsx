@@ -40,6 +40,7 @@ const Boardgame: React.FC<Props> = ({ isLocal, ...props }) => {
     board: Board,
     multiplayer,
     numPlayers: 3,
+    debug: false,
   })
   return <BoardgameComponent {...props} />;
 }

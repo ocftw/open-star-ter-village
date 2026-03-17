@@ -130,7 +130,7 @@ ctx.playOrder = ctx.playOrder.slice(1).concat(ctx.playOrder[0]);
 
 ---
 
-### Task 8 — End-game scoring for unfinished projects 🔲 In Progress
+### Task 8 — End-game scoring for unfinished projects ✅ Done
 **Files:** `packages/webapp/src/game/store/slice/projectBoard.ts`, `packages/webapp/src/game/core/handler/scoreUnfinishedProjects.ts`, `packages/webapp/src/game/core/handler/eventCardHandlers.ts`
 
 **Rule:** When the game ends, each player scores VP from their contribution points on unfinished projects:
@@ -139,11 +139,10 @@ ctx.playOrder = ctx.playOrder.slice(1).concat(ctx.playOrder[0]);
 - Remainder (fewer than 2) is discarded
 
 **Implementation steps:**
-- [ ] Add `getUnfinished` selector to `projectBoard.ts` — returns project slots that have a card but are not yet requirement-fulfilled
-- [ ] Create `packages/webapp/src/game/core/handler/scoreUnfinishedProjects.ts` — iterates unfinished slots, accumulates each player's contribution points, scores `Math.floor(total / 2)` VP per player
-- [ ] Call `scoreUnfinishedProjects` inside `endGameAfterThisRound.end` in `eventCardHandlers.ts`, before `events.endGame()`
-- [ ] Add unit tests covering: no unfinished projects, one unfinished project with contributors, multiple unfinished projects, remainder discarded
-- [ ] Run tests, lint, build, commit
+- [x] Add `getUnfinished` selector to `projectBoard.ts`
+- [x] Create `scoreUnfinishedProjects.ts` handler
+- [x] Call it in `endGameAfterThisRound.end` before `events.endGame()`
+- [x] 4 unit tests added — 43/43 passing
 
 ---
 
