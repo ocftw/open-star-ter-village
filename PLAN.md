@@ -3,7 +3,7 @@
 **Branch:** `feature/align-game-rule-to-released-version`
 **PR:** #335 (DRAFT)
 **Last updated:** 2026-03-17
-**Commit:** `cf16dcf`
+**Commit:** `12caa1a`
 
 ## Context
 
@@ -162,8 +162,58 @@ ctx.playOrder = ctx.playOrder.slice(1).concat(ctx.playOrder[0]);
 
 ---
 
+### Task 10 — Enable and fix mirror (Doin' Overtime) action ✅ Done
+**Files:** `rule.ts`, `mirror.ts`, `game.test.ts`
+
+Three bugs fixed in `mirror.ts`:
+1. Inverted cost guard (`<= mirrorActionCost` → `> mirrorActionCost`)
+2. Missing "already done" check — target slot must be occupied before mirroring
+3. Slot reset — temporarily frees target slot so sub-move's `isOccupied` guard passes; sub-move re-occupies it
+
+Also enabled mirror in `rule.ts` (`available: true`). 4 unit tests added — 49/49 passing.
+
+---
+
+### Task 11 — UI: mirror flow, event banner, game end screen, turn indicator ✅ Done
+**Files:** `actionStepSlice.ts`, `ActionStepper.selectors.ts`, `ActionStepper.tsx`, `Table.tsx`, `BoardGame.tsx`, `eventCardHandlers.ts`
+
+| Feature | Implementation |
+|---|---|
+| **Mirror UI** | 2-step wizard: step 0 shows chips for occupied action slots (inline in stepper); step 1 activates same board elements as the mirrored action; confirm calls `onMirror(target, ...params)` |
+| **Event card banner** | `Table.tsx` renders an MUI `Alert` with active event `name` + `description` when `G.table.eventSlot !== null` |
+| **Game end screen** | `BoardGame.tsx` renders an MUI `Dialog` with sorted final scores and winner highlight when `ctx.gameover` is set |
+| **Turn indicator** | Non-current players see a "Waiting for Player X…" `Alert` instead of the action bar |
+
+Also fixed: `scoreUnfinishedProjects` was passed `{ G, events }` instead of the full `FnContext` — corrected to pass the whole context object.
+
+---
+
+### Task 12 — Refactor ActionStepper: ActionConfig interface ✅ Done
+**Files:** `ActionStepper/actionConfig.ts` (new), `ActionStepper.selectors.ts`, `ActionStepper.tsx`, `actionStepSlice.ts`
+
+**Problem:** Mirror implementation used 6 separate switch-case helpers that each repeated the same 5-case pattern.
+
+**Solution:** Introduced `ActionConfig` interface in `actionConfig.ts`:
+
+```ts
+interface ActionConfig {
+  displayName: string;
+  steps: { name: string }[];
+  activateBoard(activators: ActionBoardActivators): void;
+  isStepValid(state: ActionSelectionState): boolean;
+  progressMessage(state: ActionSelectionState): string;
+  getParams(state: ActionSelectionState): unknown[];
+  execute(executors: ActionExecutors, state: ActionSelectionState): void;
+}
+```
+
+One config object per mirrorable action in `ACTION_CONFIGS: Record<MirrorableActionName, ActionConfig>`. Mirror step 1 delegates directly to `ACTION_CONFIGS[mirrorTarget]` — no duplicated switch logic. `MirrorableActionName = Exclude<ActionMoveName, 'mirror'>` flows through the entire chain for type-safe indexing.
+
+`ActionStepper.tsx` now builds three shared context objects (`selectionState`, `activators`, `executors`) and calls config methods directly.
+
+---
+
 ## Open Questions
 
-1. **四大自由 (add_two_worker_slots)** — does the last player interactively choose which 2 job cards to remove, or should we auto-discard (e.g. the 2 newest)?
-2. **mirror action** — currently disabled (`available: false`). Is this intentional for now, or should it be enabled?
-3. **Standard mode** — out of scope for MVP (Simplified Mode only).
+1. **四大自由 (add_two_worker_slots)** — MVP auto-discards last 2 cards; full rule requires last player to interactively choose. Needs product decision.
+2. **Standard mode** — out of scope for MVP (Simplified Mode only).
