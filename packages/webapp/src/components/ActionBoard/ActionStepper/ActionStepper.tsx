@@ -4,18 +4,9 @@ import { connect } from 'react-redux';
 import { StateProps, DispatchProps, GameContextProps, mapStateToProps, mapDispatchToProps, mapGameContextToProps } from './ActionStepper.selectors';
 import { connectGameContext } from '../../GameContextHelpers';
 import { UserActionMoves } from '@/lib/reducers/actionStepSlice';
-import { ActionMoveName } from '@/game/core/stage/action/move/type';
+import { ACTION_CONFIGS, ActionBoardActivators, ActionExecutors, ActionSelectionState, MirrorableActionName } from './actionConfig';
 
 type Props = StateProps & DispatchProps & GameContextProps;
-
-const actionDisplayName: Record<ActionMoveName, string> = {
-  createProject: 'Create Project',
-  recruit: 'Recruit',
-  contributeOwnedProjects: 'Contribute (Own)',
-  contributeJoinedProjects: 'Contribute (Joined)',
-  removeAndRefillJobs: 'Remove & Refill Jobs',
-  mirror: 'Mirror',
-};
 
 const ActionStepper: React.FC<Props> = ({
   currentStep,
@@ -49,116 +40,68 @@ const ActionStepper: React.FC<Props> = ({
   resetProjectSlotSelection,
   resetContribution,
 }) => {
-  const activateBoardForAction = (actionName: ActionMoveName) => {
-    switch (actionName) {
-      case 'createProject':
-        setHandPorjectCardsInteractive();
-        setJobSlotsInteractive();
-        break;
-      case 'recruit':
-        setJobSlotsInteractive();
-        setProjectSlotsInteractive();
-        break;
-      case 'contributeOwnedProjects':
-        setOwnedContributionInteractive();
-        break;
-      case 'contributeJoinedProjects':
-        setJoinedContributionInteractive();
-        break;
-      case 'removeAndRefillJobs':
-        setJobSlotsInteractive();
-        break;
-    }
+  const activators: ActionBoardActivators = {
+    setHandPorjectCardsInteractive,
+    setJobSlotsInteractive,
+    setProjectSlotsInteractive,
+    setOwnedContributionInteractive,
+    setJoinedContributionInteractive,
+  };
+
+  const executors: ActionExecutors = {
+    createProject: onCreateProject,
+    recruit: onRecruit,
+    contributeOwnedProjects: onContributeOwnedProjects,
+    contributeJoinedProjects: onContributeJoinedProjects,
+    removeAndRefillJobs: onRemoveAndRefillJobs,
+  };
+
+  const selectionState: ActionSelectionState = {
+    selectedHandProjectCards,
+    selectedJobSlots,
+    selectedProjectSlots,
+    contributions,
+    totalContributionValue,
+    getMaxContributionValue,
+  };
+
+  const resetSelections = () => {
+    resetHandProjectCardSelection();
+    resetJobSlotSelection();
+    resetProjectSlotSelection();
+    resetContribution();
   };
 
   useEffect(() => {
-    switch (currentAction) {
-      case null:
-        resetHandProjectCardSelection();
-        resetJobSlotSelection();
-        resetProjectSlotSelection();
-        resetContribution();
-        break;
-      case UserActionMoves.CreateProject:
-        if (currentStep === 0) {
-          setHandPorjectCardsInteractive();
-          setJobSlotsInteractive();
-        }
-        break;
-      case UserActionMoves.Recruit:
-        if (currentStep === 0) {
-          setJobSlotsInteractive();
-          setProjectSlotsInteractive();
-        }
-        break;
-      case UserActionMoves.ContributeOwnedProjects:
-        if (currentStep === 0) {
-          setOwnedContributionInteractive();
-        }
-        break;
-      case UserActionMoves.ContributeJoinedProjects:
-        if (currentStep === 0) {
-          setJoinedContributionInteractive();
-        }
-        break;
-      case UserActionMoves.RemoveAndRefillJobs:
-        if (currentStep === 0) {
-          setJobSlotsInteractive();
-        }
-        break;
-      case UserActionMoves.Mirror:
-        if (currentStep === 1 && mirrorTarget) {
-          activateBoardForAction(mirrorTarget);
-        }
-        break;
+    if (!currentAction) {
+      resetSelections();
+      return;
+    }
+    if (currentAction === UserActionMoves.Mirror) {
+      if (currentStep === 1 && mirrorTarget) {
+        ACTION_CONFIGS[mirrorTarget].activateBoard(activators);
+      }
+      return;
+    }
+    if (currentAction !== UserActionMoves.EndActionTurn) {
+      ACTION_CONFIGS[currentAction as MirrorableActionName].activateBoard(activators);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentAction, currentStep, mirrorTarget]);
 
-  const getMirrorParams = (): any[] => {
-    switch (mirrorTarget) {
-      case 'createProject': return [selectedHandProjectCards[0], selectedJobSlots[0]];
-      case 'recruit': return [selectedJobSlots[0], selectedProjectSlots[0]];
-      case 'contributeOwnedProjects': return [contributions];
-      case 'contributeJoinedProjects': return [contributions];
-      case 'removeAndRefillJobs': return [selectedJobSlots];
-      default: return [];
-    }
-  };
-
   const handleNext = () => {
     if (currentStep === steps.length - 1) {
-      switch (currentAction) {
-        case UserActionMoves.CreateProject:
-          onCreateProject(selectedHandProjectCards[0], selectedJobSlots[0]);
-          break;
-        case UserActionMoves.Recruit:
-          onRecruit(selectedJobSlots[0], selectedProjectSlots[0]);
-          break;
-        case UserActionMoves.ContributeOwnedProjects:
-          onContributeOwnedProjects(contributions);
-          break;
-        case UserActionMoves.ContributeJoinedProjects:
-          onContributeJoinedProjects(contributions);
-          break;
-        case UserActionMoves.RemoveAndRefillJobs:
-          onRemoveAndRefillJobs(selectedJobSlots);
-          break;
-        case UserActionMoves.EndActionTurn:
-          onEndActionTurn();
-          break;
-        case UserActionMoves.Mirror:
-          onMirror(mirrorTarget!, ...getMirrorParams());
-          break;
+      if (currentAction === UserActionMoves.EndActionTurn) {
+        onEndActionTurn();
+      } else if (currentAction === UserActionMoves.Mirror && mirrorTarget) {
+        onMirror(mirrorTarget, ...ACTION_CONFIGS[mirrorTarget].getParams(selectionState));
+      } else if (currentAction) {
+        ACTION_CONFIGS[currentAction as MirrorableActionName].execute(executors, selectionState);
       }
       resetAction();
     } else {
       if (currentAction === UserActionMoves.Mirror && currentStep === 0) {
-        // Clear board selections before entering step 1
-        resetHandProjectCardSelection();
-        resetJobSlotSelection();
-        resetProjectSlotSelection();
-        resetContribution();
+        resetSelections();
       }
       setActionStep(currentStep + 1);
     }
@@ -170,87 +113,34 @@ const ActionStepper: React.FC<Props> = ({
     } else {
       if (currentAction === UserActionMoves.Mirror) {
         setMirrorTarget(null);
-        resetHandProjectCardSelection();
-        resetJobSlotSelection();
-        resetProjectSlotSelection();
-        resetContribution();
+        resetSelections();
       }
       setActionStep(currentStep - 1);
     }
   };
 
-  const isMirrorStep1Valid = (): boolean => {
-    switch (mirrorTarget) {
-      case 'createProject': return selectedHandProjectCards.length === 1 && selectedJobSlots.length === 1;
-      case 'recruit': return selectedJobSlots.length === 1 && selectedProjectSlots.length === 1;
-      case 'contributeOwnedProjects': {
-        const max = getMaxContributionValue(UserActionMoves.ContributeOwnedProjects);
-        return 0 < totalContributionValue && totalContributionValue <= max;
-      }
-      case 'contributeJoinedProjects': {
-        const max = getMaxContributionValue(UserActionMoves.ContributeJoinedProjects);
-        return 0 < totalContributionValue && totalContributionValue <= max;
-      }
-      case 'removeAndRefillJobs': return selectedJobSlots.length > 0;
-      default: return false;
-    }
-  };
-
   const getIsNextEnabled = (): boolean => {
-    switch (currentAction) {
-      case UserActionMoves.CreateProject:
-        return selectedHandProjectCards.length === 1 && selectedJobSlots.length === 1;
-      case UserActionMoves.Recruit:
-        return selectedJobSlots.length === 1 && selectedProjectSlots.length === 1;
-      case UserActionMoves.ContributeOwnedProjects: {
-        const maxOwned = getMaxContributionValue(UserActionMoves.ContributeOwnedProjects);
-        return 0 < totalContributionValue && totalContributionValue <= maxOwned;
-      }
-      case UserActionMoves.ContributeJoinedProjects: {
-        const maxJoined = getMaxContributionValue(UserActionMoves.ContributeJoinedProjects);
-        return 0 < totalContributionValue && totalContributionValue <= maxJoined;
-      }
-      case UserActionMoves.RemoveAndRefillJobs:
-        return selectedJobSlots.length > 0;
-      case UserActionMoves.Mirror:
-        if (currentStep === 0) return mirrorTarget !== null;
-        return isMirrorStep1Valid();
-      default:
-        return true;
+    if (!currentAction) return false;
+    if (currentAction === UserActionMoves.EndActionTurn) return true;
+    if (currentAction === UserActionMoves.Mirror) {
+      if (currentStep === 0) return mirrorTarget !== null;
+      return mirrorTarget ? ACTION_CONFIGS[mirrorTarget].isStepValid(selectionState) : false;
     }
-  };
-
-  const getMirrorStep1ProgressMessage = (): string => {
-    switch (mirrorTarget) {
-      case 'createProject': return `Select ${selectedHandProjectCards.length} Hand Project Card, Select ${selectedJobSlots.length} Job Slot`;
-      case 'recruit': return `Select ${selectedJobSlots.length} Job Slot, Select ${selectedProjectSlots.length} Project Slot`;
-      case 'contributeOwnedProjects': return `Contribute ${totalContributionValue} / ${getMaxContributionValue(UserActionMoves.ContributeOwnedProjects)} to Owned Projects`;
-      case 'contributeJoinedProjects': return `Contribute ${totalContributionValue} / ${getMaxContributionValue(UserActionMoves.ContributeJoinedProjects)} to Joined Projects`;
-      case 'removeAndRefillJobs': return `Select ${selectedJobSlots.length} Job Slot`;
-      default: return '';
-    }
+    return ACTION_CONFIGS[currentAction as MirrorableActionName].isStepValid(selectionState);
   };
 
   const getProgressMessage = (): string => {
-    switch (currentAction) {
-      case UserActionMoves.CreateProject:
-        return `Select ${selectedHandProjectCards.length} Hand Project Card, Select ${selectedJobSlots.length} Job Slot`;
-      case UserActionMoves.Recruit:
-        return `Select ${selectedJobSlots.length} Job Slot, Select ${selectedProjectSlots.length} Project Slot`;
-      case UserActionMoves.ContributeOwnedProjects:
-        return `Contribute ${totalContributionValue} / ${getMaxContributionValue(UserActionMoves.ContributeOwnedProjects)} to Owned Projects`;
-      case UserActionMoves.ContributeJoinedProjects:
-        return `Contribute ${totalContributionValue} / ${getMaxContributionValue(UserActionMoves.ContributeJoinedProjects)} to Joined Projects`;
-      case UserActionMoves.RemoveAndRefillJobs:
-        return `Select ${selectedJobSlots.length} Job Slot`;
-      case UserActionMoves.EndActionTurn:
-        return 'Confirm End Action Turn';
-      case UserActionMoves.Mirror:
-        if (currentStep === 0) return mirrorTarget ? `Repeating: ${actionDisplayName[mirrorTarget]}` : 'Select an action to repeat';
-        return getMirrorStep1ProgressMessage();
-      default:
-        return '';
+    if (!currentAction) return '';
+    if (currentAction === UserActionMoves.EndActionTurn) return 'Confirm End Action Turn';
+    if (currentAction === UserActionMoves.Mirror) {
+      if (currentStep === 0) {
+        return mirrorTarget
+          ? `Repeating: ${ACTION_CONFIGS[mirrorTarget].displayName}`
+          : 'Select an action to repeat';
+      }
+      return mirrorTarget ? ACTION_CONFIGS[mirrorTarget].progressMessage(selectionState) : '';
     }
+    return ACTION_CONFIGS[currentAction as MirrorableActionName].progressMessage(selectionState);
   };
 
   const isNextEnabled = getIsNextEnabled();
@@ -280,7 +170,7 @@ const ActionStepper: React.FC<Props> = ({
               {occupiedMirrorableActions.map((actionName) => (
                 <Chip
                   key={actionName}
-                  label={actionDisplayName[actionName]}
+                  label={ACTION_CONFIGS[actionName].displayName}
                   onClick={() => setMirrorTarget(actionName)}
                   color={mirrorTarget === actionName ? 'primary' : 'default'}
                   variant={mirrorTarget === actionName ? 'filled' : 'outlined'}

@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ActionMoveName } from '@/game/core/stage/action/move/type';
+import { MirrorableActionName } from '@/components/ActionBoard/ActionStepper/actionConfig';
 
 export enum UserActionMoves {
   CreateProject = 'createProject',
@@ -14,7 +14,7 @@ export enum UserActionMoves {
 interface ActionStepState {
   currentStep: number;
   currentAction: UserActionMoves | null;
-  mirrorTarget: ActionMoveName | null;
+  mirrorTarget: MirrorableActionName | null;
   interactiveState: {
     handProjectCards: boolean;
     jobSlots: boolean;
@@ -55,7 +55,7 @@ const actionStepSlice = createSlice({
       state.mirrorTarget = null;
       state.interactiveState = initialInteractiveState;
     },
-    setMirrorTarget: (state, action: PayloadAction<ActionMoveName | null>) => {
+    setMirrorTarget: (state, action: PayloadAction<MirrorableActionName | null>) => {
       state.mirrorTarget = action.payload;
     },
     setHandPorjectCardsInteractive: (state) => {
@@ -77,7 +77,7 @@ const actionStepSlice = createSlice({
   selectors: {
     getCurrentStep: (state: ActionStepState) => state.currentStep,
     getCurrentAction: (state: ActionStepState) => state.currentAction,
-    getMirrorTarget: (state: ActionStepState) => state.mirrorTarget,
+    getMirrorTarget: (state: ActionStepState): MirrorableActionName | null => state.mirrorTarget,
     isHandProjectCardsInteractive: (state: ActionStepState) => state.interactiveState.handProjectCards,
     isJobSlotsInteractive: (state: ActionStepState) => state.interactiveState.jobSlots,
     isProjectSlotsInteractive: (state: ActionStepState) => state.interactiveState.projectSlots,
