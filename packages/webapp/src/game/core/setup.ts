@@ -106,8 +106,9 @@ export const setup: SetupFn<GameState> = ({ ctx, random }, setupData?: GameSetup
   // Support a demo/test mode: when the URL contains ?demo=four-freedoms, force
   // 四大自由 as the first event card so screenshots can be captured deterministically.
   // This is only active in development (Local transport runs in the browser).
-  const demoParam = typeof window !== 'undefined'
-    ? new URLSearchParams(window.location.search).get('demo')
+  const _window = (globalThis as { window?: { location: { search: string } } }).window;
+  const demoParam = _window !== undefined
+    ? new URLSearchParams(_window.location.search).get('demo')
     : null;
   const forcedFirstEvent = setupData?.forcedFirstEvent
     ?? (demoParam === 'four-freedoms' ? 'add_two_worker_slots' : undefined);
