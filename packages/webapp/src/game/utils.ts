@@ -27,3 +27,4 @@ export function filterInplace<T>(array: T[], condition: (t: T, i: number, thisAr
   }
   array.length = writePtr;
 }
+
