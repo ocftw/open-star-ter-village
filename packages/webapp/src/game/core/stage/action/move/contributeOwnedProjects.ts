@@ -16,12 +16,14 @@ export const contributeOwnedProjects: GameMove<ContributeOwnedProjects> = ({ G, 
     throw new Error('Action slot is occupied');
   }
 
-  console.log('use action tokens')
+  // Validate token balance before mutating state
   const contributeActionCosts = RuleSelector.getActionTokenCost(G.rules, 'contributeOwnedProjects');
-  PlayersMutator.useActionTokens(G.players, playerID, contributeActionCosts);
-  if (PlayersSelector.getNumActionTokens(G.players, playerID) < 0) {
+  if (PlayersSelector.getNumActionTokens(G.players, playerID) < contributeActionCosts) {
     throw new Error('Not enough action tokens');
   }
+
+  // All token checks passed — now mutate state
+  PlayersMutator.useActionTokens(G.players, playerID, contributeActionCosts);
   ActionSlotMutator.occupy(G.table.actionSlots.contributeOwnedProjects);
 
   contributions.forEach(({ projectSlotId, jobName }) => {
@@ -45,7 +47,6 @@ export const contributeOwnedProjects: GameMove<ContributeOwnedProjects> = ({ G, 
     throw new Error('Exceed maximum contribution value');
   }
 
-  console.log('update contributions')
   contributions.forEach(({ projectSlotId, jobName, value }) => {
     // update contributions to given contribution points
     const projectSlot = ProjectBoardSelector.getBySlotId(G.table.projectBoard, projectSlotId);

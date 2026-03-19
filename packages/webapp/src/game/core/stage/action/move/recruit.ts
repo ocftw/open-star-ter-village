@@ -4,7 +4,7 @@ import { ProjectSlotMutator, ProjectSlotSelector } from '@/game/store/slice/proj
 import { GameMove } from '@/game/core/type';
 import { ActionSlotMutator, ActionSlotSelector } from '@/game/store/slice/actionSlot';
 import { PlayersMutator, PlayersSelector } from '@/game/store/slice/players';
-import { RuleSelector } from '@/game/store/slice/rule';
+import { RuleMutator, RuleSelector } from '@/game/store/slice/rule';
 import { JobSlotsMutator, JobSlotsSelector } from '@/game/store/slice/jobSlots';
 
 export type Recruit = (jobCardId: string, projectSlotId: string) => void;
@@ -17,15 +17,20 @@ export const recruit: GameMove<Recruit> = ({ G, playerID }, jobCardId, projectSl
     throw new Error('Action slot is occupied');
   }
 
-  console.log('use action tokens')
+  // Validate token balances before mutating state
   const actionTokenCosts = RuleSelector.getActionTokenCost(G.rules, 'recruit');
-  PlayersMutator.useActionTokens(G.players, playerID, actionTokenCosts);
-  if (PlayersSelector.getNumActionTokens(G.players, playerID) < 0) {
+  if (PlayersSelector.getNumActionTokens(G.players, playerID) < actionTokenCosts) {
     throw new Error('Not enough action tokens');
   }
+  const assignWorkerTokenCosts = RuleSelector.getAssignWorkerTokenCost(G.rules, 'recruit');
+  if (PlayersSelector.getNumWorkerTokens(G.players, playerID) < assignWorkerTokenCosts) {
+    throw new Error('Not enough worker tokens');
+  }
+
+  // All token checks passed — now mutate state
+  PlayersMutator.useActionTokens(G.players, playerID, actionTokenCosts);
   ActionSlotMutator.occupy(G.table.actionSlots.recruit);
 
-  console.log('use job card')
   // check job card is on the table
   const jobCard = JobSlotsSelector.getJobCardById(G.table.jobSlots, jobCardId);
   if (!jobCard) {
@@ -46,12 +51,12 @@ export const recruit: GameMove<Recruit> = ({ G, playerID }, jobCardId, projectSl
   JobSlotsMutator.removeJobCard(G.table.jobSlots, jobCard);
   DeckMutator.discard(G.decks.jobs, [jobCard]);
 
-  const ignoreRequirement = G.rules.event?.ignoreFirstWorkerRequirement ?? false;
+  const ignoreRequirement = RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, playerID);
   if (!ignoreRequirement && !Object.keys(activeProject.card!.requirements).includes(jobCard.name)) {
     throw new Error('Job card is not required in project');
   }
   if (ignoreRequirement) {
-    G.rules.event!.ignoreFirstWorkerRequirement = false;
+    RuleMutator.consumeIgnoreFirstWorkerRequirement(G.rules, playerID);
   }
 
   const jobContribution = ProjectSlotSelector.getJobContribution(activeProject, jobCard.name);
@@ -60,12 +65,7 @@ export const recruit: GameMove<Recruit> = ({ G, playerID }, jobCardId, projectSl
     throw new Error('Job requirement already fulfilled');
   }
 
-  console.log('use worker tokens')
-  const assignWorkerTokenCosts = RuleSelector.getAssignWorkerTokenCost(G.rules, 'recruit');
   PlayersMutator.useWorkerTokens(G.players, playerID, assignWorkerTokenCosts);
-  if (PlayersSelector.getNumWorkerTokens(G.players, playerID) < 0) {
-    throw new Error('Not enough worker tokens');
-  }
 
   // assign worker token
   const initialContributionValue = RuleSelector.getAssignWorkerInitialContributionValue(G.rules, 'recruit');

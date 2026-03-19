@@ -15,15 +15,16 @@ export const removeAndRefillJobs: GameMove<RemoveAndRefillJobs> = ({ G, playerID
     throw new Error('Action slot is occupied');
   }
 
-  console.log('use action tokens')
+  // Validate token balance before mutating state
   const actionTokenCosts = RuleSelector.getActionTokenCost(G.rules, 'removeAndRefillJobs');
-  PlayersMutator.useActionTokens(G.players, playerID, actionTokenCosts);
-  if (PlayersSelector.getNumActionTokens(G.players, playerID) < 0) {
+  if (PlayersSelector.getNumActionTokens(G.players, playerID) < actionTokenCosts) {
     throw new Error('Not enough action tokens');
   }
+
+  // All token checks passed — now mutate state
+  PlayersMutator.useActionTokens(G.players, playerID, actionTokenCosts);
   ActionSlotMutator.occupy(G.table.actionSlots.removeAndRefillJobs);
 
-  console.log('remove job cards')
   // check job card is on the table
   const jobCardsToRemove = JobSlotsSelector.getJobCardsByIds(G.table.jobSlots, jobCardIds);
   if (jobCardsToRemove.length !== jobCardIds.length) {
@@ -34,7 +35,6 @@ export const removeAndRefillJobs: GameMove<RemoveAndRefillJobs> = ({ G, playerID
   JobSlotsMutator.removeJobCards(G.table.jobSlots, jobCardsToRemove);
   DeckMutator.discard(G.decks.jobs, jobCardsToRemove);
 
-  console.log('refill job cards')
   // refill job cards
   const maxJobCards = RuleSelector.getTableMaxJobSlots(G.rules);
   const filledJobSlots = JobSlotsSelector.getNumFilledSlots(G.table.jobSlots);
@@ -43,7 +43,6 @@ export const removeAndRefillJobs: GameMove<RemoveAndRefillJobs> = ({ G, playerID
   DeckMutator.draw(G.decks.jobs, refillCardNumber);
   JobSlotsMutator.addJobCards(G.table.jobSlots, jobCardsToRefill);
 
-  console.log('score victory points')
   const victoryPoints = RuleSelector.getActionVictoryPoints(G.rules, 'removeAndRefillJobs');
   ScoreBoardMutator.add(G.table.scoreBoard, playerID, victoryPoints);
 };
