@@ -19,7 +19,7 @@ interface ActionStepState {
     handProjectCards: boolean;
     jobSlots: boolean;
     projectSlots: boolean;
-    onwedContribution: boolean;
+    ownedContribution: boolean;
     joinedContribution: boolean;
   };
 }
@@ -28,7 +28,7 @@ const initialInteractiveState: ActionStepState['interactiveState'] = {
   handProjectCards: false,
   jobSlots: false,
   projectSlots: false,
-  onwedContribution: false,
+  ownedContribution: false,
   joinedContribution: false,
 };
 
@@ -64,11 +64,14 @@ const actionStepSlice = createSlice({
     setJobSlotsInteractive: (state) => {
       state.interactiveState.jobSlots = true;
     },
+    clearJobSlotsInteractive: (state) => {
+      state.interactiveState.jobSlots = false;
+    },
     setProjectSlotsInteractive: (state) => {
       state.interactiveState.projectSlots = true;
     },
     setOwnedContributionInteractive: (state) => {
-      state.interactiveState.onwedContribution = true;
+      state.interactiveState.ownedContribution = true;
     },
     setJoinedContributionInteractive: (state) => {
       state.interactiveState.joinedContribution = true;
@@ -81,7 +84,7 @@ const actionStepSlice = createSlice({
     isHandProjectCardsInteractive: (state: ActionStepState) => state.interactiveState.handProjectCards,
     isJobSlotsInteractive: (state: ActionStepState) => state.interactiveState.jobSlots,
     isProjectSlotsInteractive: (state: ActionStepState) => state.interactiveState.projectSlots,
-    isOwnedContributionInteractive: (state: ActionStepState) => state.interactiveState.onwedContribution,
+    isOwnedContributionInteractive: (state: ActionStepState) => state.interactiveState.ownedContribution,
     isJoinedContributionInteractive: (state: ActionStepState) => state.interactiveState.joinedContribution,
   }
 });
@@ -93,6 +96,7 @@ export const {
   setMirrorTarget,
   setHandPorjectCardsInteractive,
   setJobSlotsInteractive,
+  clearJobSlotsInteractive,
   setProjectSlotsInteractive,
   setOwnedContributionInteractive,
   setJoinedContributionInteractive,
