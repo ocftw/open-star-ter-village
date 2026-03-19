@@ -55,7 +55,8 @@ export interface Rule {
   },
   event?: {
     extraOwnerVictoryPoints?: number;
-    ignoreFirstWorkerRequirement?: boolean;
+    /** Per-player flag: each player independently gets one free worker placement ignoring job requirements. */
+    ignoreFirstWorkerRequirement?: Record<string, boolean>;
   },
 }
 
@@ -160,11 +161,29 @@ const setEventExtraOwnerVictoryPoints = (rule: Rule, points: number): void => {
   rule.event.extraOwnerVictoryPoints = points;
 };
 
-const setEventIgnoreFirstWorkerRequirement = (rule: Rule, value: boolean): void => {
+const setEventIgnoreFirstWorkerRequirement = (rule: Rule, playerIds: string[], value: boolean): void => {
   if (!rule.event) {
     rule.event = {};
   }
-  rule.event.ignoreFirstWorkerRequirement = value;
+  if (value) {
+    const perPlayer: Record<string, boolean> = {};
+    for (const id of playerIds) {
+      perPlayer[id] = true;
+    }
+    rule.event.ignoreFirstWorkerRequirement = perPlayer;
+  } else {
+    rule.event.ignoreFirstWorkerRequirement = undefined;
+  }
+};
+
+const consumeIgnoreFirstWorkerRequirement = (rule: Rule, playerId: string): void => {
+  if (rule.event?.ignoreFirstWorkerRequirement) {
+    rule.event.ignoreFirstWorkerRequirement[playerId] = false;
+  }
+};
+
+const canIgnoreFirstWorkerRequirement = (rule: Rule, playerId: string): boolean => {
+  return rule.event?.ignoreFirstWorkerRequirement?.[playerId] ?? false;
 };
 
 const setTableMaxJobSlots = (rule: Rule, value: number): void => {
@@ -285,6 +304,7 @@ const RuleSlice = {
     decrementContributeOwnedProjectsMaxContributionValue,
     setEventExtraOwnerVictoryPoints,
     setEventIgnoreFirstWorkerRequirement,
+    consumeIgnoreFirstWorkerRequirement,
     setTableMaxJobSlots,
   },
   selectors: {
@@ -297,6 +317,7 @@ const RuleSlice = {
     getAssignWorkerTokenCost,
     getAssignWorkerInitialContributionValue,
     getMaxContributionValue,
+    canIgnoreFirstWorkerRequirement,
     getTableMaxJobSlots,
     getTableMaxProjectSlots,
     getPlayerMaxActionTokens,
