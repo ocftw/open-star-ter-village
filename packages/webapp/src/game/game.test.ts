@@ -534,4 +534,14 @@ describe('mirror — Doin\' Overtime', () => {
     const result = mirror(ctx, 'removeAndRefillJobs', ['j1']);
     expect(result).toBe(INVALID_MOVE);
   });
+
+  it('does not mutate state when returning INVALID_MOVE (target not occupied)', () => {
+    const ctx = makeMirrorContext();
+    const apBefore = PlayersSelector.getNumActionTokens(ctx.G.players, 'alice');
+    const slotBefore = ActionSlotSelector.isAvailable(ctx.G.table.actionSlots.mirror);
+    const result = mirror(ctx, 'removeAndRefillJobs', ['j1']);
+    expect(result).toBe(INVALID_MOVE);
+    expect(PlayersSelector.getNumActionTokens(ctx.G.players, 'alice')).toBe(apBefore);
+    expect(ActionSlotSelector.isAvailable(ctx.G.table.actionSlots.mirror)).toBe(slotBefore);
+  });
 });

@@ -13,34 +13,35 @@ import { CreateProject, createProject } from './createProject';
 export type Mirror = (actionName: ActionMoveName, ...params: any[]) => void;
 export const mirror: GameMove<Mirror> = (context, actionName, ...params) => {
   const { G, playerID } = context;
+
+  // ── All validation upfront, before any state mutation ──
   if (!RuleSelector.isActionSlotAvailable(G.rules, 'mirror')) {
     return INVALID_MOVE;
   }
   if (!ActionSlotSelector.isAvailable(G.table.actionSlots.mirror)) {
     return INVALID_MOVE;
   }
-
-  console.log('use action tokens')
   const mirrorActionCost = RuleSelector.getActionTokenCost(G.rules, 'mirror');
-  PlayersMutator.useActionTokens(G.players, playerID, mirrorActionCost);
-  if (PlayersSelector.getNumActionTokens(G.players, playerID) < 0) {
+  if (PlayersSelector.getNumActionTokens(G.players, playerID) < mirrorActionCost) {
     return INVALID_MOVE;
   }
-  ActionSlotMutator.occupy(G.table.actionSlots.mirror);
-
   // Only 1-AP actions can be mirrored (Doin' Overtime rule)
   if (RuleSelector.getActionTokenCost(G.rules, actionName) > mirrorActionCost) {
     return INVALID_MOVE;
   }
-
   // The target action must have already been completed this turn (slot is occupied)
   const targetSlot = G.table.actionSlots[actionName];
   if (!ActionSlotSelector.isOccupied(targetSlot)) {
     return INVALID_MOVE;
   }
 
-  // Temporarily free the target slot so the sub-move's isOccupied guard passes;
-  // the sub-move will re-occupy it when it runs.
+  // ── Mutate only after all checks pass ──
+  PlayersMutator.useActionTokens(G.players, playerID, mirrorActionCost);
+  ActionSlotMutator.occupy(G.table.actionSlots.mirror);
+
+  // Temporarily free the target slot so the sub-move's isOccupied guard passes.
+  // If the sub-move throws, withErrorBoundary (at the boardgame.io level) returns
+  // INVALID_MOVE and Immer discards the entire draft including this reset.
   ActionSlotMutator.reset(targetSlot);
 
   let result = null;
