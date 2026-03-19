@@ -7,11 +7,9 @@ import { RuleSelector } from "@/game/store/slice/rule";
 import { ScoreBoardMutator } from "@/game/store/slice/scoreBoard";
 
 export const settleProjects: GameHookHandler = (({ G }) => {
-  console.log('settle projects')
   const fulfilledProjectSlots = ProjectBoardSelector.getRequirementFulfilled(G.table.projectBoard);
 
   if (fulfilledProjectSlots.length === 0) {
-    console.log('no fulfilled projects. skip settle projects')
     return;
   }
   fulfilledProjectSlots.forEach(projectSlot => {
@@ -57,5 +55,4 @@ export const settleProjects: GameHookHandler = (({ G }) => {
     DeckMutator.discard(G.decks.projects, projectCards);
   }
 
-  console.log('end settle projects')
 })

@@ -5,7 +5,6 @@ import { PlayersMutator, PlayersSelector } from "@/game/store/slice/players";
 import { RuleSelector } from "@/game/store/slice/rule";
 
 export const refill: GameHookHandler = ({ G, ctx }) => {
-  console.log('refill stage')
   // refill project cards
   const maxProjectCards = RuleSelector.getPlayerMaxProjectCards(G.rules);
   const numProjectsInHand = PlayersSelector.getNumProjects(G.players, ctx.currentPlayer);
@@ -20,6 +19,4 @@ export const refill: GameHookHandler = ({ G, ctx }) => {
 
   // reset active moves
   ActionSlotsMutator.reset(G.table.actionSlots);
-
-  console.log('end refill stage')
 }

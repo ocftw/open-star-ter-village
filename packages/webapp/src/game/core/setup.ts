@@ -42,9 +42,6 @@ export interface GameSetupData {
 }
 
 export const setup: SetupFn<GameState> = ({ ctx, random }, setupData?: GameSetupData) => {
-  console.log('setup game')
-
-  console.log('init state')
   // get default game state
   const G = GameStore.initialState();
 
@@ -52,9 +49,7 @@ export const setup: SetupFn<GameState> = ({ ctx, random }, setupData?: GameSetup
   // 2 players → 6 cards, 3 players → 5 cards, 4+ players → 4 cards
   RuleMutator.setNumNonEndGameEventCards(G.rules, ctx.numPlayers);
 
-  console.log('setup decks')
   // add cards to decks
-  console.log('setup project cards')
   const mapToProjectCards = (rawProjectCards: RawProjectCard[]): ProjectCard[] => {
     return rawProjectCards.map(rawProjectCard => ({
       id: getUuid(random.Number),
@@ -66,7 +61,6 @@ export const setup: SetupFn<GameState> = ({ ctx, random }, setupData?: GameSetup
   const shuffledProjectCards = random.Shuffle(projectCards);
   DeckMutator.initialize(G.decks.projects, shuffledProjectCards);
 
-  console.log('setup job cards')
   const mapToJobCards = (rawJobCards: RawJobCard[]): JobCard[] => {
     const jobCards: JobCard[] = [];
     rawJobCards.forEach(rawJobCard => {
@@ -85,7 +79,6 @@ export const setup: SetupFn<GameState> = ({ ctx, random }, setupData?: GameSetup
   const shuffledJobCards = random.Shuffle(jobCards);
   DeckMutator.initialize(G.decks.jobs, shuffledJobCards);
 
-  console.log('setup event cards');
   // TODO: Validate event card function names
   const eventCards = rawEventCards.map(rawEventCard => ({ id: getUuid(random.Number), ...rawEventCard }) as unknown as EventCard);
   // find end game event card
@@ -128,7 +121,6 @@ export const setup: SetupFn<GameState> = ({ ctx, random }, setupData?: GameSetup
   // initialize event deck
   DeckMutator.initialize(G.decks.events, shuffledEventCards);
 
-  console.log('setup table')
   // setup job slots
   const maxJobCards = RuleSelector.getTableMaxJobSlots(G.rules);
   const jobCardsInPlay = DeckSelector.peek(G.decks.jobs, maxJobCards);
@@ -138,12 +130,10 @@ export const setup: SetupFn<GameState> = ({ ctx, random }, setupData?: GameSetup
   const maxProjectSlots = RuleSelector.getTableMaxProjectSlots(G.rules);
   ProjectBoardMutator.initialize(G.table.projectBoard, maxProjectSlots);
 
-  console.log('setup players')
   // initialize players and score board
   PlayersMutator.initialize(G.players, ctx.playOrder);
   ScoreBoardMutator.initialize(G.table.scoreBoard, ctx.playOrder);
 
-  console.log('setup player hands')
   // setup player hands
   const maxProjectCards = RuleSelector.getPlayerMaxProjectCards(G.rules);
   ctx.playOrder.forEach(playerId => {
@@ -152,7 +142,6 @@ export const setup: SetupFn<GameState> = ({ ctx, random }, setupData?: GameSetup
     PlayersMutator.addProjects(G.players, playerId, projectCards);
   });
 
-  console.log('setup player tokens')
   // setup player tokens
   const numWorkerTokens = RuleSelector.getPlayerMaxWorkerTokens(G.rules);
   const numActionTokens = RuleSelector.getPlayerMaxActionTokens(G.rules);
@@ -161,11 +150,9 @@ export const setup: SetupFn<GameState> = ({ ctx, random }, setupData?: GameSetup
     PlayersMutator.resetActionTokens(G.players, playerId, numActionTokens);
   });
 
-  console.log('setup play order')
   // Initialize G.playOrder from ctx.playOrder so it can be rotated each round
   // via passStartPlayerToken without mutating the read-only ctx.
   G.playOrder = [...ctx.playOrder];
 
-  console.log('end setup game')
   return G;
 };

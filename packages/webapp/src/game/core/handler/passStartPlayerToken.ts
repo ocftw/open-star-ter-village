@@ -15,6 +15,5 @@ import { GameHookHandler } from "../type";
  * re-reads it from G at the start of each turn.
  */
 export const passStartPlayerToken: GameHookHandler = ({ G }) => {
-  console.log('pass start player token to next player');
   G.playOrder = G.playOrder.slice(1).concat(G.playOrder[0]);
 };

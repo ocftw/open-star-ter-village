@@ -7,7 +7,6 @@ export const playEventCard: GameHookHandler = (context) => {
   const { G } = context;
   const eventCard = DeckSelector.peek(G.decks.events, 1)[0];
   DeckMutator.draw(G.decks.events, 1);
-  console.log('play event card', eventCard.name);
   TableMutator.playEvent(G.table, eventCard);
 
   const eventCardHandler = eventCardHandlers[eventCard.function_name];

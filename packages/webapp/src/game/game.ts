@@ -25,7 +25,6 @@ export const OpenStarTerVillage: Game<GameState, Record<string, unknown>, GameSe
     onBegin: (context) => {
       const { ctx } = context;
       if (ctx.playOrderPos === 0) {
-        console.log('first player starts');
         playEventCard(context);
       }
     },
@@ -59,7 +58,6 @@ export const OpenStarTerVillage: Game<GameState, Record<string, unknown>, GameSe
       scoreLeftoverActionTokens(context);
       refill(context);
       if (ctx.playOrderPos === ctx.numPlayers - 1) {
-        console.log('last player ends');
         removeEventCard(context);
 
         passStartPlayerToken(context);
