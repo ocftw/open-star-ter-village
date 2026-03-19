@@ -6,7 +6,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ d
   return (
     <StoreProvider>
       <main>
-        <DevView demo={demo} initialMode={mode === 'online' ? 'online' : 'offline'} />
+        <DevView demo={demo} initialMode={mode === 'online' ? 'online' : 'offline'} isDev={process.env.NODE_ENV !== 'production'} />
       </main>
     </StoreProvider>
   );

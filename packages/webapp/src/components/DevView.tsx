@@ -17,7 +17,7 @@ function a11yProps(index: number) {
   };
 }
 
-const DevView: React.FC<{ demo?: string; initialMode?: 'offline' | 'online' }> = ({ demo, initialMode = 'offline' }) => {
+const DevView: React.FC<{ demo?: string; initialMode?: 'offline' | 'online'; isDev?: boolean }> = ({ demo, initialMode = 'offline', isDev = false }) => {
   const [value, setValue] = useState(0);
   const [mode, setMode] = useState<'offline' | 'online'>(initialMode);
   const [matchID, setMatchID] = useState(() => `dev-${Date.now()}`);
@@ -42,6 +42,10 @@ const DevView: React.FC<{ demo?: string; initialMode?: 'offline' | 'online' }> =
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
+
+  if (!isDev) {
+    return <Boardgame isLocal={mode === 'offline'} matchID={matchID} playerID="0" gameConfig={gameConfig} />;
+  }
 
   return (
     <>
