@@ -2594,6 +2594,7 @@ __metadata:
     react: ^18
     react-dom: ^18
     react-redux: ^9.1.2
+    ts-jest: ^29.4.0
     ts-node: ^10.9.2
     ts-node-dev: ^2.0.0
     tsconfig-paths: ^4.2.0
@@ -9509,7 +9510,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-jest@npm:^29.4.6":
+"ts-jest@npm:^29.4.0, ts-jest@npm:^29.4.6":
   version: 29.4.6
   resolution: "ts-jest@npm:29.4.6"
   dependencies:
