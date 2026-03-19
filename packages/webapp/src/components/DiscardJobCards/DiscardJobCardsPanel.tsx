@@ -6,7 +6,7 @@ import { connectGameContext } from '@/components/GameContextHelpers';
 import { GameContext } from '@/components/GameContextHelpers';
 import { AppDispatch } from '@/lib/store';
 import { getSelectedJobSlots, resetJobSlotSelection } from '@/lib/reducers/jobSlotSlice';
-import { setJobSlotsInteractive } from '@/lib/reducers/actionStepSlice';
+import { setJobSlotsInteractive, clearJobSlotsInteractive } from '@/lib/reducers/actionStepSlice';
 
 // ── GameContext props ────────────────────────────────────────────────────────
 
@@ -33,11 +33,13 @@ const mapStateToProps = createSelector(getSelectedJobSlots, (slots): StateProps 
 
 interface DispatchProps {
   activateJobSlots: () => void;
+  deactivateJobSlots: () => void;
   resetJobSlotSelection: () => void;
 }
 
 const mapDispatchToProps = (dispatch: AppDispatch): DispatchProps => ({
   activateJobSlots: () => dispatch(setJobSlotsInteractive()),
+  deactivateJobSlots: () => dispatch(clearJobSlotsInteractive()),
   resetJobSlotSelection: () => dispatch(resetJobSlotSelection()),
 });
 
@@ -48,11 +50,15 @@ type Props = GameContextProps & StateProps & DispatchProps;
 const DiscardJobCardsPanel: React.FC<Props> = ({
   selectedJobSlots,
   activateJobSlots,
+  deactivateJobSlots,
   resetJobSlotSelection,
   onDiscardExcessJobCards,
 }) => {
   useEffect(() => {
     activateJobSlots();
+    return () => {
+      deactivateJobSlots();
+    };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
