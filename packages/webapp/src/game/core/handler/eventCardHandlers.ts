@@ -1,7 +1,7 @@
 import { RuleMutator, RuleSelector } from "@/game/store/slice/rule";
 import { GameHookHandler } from "../type"
 import { ScoreBoardSelector } from "@/game/store/slice/scoreBoard";
-import { JobSlotsMutator } from "@/game/store/slice/jobSlots";
+import { JobSlotsMutator, JobSlotsSelector } from "@/game/store/slice/jobSlots";
 import { DeckMutator, DeckSelector } from "@/game/store/slice/deck";
 import { PlayersMutator } from "@/game/store/slice/players";
 import { scoreUnfinishedProjects } from "./scoreUnfinishedProjects";
@@ -20,7 +20,7 @@ const endGameAfterThisRound: EventCardHandler = {
     const { G, events } = context;
     RuleMutator.setSettlementLeftoverActionTokensVictoryPoints(G.rules, 0);
     scoreUnfinishedProjects(context);
-    events.endGame({ winner: ScoreBoardSelector.getWinner(G.table.scoreBoard) });
+    events.endGame({ winners: ScoreBoardSelector.getWinner(G.table.scoreBoard) });
   },
 }
 
@@ -90,9 +90,12 @@ const addTwoWorkerSlots: EventCardHandler = {
     const normalMax = RuleSelector.getTableMaxJobSlots(G.rules) - 2;
     RuleMutator.setTableMaxJobSlots(G.rules, normalMax);
     // Normally the last player discards via discardExcessJobCards move (fourFreedomsPendingDiscards
-    // already cleared). Fallback: auto-discard last 2 cards if somehow still pending.
+    // already cleared). Fallback: auto-discard the tracked cards if somehow still pending.
     if (G.table.fourFreedomsPendingDiscards.length > 0) {
-      const excess = G.table.jobSlots.slice(normalMax);
+      const excess = JobSlotsSelector.getJobCardsByIds(
+        G.table.jobSlots,
+        G.table.fourFreedomsPendingDiscards,
+      );
       if (excess.length > 0) {
         JobSlotsMutator.removeJobCards(G.table.jobSlots, excess);
         DeckMutator.discard(G.decks.jobs, excess);
@@ -103,13 +106,14 @@ const addTwoWorkerSlots: EventCardHandler = {
   },
 };
 
-// 斜槓青年: This round, the first job card used in createProject or recruit ignores job type matching
+// 斜槓青年: This round, each player's first job card used in createProject or recruit ignores job type matching
 const ignoreFirstWorkerRequirement: EventCardHandler = {
   start: ({ G }) => {
-    RuleMutator.setEventIgnoreFirstWorkerRequirement(G.rules, true);
+    const playerIds = Object.keys(G.players);
+    RuleMutator.setEventIgnoreFirstWorkerRequirement(G.rules, playerIds, true);
   },
   end: ({ G }) => {
-    RuleMutator.setEventIgnoreFirstWorkerRequirement(G.rules, false);
+    RuleMutator.setEventIgnoreFirstWorkerRequirement(G.rules, [], false);
   },
 };
 
