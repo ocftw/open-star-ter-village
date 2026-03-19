@@ -14,7 +14,7 @@ interface Props {
 }
 
 export const JobAndContributions: React.FC<Props> = ({ jobName, requirements, contributions, interactivePlayers, onContributionChange }) => {
-  const totalJobContributions = contributions.filter((contribution) => contribution.jobName === jobName).reduce((acc, contribution) => acc + contribution.value, 0);
+  const totalJobContributions = contributions.reduce((acc, contribution) => acc + contribution.value, 0);
 
   return (
     <Grid item xs={3} container direction="row" margin="8px" alignItems="center"
@@ -26,7 +26,7 @@ export const JobAndContributions: React.FC<Props> = ({ jobName, requirements, co
         <Contribution
           key={`${jobName}-${contribution.worker}`}
           worker={contribution.worker}
-          initialValue={contribution.value}
+          value={contribution.value}
           min={contribution.value}
           max={requirements - totalJobContributions + contribution.value}
           isInteractive={interactivePlayers[contribution.worker]}

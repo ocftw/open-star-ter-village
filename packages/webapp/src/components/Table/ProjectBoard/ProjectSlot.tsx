@@ -66,7 +66,7 @@ const ProjectSlot: React.FC<Props> = ({
   };
 
   return (
-    <Grid spacing={3} xs={12}>
+    <Grid container spacing={3} xs={12}>
       <StyledPaper
         data-testid={slot.id}
         data-requirements={requiredJobs.join(',')}

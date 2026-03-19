@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Box } from '@mui/material';
 import { PlayerID } from 'boardgame.io';
 import { IconButton } from '@mui/material';
@@ -9,37 +9,25 @@ import { playerNameMap } from '@/components/playerNameMap';
 
 interface Props {
   worker: PlayerID
-  initialValue: number;
+  value: number;
   min: number;
   max: number;
   isInteractive: boolean;
   onChange: (value: number) => void;
 }
 
-const Contribution: React.FC<Props> = ({ worker, initialValue, min, max, isInteractive, onChange }) => {
-  const [value, setValue] = useState(initialValue);
-
-  useEffect(() => {
-    setValue(initialValue);
-  }, [isInteractive, initialValue]);
-
+const Contribution: React.FC<Props> = ({ worker, value, min, max, isInteractive, onChange }) => {
   const handleIncrement = () => {
     if (value < max) {
-      const newValue = value + 1;
-      setValue(newValue);
-      onChange(newValue);
+      onChange(value + 1);
     }
   };
 
   const handleDecrement = () => {
     if (value > min) {
-      const newValue = value - 1;
-      setValue(newValue);
-      onChange(newValue);
+      onChange(value - 1);
     }
   };
-
-  const displayValue = isInteractive ? value : initialValue;
 
   return (
     <Box margin='8px'>
@@ -48,7 +36,7 @@ const Contribution: React.FC<Props> = ({ worker, initialValue, min, max, isInter
           <RemoveCircleOutlinedIcon />
         </IconButton>
       )}
-      <ContributionAvatarWithPlayerBadge sizes='medium' contributions={displayValue} playerID={playerNameMap[worker]} />
+      <ContributionAvatarWithPlayerBadge sizes='medium' contributions={value} playerID={playerNameMap[worker]} />
       {isInteractive &&(
         <IconButton size="small" color="primary" data-testid="contribution-increment" data-remaining={max - value} onClick={handleIncrement}>
           <AddCircleOutlinedIcon />
