@@ -2,7 +2,7 @@ import { Server, Origins } from "boardgame.io/server";
 import game from "./game";
 
 async function serve() {
-  const port = Number(process.env.PORT) || 8000;
+  const port = Number(process.env.PORT) || 3001;
   const dev = process.env.NODE_ENV !== "production";
 
   console.log(`Starting server on port ${port} in ${dev ? 'dev' : 'production'} mode...`);
