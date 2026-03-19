@@ -108,12 +108,17 @@ describe('RuleSlice', () => {
     expect(rule.numNonEndGameEventCards).toBe(4);
   });
 
-  it('setEventIgnoreFirstWorkerRequirement sets and resets', () => {
+  it('setEventIgnoreFirstWorkerRequirement sets per-player flags and resets', () => {
     const rule = RuleSlice.initialState();
-    RuleMutator.setEventIgnoreFirstWorkerRequirement(rule, true);
-    expect(rule.event?.ignoreFirstWorkerRequirement).toBe(true);
-    RuleMutator.setEventIgnoreFirstWorkerRequirement(rule, false);
-    expect(rule.event?.ignoreFirstWorkerRequirement).toBe(false);
+    RuleMutator.setEventIgnoreFirstWorkerRequirement(rule, ['alice', 'bob'], true);
+    expect(rule.event?.ignoreFirstWorkerRequirement).toEqual({ alice: true, bob: true });
+    expect(RuleSelector.canIgnoreFirstWorkerRequirement(rule, 'alice')).toBe(true);
+    expect(RuleSelector.canIgnoreFirstWorkerRequirement(rule, 'bob')).toBe(true);
+    RuleMutator.consumeIgnoreFirstWorkerRequirement(rule, 'alice');
+    expect(RuleSelector.canIgnoreFirstWorkerRequirement(rule, 'alice')).toBe(false);
+    expect(RuleSelector.canIgnoreFirstWorkerRequirement(rule, 'bob')).toBe(true);
+    RuleMutator.setEventIgnoreFirstWorkerRequirement(rule, [], false);
+    expect(rule.event?.ignoreFirstWorkerRequirement).toBeUndefined();
   });
 });
 
@@ -194,7 +199,15 @@ describe('ScoreBoardSlice', () => {
     const state = makeBoard();
     ScoreBoardMutator.add(state, 'bob', 10);
     ScoreBoardMutator.add(state, 'alice', 3);
-    expect(ScoreBoardSelector.getWinner(state)).toBe('bob');
+    expect(ScoreBoardSelector.getWinner(state)).toEqual(['bob']);
+  });
+
+  it('getWinner returns all tied players when scores are equal', () => {
+    const state = makeBoard();
+    ScoreBoardMutator.add(state, 'alice', 7);
+    ScoreBoardMutator.add(state, 'bob', 7);
+    ScoreBoardMutator.add(state, 'charlie', 3);
+    expect(ScoreBoardSelector.getWinner(state)).toEqual(['alice', 'bob']);
   });
 
   it('getAllPlayerPoints returns all scores', () => {
@@ -336,17 +349,29 @@ describe('eventCardHandlers - the_only_player_with_the_lowest_victory_points_get
 });
 
 describe('eventCardHandlers - ignore_first_worker_requirement', () => {
-  it('start: sets ignoreFirstWorkerRequirement to true', () => {
+  it('start: sets per-player ignoreFirstWorkerRequirement for all players', () => {
     const ctx = makeContext();
     eventCardHandlers.ignore_first_worker_requirement.start(ctx);
-    expect(ctx.G.rules.event?.ignoreFirstWorkerRequirement).toBe(true);
+    expect(RuleSelector.canIgnoreFirstWorkerRequirement(ctx.G.rules, 'alice')).toBe(true);
+    expect(RuleSelector.canIgnoreFirstWorkerRequirement(ctx.G.rules, 'bob')).toBe(true);
+    expect(RuleSelector.canIgnoreFirstWorkerRequirement(ctx.G.rules, 'charlie')).toBe(true);
   });
 
-  it('end: resets ignoreFirstWorkerRequirement to false', () => {
+  it('consuming one player does not affect others', () => {
+    const ctx = makeContext();
+    eventCardHandlers.ignore_first_worker_requirement.start(ctx);
+    RuleMutator.consumeIgnoreFirstWorkerRequirement(ctx.G.rules, 'alice');
+    expect(RuleSelector.canIgnoreFirstWorkerRequirement(ctx.G.rules, 'alice')).toBe(false);
+    expect(RuleSelector.canIgnoreFirstWorkerRequirement(ctx.G.rules, 'bob')).toBe(true);
+    expect(RuleSelector.canIgnoreFirstWorkerRequirement(ctx.G.rules, 'charlie')).toBe(true);
+  });
+
+  it('end: clears ignoreFirstWorkerRequirement for all players', () => {
     const ctx = makeContext();
     eventCardHandlers.ignore_first_worker_requirement.start(ctx);
     eventCardHandlers.ignore_first_worker_requirement.end!(ctx);
-    expect(ctx.G.rules.event?.ignoreFirstWorkerRequirement).toBe(false);
+    expect(ctx.G.rules.event?.ignoreFirstWorkerRequirement).toBeUndefined();
+    expect(RuleSelector.canIgnoreFirstWorkerRequirement(ctx.G.rules, 'alice')).toBe(false);
   });
 });
 
