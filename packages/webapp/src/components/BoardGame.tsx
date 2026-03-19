@@ -17,7 +17,7 @@ import { ScoreBoardSelector } from '@/game/store/slice/scoreBoard';
 const Board: React.FC<GameContext> = (gameContext) => {
   const { G, playerID, ctx } = gameContext;
   const isMyTurn = playerID === ctx.currentPlayer;
-  const gameover = ctx.gameover as { winner: string } | undefined;
+  const gameover = ctx.gameover as { winners: string[] } | undefined;
 
   const isLastPlayer = ctx.playOrderPos === ctx.numPlayers - 1;
   const hasPendingDiscard = G.table.fourFreedomsPendingDiscards.length > 0;
@@ -54,14 +54,16 @@ const Board: React.FC<GameContext> = (gameContext) => {
           {gameover && (
             <>
               <Typography variant="h6" align="center" gutterBottom>
-                Winner: Player {gameover.winner}
+                {gameover.winners.length > 1
+                  ? `Tie: Players ${gameover.winners.join(', ')}`
+                  : `Winner: Player ${gameover.winners[0]}`}
               </Typography>
               <Typography variant="subtitle1" gutterBottom>Final Scores:</Typography>
               <List dense>
                 {Object.entries(ScoreBoardSelector.getAllPlayerPoints(G.table.scoreBoard))
                   .sort(([, a], [, b]) => b - a)
                   .map(([playerId, points]) => (
-                    <ListItem key={playerId} sx={playerId === gameover.winner ? { fontWeight: 'bold', bgcolor: 'action.selected', borderRadius: 1 } : {}}>
+                    <ListItem key={playerId} sx={gameover.winners.includes(playerId) ? { fontWeight: 'bold', bgcolor: 'action.selected', borderRadius: 1 } : {}}>
                       <ListItemText
                         primary={`Player ${playerId}`}
                         secondary={`${points} VP`}
@@ -91,10 +93,9 @@ const Boardgame: React.FC<Props> = ({ isLocal, gameConfig, ...props }) => {
   // Creating a new class from Client() on every render causes React to see a new component
   // type, unmounting and remounting — which resets the game state.
   const BoardgameComponent = React.useMemo(() => {
-    const multiplayer = isLocal ? Local() : SocketIO({ server: 'localhost:8000' });
+    const multiplayer = isLocal ? Local() : SocketIO({ server: 'localhost:3001' });
     return Client({ game: gameConfig ?? game, board: Board, multiplayer, numPlayers: 3, debug: false });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isLocal, gameConfig]);
 
   return <BoardgameComponent {...props} />;
 }
