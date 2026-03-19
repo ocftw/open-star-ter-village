@@ -1,4 +1,5 @@
 import { Ctx, PlayerID } from "boardgame.io";
+import { ClientGameState } from "../store/store";
 import { Player } from "../store/slice/players";
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
@@ -8,7 +9,7 @@ type PlayerViewFn<G extends any = any> = (context: {
   playerID: PlayerID | null;
 }) => any;
 
-export const playerView: PlayerViewFn = ({ G, playerID}) => {
+export const playerView: PlayerViewFn = ({ G, playerID}): ClientGameState => {
   const { decks, players, ...view } = G;
   const publicPlayers: Record<PlayerID, PartialBy<Player, 'hand'>> = {};
   for (let id in players) {

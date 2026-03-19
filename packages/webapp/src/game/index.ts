@@ -1,4 +1,4 @@
-export type { GameState } from "./store/store";
+export type { GameState, ClientGameState } from "./store/store";
 export type { EventCard, JobCard, JobName, ProjectCard } from "./card";
 export type { Deck as DeckState } from './store/slice/deck';
 export type { Decks as DecksState } from './store/slice/decks';
