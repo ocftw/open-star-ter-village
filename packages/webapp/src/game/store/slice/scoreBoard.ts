@@ -21,16 +21,18 @@ const selectors = {
   getAllPlayerPoints: (state: ScoreBoard): Record<PlayerID, number> => {
     return { ...state };
   },
-  getWinner: (state: ScoreBoard): PlayerID => {
-    let winner: PlayerID = '';
+  getWinner: (state: ScoreBoard): PlayerID[] => {
     let maxPoints = -Infinity;
+    let winners: PlayerID[] = [];
     Object.entries(state).forEach(([playerId, points]) => {
       if (points > maxPoints) {
         maxPoints = points;
-        winner = playerId;
+        winners = [playerId];
+      } else if (points === maxPoints) {
+        winners.push(playerId);
       }
     });
-    return winner;
+    return winners;
   },
 };
 
