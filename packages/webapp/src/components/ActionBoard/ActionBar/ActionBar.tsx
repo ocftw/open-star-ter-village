@@ -60,8 +60,8 @@ const ActionBar: React.FC<Props> = ({ isActionBarVisible, actionsState, onAction
               key={action}
               data-testid={`action-btn-${action}`}
               className={state}
-              onClick={() => state === ActionMoveState.Available && onActionClick(action as UserActionMoves)}
-              disabled={state === ActionMoveState.Disabled}
+              onClick={() => onActionClick(action as UserActionMoves)}
+              disabled={state !== ActionMoveState.Available}
             >
               {action.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
             </StyledButton>
