@@ -14,6 +14,9 @@ export type DiscardExcessJobCards = (cardIds: string[]) => void;
  *   - Both IDs must correspond to cards currently on the table.
  */
 export const discardExcessJobCards: GameMove<DiscardExcessJobCards> = ({ G, events }, cardIds) => {
+  if (G.table.fourFreedomsPendingDiscards.length === 0) {
+    throw new Error('No pending discards');
+  }
   if (cardIds.length !== 2) {
     throw new Error('Must select exactly 2 job cards to discard');
   }
