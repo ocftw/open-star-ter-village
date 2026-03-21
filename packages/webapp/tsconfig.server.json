@@ -9,6 +9,9 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "include": ["./src/server.ts", "./src/game/**/*.ts"],
   "exclude": ["node_modules"]

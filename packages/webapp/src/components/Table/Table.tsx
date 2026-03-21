@@ -1,26 +1,39 @@
-import { Box, Grid } from '@mui/material';
-import ProjectSlot from '@/components/ProjectBoard/ProjectSlot';
+import { Alert, Grid, Typography } from '@mui/material';
 import { TableState } from '@/game';
+import ProjectBoard from './ProjectBoard/ProjectBoard';
+import JobSlots from './JobBoard/JobSlots';
+import { PlayerID } from 'boardgame.io';
 
 interface Props {
   table: TableState;
+  playerID: PlayerID | null;
 }
 
 const Table: React.FC<Props> = (props) => {
-  const maxActiveProjects = 6;
-  const activeProjects = [...props.table.projectBoard, ...Array(maxActiveProjects)].slice(0, maxActiveProjects);
+  const activeEvent = props.table.eventSlot;
 
   return (
-    <Box>
-      <Grid container spacing={2}>
-        {activeProjects.map((p, pIndex) => (
-          <Grid item xs={12} sm={6} md={4} key={`active-project-${pIndex}`}>
-            <ProjectSlot project={p} />
-          </Grid>
-        ))}
+    <Grid container spacing={2} sx={{ marginTop: '16px' }}>
+      {activeEvent && (
+        <Grid item xs={12}>
+          <Alert severity="info" icon={false} data-testid="event-card-banner">
+            <Typography variant="subtitle2" component="span" sx={{ fontWeight: 'bold', mr: 1 }}>
+              Event: {activeEvent.name}
+            </Typography>
+            {activeEvent.description}
+          </Alert>
+        </Grid>
+      )}
+      <Grid item xs={12}>
+        <Typography variant="h6">Project Slots</Typography>
+        <ProjectBoard slots={props.table.projectBoard} playerID={props.playerID} />
       </Grid>
-    </Box>
-  )
-}
+      <Grid item xs={12}>
+        <Typography variant="h6">Job Slots</Typography>
+        <JobSlots jobs={props.table.jobSlots} />
+      </Grid>
+    </Grid>
+  );
+};
 
 export default Table;

@@ -1,9 +1,12 @@
 import { PlayerID } from "boardgame.io";
-import { ForceCard, ProjectCard } from "../../card";
+import { ProjectCard } from "../../card";
+import { PartialBy } from "../../utils/types";
+
+/** Client-side view of players where other players' hands may be hidden. */
+export type ClientPlayers = Record<PlayerID, PartialBy<Player, 'hand'>>;
 
 export interface Hand {
   projects: ProjectCard[];
-  forces: ForceCard[];
 }
 
 export interface Player {
@@ -12,35 +15,101 @@ export interface Player {
     workers: number;
     actions: number;
   };
-  completed: {
-    projects: ProjectCard[];
-  };
-  victoryPoints: number;
 }
 
 const playerInitialState = (): Player => ({
-  hand: { projects: [], forces: [] },
+  hand: { projects: [] },
   token: { workers: 0, actions: 0 },
-  completed: { projects: [] },
-  victoryPoints: 0,
 });
 
 export type Players = Record<PlayerID, Player>;
 
 const initialState = (): Players => ({});
 
-export const initialize = (state: Players, playerNames: string[]): void => {
+const initialize = (state: Players, playerNames: PlayerID[]): void => {
   playerNames.forEach(player => {
     state[player] = playerInitialState();
   });
 }
 
+const getNumWorkerTokens = (state: ClientPlayers, playerId: PlayerID): number => {
+  return state[playerId].token.workers;
+};
+
+const getNumActionTokens = (state: ClientPlayers, playerId: PlayerID): number => {
+  return state[playerId].token.actions;
+};
+
+const getNumProjects = (state: ClientPlayers, playerId: PlayerID): number => {
+  return state[playerId].hand!.projects.length;
+};
+
+const getProjectCards = (state: ClientPlayers, playerId: PlayerID): ProjectCard[] => {
+  return state[playerId].hand!.projects;
+}
+
+const getProjectCardById = (state: ClientPlayers, playerId: PlayerID, projectId: string): ProjectCard | undefined => {
+  return state[playerId].hand!.projects.find(p => p.id === projectId);
+}
+
+const addProjects = (state: Players, playerId: PlayerID, projects: ProjectCard[]): void => {
+  state[playerId].hand.projects.push(...projects);
+};
+
+const useProject = (state: Players, playerId: PlayerID, project: ProjectCard): void => {
+  // remove the first project that matches the project card
+  const index = state[playerId].hand.projects.findIndex(p => p.id === project.id);
+  if (index !== -1) {
+    state[playerId].hand.projects.splice(index, 1);
+  }
+};
+
+const addWorkerTokens = (state: Players, playerId: PlayerID, numWorkers: number): void => {
+  state[playerId].token.workers += numWorkers;
+};
+
+const useWorkerTokens = (state: Players, playerId: PlayerID, numWorkers: number): void => {
+  state[playerId].token.workers -= numWorkers;
+};
+
+const resetWorkerTokens = (state: Players, playerId: PlayerID, numWorkers: number): void => {
+  state[playerId].token.workers = numWorkers;
+};
+
+const useActionTokens = (state: Players, playerId: PlayerID, numActions: number): void => {
+  state[playerId].token.actions -= numActions;
+};
+
+const resetActionTokens = (state: Players, playerId: PlayerID, numActions: number): void => {
+  state[playerId].token.actions = numActions;
+};
+
+const addActionTokens = (state: Players, playerId: PlayerID, numActions: number): void => {
+  state[playerId].token.actions += numActions;
+};
+
 const PlayersSlice = {
   initialState,
   mutators: {
     initialize,
+    addProjects,
+    useProject,
+    addWorkerTokens,
+    useWorkerTokens,
+    resetWorkerTokens,
+    useActionTokens,
+    resetActionTokens,
+    addActionTokens,
+  },
+  selectors: {
+    getNumWorkerTokens,
+    getNumActionTokens,
+    getNumProjects,
+    getProjectCards,
+    getProjectCardById,
   },
 };
 
 export const PlayersMutator = PlayersSlice.mutators;
+export const PlayersSelector = PlayersSlice.selectors;
 export default PlayersSlice;

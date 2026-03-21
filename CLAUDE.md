@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Open StarTer Village** is an educational board game teaching open-source culture, implemented as a web application. It supports 3–6 players, ~60 minutes per session, in Traditional Chinese and English.
 
+**Rulebook:** [Rulebook of Open StarTer Village (Google Drive)](https://drive.google.com/file/d/1gBGKhavLdDQ-J1elxQNN6E7Sdz0ZBTeO/view?usp=drive_link)
+
 ## Commands
 
 ### All Workspaces (from root)

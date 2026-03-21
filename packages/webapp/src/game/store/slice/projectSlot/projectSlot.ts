@@ -1,23 +1,31 @@
 import { PlayerID } from "boardgame.io";
 import { mutators } from "./projectSlot.mutators";
 import { selectors } from "./projectSlot.selectors";
-import { Contribution } from "../../../moves/type";
-import { ProjectCard } from "../../../card";
+import { JobName, ProjectCard } from "../../../card";
 
-export interface ProjectContribution extends Contribution {
+export interface ProjectContribution {
+  jobName: JobName;
+  value: number
   worker: PlayerID;
 }
 
+export type ProjectSlotID = string;
+
 export interface ProjectSlot {
-  card: ProjectCard;
+  id: ProjectSlotID;
+  card?: ProjectCard;
   owner: PlayerID;
+  ownerToken: number;
   contributions: ProjectContribution[];
+  lastContributor: PlayerID;
 }
 
-const initialState = (): ProjectSlot => ({
-  card: { name: '', requirements: {} },
+const initialState = (id: string): ProjectSlot => ({
+  id,
   owner: '',
+  ownerToken: 0,
   contributions: [],
+  lastContributor: '',
 })
 
 const ProjectSlotSlice = {
