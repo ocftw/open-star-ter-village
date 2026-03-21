@@ -30,7 +30,7 @@ const ActionStepper: React.FC<Props> = ({
   selectedProjectSlots,
   contributions,
   totalContributionValue,
-  setHandPorjectCardsInteractive,
+  setHandProjectCardsInteractive,
   setJobSlotsInteractive,
   setProjectSlotsInteractive,
   setOwnedContributionInteractive,
@@ -41,7 +41,7 @@ const ActionStepper: React.FC<Props> = ({
   resetContribution,
 }) => {
   const activators: ActionBoardActivators = {
-    setHandPorjectCardsInteractive,
+    setHandProjectCardsInteractive,
     setJobSlotsInteractive,
     setProjectSlotsInteractive,
     setOwnedContributionInteractive,
@@ -81,11 +81,13 @@ const ActionStepper: React.FC<Props> = ({
       if (currentStep === 1 && mirrorTarget) {
         ACTION_CONFIGS[mirrorTarget].activateBoard(activators);
       }
-      return;
-    }
-    if (currentAction !== UserActionMoves.EndActionTurn) {
+    } else if (currentAction !== UserActionMoves.EndActionTurn) {
       ACTION_CONFIGS[currentAction as MirrorableActionName].activateBoard(activators);
     }
+
+    return () => {
+      resetSelections();
+    };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentAction, currentStep, mirrorTarget]);
 
