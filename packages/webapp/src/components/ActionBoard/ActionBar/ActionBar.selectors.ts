@@ -1,6 +1,6 @@
 import { ActionMoveName } from '@/game/core/stage/action/move/type';
 import { GameContext } from '../../GameContextHelpers';
-import { GameState } from '@/game/store/store';
+import { ClientGameState } from '@/game/store/store';
 import { RuleSelector } from '@/game/store/slice/rule';
 import { ActionSlotSelector } from '@/game/store/slice/actionSlot';
 import { AppDispatch } from '@/lib/store';
@@ -29,7 +29,7 @@ export enum ActionMoveState {
   Disabled = 'disabled'
 }
 
-const getActionMoveState = (state: GameState, actionMove: ActionMoveName): ActionMoveState => {
+const getActionMoveState = (state: ClientGameState, actionMove: ActionMoveName): ActionMoveState => {
   if (!RuleSelector.isActionSlotAvailable(state.rules, actionMove)) {
     return ActionMoveState.Disabled;
   }

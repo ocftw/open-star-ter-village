@@ -1,13 +1,13 @@
 import React from 'react';
 import Grid from '@mui/material/Grid';
 import PlayerStatus from './PlayerStatus';
-import { PlayersState, ScoreBoardState } from '@/game';
+import { ScoreBoardState } from '@/game';
 import { playerNameMap } from '../playerNameMap';
-import { PlayersSelector } from '@/game/store/slice/players';
+import { ClientPlayers, PlayersSelector } from '@/game/store/slice/players';
 import { ScoreBoardSelector } from '@/game/store/slice/scoreBoard';
 
 type GameHeaderProps = {
-  players: PlayersState;
+  players: ClientPlayers;
   scoreBoard: ScoreBoardState;
 };
 

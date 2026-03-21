@@ -1,9 +1,9 @@
-import { Client } from 'boardgame.io/react';
+import { Client, BoardProps } from 'boardgame.io/react';
 import { SocketIO, Local } from 'boardgame.io/multiplayer'
 import game from '@/game';
 import React from 'react';
 import { Game } from 'boardgame.io';
-import { GameState } from '@/game';
+import { ClientGameState, GameState } from '@/game';
 import Table from '@/components/Table/Table';
 import ActionBar from './ActionBoard/ActionBar/ActionBar';
 import GameHeader from './GameHeader/GameHeader';
@@ -19,6 +19,7 @@ const Board: React.FC<GameContext> = (gameContext) => {
   const isMyTurn = playerID === ctx.currentPlayer;
   const gameover = ctx.gameover as { winners: string[] } | undefined;
 
+  const [showGameOver, setShowGameOver] = React.useState(true);
   const isLastPlayer = ctx.playOrderPos === ctx.numPlayers - 1;
   const hasPendingDiscard = G.table.fourFreedomsPendingDiscards.length > 0;
   const outOfAP = playerID != null && (G.players[playerID]?.token?.actions ?? 1) === 0;
@@ -48,7 +49,7 @@ const Board: React.FC<GameContext> = (gameContext) => {
         </Box>
       </Box>
 
-      <Dialog open={!!gameover} maxWidth="xs" fullWidth>
+      <Dialog open={!!gameover && showGameOver} onClose={() => setShowGameOver(false)} maxWidth="xs" fullWidth>
         <DialogTitle sx={{ textAlign: 'center' }}>Game Over</DialogTitle>
         <DialogContent>
           {gameover && (
@@ -71,6 +72,9 @@ const Board: React.FC<GameContext> = (gameContext) => {
                     </ListItem>
                   ))}
               </List>
+              <Button onClick={() => setShowGameOver(false)} fullWidth sx={{ mt: 2 }}>
+                Close
+              </Button>
             </>
           )}
         </DialogContent>
@@ -94,7 +98,10 @@ const Boardgame: React.FC<Props> = ({ isLocal, gameConfig, ...props }) => {
   // type, unmounting and remounting — which resets the game state.
   const BoardgameComponent = React.useMemo(() => {
     const multiplayer = isLocal ? Local() : SocketIO({ server: 'localhost:3001' });
-    return Client({ game: gameConfig ?? game, board: Board, multiplayer, numPlayers: 3, debug: false });
+    // Board expects ClientGameState (after playerView strips decks), but Client() couples
+    // game + board generics to GameState. The cast is safe because boardgame.io always runs
+    // playerView before passing state to the board component.
+    return Client({ game: gameConfig ?? game, board: Board as React.FC<BoardProps<GameState>>, multiplayer, numPlayers: 3, debug: false });
   }, [isLocal, gameConfig]);
 
   return <BoardgameComponent {...props} />;

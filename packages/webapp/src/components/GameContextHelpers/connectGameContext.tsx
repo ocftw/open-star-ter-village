@@ -1,8 +1,8 @@
 import React from 'react';
-import { GameState } from "@/game";
+import { ClientGameState } from "@/game";
 import { BoardProps } from 'boardgame.io/react';
 
-export type GameContext = BoardProps<GameState>;
+export type GameContext = BoardProps<ClientGameState>;
 export type GameContextComponentProps = { gameContext: GameContext; };
 export type MapGameContextToProps<TProps, TOwnProps> = (context: GameContext, ownProps: TOwnProps) => TProps;
 

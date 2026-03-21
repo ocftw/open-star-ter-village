@@ -1,17 +1,10 @@
 import { Ctx, PlayerID } from "boardgame.io";
-import { ClientGameState } from "../store/store";
-import { Player } from "../store/slice/players";
+import { ClientGameState, GameState } from "../store/store";
+import { ClientPlayers } from "../store/slice/players";
 
-type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
-type PlayerViewFn<G extends any = any> = (context: {
-  G: G;
-  ctx: Ctx;
-  playerID: PlayerID | null;
-}) => any;
-
-export const playerView: PlayerViewFn = ({ G, playerID}): ClientGameState => {
+export const playerView = ({ G, playerID }: { G: GameState; ctx: Ctx; playerID: PlayerID | null }): ClientGameState => {
   const { decks, players, ...view } = G;
-  const publicPlayers: Record<PlayerID, PartialBy<Player, 'hand'>> = {};
+  const publicPlayers: ClientPlayers = {};
   for (let id in players) {
     if (id === playerID) {
       publicPlayers[id] = players[id];

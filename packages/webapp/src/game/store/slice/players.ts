@@ -1,5 +1,9 @@
 import { PlayerID } from "boardgame.io";
 import { ProjectCard } from "../../card";
+import { PartialBy } from "../../utils/types";
+
+/** Client-side view of players where other players' hands may be hidden. */
+export type ClientPlayers = Record<PlayerID, PartialBy<Player, 'hand'>>;
 
 export interface Hand {
   projects: ProjectCard[];
@@ -28,24 +32,24 @@ const initialize = (state: Players, playerNames: PlayerID[]): void => {
   });
 }
 
-const getNumWorkerTokens = (state: Players, playerId: PlayerID): number => {
+const getNumWorkerTokens = (state: ClientPlayers, playerId: PlayerID): number => {
   return state[playerId].token.workers;
 };
 
-const getNumActionTokens = (state: Players, playerId: PlayerID): number => {
+const getNumActionTokens = (state: ClientPlayers, playerId: PlayerID): number => {
   return state[playerId].token.actions;
 };
 
-const getNumProjects = (state: Players, playerId: PlayerID): number => {
-  return state[playerId].hand.projects.length;
+const getNumProjects = (state: ClientPlayers, playerId: PlayerID): number => {
+  return state[playerId].hand!.projects.length;
 };
 
-const getProjectCards = (state: Players, playerId: PlayerID): ProjectCard[] => {
-  return state[playerId].hand.projects;
+const getProjectCards = (state: ClientPlayers, playerId: PlayerID): ProjectCard[] => {
+  return state[playerId].hand!.projects;
 }
 
-const getProjectCardById = (state: Players, playerId: PlayerID, projectId: string): ProjectCard | undefined => {
-  return state[playerId].hand.projects.find(p => p.id === projectId);
+const getProjectCardById = (state: ClientPlayers, playerId: PlayerID, projectId: string): ProjectCard | undefined => {
+  return state[playerId].hand!.projects.find(p => p.id === projectId);
 }
 
 const addProjects = (state: Players, playerId: PlayerID, projects: ProjectCard[]): void => {

@@ -1,14 +1,12 @@
-import PlayersSlice, { Player, Players } from "./slice/players";
+import PlayersSlice, { ClientPlayers, Players } from "./slice/players";
 import TableSlice, { Table } from "./slice/table";
 import DecksSlice, { Decks } from "./slice/decks";
 import RuleSlice, { Rule } from "./slice/rule";
 import { PlayerID } from "boardgame.io";
 
-type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
-
 /** The game state as seen by a client (after playerView strips server-only data). */
-export type ClientGameState = Omit<GameState, 'decks'> & {
-  players: Record<PlayerID, PartialBy<Player, 'hand'>>;
+export type ClientGameState = Omit<GameState, 'decks' | 'players'> & {
+  players: ClientPlayers;
 };
 
 export interface GameState {
