@@ -2,7 +2,6 @@ import React from 'react';
 import { ProjectSlotState } from '@/game';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import Chip from '@mui/material/Chip';
@@ -66,33 +65,31 @@ const ProjectSlot: React.FC<Props> = ({
   };
 
   return (
-    <Grid container spacing={3} xs={12}>
-      <StyledPaper
-        data-testid={slot.id}
-        data-requirements={requiredJobs.join(',')}
-        data-job-requirements={JSON.stringify(requirements)}
-        onClick={onProjectSlotClick}
-        className={selected ? 'selected' : ''}
-      >
-        <Box display="flex" alignItems="center">
-          <Avatar sizes="medium">{owner}</Avatar>
-          <Typography variant="h6" sx={{ marginLeft: '8px' }}>{projectName}</Typography>
-        </Box>
-        {!!projectType && (<Chip label={projectType} color="primary" size="small" />)}
-        <Grid container direction="column" justifyContent="center" alignItems="flex-start" width='100%'>
-          {requiredJobs.map((jobName) => (
-            <JobAndContributions
-              key={`${slot.id}-${jobName}`}
-              jobName={jobName}
-              requirements={requirements[jobName]}
-              contributions={slot.contributions.filter((contribution) => contribution.jobName === jobName)}
-              interactivePlayers={interactivePlayers}
-              onContributionChange={onContributionChange}
-            />
-          ))}
-        </Grid>
-      </StyledPaper>
-    </Grid>
+    <StyledPaper
+      data-testid={slot.id}
+      data-requirements={requiredJobs.join(',')}
+      data-job-requirements={JSON.stringify(requirements)}
+      onClick={onProjectSlotClick}
+      className={selected ? 'selected' : ''}
+    >
+      <Box display="flex" alignItems="center">
+        <Avatar sizes="medium">{owner}</Avatar>
+        <Typography variant="h6" sx={{ marginLeft: '8px' }}>{projectName}</Typography>
+      </Box>
+      {!!projectType && (<Chip label={projectType} color="primary" size="small" />)}
+      <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+        {requiredJobs.map((jobName) => (
+          <JobAndContributions
+            key={`${slot.id}-${jobName}`}
+            jobName={jobName}
+            requirements={requirements[jobName]}
+            contributions={slot.contributions.filter((contribution) => contribution.jobName === jobName)}
+            interactivePlayers={interactivePlayers}
+            onContributionChange={onContributionChange}
+          />
+        ))}
+      </Box>
+    </StyledPaper>
   );
 };
 
