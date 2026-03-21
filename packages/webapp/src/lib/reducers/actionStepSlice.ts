@@ -58,7 +58,7 @@ const actionStepSlice = createSlice({
     setMirrorTarget: (state, action: PayloadAction<MirrorableActionName | null>) => {
       state.mirrorTarget = action.payload;
     },
-    setHandPorjectCardsInteractive: (state) => {
+    setHandProjectCardsInteractive: (state) => {
       state.interactiveState.handProjectCards = true;
     },
     setJobSlotsInteractive: (state) => {
@@ -94,7 +94,7 @@ export const {
   setCurrentAction,
   resetAction,
   setMirrorTarget,
-  setHandPorjectCardsInteractive,
+  setHandProjectCardsInteractive,
   setJobSlotsInteractive,
   clearJobSlotsInteractive,
   setProjectSlotsInteractive,

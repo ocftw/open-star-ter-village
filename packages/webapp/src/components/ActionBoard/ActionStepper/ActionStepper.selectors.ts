@@ -1,6 +1,6 @@
 import { AppDispatch } from '@/lib/store';
 import { createSelector } from '@reduxjs/toolkit';
-import { UserActionMoves, getCurrentAction, getCurrentStep, getMirrorTarget, resetAction, setActionStep, setMirrorTarget, setOwnedContributionInteractive, setHandPorjectCardsInteractive, setJobSlotsInteractive, setProjectSlotsInteractive, setJoinedContributionInteractive } from '@/lib/reducers/actionStepSlice';
+import { UserActionMoves, getCurrentAction, getCurrentStep, getMirrorTarget, resetAction, setActionStep, setMirrorTarget, setOwnedContributionInteractive, setHandProjectCardsInteractive, setJobSlotsInteractive, setProjectSlotsInteractive, setJoinedContributionInteractive } from '@/lib/reducers/actionStepSlice';
 import { GameContext } from '../../GameContextHelpers';
 import { getSelectedHandProjectCards, resetHandProjectCardSelection } from '@/lib/reducers/handProjectCardSlice';
 import { getSelectedJobSlots, resetJobSlotSelection } from '@/lib/reducers/jobSlotSlice';
@@ -117,7 +117,7 @@ export const mapStateToProps = createSelector(
 export interface DispatchProps {
   setActionStep: (step: number) => void;
   setMirrorTarget: (target: MirrorableActionName | null) => void;
-  setHandPorjectCardsInteractive: () => void;
+  setHandProjectCardsInteractive: () => void;
   setJobSlotsInteractive: () => void;
   setProjectSlotsInteractive: () => void;
   setOwnedContributionInteractive: () => void;
@@ -132,7 +132,7 @@ export interface DispatchProps {
 export const mapDispatchToProps = (dispatch: AppDispatch): DispatchProps => ({
   setActionStep: (step: number) => dispatch(setActionStep(step)),
   setMirrorTarget: (target: MirrorableActionName | null) => dispatch(setMirrorTarget(target)),
-  setHandPorjectCardsInteractive: () => dispatch(setHandPorjectCardsInteractive()),
+  setHandProjectCardsInteractive: () => dispatch(setHandProjectCardsInteractive()),
   setJobSlotsInteractive: () => dispatch(setJobSlotsInteractive()),
   setProjectSlotsInteractive: () => dispatch(setProjectSlotsInteractive()),
   setOwnedContributionInteractive: () => dispatch(setOwnedContributionInteractive()),

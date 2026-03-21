@@ -16,7 +16,7 @@ export interface ActionSelectionState {
 
 /** Redux dispatch functions that make board elements interactive. */
 export interface ActionBoardActivators {
-  setHandPorjectCardsInteractive: () => void;
+  setHandProjectCardsInteractive: () => void;
   setJobSlotsInteractive: () => void;
   setProjectSlotsInteractive: () => void;
   setOwnedContributionInteractive: () => void;
@@ -46,8 +46,8 @@ export const ACTION_CONFIGS: Record<MirrorableActionName, ActionConfig> = {
   createProject: {
     displayName: 'Create Project',
     steps: [{ name: 'Select One Hand Project Card, Select One Job Slot' }],
-    activateBoard: ({ setHandPorjectCardsInteractive, setJobSlotsInteractive }) => {
-      setHandPorjectCardsInteractive();
+    activateBoard: ({ setHandProjectCardsInteractive, setJobSlotsInteractive }) => {
+      setHandProjectCardsInteractive();
       setJobSlotsInteractive();
     },
     isStepValid: ({ selectedHandProjectCards, selectedJobSlots }) =>
