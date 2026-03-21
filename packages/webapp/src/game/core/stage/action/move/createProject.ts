@@ -30,43 +30,42 @@ export const createProject: GameMove<CreateProject> = ({ G, playerID }, projectC
     throw new Error('Not enough worker tokens');
   }
 
-  // All token checks passed — now mutate state
-  PlayersMutator.useActionTokens(G.players, playerID, actionTokenCosts);
-  ActionSlotMutator.occupy(G.table.actionSlots.createProject);
-  PlayersMutator.useWorkerTokens(G.players, playerID, projectOwnerWorkerTokenCosts);
-
-  // check project card in in hand
+  // Validate project card is in hand
   const projectCard = PlayersSelector.getProjectCardById(G.players, playerID, projectCardId);
   if (!projectCard) {
     throw new Error('Project card not found');
   }
-  PlayersMutator.useProject(G.players, playerID, projectCard);
-  ProjectBoardMutator.add(G.table.projectBoard, projectCard);
 
-  // assign worker token to owner slot
-  const projectSlot = ProjectBoardSelector.getSlotByCard(G.table.projectBoard, projectCard);
-  ProjectSlotMutator.assignOwner(projectSlot, playerID, projectOwnerWorkerTokenCosts);
-
-  // check job card is on the table
+  // Validate job card is on the table
   const jobCard = JobSlotsSelector.getJobCardById(G.table.jobSlots, jobCardId);
   if (!jobCard) {
     throw new Error('Job card not found');
   }
 
-  // remove and discard job card
-  JobSlotsMutator.removeJobCard(G.table.jobSlots, jobCard);
-  DeckMutator.discard(G.decks.jobs, [jobCard]);
-
-  // check job card is required in project
+  // Validate job card is required in project
   const ignoreRequirement = RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, playerID);
   if (!ignoreRequirement && !Object.keys(projectCard.requirements).includes(jobCard.name)) {
     throw new Error('Job card is not required in project');
   }
+
+  // All checks passed — now mutate state
+  PlayersMutator.useActionTokens(G.players, playerID, actionTokenCosts);
+  ActionSlotMutator.occupy(G.table.actionSlots.createProject);
+  PlayersMutator.useWorkerTokens(G.players, playerID, projectOwnerWorkerTokenCosts);
+
+  PlayersMutator.useProject(G.players, playerID, projectCard);
+  ProjectBoardMutator.add(G.table.projectBoard, projectCard);
+
+  const projectSlot = ProjectBoardSelector.getSlotByCard(G.table.projectBoard, projectCard);
+  ProjectSlotMutator.assignOwner(projectSlot, playerID, projectOwnerWorkerTokenCosts);
+
+  JobSlotsMutator.removeJobCard(G.table.jobSlots, jobCard);
+  DeckMutator.discard(G.decks.jobs, [jobCard]);
+
   if (ignoreRequirement) {
     RuleMutator.consumeIgnoreFirstWorkerRequirement(G.rules, playerID);
   }
 
-  // assign worker token to job slot
   PlayersMutator.useWorkerTokens(G.players, playerID, assignWorkerTokenCosts);
   const initialContributionValue = RuleSelector.getAssignWorkerInitialContributionValue(G.rules, 'createProject');
   ProjectSlotMutator.assignWorker(projectSlot, jobCard.name, playerID, initialContributionValue);

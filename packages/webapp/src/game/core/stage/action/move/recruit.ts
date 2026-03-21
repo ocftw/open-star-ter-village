@@ -27,47 +27,48 @@ export const recruit: GameMove<Recruit> = ({ G, playerID }, jobCardId, projectSl
     throw new Error('Not enough worker tokens');
   }
 
-  // All token checks passed — now mutate state
-  PlayersMutator.useActionTokens(G.players, playerID, actionTokenCosts);
-  ActionSlotMutator.occupy(G.table.actionSlots.recruit);
-
-  // check job card is on the table
+  // Validate job card is on the table
   const jobCard = JobSlotsSelector.getJobCardById(G.table.jobSlots, jobCardId);
   if (!jobCard) {
     throw new Error('Job card not found');
   }
 
+  // Validate project slot exists
   const activeProject = ProjectBoardSelector.getBySlotId(G.table.projectBoard, projectSlotId);
   if (!activeProject) {
     throw new Error('Project slot not found');
   }
 
-  // User cannot place more than one worker in same job
+  // Validate no duplicate worker in same job
   if (ProjectSlotSelector.hasWorker(activeProject, jobCard.name, playerID)) {
     throw new Error('Worker already assigned');
   }
 
-  // remove and discard job card
-  JobSlotsMutator.removeJobCard(G.table.jobSlots, jobCard);
-  DeckMutator.discard(G.decks.jobs, [jobCard]);
-
+  // Validate job card is required in project
   const ignoreRequirement = RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, playerID);
   if (!ignoreRequirement && !Object.keys(activeProject.card!.requirements).includes(jobCard.name)) {
     throw new Error('Job card is not required in project');
   }
-  if (ignoreRequirement) {
-    RuleMutator.consumeIgnoreFirstWorkerRequirement(G.rules, playerID);
-  }
 
+  // Validate job requirement is not fulfilled yet
   const jobContribution = ProjectSlotSelector.getJobContribution(activeProject, jobCard.name);
-  // Check job requirment is not fulfilled yet
   if (jobContribution >= activeProject.card!.requirements[jobCard.name]) {
     throw new Error('Job requirement already fulfilled');
   }
 
+  // All checks passed — now mutate state
+  PlayersMutator.useActionTokens(G.players, playerID, actionTokenCosts);
+  ActionSlotMutator.occupy(G.table.actionSlots.recruit);
+
+  JobSlotsMutator.removeJobCard(G.table.jobSlots, jobCard);
+  DeckMutator.discard(G.decks.jobs, [jobCard]);
+
+  if (ignoreRequirement) {
+    RuleMutator.consumeIgnoreFirstWorkerRequirement(G.rules, playerID);
+  }
+
   PlayersMutator.useWorkerTokens(G.players, playerID, assignWorkerTokenCosts);
 
-  // assign worker token
   const initialContributionValue = RuleSelector.getAssignWorkerInitialContributionValue(G.rules, 'recruit');
   ProjectSlotMutator.assignWorker(activeProject, jobCard.name, playerID, initialContributionValue);
 
