@@ -1,0 +1,50 @@
+{
+  "permissions": {
+    "allow": [
+      "Edit(rfc/**)",
+      "Write(rfc/**)",
+      "Edit(.claude/commands/**)",
+      "Write(.claude/commands/**)",
+
+      "Bash(gh pr comment:*)",
+      "Bash(gh pr create:*)",
+      "Bash(gh pr edit:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr diff:*)",
+      "Bash(gh issue comment:*)",
+
+      "Edit(packages/webapp/src/**)",
+      "Write(packages/webapp/src/**)",
+      "Edit(homepage/src/**)",
+      "Write(homepage/src/**)",
+      "Edit(homepage/_cards/**)",
+      "Write(homepage/_cards/**)",
+      "Edit(homepage/_pages/**)",
+      "Write(homepage/_pages/**)",
+      "Edit(homepage/_footer/**)",
+      "Write(homepage/_footer/**)",
+      "Bash(yarn webapp build)",
+      "Bash(yarn webapp test)",
+      "Bash(yarn webapp lint)",
+      "Bash(npx tsc:*)",
+      "Bash(cd homepage && yarn lint)",
+      "Bash(cd homepage && yarn build)",
+
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git push origin:*)",
+      "Bash(git branch:*)"
+    ],
+    "deny": [
+      "Bash(git push origin main:*)",
+      "Bash(git push origin master:*)",
+      "Bash(git push --force origin main:*)",
+      "Bash(git push --force origin master:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(rm -rf:*)"
+    ]
+  }
+}
