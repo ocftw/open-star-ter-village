@@ -94,4 +94,39 @@ Game logic (moves, mutations) operates on `GameState` via boardgame.io; UI conce
 - **Yarn 3.4.1** — use project-local yarn, not system yarn
 - TypeScript strict mode is enabled; all new code must be strictly typed
 - Tests exist only for game core logic (`src/game/utils.test.ts`); component tests are not yet in place
-- CI runs `yarn run webapp build` on Node 18.x and 20.x on pushes/PRs to main
+- CI runs `yarn webapp build` on Node 18.x and 20.x on pushes/PRs to main
+
+## Agent Workflow
+
+This project uses a multi-agent development workflow with three roles:
+
+- **Planner** (Claude / Opus 4.6): RFC writing, architecture decisions, plan breakdown
+- **Supervisor** (Claude / Sonnet 4.6): Plan oversight, review orchestration, merge requests
+- **Executor** (Codex plugin / gpt-5.4): Task implementation and testing
+
+### Process
+
+```
+RFC (Planner)
+  → Plans (Planner breaks RFC into observable features)
+    → Tasks (Supervisor breaks each plan into coding-agent units)
+      → Implement + Test in parallel (1–N Executor agents via Codex plugin)
+        → /simplify (post-task cleanup)
+          → Review + Test in parallel:
+              1. /code-review:code-review
+              2. /codex:review
+              3. yarn webapp test (or homepage lint)
+            → Auto-fix all critical issues
+              (escalate to human only for: architecture conflicts, strategy gaps, unclear scope)
+              → Commit → Push → Raise MR
+```
+
+### Scope hierarchy
+
+| Level | Owner | Description |
+|-------|-------|-------------|
+| **RFC** | Planner | Large feature area (e.g. "Create a game lobby") |
+| **Plan** | Planner → Supervisor | One observable feature (e.g. "User can list public rooms") |
+| **Task** | Supervisor → Executor | Single coding unit — implement + test, one agent handles end-to-end |
+
+See `rfc/002-agent-workflow-role-separation.md` for background.
