@@ -30,7 +30,7 @@ This RFC formalizes agent roles, defines project-aware review strategies, and in
 - Automating code review via GitHub Actions or webhooks (token cost risk from external triggers)
 - Mandating a fixed number of review agents per PR
 - Replacing human code review — this augments, not replaces, maintainer judgment
-- Defining permissions or settings.json configuration (covered separately)
+- Defining `.claude/settings.json` configuration (covered in RFC 003)
 - Defining the RFC folder structure or template (covered by RFC 001)
 
 ## Solutions
@@ -139,7 +139,7 @@ When multiple agents run in parallel, the Supervisor consolidates their findings
 
 ### 5. `/code-review:code-review` Skill
 
-A Claude Code plugin skill that maintainers and contributors invoke manually. **Not attached to GitHub hooks or actions.**
+A Claude Code plugin skill that maintainers and contributors invoke manually. **Not attached to GitHub hooks or actions.** This skill is a future deliverable of this RFC — it does not exist yet.
 
 **Three invocation modes:**
 
@@ -169,7 +169,7 @@ Replace the current generic `AGENTS.md` (254 lines, duplicates CLAUDE.md and REA
 
 ### 7. Permission Guidelines (Per-Role)
 
-Claude Code permissions (`.claude/settings.json`) cannot enforce role-based access — all agents share the same permission set. The table below documents the **intended** permissions per role as a guideline for contributors and future tooling.
+Claude Code permissions (`.claude/settings.json`) cannot enforce role-based access — all agents share the same permission set. The table below documents the **intended** permissions per role as a convention guideline. The actual `.claude/settings.json` configuration (union of all role permissions, deny list, settings file separation) is defined in [RFC 003](./003-permissions-hands-free-execution.md).
 
 | Permission | Planner | Supervisor | Executor | Notes |
 |------------|:-------:|:----------:|:--------:|-------|

@@ -92,7 +92,7 @@ Game logic (moves, mutations) operates on `GameState` via boardgame.io; UI conce
 - **Yarn 3.4.1** — use project-local yarn, not system yarn
 - TypeScript strict mode is enabled; all new code must be strictly typed
 - Tests exist only for game core logic (`src/game/utils.test.ts`); component tests are not yet in place
-- CI runs `yarn run webapp build` on Node 18.x and 20.x on pushes/PRs to main
+- CI runs `yarn webapp build` on Node 18.x and 20.x on pushes/PRs to main
 
 ## Agent Workflow
 

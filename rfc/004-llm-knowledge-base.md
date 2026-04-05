@@ -149,6 +149,8 @@ The LLM reads from all three raw sources and produces organized, interlinked art
 | `resources.md` | Drive links from all sources | All external resources with descriptions |
 | `homepage-editing.md` | wiki editing guide | CMS guide, block types, editorial workflow |
 
+**Language:** Wiki articles are written in English. Bilingual wiki content (zh-Hant translations) is deferred — at this scale, a Cursor skill or chat-based search interface on the website may serve multilingual users better than maintaining parallel article sets. This decision can be revisited when the wiki grows beyond ~15 articles.
+
 **Obsidian compatibility** (nice-to-have): Standard `[text](./path.md)` links work in both Obsidian and on the web. The `knowledge/` folder can be opened as an Obsidian vault directly without plugins.
 
 ### 4. Incremental Ingestion: `/add-file`
@@ -327,7 +329,7 @@ The article notes this is unnecessary at small scale. Auto-maintained index file
 Violates the explicit goal of keeping Drive files in place. Binary assets (PDFs, images, presentations) would bloat the repo. Cataloging with links and reading content via MCP is sufficient.
 
 ### Node.js / shell scripts for wiki tooling
-Python was chosen for `add_file.py` and `doctor.py` because it has stronger libraries for URL parsing, file type detection, and JSON processing. `buildSearchIndex.ts` is TypeScript because it lives in the homepage project and is imported by `getStaticProps` at build time.
+Python was chosen for `add_file.py` and `doctor.py` because it has the lowest barrier to entry for new contributors — Python is pre-installed on macOS and most Linux distributions, requires no project-specific setup (no `package.json`, no build step), and its standard library covers URL parsing, file type detection, and JSON processing without additional dependencies. `buildSearchIndex.ts` is TypeScript because it lives in the homepage project and is imported by `getStaticProps` at build time. There is no mandatory language constraint; the guiding principle is minimizing setup friction for contributors.
 
 ## Testing Plan
 
