@@ -1,8 +1,11 @@
-# RFC: Phase 2 — Online Multiplayer
+# RFC 005: Online Multiplayer Support
 
-Status: Draft
+**Status:** Draft
+**Author:** @ocftw
+**Created:** 2026-04-05
+**Related:** [PR #345](https://github.com/ocftw/open-star-ter-village/pull/345)
 
-## Problem
+## Description
 
 Open StarTer Village currently runs as a single-browser experience. All players
 share one machine via tabs in `DevView`, using boardgame.io's `Local()` transport
@@ -31,7 +34,7 @@ Without these, the game cannot be played online by separate users.
 - The existing `DevView` local/offline mode continues to work for development
   and testing.
 
-## Non-goals
+## Non-Goals
 
 - **Deployment platform and infrastructure** — this RFC does not prescribe how
   the Next.js client and boardgame.io server are deployed, reverse-proxied, or
@@ -43,7 +46,7 @@ Without these, the game cannot be played online by separate users.
 - **Matchmaking or ELO** — players manually create and join rooms.
 - **Mobile-specific UI optimisations.**
 
-## Proposal
+## Solutions
 
 ### Architecture Overview
 
@@ -60,24 +63,11 @@ Without these, the game cannot be played online by separate users.
 └──────────────┘         └──────────────────────┘
 ```
 
-boardgame.io 0.50.2's `Server()` already exposes a Lobby REST API alongside
-the SocketIO transport. The plan is to use these built-in endpoints — no custom
-backend logic is needed.
+boardgame.io 0.50.2's `Server()` already exposes a Lobby REST API alongside the
+SocketIO transport. The plan uses these built-in endpoints — no custom backend
+logic is needed.
 
-### Lobby REST API (provided by boardgame.io)
-
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `/games/OpenStarTerVillage/create` | POST | Create a match, returns `{ matchID }` |
-| `/games/OpenStarTerVillage` | GET | List matches (filterable by `isGameover`) |
-| `/games/OpenStarTerVillage/{id}` | GET | Get match metadata (players, seats) |
-| `/games/OpenStarTerVillage/{id}/join` | POST | Join a seat, returns `{ playerCredentials }` |
-| `/games/OpenStarTerVillage/{id}/leave` | POST | Leave a match |
-
-These endpoints are automatically available once the game has a `name` property
-and the server is running.
-
-### Step 1 — Game definition: add `name`
+### 1. Game Definition — Add `name`
 
 **File:** `packages/webapp/src/game/game.ts`
 
@@ -94,7 +84,7 @@ export const OpenStarTerVillage: Game<GameState, Record<string, unknown>, GameSe
 };
 ```
 
-### Step 2 — Server: configurable CORS origins
+### 2. Server — Configurable CORS Origins
 
 **File:** `packages/webapp/src/server.ts`
 
@@ -120,12 +110,11 @@ A `.env.development` file in `packages/webapp/` provides defaults:
 NEXT_PUBLIC_GAME_SERVER_URL=http://localhost:8000
 ```
 
-### Step 3 — Lobby client utility
+### 3. Lobby Client Utility
 
 **New file:** `packages/webapp/src/lib/lobbyClient.ts`
 
-A thin module that exports a configured `LobbyClient` instance and shared
-constants:
+A thin module that exports a configured `LobbyClient` instance and shared constants:
 
 ```ts
 import { LobbyClient } from 'boardgame.io/lobby';
@@ -139,7 +128,17 @@ export const lobbyClient = new LobbyClient({ server: GAME_SERVER_URL });
 
 All lobby and game-room code imports from here — no hardcoded URLs elsewhere.
 
-### Step 4 — Credential storage
+The Lobby REST API provided by boardgame.io:
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/games/OpenStarTerVillage/create` | POST | Create a match, returns `{ matchID }` |
+| `/games/OpenStarTerVillage` | GET | List matches (filterable by `isGameover`) |
+| `/games/OpenStarTerVillage/{id}` | GET | Get match metadata (players, seats) |
+| `/games/OpenStarTerVillage/{id}/join` | POST | Join a seat, returns `{ playerCredentials }` |
+| `/games/OpenStarTerVillage/{id}/leave` | POST | Leave a match |
+
+### 4. Credential Storage
 
 **New file:** `packages/webapp/src/lib/matchCredentials.ts`
 
@@ -160,7 +159,7 @@ export function loadCredentials(matchID: string): MatchCredentials | null;
 export function clearCredentials(matchID: string): void;
 ```
 
-### Step 5 — Refactor `BoardGame.tsx`
+### 5. Refactor `BoardGame.tsx`
 
 **File:** `packages/webapp/src/components/BoardGame.tsx`
 
@@ -173,62 +172,56 @@ export function clearCredentials(matchID: string): void;
 
 The `Board` component and all game UI remain untouched.
 
-### Step 6 — Lobby page
+### 6. Lobby Page
 
 **New file:** `packages/webapp/src/app/lobby/page.tsx` (client component)
 
 Three sections, built with MUI:
 
-#### Create Match
-- Text field for **player name** (persisted in `localStorage` across sessions)
-- Dropdown for **number of players** (3–6)
+**Create Match**
+- Text field for player name (persisted in `localStorage` across sessions)
+- Dropdown for number of players (3–6)
 - "Create Game" button
-- Flow: `createMatch()` → auto-join seat 0 → save credentials → redirect to
-  `/game/{matchID}`
+- Flow: `createMatch()` → auto-join seat 0 → save credentials → redirect to `/game/{matchID}`
 
-#### Match List
+**Match List**
 - Fetched via `listMatches()` on mount + manual refresh button
 - Shows: match ID (truncated), seats filled / total, creation time
 - Filters out completed games and full matches
 - "Join" button per available match
 
-#### Join Flow
+**Join Flow**
 - Finds the first open seat
 - Calls `joinMatch()` with player name
 - Saves credentials
 - Redirects to `/game/{matchID}`
 
-### Step 7 — Game room page
+### 7. Game Room Page
 
-**New file:** `packages/webapp/src/app/game/[matchID]/page.tsx` (client
-component)
+**New file:** `packages/webapp/src/app/game/[matchID]/page.tsx` (client component)
 
 Two states:
 
-#### Waiting Room
-Shown when not all seats are filled. Displays:
+**Waiting Room** — shown when not all seats are filled:
 - Match ID and player count
 - List of joined players (name, seat index)
 - Shareable URL for inviting others
 - Auto-polls `getMatch()` every 3 seconds
 
-#### Game Board
-Shown when all seats are filled. Renders `<Boardgame>` with:
+**Game Board** — shown when all seats are filled, renders `<Boardgame>` with:
 - `isLocal={false}`
 - `matchID` from URL
 - `playerID` and `credentials` from localStorage
 
-#### Observer Mode
-If no credentials exist for this matchID, the board renders without a
-`playerID` — the viewer sees the game state without move controls.
+**Observer Mode** — if no credentials exist for this matchID, the board renders
+without a `playerID`; the viewer sees game state without move controls.
 
-### Step 8 — Home page update
+### 8. Home Page Update
 
 **File:** `packages/webapp/src/app/page.tsx`
 
 - Add a "Play Online" button/link routing to `/lobby`
-- Keep the existing `DevView` for development (gated behind
-  `NODE_ENV === 'development'` or `?dev=true` query param)
+- Keep the existing `DevView` for development (gated behind `NODE_ENV === 'development'` or `?dev=true` query param)
 
 ### Route Summary
 
@@ -238,7 +231,7 @@ If no credentials exist for this matchID, the board renders without a
 | `/lobby` | Create, list, and join matches |
 | `/game/[matchID]` | Waiting room → game board |
 
-### Data Flow: Full Match Lifecycle
+### Data Flow — Full Match Lifecycle
 
 ```
 1. Player A opens /lobby
@@ -261,7 +254,7 @@ If no credentials exist for this matchID, the board renders without a
 11. On page refresh: credentials loaded from localStorage → reconnect
 ```
 
-## Files Changed
+### Files Changed
 
 | Action | File | Purpose |
 |--------|------|---------|
@@ -278,54 +271,41 @@ If no credentials exist for this matchID, the board renders without a
 **No changes to:** `DevView.tsx`, game logic (`moves/`, `store/`), Redux store,
 or any existing game UI components.
 
-## Alternatives Considered
+### Open Questions
 
-| Option | Pros | Cons | Why rejected |
-|--------|------|------|--------------|
-| **Custom WebSocket server** (replace boardgame.io server) | Full control over protocol | Massive effort; re-invents state sync, conflict resolution, reconnection | boardgame.io already solves all of this |
-| **boardgame.io `<Lobby>` React component** | Zero UI work | Opinionated UI, limited customisation, doesn't integrate well with Next.js App Router | Need custom UX that fits the game's MUI design system |
-| **NextAuth + database for user accounts** | Persistent identity, friend lists | Over-engineered for MVP; adds auth complexity | Out of scope — display names + per-match credentials are sufficient |
-| **Peer-to-peer (WebRTC)** | No server needed | Requires STUN/TURN for NAT traversal; boardgame.io doesn't support it; game state needs authoritative server | Architectural mismatch |
-
-## Impact
-
-- **Systems affected:** `packages/webapp` only (game server + Next.js client)
-- **Breaking changes:** None — all existing routes and DevView continue working
-- **Rollout plan:** Feature branch (`feature/online-multiplayer`) merged after
-  manual testing. No feature flags needed — the lobby is additive, not a
-  replacement.
-- **Risks:**
-  - *CORS misconfiguration in production* — mitigated by env var with clear
-    documentation
-  - *Stale credentials in localStorage* — if a match is cleaned up server-side,
-    the client will fail to reconnect; the game room page should handle this
-    gracefully with a "match not found" message
-  - *boardgame.io in-memory storage* — by default, matches are stored in memory
-    and lost on server restart; production deployments should configure a
-    persistent storage adapter (e.g. `FlatFile` or a database), but that is an
-    infra concern excluded from this RFC
-
-## Open Questions
-
-- [ ] Should the lobby auto-refresh the match list on an interval, or only on
-      manual refresh?
-- [ ] Should there be a "leave match" button in the waiting room, calling the
-      `/leave` endpoint?
+- [ ] Should the lobby auto-refresh the match list on an interval, or only on manual refresh?
+- [ ] Should there be a "leave match" button in the waiting room, calling the `/leave` endpoint?
 - [ ] What is the desired player name length limit and validation rules?
-- [ ] Should observers be able to see player hands (current `playerView` hides
-      them for non-players)?
+- [ ] Should observers be able to see player hands (current `playerView` hides them for non-players)?
 
-## Timeline / Milestones
+## Rejected Solutions
 
-| Milestone | Target |
-|-----------|--------|
-| RFC approved | — |
-| Implementation start | — |
-| Lobby + game room functional (local dev) | — |
-| Manual QA with 3+ browser sessions | — |
-| Merge to main | — |
+### Custom WebSocket Server
 
-## Verification Plan
+Replace boardgame.io server entirely with a hand-rolled WebSocket server. Pros:
+full control over protocol. Rejected because boardgame.io already solves state
+sync, conflict resolution, and reconnection — reimplementing it is massive
+effort with no benefit.
+
+### boardgame.io `<Lobby>` React Component
+
+Use the built-in `<Lobby>` component for zero UI work. Rejected because it has
+an opinionated UI with limited customisation and does not integrate well with the
+Next.js App Router; we need custom UX that fits the game's MUI design system.
+
+### NextAuth + Database for User Accounts
+
+Add persistent identity with friend lists. Rejected as over-engineered for MVP;
+display names and per-match credentials are sufficient. Auth complexity is out of
+scope.
+
+### Peer-to-Peer (WebRTC)
+
+No server needed. Rejected because it requires STUN/TURN for NAT traversal,
+boardgame.io does not support WebRTC, and game state requires an authoritative
+server — an architectural mismatch.
+
+## Testing Plan
 
 1. `yarn webapp dev` — start Next.js (port 3000) and game server (port 8000)
 2. Navigate to `http://localhost:3000/lobby`
@@ -337,3 +317,12 @@ or any existing game UI components.
 8. Verify `http://localhost:3000/?dev=true` still shows DevView with local mode
 9. `yarn webapp build` — no type errors
 10. `yarn webapp test` — existing Jest tests pass
+
+## SLAs
+
+| Metric | Target | Notes |
+|--------|--------|-------|
+| Move round-trip latency | < 300 ms | LAN/broadband; boardgame.io SocketIO transport |
+| Waiting room poll interval | 3 s | `getMatch()` polling until all seats filled |
+| Reconnection on refresh | < 5 s | Credential lookup from localStorage + SocketIO reconnect |
+| Breaking changes to existing routes | 0 | `/`, DevView, all existing game logic unaffected |
