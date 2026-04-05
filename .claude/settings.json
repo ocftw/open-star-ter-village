@@ -5,14 +5,12 @@
       "Write(rfc/**)",
       "Edit(.claude/commands/**)",
       "Write(.claude/commands/**)",
-
       "Bash(gh pr comment:*)",
       "Bash(gh pr create:*)",
       "Bash(gh pr edit:*)",
       "Bash(gh pr view:*)",
       "Bash(gh pr diff:*)",
       "Bash(gh issue comment:*)",
-
       "Edit(packages/webapp/src/**)",
       "Write(packages/webapp/src/**)",
       "Edit(homepage/src/**)",
@@ -29,7 +27,6 @@
       "Bash(npx tsc:*)",
       "Bash(cd homepage && yarn lint)",
       "Bash(cd homepage && yarn build)",
-
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(git status:*)",
@@ -46,5 +43,11 @@
       "Bash(git reset --hard:*)",
       "Bash(rm -rf:*)"
     ]
+  },
+  "enabledPlugins": {
+    "code-review@claude-plugins-official": true,
+    "codex@openai-codex": true,
+    "typescript-lsp@claude-plugins-official": true,
+    "skill-creator@claude-plugins-official": true
   }
 }
