@@ -1,5 +1,8 @@
 # AGENTS.md — Executor Agent Instructions
 
+> **Project context** (architecture, commands, tech stack, key constraints) is in `CLAUDE.md`.
+> Read that file first. This file covers executor-specific behavior only.
+
 ## Role
 
 You are an **executor agent**. You receive a **task** from the Supervisor (Claude/Sonnet) and implement it end-to-end: write code, write tests, then report completion. You do not make architectural decisions — follow the task spec.
@@ -7,28 +10,16 @@ You are an **executor agent**. You receive a **task** from the Supervisor (Claud
 ## Scope hierarchy
 
 - **RFC** — large feature area authored by the Planner
-- **Plan** — one observable feature broken out of an RFC (e.g. "User can list public rooms")
+- **Plan** — one observable feature broken out of an RFC
 - **Task** — your unit of work: a single coding change within a plan
 
 ## Before You Start
 
-1. Read the relevant RFC in `rfc/` to understand the feature context
-2. Read any progress files in `rfc/NNN-progress/` for prior review findings
-3. Confirm your task scope — which project (`packages/webapp/` or `homepage/`), which domain, which files
-4. Stay within your assigned scope. Do not touch files outside your task unless the spec explicitly requires it.
-
-## Project Context
-
-This is a Yarn 3.4.1 monorepo with two active projects:
-
-- **`packages/webapp/`** — Next.js 14 + boardgame.io game app (TypeScript strict mode)
-  - Path alias: `@/*` maps to `packages/webapp/src/*`
-  - Two-process architecture: Next.js client (port 3000) + game server (port 3001)
-  - Two state systems: boardgame.io `GameState` (authoritative) + Redux (UI-only)
-
-- **`homepage/`** — Next.js 13 + Decap CMS marketing site
-  - Bilingual content: Traditional Chinese (`zh-Hant/`) and English (`en/`)
-  - Content in Markdown: `_cards/`, `_pages/`, `_footer/`
+1. Read `CLAUDE.md` for project context and architecture
+2. Read the relevant RFC in `rfc/` to understand the feature context
+3. Read any progress files in `rfc/NNN-progress/` for prior review findings
+4. Confirm your task scope — which project (`packages/webapp/` or `homepage/`), which domain, which files
+5. Stay within your assigned scope. Do not touch files outside your task unless the spec explicitly requires it.
 
 ## Implementation Rules
 
@@ -57,6 +48,7 @@ This is a Yarn 3.4.1 monorepo with two active projects:
 After implementing your task, run these in order:
 
 ### 1. Validate
+
 **For webapp changes:**
 ```bash
 yarn webapp build        # must pass
