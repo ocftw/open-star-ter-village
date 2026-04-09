@@ -96,6 +96,10 @@ Game logic (moves, mutations) operates on `GameState` via boardgame.io; UI conce
 - Tests exist only for game core logic (`src/game/utils.test.ts`); component tests are not yet in place
 - CI runs `yarn webapp build` on Node 18.x and 20.x on pushes/PRs to main
 
+## Git Workflow
+
+Always work in a worktree. When starting any task that involves code changes, create an isolated worktree first before making edits.
+
 ## Agent Workflow
 
 This project uses a multi-agent development workflow with three roles:
