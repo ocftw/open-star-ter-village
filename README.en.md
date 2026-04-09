@@ -29,7 +29,7 @@ Through playing the game, players will come to understand:
 
 ### Open Game Rental
 
-If you're interested in renting the game, please send an email to <hi@ocf.tw> for an application and include the game lending agreement.
+If you're interested in renting the game, please send an email to [hi@ocf.tw](mailto:hi@ocf.tw) for an application and include the game lending agreement.
 
 - [Game Rules and Rental Application Form](https://drive.google.com/drive/folders/16FZ0F8D32D4zWGBKwP13-fnf9gr-CZJz)
 
@@ -56,11 +56,11 @@ You can join our discussions on [Discord](https://discord.gg/JnTHGnxwYS).
 
 ## Online Project Structure
 
-| Sub-Project                                       | Description                                     |
-| ----------------------------------------------- | ----------------------------------------------- |
-| [google-spreadsheet](./google-spreadsheet/)      | Prototype - Presented using Google Spreadsheets |
-| [packages/webapp](./packages/webapp/)            | Webapp - web game website                       |
-| [homepage](./homepage/)                          | [Official Website](https://openstartervillage.ocf.tw/)
+| Sub-Project                                 | Description                                            |
+| ------------------------------------------- | ------------------------------------------------------ |
+| [google-spreadsheet](./google-spreadsheet/) | Prototype - Presented using Google Spreadsheets        |
+| [packages/webapp](./packages/webapp/)       | Webapp - web game website                              |
+| [homepage](./homepage/)                     | [Official Website](https://openstartervillage.ocf.tw/) |
 
 ## Licensing Terms
 
