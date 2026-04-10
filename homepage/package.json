@@ -18,7 +18,7 @@
     "url": "https://github.com/ocftw/open-star-ter-village"
   },
   "engines": {
-    "node": ">= 24"
+    "node": ">= 22"
   },
   "bugs": {
     "url": "https://github.com/ocftw/open-star-ter-village/issues"

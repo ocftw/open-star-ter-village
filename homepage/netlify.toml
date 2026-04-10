@@ -4,5 +4,5 @@
   publish = ".next"
 
 [build.environment]
-  NODE_VERSION                = "24"
+  NODE_VERSION                = "22"
   SHARP_IGNORE_GLOBAL_LIBVIPS = "true"
