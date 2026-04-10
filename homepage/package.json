@@ -18,7 +18,7 @@
     "url": "https://github.com/ocftw/open-star-ter-village"
   },
   "engines": {
-    "node": ">= 18"
+    "node": ">= 24"
   },
   "bugs": {
     "url": "https://github.com/ocftw/open-star-ter-village/issues"
@@ -32,7 +32,8 @@
     "react-markdown": "^8.0.7",
     "rehype-raw": "^7.0.0",
     "remark": "^14.0.3",
-    "remark-html": "^15.0.2"
+    "remark-html": "^15.0.2",
+    "sharp": "^0.33.5"
   },
   "devDependencies": {
     "eslint": "^8.35.0",
