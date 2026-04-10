@@ -117,6 +117,10 @@ dist
 build/
 dist/
 
+# Claude Code local config
+.claude/settings.local.json
+.claude/worktrees/
+
 # yarn
 .yarn/*
 !.yarn/cache

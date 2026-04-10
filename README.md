@@ -31,7 +31,7 @@ English version: [README.en.md](./README.en.md)
 
 ### 開放遊戲租借
 
-如果您有興趣租借遊戲，請寄信至 <hi@ocf.tw> 進行申請，同時請附上遊戲出借同意書。
+如果您有興趣租借遊戲，請寄信至 [hi@ocf.tw](mailto:hi@ocf.tw) 進行申請，同時請附上遊戲出借同意書。
 
 - [遊戲規則與借用申請書](https://drive.google.com/drive/folders/16FZ0F8D32D4zWGBKwP13-fnf9gr-CZJz)
 
@@ -58,11 +58,11 @@ English version: [README.en.md](./README.en.md)
 
 ## 線上專案架構
 
-| 子專案                                        | 說明                                                |
-| --------------------------------------------- | --------------------------------------------------- |
-| [`google-spreadsheet`](./google-spreadsheet/) | 原型版本 - 以 Google Spreadsheet 呈現                 |
-| [`packages/webapp`](./packages/webapp/)       | 網頁版遊戲 - 處理遊戲規則                    |
-| [`homepage`](./homepage/)                     | [官方網站 - Official Website](https://openstartervillage.ocf.tw/)
+| 子專案                                           | 說明                                                            |
+| --------------------------------------------- | ------------------------------------------------------------- |
+| [google-spreadsheet](./google-spreadsheet/) | 原型版本 - 以 Google Spreadsheet 呈現                                |
+| [packages/webapp](./packages/webapp/)       | 網頁版遊戲 - 處理遊戲規則                                                |
+| [homepage](./homepage/)                     | [官方網站 - Official Website](https://openstartervillage.ocf.tw/) |
 
 ## 授權條款
 
