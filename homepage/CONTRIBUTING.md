@@ -5,7 +5,7 @@
 | 工具 | 版本 |
 | ---: | ---: |
 | Node | >=14 |
-| yarn | >=2 |
+| yarn |  >=2 |
 
 若尚未安裝 Node，請前往[此處](https://nodejs.org/en/)進行安裝。
 若尚未安裝 Yarn 或版本過舊，請前往[此處](https://yarnpkg.com/getting-started/install)進行安裝。
