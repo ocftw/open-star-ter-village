@@ -8,4 +8,7 @@ module.exports = {
     defaultLocale: 'zh-Hant',
   },
   trailingSlash: true,
+  images: {
+    unoptimized: true,
+  },
 };
