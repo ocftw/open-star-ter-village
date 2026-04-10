@@ -1,0 +1,8 @@
+[build]
+  base    = "homepage"
+  command = "yarn install && yarn build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION                = "24"
+  SHARP_IGNORE_GLOBAL_LIBVIPS = "true"
