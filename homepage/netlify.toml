@@ -1,6 +1,6 @@
 [build]
   base    = "homepage"
-  command = "yarn install && yarn build"
+  command = "yarn build"
   publish = ".next"
 
 [build.environment]
