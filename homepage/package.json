@@ -18,7 +18,7 @@
     "url": "https://github.com/ocftw/open-star-ter-village"
   },
   "engines": {
-    "node": ">= 18"
+    "node": ">= 24"
   },
   "bugs": {
     "url": "https://github.com/ocftw/open-star-ter-village/issues"
@@ -26,7 +26,7 @@
   "packageManager": "yarn@3.4.1",
   "dependencies": {
     "decap-cms-app": "^3.1.9",
-    "next": "^13.2.3",
+    "next": "13.5.11",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-markdown": "^8.0.7",
@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "eslint": "^8.35.0",
-    "eslint-config-next": "13.2.3",
+    "eslint-config-next": "13.5.11",
     "eslint-config-prettier": "^8.8.0",
     "prettier": "^3.0.0"
   }
