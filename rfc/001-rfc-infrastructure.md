@@ -1,6 +1,6 @@
 # RFC 001: RFC Infrastructure
 
-**Status:** Draft
+**Status:** In Review
 **Author:** @ben196888
 **Created:** 2026-03-23
 **Related:** [Issue #346](https://github.com/ocftw/open-star-ter-village/issues/346)
