@@ -66,13 +66,13 @@ See `rfc/TEMPLATE.md` for the full template. Every RFC must include:
 | **Accepted** | Approved for implementation | Maintainer |
 | **In Progress** | Implementation underway | Author / Executor |
 | **Complete** | Fully implemented and verified | Maintainer |
-| **Abandoned** | Proposal withdrawn or superseded | Author / Maintainer |
+| **Abandoned** | Proposal withdrawn or timed out; set `Superseded-By` if replaced by another RFC | Author / Maintainer |
 
 Transitions are tracked by updating the `Status` field in the RFC frontmatter. There is no formal approval vote — maintainer judgment applies.
 
 **Time limits:**
-- **Draft:** must advance to In Review, be superseded, or be abandoned within **3 months** of the RFC's first commit date on the main branch.
-- **In Review:** a fixed **1-month window** for the Maintainer to accept, supersede, or abandon the RFC. If no decision is made, the RFC is automatically considered Abandoned.
+- **Draft:** must advance to In Review, be superseded (set `Superseded-By` + Abandoned), or be abandoned within **3 months** of the RFC's merge date into main.
+- **In Review:** a fixed **1-month window** for the Maintainer to accept, supersede, or abandon the RFC. If the window expires with no decision, the Author or Maintainer must update the status to Abandoned.
 
 ### 4. Integration with Agent Workflow
 
@@ -112,6 +112,6 @@ External tools introduce access management overhead and are not version-controll
 
 | Metric | Target | Notes |
 |--------|--------|-------|
-| Draft lifespan | ≤ 3 months from first commit on main | Must advance to In Review, be superseded, or be abandoned |
+| Draft lifespan | ≤ 3 months from merge date into main | Must advance to In Review, be superseded, or be abandoned |
 | In Review window | ≤ 1 month (fixed) | Maintainer must accept, supersede, or abandon; no decision = Abandoned |
 | RFC numbering | Sequential, no gaps | If an RFC is abandoned, its number is not reused |
