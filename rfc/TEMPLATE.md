@@ -1,9 +1,10 @@
 # RFC NNN: Title
 
-**Status:** Draft | In Review | Accepted | In Progress | Complete
+**Status:** Draft | In Review | Accepted | In Progress | Complete | Abandoned
 **Author:** @github-handle
 **Created:** YYYY-MM-DD
 **Related:** [Issue #N](https://github.com/ocftw/open-star-ter-village/issues/N)
+**Superseded-By:** *(optional) RFC NNN — omit this line if not superseded*
 
 ## Description
 
