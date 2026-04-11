@@ -1,6 +1,6 @@
 # RFC 001: RFC Infrastructure
 
-**Status:** Draft
+**Status:** Accepted
 **Author:** @ben196888
 **Created:** 2026-03-23
 **Related:** [Issue #346](https://github.com/ocftw/open-star-ter-village/issues/346)
@@ -43,13 +43,13 @@ rfc/
 
 **Naming convention:** `NNN-kebab-case-slug.md` where NNN is a zero-padded sequential number.
 
-**Progress folders:** `NNN-progress/` contains review summaries, implementation notes, and other tracking artifacts. Files inside are freeform — no required structure.
+**Progress folders:** `NNN-progress/` contains review summaries, implementation notes, and other tracking artifacts. Files inside use date-prefixed names (e.g. `2026-04-11-review-summary.md`) — no other structure is required.
 
 ### 2. RFC Template
 
 See `rfc/TEMPLATE.md` for the full template. Every RFC must include:
 
-- **Metadata:** Status, Author, Created date, Related issues/PRs
+- **Metadata:** Status, Author, Created date, Related issues/PRs, optional Superseded-By
 - **Description:** The problem and motivation
 - **Goals / Non-Goals:** Scope boundaries
 - **Solutions:** The proposed approach, in detail
@@ -66,8 +66,13 @@ See `rfc/TEMPLATE.md` for the full template. Every RFC must include:
 | **Accepted** | Approved for implementation | Maintainer |
 | **In Progress** | Implementation underway | Author / Executor |
 | **Complete** | Fully implemented and verified | Maintainer |
+| **Abandoned** | Proposal withdrawn or timed out; set `Superseded-By` if replaced by another RFC | Author / Maintainer |
 
 Transitions are tracked by updating the `Status` field in the RFC frontmatter. There is no formal approval vote — maintainer judgment applies.
+
+**Time limits:**
+- **Draft:** must advance to In Review, be superseded (set `Superseded-By` + Abandoned), or be abandoned within **3 months** of the RFC's merge date into main.
+- **In Review:** a fixed **1-month window** for the Maintainer to accept, supersede, or abandon the RFC. If the window expires with no decision, the Author or Maintainer must update the status to Abandoned.
 
 ### 4. Integration with Agent Workflow
 
@@ -101,12 +106,12 @@ External tools introduce access management overhead and are not version-controll
 
 1. **Template usability:** Verify `TEMPLATE.md` can be copied to create a new RFC with all required sections
 2. **Existing RFC conformance:** Verify RFC 002 (already committed) follows the template structure
-3. **Progress folder:** Create `rfc/001-progress/` and verify it can hold freeform tracking files
-4. **Agent discovery:** Verify that a Claude Code or Codex agent, given the instruction "read the relevant RFC", can find and parse RFCs in `rfc/`
+3. **Progress folder:** Create `rfc/001-progress/` and verify it can hold date-prefixed tracking files
 
 ## SLAs
 
 | Metric | Target | Notes |
 |--------|--------|-------|
-| RFC review turnaround | ≤ 1 week from Draft → In Review decision | Maintainer acknowledges within 1 week |
+| Draft lifespan | ≤ 3 months from merge date into main | Must advance to In Review, be superseded, or be abandoned |
+| In Review window | ≤ 1 month (fixed) | Maintainer must accept, supersede, or abandon; no decision = Abandoned |
 | RFC numbering | Sequential, no gaps | If an RFC is abandoned, its number is not reused |
