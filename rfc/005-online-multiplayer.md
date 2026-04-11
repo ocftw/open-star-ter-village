@@ -1,6 +1,6 @@
 # RFC 005: Online Multiplayer Support
 
-**Status:** Draft
+**Status:** In Review
 **Author:** @ocftw
 **Created:** 2026-04-05
 **Related:** [PR #345](https://github.com/ocftw/open-star-ter-village/pull/345)
@@ -180,12 +180,18 @@ Three sections, built with MUI:
 
 **Create Match**
 - Text field for player name (persisted in `localStorage` across sessions)
+  - Validation: 1-20 characters after trimming whitespace; must contain at least
+    one non-whitespace character; no further character restrictions (Unicode
+    names are allowed). These limits are simple, inclusive, and sufficient for a
+    casual game where names are not unique identifiers.
 - Dropdown for number of players (3–6)
 - "Create Game" button
 - Flow: `createMatch()` → auto-join seat 0 → save credentials → redirect to `/game/{matchID}`
 
 **Match List**
-- Fetched via `listMatches()` on mount + manual refresh button
+- Fetched via `listMatches()` on mount + auto-refresh every 10 seconds + manual
+  refresh button. Auto-refresh keeps the list current without requiring user
+  action; 10 seconds is frequent enough for discovery while keeping API load low.
 - Shows: match ID (truncated), seats filled / total, creation time
 - Filters out completed games and full matches
 - "Join" button per available match
@@ -206,6 +212,9 @@ Two states:
 - Match ID and player count
 - List of joined players (name, seat index)
 - Shareable URL for inviting others
+- "Leave Match" button — calls the `/leave` endpoint, clears stored credentials,
+  and redirects back to `/lobby`. Players should be able to exit before a game
+  starts (e.g., joined the wrong room, changed their mind).
 - Auto-polls `getMatch()` every 3 seconds
 
 **Game Board** — shown when all seats are filled, renders `<Boardgame>` with:
@@ -273,10 +282,8 @@ or any existing game UI components.
 
 ### Open Questions
 
-- [ ] Should the lobby auto-refresh the match list on an interval, or only on manual refresh?
-- [ ] Should there be a "leave match" button in the waiting room, calling the `/leave` endpoint?
-- [ ] What is the desired player name length limit and validation rules?
-- [ ] Should observers be able to see player hands (current `playerView` hides them for non-players)?
+- [ ] Should observers be able to see player hands (current `playerView` hides
+  them for non-players)? — Requires product decision; see PR comment for details.
 
 ## Rejected Solutions
 
