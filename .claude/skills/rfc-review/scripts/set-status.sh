@@ -28,6 +28,13 @@ RFC_NUM=$(basename "${RFC_FILE}" | grep -o '^[0-9]*')
 RFC_SLUG=$(basename "${RFC_FILE}" .md | sed 's/^[0-9]*-//')
 
 case "${NEW_STATUS}" in
+  "Draft"|"In Review"|"Accepted"|"In Progress"|"Complete"|"Abandoned") ;;
+  *) echo "Error: '${NEW_STATUS}' is not a valid RFC status." >&2
+     echo "Valid statuses: Draft, In Review, Accepted, In Progress, Complete, Abandoned" >&2
+     exit 1 ;;
+esac
+
+case "${NEW_STATUS}" in
   "In Review") COMMIT_MSG="docs(rfc): move RFC ${RFC_NUM} to In Review" ;;
   "Accepted")  COMMIT_MSG="docs(rfc): accept RFC ${RFC_NUM} ${RFC_SLUG}" ;;
   "Abandoned") COMMIT_MSG="docs(rfc): abandon RFC ${RFC_NUM} ${RFC_SLUG}" ;;
@@ -39,7 +46,22 @@ sed -i '' "s/^\*\*Status:\*\* .*/**Status:** ${NEW_STATUS}/" "${RFC_FILE}"
 
 git add "${RFC_FILE}"
 git commit -m "${COMMIT_MSG}"
-git push
+
+# Push — set upstream if none is configured yet
+if git rev-parse --abbrev-ref --symbolic-full-name @{u} &>/dev/null; then
+  git push
+else
+  BRANCH=$(git rev-parse --abbrev-ref HEAD)
+  REMOTES=$(git remote)
+  REMOTE_COUNT=$(echo "${REMOTES}" | grep -c .)
+  if [ "${REMOTE_COUNT}" -eq 1 ]; then
+    git push -u "${REMOTES}" "${BRANCH}"
+  else
+    echo "Error: branch '${BRANCH}' has no upstream and multiple remotes exist." >&2
+    echo "Run: git push -u <remote> ${BRANCH}" >&2
+    exit 1
+  fi
+fi
 
 echo "✓ Updated status: ${CURRENT_STATUS} → ${NEW_STATUS}"
 echo "✓ Committed: ${COMMIT_MSG}"
