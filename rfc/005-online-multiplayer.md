@@ -1,6 +1,6 @@
 # RFC 005: Online Multiplayer Support
 
-**Status:** In Review
+**Status:** Accepted
 **Author:** @ocftw
 **Created:** 2026-04-05
 **Related:** [PR #345](https://github.com/ocftw/open-star-ter-village/pull/345)
@@ -224,6 +224,9 @@ Two states:
 
 **Observer Mode** — if no credentials exist for this matchID, the board renders
 without a `playerID`; the viewer sees game state without move controls.
+Observers use the existing `playerView`, which hides all player hands from
+non-players. This is intentional: sharing hand information is a social game
+mechanic left to each player's discretion.
 
 ### 8. Home Page Update
 
@@ -279,11 +282,6 @@ without a `playerID`; the viewer sees game state without move controls.
 
 **No changes to:** `DevView.tsx`, game logic (`moves/`, `store/`), Redux store,
 or any existing game UI components.
-
-### Open Questions
-
-- [ ] Should observers be able to see player hands (current `playerView` hides
-  them for non-players)? — Requires product decision; see PR comment for details.
 
 ## Rejected Solutions
 
