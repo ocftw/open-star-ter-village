@@ -1,6 +1,6 @@
 # RFC 005: Online Multiplayer Support
 
-**Status:** In Review
+**Status:** Accepted
 **Author:** @ocftw
 **Created:** 2026-04-05
 **Related:** [PR #345](https://github.com/ocftw/open-star-ter-village/pull/345)
@@ -76,11 +76,12 @@ explicit name boardgame.io defaults to `"default"`, producing unpredictable
 lobby paths (`/games/default/...`).
 
 ```ts
-export const OpenStarTerVillage: Game<GameState, Record<string, unknown>, GameSetupData> = {
+export const OpenStarTerVillage: Game<GameState> = {
   name: 'OpenStarTerVillage',   // ← add this
-  setup,
+  setup: ({ ctx }) => { ... },
+  phases: { ... },
   turn: { ... },
-  playerView,
+  playerView: ({ G, ctx, playerID }) => { ... },
 };
 ```
 
@@ -180,7 +181,7 @@ Three sections, built with MUI:
 
 **Create Match**
 - Text field for player name (persisted in `localStorage` across sessions)
-  - Validation: 1-20 characters after trimming whitespace; must contain at least
+  - Validation: 1–20 characters after trimming whitespace; must contain at least
     one non-whitespace character; no further character restrictions (Unicode
     names are allowed). These limits are simple, inclusive, and sufficient for a
     casual game where names are not unique identifiers.
@@ -192,9 +193,24 @@ Three sections, built with MUI:
 - Fetched via `listMatches()` on mount + auto-refresh every 10 seconds + manual
   refresh button. Auto-refresh keeps the list current without requiring user
   action; 10 seconds is frequent enough for discovery while keeping API load low.
-- Shows: match ID (truncated), seats filled / total, creation time
-- Filters out completed games and full matches
-- "Join" button per available match
+- Shows: match ID (truncated), seats filled / total, creation time, status badge
+- "Join" button per joinable match
+
+The lobby derives a display status for each match from the metadata returned by
+`getMatch()` / `listMatches()`:
+
+| Derived Status | Condition | Visible in Lobby? | Joinable? |
+|----------------|-----------|-------------------|-----------|
+| **Waiting** | Has open seats, game not started | Yes | Yes |
+| **In Progress** | All seats filled, `gameover` is `undefined` | Yes (greyed) | No |
+| **Finished** | `gameover` is set (a player has won) | No | No |
+| **Abandoned** | All players have left (every seat's `name` is unset or all connections dropped) | No | No |
+
+> **Note:** The game currently has no `endIf` condition, so `gameover` will never
+> be set until one is implemented. For now, matches will show as "In Progress"
+> indefinitely after all seats fill. This is acceptable for MVP — adding an
+> `endIf` victory condition to the game definition is tracked separately and will
+> make the "Finished" status work automatically.
 
 **Join Flow**
 - Finds the first open seat
@@ -224,13 +240,65 @@ Two states:
 
 **Observer Mode** — if no credentials exist for this matchID, the board renders
 without a `playerID`; the viewer sees game state without move controls.
+Observers use the existing `playerView`, which hides all player hands from
+non-players. This is intentional: sharing hand information is a social game
+mechanic left to each player's discretion.
 
 ### 8. Home Page Update
 
 **File:** `packages/webapp/src/app/page.tsx`
 
-- Add a "Play Online" button/link routing to `/lobby`
-- Keep the existing `DevView` for development (gated behind `NODE_ENV === 'development'` or `?dev=true` query param)
+The current home page determines transport mode with inverted logic — production
+uses `Local()` and development uses `SocketIO`:
+
+```ts
+// Current (BEFORE this RFC):
+const getIsLocal = async () => {
+  'use server'
+  return process.env.NODE_ENV === 'production';  // production = local-only
+}
+```
+
+This RFC replaces that logic entirely. The home page becomes a landing page:
+
+- Remove the `getIsLocal()` server action — transport mode is no longer decided
+  here; online games always use `SocketIO` via the game room page, and DevView
+  always uses `Local()`.
+- Add a "Play Online" button/link routing to `/lobby`.
+- Render `<DevView isLocal={true} />` only when `NODE_ENV === 'development'` or
+  the `?dev=true` query param is present. DevView always uses `Local()` transport
+  regardless of environment, since its purpose is single-browser development.
+
+### 9. Move `StoreProvider` to Root Layout
+
+**File:** `packages/webapp/src/app/layout.tsx`
+
+The Redux `<StoreProvider>` is currently placed inside `page.tsx` (the home
+page), which means it only wraps that single route. The new `/lobby` and
+`/game/[matchID]` pages would not have access to the Redux store, causing
+crashes if any child component dispatches actions (e.g. the wizard reducer).
+
+Move `<StoreProvider>` into `layout.tsx` so it wraps all routes:
+
+```tsx
+import StoreProvider from './StoreProvider';
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <body className={inter.className}>
+        <AppRouterCacheProvider>
+          <StoreProvider>
+            {children}
+          </StoreProvider>
+        </AppRouterCacheProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+Remove the `<StoreProvider>` wrapper from `page.tsx` after this move.
 
 ### Route Summary
 
@@ -265,25 +333,68 @@ without a `playerID`; the viewer sees game state without move controls.
 
 ### Files Changed
 
+All paths below are relative to `packages/webapp/`.
+
 | Action | File | Purpose |
 |--------|------|---------|
 | Modify | `src/game/game.ts` | Add `name: 'OpenStarTerVillage'` |
 | Modify | `src/server.ts` | Configurable CORS origins via env var |
-| Modify | `src/components/BoardGame.tsx` | Accept credentials, dynamic server URL |
-| Modify | `src/app/page.tsx` | Add lobby navigation, gate DevView |
-| Create | `packages/webapp/.env.development` | Default env vars |
+| Modify | `src/components/BoardGame.tsx` | Accept credentials, dynamic server URL, remove hardcoded `numPlayers` |
+| Modify | `src/app/page.tsx` | Remove `getIsLocal()`, add lobby link, gate DevView |
+| Modify | `src/app/layout.tsx` | Move `StoreProvider` here so all routes share Redux store |
+| Create | `.env.development` | Default env vars |
 | Create | `src/lib/lobbyClient.ts` | LobbyClient instance + constants |
 | Create | `src/lib/matchCredentials.ts` | localStorage credential helpers |
 | Create | `src/app/lobby/page.tsx` | Lobby UI |
 | Create | `src/app/game/[matchID]/page.tsx` | Game room + waiting room |
 
-**No changes to:** `DevView.tsx`, game logic (`moves/`, `store/`), Redux store,
-or any existing game UI components.
+**No changes to:** `DevView.tsx`, game logic (`moves/`, `store/`), Redux
+reducers, or any existing game UI components.
 
-### Open Questions
+### Known Limitations & Proposed Mitigations
 
-- [ ] Should observers be able to see player hands (current `playerView` hides
-  them for non-players)? — Requires product decision; see PR comment for details.
+#### DevView Only Supports 2 Players
+
+The current `DevView` hardcodes exactly 2 player views (seats 0 and 1) plus one
+observer view, but the game is designed for 3–6 players. This RFC claims "No
+changes to DevView" — that remains true, but developers should be aware that
+DevView is insufficient for testing 3+ player games locally.
+
+**Proposed mitigation:** Separately from this RFC, make DevView accept a
+`numPlayers` query param (e.g. `?dev=true&players=4`) and dynamically render
+that many player panels. This is a DevView-only improvement and does not affect
+the online multiplayer design.
+
+#### Create-Match Auto-Join Race Condition
+
+When a player creates a match, the match becomes visible in the lobby list
+immediately, but the creator's auto-join of seat 0 is a separate API call. In
+theory, another player polling the lobby could see the new match and join seat 0
+before the creator does.
+
+**Proposed mitigation:** Since `createMatch` returns a unique `matchID`, the
+creator calls `joinMatch` immediately in the same async flow before redirecting.
+The window is sub-second and the match won't appear in another player's list
+until their next poll cycle (3s), making a collision practically impossible. No
+server-side changes are needed — the existing sequential `createMatch → joinMatch`
+is sufficient.
+
+#### Concurrent Last-Seat Join Conflict
+
+If two players click "Join" simultaneously for a match with only one remaining
+seat, one `joinMatch` call will succeed and the other will receive an error from
+the boardgame.io server (HTTP 409 Conflict).
+
+**Proposed mitigation:** The lobby join flow should handle non-2xx responses
+from `joinMatch()` gracefully:
+
+1. Catch the error and show a toast/snackbar: _"This seat was just taken.
+   Refreshing match list…"_
+2. Auto-refresh the match list so the player sees the updated state.
+3. If the match is now full, disable the Join button for that match.
+
+No retry or complex locking is needed — the server is the authority and the
+client simply reacts to the rejection.
 
 ## Rejected Solutions
 
