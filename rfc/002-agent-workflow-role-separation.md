@@ -77,6 +77,8 @@ Skills are human-invocable entry points. Each skill orchestrates one or more age
 | `/implement` | N× `programmer` in parallel | Spawn one per task via the Agent tool, run Codex review gate, `/simplify`, coordinate post-plan review |
 | `/code-review` | N× `code-reviewer` in parallel | Scope-aware review orchestrator (see §5) |
 
+> **External skills:** `/codex:review` and `/codex:adversarial-review` are Codex plugin skills, not defined in this RFC. They are invoked by `/implement` (post-plan review) and `/code-review` (domain review) as sub-steps. Their behavior is defined by the Codex plugin.
+
 ### 4. Development Process
 
 ```
@@ -268,7 +270,7 @@ Tying agent identity to a specific model (e.g., "the Planner must use Opus"). Re
 
 | Metric | Target | Notes |
 |--------|--------|-------|
-| Review turnaround | < 10 minutes for typical PR | From `/code-review` invocation to consolidated P0/P1/P2 output |
+| Review turnaround | < 10 minutes for typical PR | From `/code-review` invocation to consolidated P0/P1/P2 output. No hard escalation path yet — revisit once real timing data is collected. |
 | `programmer` agents | 1 per non-overlapping task, no cap | Maximize parallelism |
 | `code-reviewer` agents | 1 per affected domain | Domain count drives agent count, not file count |
 | Token budget guidance | Use suggested model when available; fall back per §2 model matrix | No hard token limit; monitor and adjust |
