@@ -57,25 +57,25 @@ Three agents, each with a skill file defining scope and model recommendations:
 
 | Agent | `allowed-tools` scope | Claude (preferred) | Claude-only | GPT-only |
 |-------|----------------------|-------------------|-------------|----------|
-| `rfc-writer` | `Edit(rfc/**) Write(rfc/**) Bash(gh pr view:*) Bash(gh pr diff:*) Bash(git *)` | Opus 4.6 | Sonnet 4.6 | gpt-5.4 effort:high |
-| `programmer` | `Edit(packages/webapp/src/**) Edit(homepage/**) Write(packages/webapp/src/**) Write(homepage/**) Bash(yarn *) Bash(git add:*) Bash(git commit:*) Bash(git push:*)` | Sonnet 4.6 | Sonnet 4.6 | gpt-5.3-codex |
-| `code-reviewer` | read-only — `Bash(gh pr diff:*) Bash(gh pr view:*) Bash(yarn *) Bash(npx tsc:*)` | Sonnet 4.6 | Sonnet 4.6 | gpt-5.4 |
+| `rfc-writer` | `Read(**) Grep(**) Glob(**) Edit(rfc/**) Write(rfc/**) Bash(gh pr view:*) Bash(gh pr diff:*) Bash(git diff:*) Bash(git *)` | Opus 4.6 | Sonnet 4.6 | gpt-5.4 effort:high |
+| `programmer` | `Read(**) Grep(**) Glob(**) Edit(packages/webapp/src/**) Edit(homepage/**) Write(packages/webapp/src/**) Write(homepage/**) Bash(yarn *) Bash(git add:*) Bash(git commit:*) Bash(git push:*)` | Sonnet 4.6 | Sonnet 4.6 | gpt-5.3-codex |
+| `code-reviewer` | `Read(**) Grep(**) Glob(**) Bash(gh pr diff:*) Bash(gh pr view:*) Bash(git diff:*) Bash(yarn *) Bash(npx tsc:*)` | Sonnet 4.6 | Sonnet 4.6 | gpt-5.4 |
 
 > **Model suggestions are not requirements.** Agent identity is defined by which skill you invoke and its `allowed-tools` scope — not the model. Pick the column that matches your available tools. `rfc-writer` and `code-reviewer` are reasoning-heavy tasks; `programmer` is implementation work optimized for a code-specialized model.
 
-**Agent boundaries are enforced by `allowed-tools`, not convention.** When a skill invokes an agent, Claude Code restricts available tools to those listed. Violations fail at the tool-call level. The `allowed-tools` mechanism is the same used by the `playwright-cli` skill (`allowed-tools: Bash(playwright-cli:*) Bash(npx:*) Bash(npm:*)`).
+**Agent boundaries are partially enforced by `allowed-tools`.** Bash command scope (`Bash(git *)`, `Bash(yarn *)`, etc.) is reliably enforced — Claude Code only offers those commands when the skill is active. Edit/Write file-path scope (e.g., `Edit(rfc/**)`) is documented intent but has a [known enforcement gap (anthropics/claude-code#18837)](https://github.com/anthropics/claude-code/issues/18837) and is treated as convention. The post-commit scope check (§8) is the runtime enforcement for file-path boundaries.
 
 ### 3. Skill Definitions
 
 Skills are human-invocable entry points. Each skill orchestrates one or more agents.
 
-| Skill | Spawns | Purpose |
-|-------|--------|---------|
+| Skill | Instructs Claude to spawn | Purpose |
+|-------|--------------------------|---------|
 | `/rfc:write` | 1× `rfc-writer` | Draft a new RFC from a prompt |
 | `/rfc:to-plan` | 1× `rfc-writer` | Break an accepted RFC into observable plans |
 | `/plan:to-task` | 1× `rfc-writer` | Break a plan into parallelizable tasks |
-| `/implement` | N× `programmer` | Spawn one per task, run Codex review gate, `/simplify`, coordinate post-plan review |
-| `/code-review` | N× `code-reviewer` | Scope-aware review orchestrator (see §5) |
+| `/implement` | N× `programmer` in parallel | Spawn one per task via the Agent tool, run Codex review gate, `/simplify`, coordinate post-plan review |
+| `/code-review` | N× `code-reviewer` in parallel | Scope-aware review orchestrator (see §5) |
 
 ### 4. Development Process
 
@@ -101,7 +101,7 @@ Skills are human-invocable entry points. Each skill orchestrates one or more age
 
 - **RFC → Plans:** `rfc-writer` breaks a large RFC into plans — each plan is one observable feature verifiable end-to-end (e.g., "User can list public rooms").
 - **Plans → Tasks:** `rfc-writer` (Opus/gpt-5.4) breaks each plan into tasks — the smallest coding unit a `programmer` can complete independently: implement + test + validate. Task decomposition requires architectural judgment about dependencies and parallelism — this belongs with the highest-capability model available, not with a coordination layer.
-- **Parallel implementation:** `/implement` spawns 1–N `programmer` agents in parallel, one per non-overlapping task. No cap on `programmer` agents — maximize parallelism.
+- **Parallel implementation:** `/implement` instructs Claude to use the Agent tool to spawn 1–N `programmer` agents in parallel, one per non-overlapping task. No cap — maximize parallelism.
 - **Codex review gate:** enabled during implementation so each commit is auto-reviewed as it lands. Catches issues early before post-plan review.
 - **Post-plan review:** `/codex:review` and `/codex:adversarial-review` run in parallel with automated tests. The `code-reviewer` perspective in `/codex:adversarial-review` challenges correctness, safety, and architectural fit.
 - **Scope enforcement:** `/implement` runs `git diff --name-only HEAD~1` after each `programmer` task and cross-references changed files against the task's declared domain. Out-of-scope files are flagged before push.
@@ -122,7 +122,7 @@ Step 1 — Clarify target
   → PR by number      (gh pr diff <number>)
   → PR by URL         (gh pr diff <URL>)
 
-Step 2 — Determine scope → spawn parallel code-reviewer agents
+Step 2 — Determine scope → instruct Claude to spawn parallel code-reviewer agents via Agent tool
   webapp changes:
     → /codex:review              (game logic perspective)
     → /codex:review              (UI perspective)
@@ -133,9 +133,9 @@ Step 2 — Determine scope → spawn parallel code-reviewer agents
     → add one infra perspective
 
 Step 3 — Consolidate findings
-  P0 — Critical: must fix before merge
-  P1 — Important: should fix
-  P2 — Nice to have: optional improvements
+  🔴 P0 — Critical: must fix before merge
+  🟡 P1 — Important: should fix
+  🔵 P2 — Nice to have: optional improvements
 ```
 
 The `code-reviewer` agent is generic — the domain perspective is passed as context per invocation. No separate agent definition per domain. Domain-specific `code-reviewer` variants are out of scope for this RFC.
@@ -147,15 +147,15 @@ All review agents produce findings in this structure:
 ```markdown
 ## [Domain] Review
 
-### P0 — Critical
+### 🔴 P0 — Critical
 Must fix before merge.
 - `file/path.ts:42` — Description of the issue
 
-### P1 — Important
+### 🟡 P1 — Important
 Should fix.
 - `file/path.ts:78` — Description of the concern
 
-### P2 — Nice to Have
+### 🔵 P2 — Nice to Have
 Optional improvements.
 - `file/path.ts:15` — Suggestion
 
@@ -189,19 +189,21 @@ The number of `code-reviewer` agents spawned by `/code-review` adapts to the pro
 
 ### 8. Agent Scope Enforcement
 
-**Primary enforcement — `allowed-tools` frontmatter:**
+Two enforcement layers with different reliability levels:
 
-Each agent's skill file defines its tool scope via `allowed-tools`. Claude Code restricts available tools to those listed when a skill is active. See §2 for the full `allowed-tools` definitions per agent.
+**Layer 1 — Bash command scope (`allowed-tools`, reliable):**
 
-**Secondary enforcement — post-commit scope check:**
+Each agent's skill file restricts which Bash commands are available via `allowed-tools`. Claude Code enforces this at the tool-call level — commands outside the pattern are not offered. Example: a `programmer` agent has `Bash(yarn *)` and `Bash(git add:*)` but not `Bash(gh pr *)`, so it cannot create PRs. This is the same mechanism used by `playwright-cli`.
 
-`/implement` runs `git diff --name-only HEAD~1` after each `programmer` task and cross-references changed files against the task's declared domain. Out-of-scope files are flagged before push. This is detection, not prevention — `allowed-tools` is the primary prevention.
+**Layer 2 — File-path scope (convention + runtime detection):**
+
+Edit/Write file-path patterns in `allowed-tools` (e.g., `Edit(rfc/**)`) document intended scope but have a [known enforcement gap (anthropics/claude-code#18837)](https://github.com/anthropics/claude-code/issues/18837). These are treated as documented convention, not hard tooling enforcement.
+
+Runtime compensation: `/implement` runs `git diff --name-only HEAD~1` after each `programmer` task and cross-references changed files against the task's declared domain. Out-of-scope files are flagged before push.
 
 **Relation to RFC 003:**
 
 `settings.json` (RFC 003) defines the union baseline and the deny list that applies across all agents (protected branches, destructive operations). Skill `allowed-tools` scopes each invocation to a subset of those permissions.
-
-> These boundaries are enforced by tooling (`allowed-tools`), not by convention. There is no "future work" qualifier — the mechanism exists today, as demonstrated by the `playwright-cli` skill.
 
 ### 9. AGENTS.md
 
@@ -238,14 +240,14 @@ Running `/code-review:code-review` as a post-plan review step alongside `/codex:
 Assigning `Plans → Tasks` to a Supervisor (Sonnet-class). Rejected because: task decomposition requires architectural judgment about dependency ordering and parallelism — this is reasoning work that belongs with the highest-capability model available (`rfc-writer` / Opus or gpt-5.4). Mis-scoped tasks from a weaker model cause executor failures that negate the token savings.
 
 ### Role-based boundaries (convention-enforced)
-Defining Planner/Supervisor/Executor roles enforced by documentation and prompts. Rejected because: any agent can deviate without detection. `allowed-tools` frontmatter enforces scope at the tool-call level — violations fail rather than being silently ignored.
+Defining Planner/Supervisor/Executor roles enforced by documentation and prompts. Rejected because: any agent can deviate without detection. The agent+skill model improves on this: Bash command scope is tooling-enforced, and file-path deviations are caught by the post-commit scope check before push.
 
 ### Fixed model assignments (model as identity)
 Tying agent identity to a specific model (e.g., "the Planner must use Opus"). Rejected because: contributors have different tool access (Claude-only, GPT-only, or both). Agent identity is defined by the skill's `allowed-tools` scope; model is a recommendation with explicit fallbacks.
 
 ## Testing Plan
 
-1. **Agent scope check:** Invoke the `programmer` skill and attempt to edit `rfc/002.md` — verify the tool call is rejected by `allowed-tools`.
+1. **Bash command scope check:** Invoke the `programmer` skill and attempt to run `gh pr create` — verify the tool call is rejected by `allowed-tools` (Bash command scoping is reliably enforced). Note: Edit/Write file-path scoping has a known enforcement gap (#18837); file-path boundary violations are caught by the post-commit scope check instead.
 
 2. **Post-commit scope detection:** Run `/implement` on a task declared for `src/game/**`. Have a `programmer` agent touch `src/components/`. Verify `/implement` flags the out-of-scope file before push.
 
