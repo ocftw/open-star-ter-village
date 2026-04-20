@@ -3,7 +3,7 @@
 **Status:** Draft
 **Author:** @ben196888
 **Created:** 2026-03-23
-**Related:** [Issue #346](https://github.com/ocftw/open-star-ter-village/issues/346), [RFC 002](./002-agent-workflow-role-separation.md)
+**Related:** [Issue #346](https://github.com/ocftw/open-star-ter-village/issues/346), [RFC 002](./002-agent-workflow-role-separation.md), [Discussion #366](https://github.com/ocftw/open-star-ter-village/issues/366)
 
 ## Description
 
