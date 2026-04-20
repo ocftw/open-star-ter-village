@@ -40,6 +40,7 @@
     "code-review@claude-plugins-official": true,
     "codex@openai-codex": true,
     "typescript-lsp@claude-plugins-official": true,
-    "skill-creator@claude-plugins-official": true
+    "skill-creator@claude-plugins-official": true,
+    "netlify-skills@claude-plugins-official": true
   }
 }
