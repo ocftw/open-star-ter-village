@@ -13,6 +13,7 @@ import { scoreLeftoverActionTokens } from './core/handler/scoreLeftoverActionTok
 import { refill } from './core/handler/refill';
 
 export const OpenStarTerVillage: Game<GameState, Record<string, unknown>, GameSetupData> = {
+  name: 'OpenStarTerVillage',
   setup: setup,
   turn: {
     /**

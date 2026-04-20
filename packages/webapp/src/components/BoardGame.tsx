@@ -3,7 +3,7 @@ import { SocketIO, Local } from 'boardgame.io/multiplayer'
 import game from '@/game';
 import React from 'react';
 import { Game } from 'boardgame.io';
-import { ClientGameState, GameState } from '@/game';
+import { GameState } from '@/game';
 import Table from '@/components/Table/Table';
 import ActionBar from './ActionBoard/ActionBar/ActionBar';
 import GameHeader from './GameHeader/GameHeader';
@@ -13,6 +13,7 @@ import { GameContext } from './GameContextHelpers';
 import ActionStepper from './ActionBoard/ActionStepper/ActionStepper';
 import DiscardJobCardsPanel from './DiscardJobCards/DiscardJobCardsPanel';
 import { ScoreBoardSelector } from '@/game/store/slice/scoreBoard';
+import { GAME_SERVER_URL } from '@/lib/lobbyClient';
 
 const Board: React.FC<GameContext> = (gameContext) => {
   const { G, playerID, ctx } = gameContext;
@@ -85,6 +86,8 @@ const Board: React.FC<GameContext> = (gameContext) => {
 
 type OwnProps = {
   isLocal: boolean;
+  credentials?: string;
+  numPlayers?: number;
   /** Optional game config override. Must be a stable reference — all instances sharing
    *  a matchID should pass the SAME object so boardgame.io's LocalMaster is shared. */
   gameConfig?: Game<GameState>;
@@ -92,17 +95,24 @@ type OwnProps = {
 
 type Props = OwnProps & React.ComponentProps<ReturnType<typeof Client>>;
 
-const Boardgame: React.FC<Props> = ({ isLocal, gameConfig, ...props }) => {
+const Boardgame: React.FC<Props> = ({ isLocal, gameConfig, numPlayers, ...props }) => {
   // Memoize so Client() is called once per mount, not every render.
   // Creating a new class from Client() on every render causes React to see a new component
   // type, unmounting and remounting — which resets the game state.
   const BoardgameComponent = React.useMemo(() => {
-    const multiplayer = isLocal ? Local() : SocketIO({ server: 'localhost:3001' });
+    const multiplayer = isLocal ? Local() : SocketIO({ server: GAME_SERVER_URL });
+    const resolvedNumPlayers = isLocal ? (numPlayers ?? 3) : numPlayers;
     // Board expects ClientGameState (after playerView strips decks), but Client() couples
     // game + board generics to GameState. The cast is safe because boardgame.io always runs
     // playerView before passing state to the board component.
-    return Client({ game: gameConfig ?? game, board: Board as React.FC<BoardProps<GameState>>, multiplayer, numPlayers: 3, debug: false });
-  }, [isLocal, gameConfig]);
+    return Client({
+      game: gameConfig ?? game,
+      board: Board as React.FC<BoardProps<GameState>>,
+      multiplayer,
+      numPlayers: resolvedNumPlayers,
+      debug: false,
+    });
+  }, [isLocal, gameConfig, numPlayers]);
 
   return <BoardgameComponent {...props} />;
 }
