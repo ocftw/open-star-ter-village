@@ -19,25 +19,20 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { saveCredentials } from '@/lib/matchCredentials';
+import { loadCredentials, saveCredentials, type MatchCredentials } from '@/lib/matchCredentials';
+import { usePolling } from '@/lib/usePolling';
+import { useSnackbar } from '@/lib/useSnackbar';
 import {
   createRoom,
   getLobbyErrorMessage,
-  getMatch,
-  getOpenSeatID,
-  joinRoom,
+  joinPublicMatch,
+  LobbyError,
   listPublicMatches,
   type VisibleMatch,
 } from './actions';
 
 const PLAYER_NAME_STORAGE_KEY = 'open-star-ter-village.player-name';
 const PLAYER_COUNT_OPTIONS = [3, 4, 5, 6] as const;
-
-type SnackbarState = {
-  open: boolean;
-  message: string;
-  severity: 'success' | 'error' | 'info';
-};
 
 function isValidPlayerName(value: string): boolean {
   const trimmedValue = value.trim();
@@ -60,37 +55,19 @@ export default function LobbyPage() {
   const [isCreating, setIsCreating] = React.useState(false);
   const [isRefreshing, setIsRefreshing] = React.useState(false);
   const [joiningMatchID, setJoiningMatchID] = React.useState<string | null>(null);
-  const [snackbar, setSnackbar] = React.useState<SnackbarState>({
-    open: false,
-    message: '',
-    severity: 'info',
-  });
+  const { snackbar, showSnackbar, closeSnackbar } = useSnackbar();
 
   const trimmedPlayerName = playerName.trim();
   const playerNameIsValid = isValidPlayerName(playerName);
 
-  const showSnackbar = React.useCallback((message: string, severity: SnackbarState['severity']) => {
-    setSnackbar({ open: true, message, severity });
-  }, []);
-
-  const loadMatches = React.useCallback(async (silent = false, shouldIgnore?: () => boolean) => {
-    if (!silent) {
-      setIsLoading(true);
-    }
-
+  const fetchMatches = React.useCallback(async () => {
     try {
       const nextMatches = await listPublicMatches();
-      if (!shouldIgnore?.()) {
-        setMatches(nextMatches);
-      }
+      setMatches(nextMatches);
     } catch (error) {
-      if (!shouldIgnore?.()) {
-        showSnackbar(getLobbyErrorMessage(error, 'Unable to load matches.'), 'error');
-      }
+      showSnackbar(getLobbyErrorMessage(error, 'Unable to load matches.'), 'error');
     } finally {
-      if (!silent && !shouldIgnore?.()) {
-        setIsLoading(false);
-      }
+      setIsLoading(false);
     }
   }, [showSnackbar]);
 
@@ -101,25 +78,7 @@ export default function LobbyPage() {
     }
   }, []);
 
-  React.useEffect(() => {
-    let cancelled = false;
-
-    const load = async (silent = false) => {
-      await loadMatches(silent, () => cancelled);
-    };
-
-    void load();
-    const intervalID = window.setInterval(() => {
-      if (!cancelled) {
-        void load(true);
-      }
-    }, 10_000);
-
-    return () => {
-      cancelled = true;
-      window.clearInterval(intervalID);
-    };
-  }, [loadMatches]);
+  usePolling(fetchMatches, 10_000);
 
   const handlePlayerNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const nextValue = event.target.value;
@@ -131,7 +90,7 @@ export default function LobbyPage() {
     setIsRefreshing(true);
 
     try {
-      await loadMatches(true);
+      await fetchMatches();
     } finally {
       setIsRefreshing(false);
     }
@@ -162,24 +121,33 @@ export default function LobbyPage() {
       return;
     }
 
+    const existing = loadCredentials(matchID);
+    if (existing) {
+      router.push(`/game/${matchID}`);
+      return;
+    }
+
     setJoiningMatchID(matchID);
 
     try {
-      const match = await getMatch(matchID);
-      const openSeatID = getOpenSeatID(match);
-
-      if (!openSeatID) {
-        showSnackbar('This match is already full.', 'info');
-        await loadMatches(true);
-        return;
-      }
-
-      const credentials = await joinRoom(matchID, trimmedPlayerName, openSeatID);
+      const joinedMatch = await joinPublicMatch(matchID, trimmedPlayerName);
+      const credentials: MatchCredentials = {
+        matchID,
+        playerID: joinedMatch.playerID,
+        credential: joinedMatch.credentials,
+        playerName: trimmedPlayerName,
+      };
       saveCredentials(credentials);
       router.push(`/game/${matchID}`);
     } catch (error) {
+      if (error instanceof LobbyError && error.code === 'MATCH_FULL') {
+        showSnackbar('This match is already full.', 'info');
+        await fetchMatches();
+        return;
+      }
+
       showSnackbar(getLobbyErrorMessage(error, 'Unable to join that match.'), 'error');
-      await loadMatches(true);
+      await fetchMatches();
     } finally {
       setJoiningMatchID(null);
     }
@@ -249,7 +217,7 @@ export default function LobbyPage() {
                     <Typography variant="h5" component="h2">
                       Public Matches
                     </Typography>
-                    <Button onClick={() => void handleRefreshMatches()} variant="text" disabled={isRefreshing}>
+                    <Button onClick={() => void handleRefreshMatches()} variant="text" disabled={isRefreshing || isCreating}>
                       {isRefreshing ? 'Refreshing…' : 'Refresh'}
                     </Button>
                   </Box>
@@ -286,7 +254,7 @@ export default function LobbyPage() {
                             <Button
                               onClick={() => void handleJoinMatch(match.matchID)}
                               variant="contained"
-                              disabled={status !== 'Waiting' || joiningMatchID !== null}
+                              disabled={status !== 'Waiting' || joiningMatchID !== null || isCreating}
                             >
                               {joiningMatchID === match.matchID ? 'Joining…' : 'Join'}
                             </Button>
@@ -305,9 +273,9 @@ export default function LobbyPage() {
       <Snackbar
         open={snackbar.open}
         autoHideDuration={5000}
-        onClose={() => setSnackbar((current) => ({ ...current, open: false }))}
+        onClose={closeSnackbar}
       >
-        <Alert severity={snackbar.severity} onClose={() => setSnackbar((current) => ({ ...current, open: false }))}>
+        <Alert severity={snackbar.severity} onClose={closeSnackbar}>
           {snackbar.message}
         </Alert>
       </Snackbar>

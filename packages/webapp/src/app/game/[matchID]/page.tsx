@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import {
   Alert,
   Box,
@@ -11,6 +12,7 @@ import {
   CardContent,
   Container,
   Divider,
+  IconButton,
   List,
   ListItem,
   ListItemText,
@@ -21,6 +23,8 @@ import {
 } from '@mui/material';
 import Boardgame from '@/components/BoardGame';
 import { clearCredentials, loadCredentials, type MatchCredentials } from '@/lib/matchCredentials';
+import { usePolling } from '@/lib/usePolling';
+import { useSnackbar } from '@/lib/useSnackbar';
 import {
   getFilledSeatCount,
   getLobbyErrorMessage,
@@ -31,12 +35,6 @@ import {
   startRoom,
   type LobbyMatch,
 } from '@/app/lobby/actions';
-
-type SnackbarState = {
-  open: boolean;
-  message: string;
-  severity: 'success' | 'error' | 'info';
-};
 
 export default function GameRoomPage() {
   const params = useParams<{ matchID: string }>();
@@ -51,82 +49,72 @@ export default function GameRoomPage() {
   const [isStarting, setIsStarting] = React.useState(false);
   const [isRefreshing, setIsRefreshing] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
-  const [snackbar, setSnackbar] = React.useState<SnackbarState>({
-    open: false,
-    message: '',
-    severity: 'info',
-  });
+  const { snackbar, showSnackbar, closeSnackbar } = useSnackbar();
 
-  const showSnackbar = React.useCallback((message: string, severity: SnackbarState['severity']) => {
-    setSnackbar({ open: true, message, severity });
-  }, []);
-
-  const loadMatchMetadata = React.useCallback(async (silent = false, shouldIgnore?: () => boolean) => {
-    if (!silent) {
-      setIsLoading(true);
-    }
-
+  const pollMatch = React.useCallback(async () => {
     try {
       const nextMatch = await getMatch(matchID);
-      if (!shouldIgnore?.()) {
-        setMatch(nextMatch);
-        setErrorMessage(null);
-      }
+      setMatch(nextMatch);
+      setErrorMessage(null);
     } catch (error) {
-      if (!shouldIgnore?.()) {
-        setErrorMessage(getLobbyErrorMessage(error, 'Unable to load this room.'));
-      }
+      setErrorMessage(getLobbyErrorMessage(error, 'Unable to load this room.'));
     } finally {
-      if (!silent && !shouldIgnore?.()) {
-        setIsLoading(false);
-      }
+      setIsLoading(false);
     }
   }, [matchID]);
 
   React.useEffect(() => {
-    setCredentials(loadCredentials(matchID));
-    setCredentialsReady(true);
+    let cancelled = false;
+
+    setCredentialsReady(false);
+
+    const loadSavedCredentials = async () => {
+      const creds = loadCredentials(matchID);
+
+      if (!creds) {
+        if (!cancelled) {
+          setCredentials(null);
+          setCredentialsReady(true);
+        }
+        return;
+      }
+
+      let nextCredentials: MatchCredentials | null = creds;
+      const serverMatch = await getMatch(matchID).catch(() => null);
+
+      if (serverMatch) {
+        const slot = serverMatch.players.find((player) => player.id === Number(creds.playerID));
+        if (!slot?.name) {
+          clearCredentials(matchID);
+          nextCredentials = null;
+        }
+      }
+
+      if (!cancelled) {
+        setCredentials(nextCredentials);
+        setCredentialsReady(true);
+      }
+    };
+
+    void loadSavedCredentials();
+
+    return () => {
+      cancelled = true;
+    };
   }, [matchID]);
 
   React.useEffect(() => {
     setInviteURL(window.location.href);
   }, []);
 
-  React.useEffect(() => {
-    const boardIsVisible =
-      match !== null &&
-      getFilledSeatCount(match) === match.players.length &&
-      hasHostStarted(match);
-
-    if (boardIsVisible) {
-      return;
-    }
-
-    let cancelled = false;
-
-    const load = async (silent = false) => {
-      await loadMatchMetadata(silent, () => cancelled);
-    };
-
-    void load();
-
-    const intervalID = window.setInterval(() => {
-      if (!cancelled) {
-        void load(true);
-      }
-    }, 3_000);
-
-    return () => {
-      cancelled = true;
-      window.clearInterval(intervalID);
-    };
-  }, [loadMatchMetadata, match]);
-
   const allSeatsFilled = match ? getFilledSeatCount(match) === match.players.length : false;
   const hasStarted = match ? hasHostStarted(match) : false;
+  const isAbandoned = match ? match.players.every((player) => !player.name) : false;
   const isHost = credentials?.playerID === '0';
   const shouldShowBoard = Boolean(match) && allSeatsFilled && hasStarted;
   const isMutating = isStarting || isLeaving || isRefreshing;
+
+  usePolling(pollMatch, 3_000, !shouldShowBoard);
 
   const handleLeaveMatch = async () => {
     if (!credentials) {
@@ -156,7 +144,7 @@ export default function GameRoomPage() {
 
     try {
       await startRoom(matchID, credentials.playerID, credentials.credential);
-      await loadMatchMetadata(true);
+      await pollMatch();
     } catch (error) {
       showSnackbar(getLobbyErrorMessage(error, 'Unable to start the game.'), 'error');
     } finally {
@@ -168,9 +156,18 @@ export default function GameRoomPage() {
     setIsRefreshing(true);
 
     try {
-      await loadMatchMetadata(true);
+      await pollMatch();
     } finally {
       setIsRefreshing(false);
+    }
+  };
+
+  const handleCopyInviteURL = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      showSnackbar('Copied!', 'success');
+    } catch {
+      showSnackbar('Unable to copy the invite URL.', 'error');
     }
   };
 
@@ -232,6 +229,19 @@ export default function GameRoomPage() {
               />
             </CardContent>
           </Card>
+        </Stack>
+      </Container>
+    );
+  }
+
+  if (match && isAbandoned && !hasStarted) {
+    return (
+      <Container maxWidth="md" sx={{ py: 6 }}>
+        <Stack spacing={2}>
+          <Alert severity="info">This room was abandoned.</Alert>
+          <Button component={Link} href="/lobby" variant="contained">
+            Return to Lobby
+          </Button>
         </Stack>
       </Container>
     );
@@ -302,14 +312,24 @@ export default function GameRoomPage() {
               <Typography variant="h6" component="h2">
                 Invite Link
               </Typography>
-              <TextField value={inviteURL} InputProps={{ readOnly: true }} fullWidth />
+              <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-start' }}>
+                <TextField
+                  value={inviteURL}
+                  InputProps={{ readOnly: true }}
+                  inputProps={{ 'aria-label': 'Invite URL' }}
+                  fullWidth
+                />
+                <IconButton aria-label="Copy invite URL" onClick={() => void handleCopyInviteURL()}>
+                  <ContentCopyIcon />
+                </IconButton>
+              </Box>
             </Stack>
           </CardContent>
         </Card>
 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
-          <Button onClick={() => void handleRefreshNow()} variant="text" disabled={isRefreshing || isMutating}>
-            Refresh Now
+          <Button onClick={() => void handleRefreshNow()} variant="text" disabled={isRefreshing}>
+            {isRefreshing ? 'Refreshing…' : 'Refresh Now'}
           </Button>
           <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
             {isHost && credentials && (
@@ -331,9 +351,9 @@ export default function GameRoomPage() {
       <Snackbar
         open={snackbar.open}
         autoHideDuration={5000}
-        onClose={() => setSnackbar((current) => ({ ...current, open: false }))}
+        onClose={closeSnackbar}
       >
-        <Alert severity={snackbar.severity} onClose={() => setSnackbar((current) => ({ ...current, open: false }))}>
+        <Alert severity={snackbar.severity} onClose={closeSnackbar}>
           {snackbar.message}
         </Alert>
       </Snackbar>

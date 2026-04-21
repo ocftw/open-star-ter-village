@@ -13,6 +13,18 @@ export interface VisibleMatch {
   totalSeats: number;
 }
 
+export type LobbyErrorCode = 'MATCH_FULL';
+
+export class LobbyError extends Error {
+  code: LobbyErrorCode;
+
+  constructor(code: LobbyErrorCode) {
+    super(code);
+    this.name = 'LobbyError';
+    this.code = code;
+  }
+}
+
 type LobbyPlayer = LobbyMatch['players'][number];
 
 function compareSeatOrder(left: LobbyPlayer, right: LobbyPlayer): number {
@@ -126,6 +138,25 @@ export async function joinRoom(
     playerID: joinedMatch.playerID,
     credential: joinedMatch.playerCredentials,
     playerName,
+  };
+}
+
+export async function joinPublicMatch(
+  matchID: string,
+  playerName: string,
+): Promise<{ playerID: string; credentials: string }> {
+  const match = await getMatch(matchID);
+  const openSeatID = getOpenSeatID(match);
+
+  if (!openSeatID) {
+    throw new LobbyError('MATCH_FULL');
+  }
+
+  const credentials = await joinRoom(matchID, playerName, openSeatID);
+
+  return {
+    playerID: credentials.playerID,
+    credentials: credentials.credential,
   };
 }
 

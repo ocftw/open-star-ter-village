@@ -10,7 +10,7 @@ async function serve() {
     .filter((origin) => origin.length > 0);
   const origins = parsedOrigins.length > 0
     ? parsedOrigins
-    : [Origins.LOCALHOST_IN_DEVELOPMENT];
+    : Origins.LOCALHOST_IN_DEVELOPMENT;
 
   console.log(`Starting server on port ${port} in ${dev ? 'dev' : 'production'} mode...`);
 

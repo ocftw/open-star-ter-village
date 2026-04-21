@@ -14,7 +14,6 @@ export default function Home({
   searchParams?: { demo?: SearchParamValue; mode?: SearchParamValue; dev?: SearchParamValue };
 }) {
   const demo = getSearchParamValue(searchParams?.demo);
-  const mode = getSearchParamValue(searchParams?.mode);
   const dev = getSearchParamValue(searchParams?.dev);
   const showDevView = process.env.NODE_ENV !== 'production' || dev === 'true';
 
@@ -39,7 +38,7 @@ export default function Home({
               <Typography variant="h4" component="h2" gutterBottom>
                 Developer View
               </Typography>
-              <DevView demo={demo} initialMode={mode === 'online' ? 'online' : 'offline'} isDev={showDevView} />
+              <DevView demo={demo} initialMode="offline" isDev={showDevView} />
             </Box>
           )}
         </Stack>
