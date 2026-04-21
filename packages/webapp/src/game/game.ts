@@ -14,6 +14,8 @@ import { refill } from './core/handler/refill';
 
 export const OpenStarTerVillage: Game<GameState, Record<string, unknown>, GameSetupData> = {
   name: 'OpenStarTerVillage',
+  minPlayers: 3,
+  maxPlayers: 6,
   setup: setup,
   turn: {
     /**
