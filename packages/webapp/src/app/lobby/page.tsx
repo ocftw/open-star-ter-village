@@ -58,6 +58,7 @@ export default function LobbyPage() {
   const [matches, setMatches] = React.useState<VisibleMatch[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [isCreating, setIsCreating] = React.useState(false);
+  const [isRefreshing, setIsRefreshing] = React.useState(false);
   const [joiningMatchID, setJoiningMatchID] = React.useState<string | null>(null);
   const [snackbar, setSnackbar] = React.useState<SnackbarState>({
     open: false,
@@ -72,17 +73,22 @@ export default function LobbyPage() {
     setSnackbar({ open: true, message, severity });
   }, []);
 
-  const loadMatches = React.useCallback(async (silent = false) => {
+  const loadMatches = React.useCallback(async (silent = false, shouldIgnore?: () => boolean) => {
     if (!silent) {
       setIsLoading(true);
     }
 
     try {
-      setMatches(await listPublicMatches());
+      const nextMatches = await listPublicMatches();
+      if (!shouldIgnore?.()) {
+        setMatches(nextMatches);
+      }
     } catch (error) {
-      showSnackbar(getLobbyErrorMessage(error, 'Unable to load matches.'), 'error');
+      if (!shouldIgnore?.()) {
+        showSnackbar(getLobbyErrorMessage(error, 'Unable to load matches.'), 'error');
+      }
     } finally {
-      if (!silent) {
+      if (!silent && !shouldIgnore?.()) {
         setIsLoading(false);
       }
     }
@@ -96,12 +102,21 @@ export default function LobbyPage() {
   }, []);
 
   React.useEffect(() => {
-    void loadMatches();
+    let cancelled = false;
+
+    const load = async (silent = false) => {
+      await loadMatches(silent, () => cancelled);
+    };
+
+    void load();
     const intervalID = window.setInterval(() => {
-      void loadMatches(true);
+      if (!cancelled) {
+        void load(true);
+      }
     }, 10_000);
 
     return () => {
+      cancelled = true;
       window.clearInterval(intervalID);
     };
   }, [loadMatches]);
@@ -110,6 +125,16 @@ export default function LobbyPage() {
     const nextValue = event.target.value;
     setPlayerName(nextValue);
     localStorage.setItem(PLAYER_NAME_STORAGE_KEY, nextValue);
+  };
+
+  const handleRefreshMatches = async () => {
+    setIsRefreshing(true);
+
+    try {
+      await loadMatches(true);
+    } finally {
+      setIsRefreshing(false);
+    }
   };
 
   const handleCreateMatch = async () => {
@@ -123,7 +148,7 @@ export default function LobbyPage() {
     try {
       const credentials = await createRoom(trimmedPlayerName, numPlayers);
       saveCredentials(credentials);
-      router.push(`/room/${credentials.matchID}`);
+      router.push(`/game/${credentials.matchID}`);
     } catch (error) {
       showSnackbar(getLobbyErrorMessage(error, 'Unable to create the match.'), 'error');
     } finally {
@@ -151,9 +176,10 @@ export default function LobbyPage() {
 
       const credentials = await joinRoom(matchID, trimmedPlayerName, openSeatID);
       saveCredentials(credentials);
-      router.push(`/room/${matchID}`);
+      router.push(`/game/${matchID}`);
     } catch (error) {
       showSnackbar(getLobbyErrorMessage(error, 'Unable to join that match.'), 'error');
+      await loadMatches(true);
     } finally {
       setJoiningMatchID(null);
     }
@@ -223,8 +249,8 @@ export default function LobbyPage() {
                     <Typography variant="h5" component="h2">
                       Public Matches
                     </Typography>
-                    <Button onClick={() => void loadMatches()} variant="text">
-                      Refresh
+                    <Button onClick={() => void handleRefreshMatches()} variant="text" disabled={isRefreshing}>
+                      {isRefreshing ? 'Refreshing…' : 'Refresh'}
                     </Button>
                   </Box>
 
@@ -260,7 +286,7 @@ export default function LobbyPage() {
                             <Button
                               onClick={() => void handleJoinMatch(match.matchID)}
                               variant="contained"
-                              disabled={status !== 'Waiting' || joiningMatchID === match.matchID}
+                              disabled={status !== 'Waiting' || joiningMatchID !== null}
                             >
                               {joiningMatchID === match.matchID ? 'Joining…' : 'Join'}
                             </Button>

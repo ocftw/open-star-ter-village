@@ -3,7 +3,7 @@ import { GAME_NAME, lobbyClient } from '@/lib/lobbyClient';
 import type { MatchCredentials } from '@/lib/matchCredentials';
 
 export type LobbyMatch = Awaited<ReturnType<typeof lobbyClient.getMatch>>;
-export type LobbyStatus = 'Waiting' | 'In Progress' | 'Finished' | 'Abandoned';
+export type LobbyStatus = 'Waiting' | 'Full' | 'In Progress' | 'Finished' | 'Abandoned';
 
 export interface VisibleMatch {
   match: LobbyMatch;
@@ -41,8 +41,12 @@ export function hasHostStarted(match: Pick<LobbyMatch, 'players'>): boolean {
     return false;
   }
 
-  const data = host.data as { started?: unknown };
-  return data.started === true;
+  return (
+    typeof host.data === 'object' &&
+    host.data !== null &&
+    'started' in host.data &&
+    (host.data as Record<string, unknown>)['started'] === true
+  );
 }
 
 export function getLobbyStatus(match: LobbyMatch): LobbyStatus {
@@ -59,6 +63,10 @@ export function getLobbyStatus(match: LobbyMatch): LobbyStatus {
 
   if (seatsFilled < totalSeats) {
     return 'Waiting';
+  }
+
+  if (!hasHostStarted(match)) {
+    return 'Full';
   }
 
   return 'In Progress';
@@ -94,7 +102,13 @@ export async function getMatch(matchID: string): Promise<LobbyMatch> {
 
 export async function createRoom(playerName: string, numPlayers: number): Promise<MatchCredentials> {
   const { matchID } = await lobbyClient.createMatch(GAME_NAME, { numPlayers });
-  return joinRoom(matchID, playerName, '0');
+  try {
+    return await joinRoom(matchID, playerName, '0');
+  } catch (error) {
+    throw new Error(
+      `Match created (${matchID}) but failed to join seat 0: ${error instanceof Error ? error.message : String(error)}`,
+    );
+  }
 }
 
 export async function joinRoom(

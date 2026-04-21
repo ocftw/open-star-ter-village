@@ -49,6 +49,7 @@ export default function GameRoomPage() {
   const [isLoading, setIsLoading] = React.useState(true);
   const [isLeaving, setIsLeaving] = React.useState(false);
   const [isStarting, setIsStarting] = React.useState(false);
+  const [isRefreshing, setIsRefreshing] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
   const [snackbar, setSnackbar] = React.useState<SnackbarState>({
     open: false,
@@ -60,19 +61,23 @@ export default function GameRoomPage() {
     setSnackbar({ open: true, message, severity });
   }, []);
 
-  const loadMatchMetadata = React.useCallback(async (silent = false) => {
+  const loadMatchMetadata = React.useCallback(async (silent = false, shouldIgnore?: () => boolean) => {
     if (!silent) {
       setIsLoading(true);
     }
 
     try {
       const nextMatch = await getMatch(matchID);
-      setMatch(nextMatch);
-      setErrorMessage(null);
+      if (!shouldIgnore?.()) {
+        setMatch(nextMatch);
+        setErrorMessage(null);
+      }
     } catch (error) {
-      setErrorMessage(getLobbyErrorMessage(error, 'Unable to load this room.'));
+      if (!shouldIgnore?.()) {
+        setErrorMessage(getLobbyErrorMessage(error, 'Unable to load this room.'));
+      }
     } finally {
-      if (!silent) {
+      if (!silent && !shouldIgnore?.()) {
         setIsLoading(false);
       }
     }
@@ -88,21 +93,40 @@ export default function GameRoomPage() {
   }, []);
 
   React.useEffect(() => {
-    void loadMatchMetadata();
+    const boardIsVisible =
+      match !== null &&
+      getFilledSeatCount(match) === match.players.length &&
+      hasHostStarted(match);
+
+    if (boardIsVisible) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const load = async (silent = false) => {
+      await loadMatchMetadata(silent, () => cancelled);
+    };
+
+    void load();
 
     const intervalID = window.setInterval(() => {
-      void loadMatchMetadata(true);
+      if (!cancelled) {
+        void load(true);
+      }
     }, 3_000);
 
     return () => {
+      cancelled = true;
       window.clearInterval(intervalID);
     };
-  }, [loadMatchMetadata]);
+  }, [loadMatchMetadata, match]);
 
   const allSeatsFilled = match ? getFilledSeatCount(match) === match.players.length : false;
   const hasStarted = match ? hasHostStarted(match) : false;
   const isHost = credentials?.playerID === '0';
   const shouldShowBoard = Boolean(match) && allSeatsFilled && hasStarted;
+  const isMutating = isStarting || isLeaving || isRefreshing;
 
   const handleLeaveMatch = async () => {
     if (!credentials) {
@@ -137,6 +161,16 @@ export default function GameRoomPage() {
       showSnackbar(getLobbyErrorMessage(error, 'Unable to start the game.'), 'error');
     } finally {
       setIsStarting(false);
+    }
+  };
+
+  const handleRefreshNow = async () => {
+    setIsRefreshing(true);
+
+    try {
+      await loadMatchMetadata(true);
+    } finally {
+      setIsRefreshing(false);
     }
   };
 
@@ -274,7 +308,7 @@ export default function GameRoomPage() {
         </Card>
 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
-          <Button onClick={() => void loadMatchMetadata()} variant="text">
+          <Button onClick={() => void handleRefreshNow()} variant="text" disabled={isRefreshing || isMutating}>
             Refresh Now
           </Button>
           <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
@@ -282,12 +316,12 @@ export default function GameRoomPage() {
               <Button
                 onClick={handleStartGame}
                 variant="contained"
-                disabled={!allSeatsFilled || isStarting}
+                disabled={!allSeatsFilled || isMutating}
               >
                 {isStarting ? 'Starting…' : 'Start Game'}
               </Button>
             )}
-            <Button onClick={handleLeaveMatch} color="error" variant="outlined" disabled={isLeaving}>
+            <Button onClick={handleLeaveMatch} color="error" variant="outlined" disabled={isMutating}>
               {isLeaving ? 'Leaving…' : credentials ? 'Leave Match' : 'Back to Lobby'}
             </Button>
           </Box>
