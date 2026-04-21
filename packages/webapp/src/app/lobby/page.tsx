@@ -51,6 +51,7 @@ export default function LobbyPage() {
   const [playerName, setPlayerName] = React.useState('');
   const [numPlayers, setNumPlayers] = React.useState<number>(3);
   const [matches, setMatches] = React.useState<VisibleMatch[]>([]);
+  const [loadError, setLoadError] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(true);
   const [isCreating, setIsCreating] = React.useState(false);
   const [isRefreshing, setIsRefreshing] = React.useState(false);
@@ -60,11 +61,15 @@ export default function LobbyPage() {
   const trimmedPlayerName = playerName.trim();
   const playerNameIsValid = isValidPlayerName(playerName);
 
-  const fetchMatches = React.useCallback(async () => {
+  const fetchMatches = React.useCallback(async (silent = false) => {
     try {
       const nextMatches = await listPublicMatches();
       setMatches(nextMatches);
+      setLoadError(false);
     } catch (error) {
+      if (!silent) {
+        setLoadError(true);
+      }
       showSnackbar(getLobbyErrorMessage(error, 'Unable to load matches.'), 'error');
     } finally {
       setIsLoading(false);
@@ -78,7 +83,11 @@ export default function LobbyPage() {
     }
   }, []);
 
-  usePolling(fetchMatches, 10_000);
+  React.useEffect(() => {
+    void fetchMatches();
+  }, [fetchMatches]);
+
+  usePolling(React.useCallback(() => fetchMatches(true), [fetchMatches]), 10_000);
 
   const handlePlayerNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const nextValue = event.target.value;
@@ -224,6 +233,8 @@ export default function LobbyPage() {
 
                   {isLoading ? (
                     <Typography color="text.secondary">Loading matches…</Typography>
+                  ) : loadError ? (
+                    <Alert severity="error">Unable to load matches. Check your connection and try refreshing.</Alert>
                   ) : matches.length === 0 ? (
                     <Alert severity="info">No public matches are waiting right now. Create one to get started.</Alert>
                   ) : (

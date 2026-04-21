@@ -12,17 +12,21 @@ export function usePolling(
     if (!enabled) return;
     let cancelled = false;
 
-    const run = async () => {
-      if (!cancelled) {
+    const run = async (): Promise<void> => {
+      if (cancelled) return;
+      try {
         await callbackRef.current();
+      } catch {
+        // caller is responsible for error handling
+      }
+      if (!cancelled) {
+        window.setTimeout(() => void run(), intervalMs);
       }
     };
 
     void run();
-    const id = window.setInterval(() => void run(), intervalMs);
     return () => {
       cancelled = true;
-      window.clearInterval(id);
     };
   }, [intervalMs, enabled]);
 }

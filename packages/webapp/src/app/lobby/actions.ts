@@ -61,6 +61,11 @@ export function hasHostStarted(match: Pick<LobbyMatch, 'players'>): boolean {
   );
 }
 
+function isAbandonedMatch(players: LobbyMatch['players']): boolean {
+  // A match is abandoned if every player either has no name or is disconnected.
+  return players.length > 0 && players.every((player) => !player.name?.trim() || player.isConnected === false);
+}
+
 export function getLobbyStatus(match: LobbyMatch): LobbyStatus {
   const seatsFilled = getFilledSeatCount(match);
   const totalSeats = match.players.length;
@@ -69,7 +74,7 @@ export function getLobbyStatus(match: LobbyMatch): LobbyStatus {
     return 'Finished';
   }
 
-  if (seatsFilled === 0) {
+  if (isAbandonedMatch(match.players)) {
     return 'Abandoned';
   }
 

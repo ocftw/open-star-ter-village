@@ -8,6 +8,12 @@ async function serve() {
     .split(',')
     .map((origin) => origin.trim())
     .filter((origin) => origin.length > 0);
+  if (process.env.NODE_ENV === 'production' && parsedOrigins.length === 0) {
+    console.warn(
+      '[server] GAME_SERVER_ORIGINS is not set in production. All cross-origin requests will be denied. ' +
+      'Set GAME_SERVER_ORIGINS to a comma-separated list of allowed origins.'
+    );
+  }
   const origins = parsedOrigins.length > 0
     ? parsedOrigins
     : Origins.LOCALHOST_IN_DEVELOPMENT;

@@ -40,6 +40,7 @@ export default function GameRoomPage() {
   const params = useParams<{ matchID: string }>();
   const router = useRouter();
   const matchID = Array.isArray(params.matchID) ? params.matchID[0] : params.matchID;
+  const hasLoaded = React.useRef(false);
   const [match, setMatch] = React.useState<LobbyMatch | null>(null);
   const [credentials, setCredentials] = React.useState<MatchCredentials | null>(null);
   const [credentialsReady, setCredentialsReady] = React.useState(false);
@@ -56,12 +57,17 @@ export default function GameRoomPage() {
       const nextMatch = await getMatch(matchID);
       setMatch(nextMatch);
       setErrorMessage(null);
+      hasLoaded.current = true;
     } catch (error) {
-      setErrorMessage(getLobbyErrorMessage(error, 'Unable to load this room.'));
+      if (!hasLoaded.current) {
+        setErrorMessage(getLobbyErrorMessage(error, 'Unable to load this room.'));
+      } else {
+        showSnackbar('Connection issue — retrying…', 'info');
+      }
     } finally {
       setIsLoading(false);
     }
-  }, [matchID]);
+  }, [matchID, showSnackbar]);
 
   React.useEffect(() => {
     let cancelled = false;
@@ -84,7 +90,7 @@ export default function GameRoomPage() {
 
       if (serverMatch) {
         const slot = serverMatch.players.find((player) => player.id === Number(creds.playerID));
-        if (!slot?.name) {
+        if (!slot?.name || slot.name !== creds.playerName) {
           clearCredentials(matchID);
           nextCredentials = null;
         }
@@ -109,7 +115,9 @@ export default function GameRoomPage() {
 
   const allSeatsFilled = match ? getFilledSeatCount(match) === match.players.length : false;
   const hasStarted = match ? hasHostStarted(match) : false;
-  const isAbandoned = match ? match.players.every((player) => !player.name) : false;
+  const isAbandoned = match
+    ? match.players.every((player) => !player.name?.trim() || player.isConnected === false)
+    : false;
   const isHost = credentials?.playerID === '0';
   const shouldShowBoard = Boolean(match) && allSeatsFilled && hasStarted;
   const isMutating = isStarting || isLeaving || isRefreshing;
@@ -163,11 +171,24 @@ export default function GameRoomPage() {
   };
 
   const handleCopyInviteURL = async () => {
+    const url = window.location.href;
     try {
-      await navigator.clipboard.writeText(window.location.href);
-      showSnackbar('Copied!', 'success');
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(url);
+      } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = url;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+      }
+      showSnackbar('Invite URL copied!', 'success');
     } catch {
-      showSnackbar('Unable to copy the invite URL.', 'error');
+      showSnackbar('Copy failed — select and copy the URL manually.', 'error');
     }
   };
 
