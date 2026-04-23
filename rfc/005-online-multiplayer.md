@@ -1,6 +1,6 @@
 # RFC 005: Online Multiplayer Support
 
-**Status:** Accepted
+**Status:** In Progress
 **Author:** @ocftw
 **Created:** 2026-04-05
 **Related:** [PR #345](https://github.com/ocftw/open-star-ter-village/pull/345)

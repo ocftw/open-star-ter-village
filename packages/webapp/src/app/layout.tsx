@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
 import "./globals.css";
 import { CssBaseline } from "@mui/material";
-
-const inter = Inter({ subsets: ["latin"] });
+import StoreProvider from './StoreProvider';
 
 export const metadata: Metadata = {
   title: "Open StarTer Village",
@@ -18,10 +16,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body>
         <AppRouterCacheProvider>
-          <CssBaseline />
-          {children}
+          <StoreProvider>
+            <CssBaseline />
+            {children}
+          </StoreProvider>
         </AppRouterCacheProvider>
       </body>
     </html>
