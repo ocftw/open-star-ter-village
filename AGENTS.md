@@ -43,6 +43,17 @@ You are an **executor agent**. You receive a **task** from the Supervisor (Claud
 - One commit per small-scope change — do not batch unrelated changes
 - No body unless the change is non-obvious
 
+## Multiplayer (RFC 005) Decisions
+
+These are locked decisions — do not re-derive or override them:
+
+- **Game server port:** `3001` (not 8000 as RFC diagram shows). Default `NEXT_PUBLIC_GAME_SERVER_URL=http://localhost:3001`.
+- **`LobbyClient` import:** `boardgame.io/client` in boardgame.io 0.50.2 (fall back to `boardgame.io/lobby` only if that fails).
+- **`credentials` prop in `BoardGame.tsx`:** add to `OwnProps` only; pass through via `{...props}` spread. Do not restructure the `Client()` call.
+- **No `numPlayers` in `Client()`:** removed; server enforces numPlayers per match.
+- **`localStorage` safety:** lobby and game room pages are `'use client'` — direct `localStorage` calls are safe with no extra guard needed.
+- **`StoreProvider` lives in `layout.tsx`**, not `page.tsx` — all routes share Redux store.
+
 ## Post-Task Steps
 
 After implementing your task, run these in order:
