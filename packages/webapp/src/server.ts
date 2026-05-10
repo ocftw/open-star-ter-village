@@ -1,8 +1,9 @@
 import { Server, Origins } from "boardgame.io/server";
+import packageJson from "../package.json";
 import game from "./game";
 import { loadWebappEnv } from "./env";
 
-const packageVersion = '0.1.0';
+const packageVersion = packageJson.version;
 const gameName = 'OpenStarTerVillage';
 
 async function serve() {
