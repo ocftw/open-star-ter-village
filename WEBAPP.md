@@ -25,9 +25,61 @@ yarn run webapp start
 
 ## Deployment Options
 
-### Deploy to Vercel
+### Deploy to Fly.io
 
-TBD - We are working on this feature.
+Fly.io is the alpha deployment target for online multiplayer because it can run the Next.js client and long-lived boardgame.io SocketIO server in one Node container close to Taiwan players.
+
+Rejected alternatives:
+
+- Vercel: good fit for the Next.js client, poor fit for the long-lived in-memory SocketIO game server.
+- Render: workable, but the free/low-cost sleep behavior is a bad fit for live matches.
+- Railway: workable, but Fly.io gives more explicit region and VM control for this alpha.
+
+### Deploy Your Own Village
+
+Prerequisites:
+
+- A Fly.io account.
+- The `flyctl` CLI.
+- Node.js 18+ and Yarn 3.4.1 for local verification.
+
+Create an app:
+
+```shell
+cp fly.toml.example fly.toml
+# Edit fly.toml and replace your-village-app with your Fly app name.
+fly launch --copy-config
+```
+
+The included `fly.toml` is the Open StarTer Village alpha deployment config and is safe to publish because it contains app routing, region, and build-time public URLs only. It does not contain Fly API tokens, CORS secrets, webhooks, or private credentials. For your own deployment, start from `fly.toml.example` and replace the app name and public URLs.
+
+Both Fly configs use one Fly app and one container. The Next.js client listens on port 3000, and the boardgame.io server listens on port 3001.
+
+Required configuration:
+
+- `NEXT_PUBLIC_GAME_SERVER_URL`: public URL for the game server. This is inlined by Next.js at build time, so set it as a Docker build argument before `next build`; changing a runtime env var later will not update the browser bundle.
+- `GAME_SERVER_ORIGINS`: comma-separated allowed browser origins for the game server CORS policy. Set this as a Fly secret.
+
+Example:
+
+```shell
+fly secrets set GAME_SERVER_ORIGINS=https://open-star-ter-village.fly.dev
+fly deploy --build-arg NEXT_PUBLIC_GAME_SERVER_URL=https://open-star-ter-village.fly.dev:3001
+```
+
+For a custom domain, add the certificate in Fly and include that origin in `GAME_SERVER_ORIGINS`:
+
+```shell
+fly certs add village.example.org
+fly secrets set GAME_SERVER_ORIGINS=https://village.example.org
+fly deploy --build-arg NEXT_PUBLIC_GAME_SERVER_URL=https://village.example.org:3001
+```
+
+The alpha runs on `shared-cpu-1x` with 256 MB memory and keeps one machine warm. Expect roughly USD $2-5/month depending on region, transfer, and Fly pricing changes.
+
+Match state is in memory for alpha. Restarts lose active matches until the post-alpha persistence task lands.
+
+Run the [external-network smoke test](./docs/deploy-smoke-test.md) after every deploy.
 
 ## How to Contribute to the Source Code
 

@@ -39,6 +39,8 @@ English version: [README.en.md](./README.en.md)
 
 **建置中！**
 
+如需自行部署網頁版遊戲，請參考 [Deploy Your Own Village](./WEBAPP.md#deploy-your-own-village)。
+
 ## 如何參與
 
 我們歡迎各種形式的貢獻，即使您不具備程式能力，也歡迎分享您的想法。此專案有實體和線上兩個版本，您可以在我們的維基頁面上查看所有專案的規劃和進度，任何有 "[Assistance Required]" 標記的項目都歡迎您加入貢獻。
