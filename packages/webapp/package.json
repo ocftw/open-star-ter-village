@@ -11,7 +11,7 @@
     "build:server": "tsc -P tsconfig.server.json",
     "start": "yarn start:next & yarn start:server",
     "start:next": "next start",
-    "start:server": "node -r tsconfig-paths/register dist/server.js",
+    "start:server": "node -r ./register-dist-alias.js dist/src/server.js",
     "lint": "next lint",
     "test": "jest",
     "e2e": "PLAYWRIGHT_BROWSERS_PATH=/tmp/pw-browsers playwright test",

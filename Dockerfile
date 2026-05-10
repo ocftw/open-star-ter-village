@@ -36,9 +36,8 @@ COPY --from=build /app/packages/webapp/.next/standalone ./
 COPY --from=build /app/packages/webapp/.next/static ./packages/webapp/.next/static
 COPY --from=build /app/packages/webapp/public ./packages/webapp/public
 COPY --from=build /app/packages/webapp/dist ./packages/webapp/dist
-RUN mkdir -p /app/node_modules/@ \
-  && ln -s /app/packages/webapp/dist/game /app/node_modules/@/game
+COPY packages/webapp/register-dist-alias.js ./packages/webapp/register-dist-alias.js
 
 EXPOSE 3000 3001
 
-CMD ["sh", "-c", "yarn workspace @open-star-ter-village/webapp next start -H 0.0.0.0 -p 3000 & PORT=3001 node packages/webapp/dist/server.js & wait"]
+CMD ["sh", "-c", "yarn workspace @open-star-ter-village/webapp next start -H 0.0.0.0 -p 3000 & PORT=3001 yarn workspace @open-star-ter-village/webapp start:server & wait"]
