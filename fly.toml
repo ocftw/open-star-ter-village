@@ -7,6 +7,9 @@ primary_region = "sin"
   [build.args]
     NEXT_PUBLIC_GAME_SERVER_URL = "https://open-star-ter-village.fly.dev:3001"
 
+[env]
+  NEXT_PUBLIC_GAME_SERVER_URL = "https://open-star-ter-village.fly.dev:3001"
+
 [[services]]
   protocol = "tcp"
   internal_port = 3000

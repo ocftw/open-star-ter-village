@@ -22,8 +22,10 @@ RUN yarn webapp build
 FROM node:20-alpine AS runtime
 WORKDIR /app
 
+ARG NEXT_PUBLIC_GAME_SERVER_URL=http://localhost:3001
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV NEXT_PUBLIC_GAME_SERVER_URL=$NEXT_PUBLIC_GAME_SERVER_URL
 
 RUN corepack enable
 
