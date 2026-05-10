@@ -1,0 +1,47 @@
+app = "open-star-ter-village"
+primary_region = "sin"
+
+[build]
+  dockerfile = "Dockerfile"
+
+  [build.args]
+    NEXT_PUBLIC_GAME_SERVER_URL = "https://open-star-ter-village.fly.dev:3001"
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 3000
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [[services.ports]]
+    port = 80
+    handlers = ["http"]
+    force_https = true
+
+  [[services.ports]]
+    port = 443
+    handlers = ["tls", "http"]
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 3001
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [[services.http_checks]]
+    interval = "15s"
+    timeout = "2s"
+    method = "GET"
+    path = "/health"
+    protocol = "http"
+
+  [[services.ports]]
+    port = 3001
+    handlers = ["tls", "http"]
+
+[vm]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 256
