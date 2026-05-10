@@ -13,6 +13,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["./src/server.ts", "./src/game/**/*.ts"],
+  "include": ["./src/server.ts", "./src/env.ts", "./src/game/**/*.ts"],
   "exclude": ["node_modules"]
 }
