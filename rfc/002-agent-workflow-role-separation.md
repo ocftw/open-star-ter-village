@@ -1,9 +1,9 @@
 # RFC 002: Agent Workflow & Role Separation
 
-**Status:** In Review
+**Status:** Accepted
 **Author:** @ben196888
 **Created:** 2026-03-23
-**Related:** [Issue #346](https://github.com/ocftw/open-star-ter-village/issues/346), [PR #335](https://github.com/ocftw/open-star-ter-village/pull/335)
+**Related:** [Issue #346](https://github.com/ocftw/open-star-ter-village/issues/346), [PR #335](https://github.com/ocftw/open-star-ter-village/pull/335), [Discussion #365](https://github.com/ocftw/open-star-ter-village/issues/365)
 
 ## Description
 
@@ -15,219 +15,263 @@ However, the current process has friction:
 2. **Rigid agent structure** — the 3-domain pattern (game logic, architecture, UI) was validated for the webapp but doesn't generalize to the homepage project or smaller changes.
 3. **No reusable review process** — code review was done ad-hoc in PR comments rather than through a repeatable skill.
 
-This RFC formalizes agent roles, defines project-aware review strategies, and introduces a `/code-review:code-review` skill for self-service code review.
+This RFC formalizes a two-layer agent + skill architecture: **agents** define identity, scope, and model; **skills** are human-invocable workflow steps that orchestrate agents. This replaces abstract role definitions with enforceable agent boundaries and composable workflow entry points.
 
 ## Goals
 
-- Define three distinct agent roles (Planner, Supervisor, Executor) with clear model assignments and responsibilities
-- Reduce Opus token usage by delegating implementation to Codex executors
-- Create a `/code-review:code-review` skill that adapts review strategy based on project type and change scope
-- Support the monorepo structure — different review strategies for webapp vs homepage
-- Enable maintainers and contributors to self-review PRs without consuming tokens via GitHub hooks
+- Define three named agents (`rfc-writer`, `programmer`, `code-reviewer`) with scope-enforced boundaries via `allowed-tools`
+- Support both Claude and GPT/Codex contributors — model assignments are recommendations, not requirements
+- Define workflow skills (`/rfc:write`, `/rfc:to-plan`, `/plan:to-task`, `/implement`, `/code-review`) as human-invocable entry points
+- Create a `/code-review` skill that determines review scope, spawns parallel domain-scoped reviewers, and consolidates findings as P0/P1/P2
+- Support the monorepo structure — different review scopes for webapp vs homepage
+- Enable maintainers and contributors to self-service review without consuming tokens via GitHub hooks
 
 ## Non-Goals
 
 - Automating code review via GitHub Actions or webhooks (token cost risk from external triggers)
-- Mandating a fixed number of review agents per PR
 - Replacing human code review — this augments, not replaces, maintainer judgment
 - Defining `.claude/settings.json` configuration (covered in RFC 003)
 - Defining the RFC folder structure or template (covered by RFC 001)
+- Domain-specific `code-reviewer` variants (e.g., `code-reviewer:game-core`, `code-reviewer:ui`) — these are future work
 
 ## Solutions
 
-### 1. Role Definitions
+### 1. Two-Layer Architecture
 
-Three roles with specific model assignments:
+This RFC defines two layers:
 
-| Role | Model | Responsibility | When Used |
-|------|-------|----------------|-----------|
-| **Planner** | Claude / Opus 4.6 | RFC writing, architecture decisions, plan mode, complex analysis | Starting new features, designing specs, breaking down large tasks |
-| **Supervisor** | Claude / Sonnet 4.6 | Code review, oversight, progress tracking, consolidation | PR reviews, mid-implementation checkpoints, quality gates |
-| **Executor** | Codex / gpt-5.4 | Code implementation, file edits, test writing, refactoring | Implementing planned tasks, writing tests, mechanical changes |
+- **Agents** — named, scoped entities. Each agent has an `allowed-tools` definition that enforces what files and commands it can access, regardless of which model runs it.
+- **Skills** — human-invocable workflow steps. Each skill orchestrates one or more agents to accomplish a workflow goal.
 
-**Role boundaries:**
+```
+Human invokes skill
+  ↓
+Skill decides: which agents, how many, in what order or in parallel
+  ↓
+Agents execute within their allowed-tools scope
+```
 
-- **Planner** produces specs and plans; never writes production code directly. Uses plan mode to align with the user before handing off to executors.
-- **Supervisor** reviews executor output. Uses Sonnet for cost-efficient oversight and Codex for deeper domain-specific analysis. Consolidates findings from parallel review agents.
-- **Executor** receives scoped tasks from the Planner's output and implements them. Stays within the assigned scope (project and domain). Runs validation before reporting completion.
+### 2. Agent Definitions
 
-All roles share the same commit conventions (Conventional Commits) and validation checklist.
+Three agents, each with a skill file defining scope and model recommendations:
 
-### 2. Project-Aware Review Strategy
+| Agent | `allowed-tools` scope | Claude (preferred) | Claude-only | GPT-only |
+|-------|----------------------|-------------------|-------------|----------|
+| `rfc-writer` | `Read(**) Grep(**) Glob(**) Edit(rfc/**) Write(rfc/**) Bash(gh pr view:*) Bash(gh pr diff:*) Bash(git diff:*) Bash(git *)` | Opus 4.6 | Sonnet 4.6 | gpt-5.4 effort:high |
+| `programmer` | `Read(**) Grep(**) Glob(**) Edit(packages/webapp/src/**) Edit(homepage/**) Write(packages/webapp/src/**) Write(homepage/**) Bash(yarn *) Bash(git add:*) Bash(git commit:*) Bash(git push:*)` | Sonnet 4.6 | Sonnet 4.6 | gpt-5.3-codex |
+| `code-reviewer` | `Read(**) Grep(**) Glob(**) Bash(gh pr diff:*) Bash(gh pr view:*) Bash(git diff:*) Bash(yarn *) Bash(npx tsc:*)` | Sonnet 4.6 | Sonnet 4.6 | gpt-5.4 |
 
-Instead of hardcoding 3 domain agents, the review strategy adapts to the project and change scope.
+> **Model suggestions are not requirements.** Agent identity is defined by which skill you invoke and its `allowed-tools` scope — not the model. Pick the column that matches your available tools. `rfc-writer` and `code-reviewer` are reasoning-heavy tasks; `programmer` is implementation work optimized for a code-specialized model.
+
+**Agent boundaries are partially enforced by `allowed-tools`.** Bash command scope (`Bash(git *)`, `Bash(yarn *)`, etc.) is reliably enforced — Claude Code only offers those commands when the skill is active. Edit/Write file-path scope (e.g., `Edit(rfc/**)`) is documented intent but has a [known enforcement gap (anthropics/claude-code#18837)](https://github.com/anthropics/claude-code/issues/18837) and is treated as convention. The post-commit scope check (§8) is the runtime enforcement for file-path boundaries.
+
+### 3. Skill Definitions
+
+Skills are human-invocable entry points. Each skill orchestrates one or more agents.
+
+| Skill | Instructs Claude to spawn | Purpose |
+|-------|--------------------------|---------|
+| `/rfc:write` | 1× `rfc-writer` | Draft a new RFC from a prompt |
+| `/rfc:to-plan` | 1× `rfc-writer` | Break an accepted RFC into observable plans |
+| `/plan:to-task` | 1× `rfc-writer` | Break a plan into parallelizable tasks |
+| `/implement` | N× `programmer` in parallel | Spawn one per task via the Agent tool, run Codex review gate, `/simplify`, coordinate post-plan review |
+| `/code-review` | N× `code-reviewer` in parallel | Scope-aware review orchestrator (see §5) |
+
+> **External skills:** `/codex:review` and `/codex:adversarial-review` are Codex plugin skills, not defined in this RFC. They are invoked by `/implement` (post-plan review) and `/code-review` (domain review) as sub-steps. Their behavior is defined by the Codex plugin.
+
+### 4. Development Process
+
+```
+/rfc:write      → rfc-writer drafts RFC
+/rfc:to-plan    → rfc-writer breaks RFC into plans (one observable feature each)
+/plan:to-task   → rfc-writer breaks plan into parallelizable tasks
+/implement      → N× programmer agents (one per non-overlapping task)
+                    [Codex review gate — auto-reviews each commit]
+                  → /simplify per task (post-task cleanup)
+                  → post-plan review in parallel:
+                      /codex:review
+                      /codex:adversarial-review (code-reviewer perspective)
+                      yarn webapp test (or homepage lint)
+                  → programmer agents auto-fix critical findings
+                    (escalate only: architecture conflicts, unclear scope)
+                  → commit → push → raise PR
+/code-review    → N× code-reviewer agents (one per affected domain)
+                  → consolidated P0/P1/P2 findings
+```
+
+**Process notes:**
+
+- **RFC → Plans:** `rfc-writer` breaks a large RFC into plans — each plan is one observable feature verifiable end-to-end (e.g., "User can list public rooms").
+- **Plans → Tasks:** `rfc-writer` (Opus/gpt-5.4) breaks each plan into tasks — the smallest coding unit a `programmer` can complete independently: implement + test + validate. Task decomposition requires architectural judgment about dependencies and parallelism — this belongs with the highest-capability model available, not with a coordination layer.
+- **Parallel implementation:** `/implement` instructs Claude to use the Agent tool to spawn 1–N `programmer` agents in parallel, one per non-overlapping task. No cap — maximize parallelism.
+- **Codex review gate:** enabled during implementation so each commit is auto-reviewed as it lands. Catches issues early before post-plan review.
+- **Post-plan review:** `/codex:review` and `/codex:adversarial-review` run in parallel with automated tests. The `code-reviewer` perspective in `/codex:adversarial-review` challenges correctness, safety, and architectural fit.
+- **Scope enforcement:** `/implement` runs `git diff --name-only HEAD~1` after each `programmer` task and cross-references changed files against the task's declared domain. Out-of-scope files are flagged before push.
+
+**`programmer` agent cap:** No cap — one per non-overlapping task.
+**`code-reviewer` agent cap:** One per affected domain (domain count, not file count).
+
+### 5. `/code-review` Skill
+
+A Claude Code skill that maintainers and contributors invoke manually. **Not attached to GitHub hooks or actions.** It wraps `/codex:review` and `/codex:adversarial-review`, determines review scope, and consolidates findings.
+
+**Skill behavior:**
+
+```
+Step 1 — Clarify target
+  → uncommitted code  (git diff --staged)
+  → branch            (git diff main..HEAD)
+  → PR by number      (gh pr diff <number>)
+  → PR by URL         (gh pr diff <URL>)
+
+Step 2 — Determine scope → instruct Claude to spawn parallel code-reviewer agents via Agent tool
+  webapp changes:
+    → /codex:review              (game logic perspective)
+    → /codex:review              (UI perspective)
+    → /codex:adversarial-review  (architecture perspective)
+  homepage changes:
+    → /codex:review              (content + styling perspective)
+  cross-project / monorepo config:
+    → add one infra perspective
+
+Step 3 — Consolidate findings
+  🔴 P0 — Critical: must fix before merge
+  🟡 P1 — Important: should fix
+  🔵 P2 — Nice to have: optional improvements
+```
+
+The `code-reviewer` agent is generic — the domain perspective is passed as context per invocation. No separate agent definition per domain. Domain-specific `code-reviewer` variants are out of scope for this RFC.
+
+### 6. Code Review Output Format
+
+All review agents produce findings in this structure:
+
+```markdown
+## [Domain] Review
+
+### 🔴 P0 — Critical
+Must fix before merge.
+- `file/path.ts:42` — Description of the issue
+
+### 🟡 P1 — Important
+Should fix.
+- `file/path.ts:78` — Description of the concern
+
+### 🔵 P2 — Nice to Have
+Optional improvements.
+- `file/path.ts:15` — Suggestion
+
+### Verification
+- [ ] `yarn webapp build` — pass/fail
+- [ ] `yarn webapp test` — pass/fail
+- [ ] `npx tsc --noEmit` — pass/fail
+```
+
+When multiple agents run in parallel, `/code-review` consolidates their findings into a single P0/P1/P2 summary.
+
+### 7. Project-Aware Review Scope
+
+The number of `code-reviewer` agents spawned by `/code-review` adapts to the project and change scope.
 
 **Webapp review domains:**
 
-| Domain | Scope | Files |
-|--------|-------|-------|
+| Domain | Perspective | Files |
+|--------|-------------|-------|
 | Game Logic | Moves, handlers, state mutations, rules, tests | `src/game/**` |
 | Architecture | Types, state management, build config, server, dependencies | `src/server.ts`, `src/lib/**`, `tsconfig*.json`, `package.json` |
 | UI | Components, props, hooks, accessibility, styles | `src/components/**`, `src/pages/**` |
 
 **Homepage review domains:**
 
-| Domain | Scope | Files |
-|--------|-------|-------|
-| Content & CMS | Card data, page content, footer, CMS config | `_cards/`, `_pages/`, `_footer/`, `src/CMS/` |
-| Components & Styling | Layouts, components, CSS, i18n | `src/components/`, `src/layouts/`, `public/css/` |
-
-**Scaling heuristic:**
-
-| Project | Default Agents | When to Scale Up |
-|---------|---------------|-----------------|
-| webapp | 1–3 depending on change scope | Large PRs touching multiple domains → up to 3 agents |
-| homepage | 1 (content + styling combined) | CMS schema changes or i18n overhaul → 2 agents |
-| cross-project | 1 per affected project | Monorepo config changes → add 1 infra agent |
+| Domain | Perspective | Files |
+|--------|-------------|-------|
+| Content & Styling | Card data, page content, footer, CMS config, components, CSS, i18n | `_cards/`, `_pages/`, `_footer/`, `src/CMS/`, `src/components/`, `public/css/` |
 
 **Decision rule:** Count affected domains, not files. A 50-file change in one domain = 1 agent. A 10-file change across 3 domains = 3 agents.
 
-**No fixed agent cap.** Spawn as many executor agents as there are parallel tasks. For post-plan review, run all three review checks in parallel.
+### 8. Agent Scope Enforcement
 
-### 3. Development Process
+Two enforcement layers with different reliability levels:
 
-```
-RFC (Planner / Opus)
-  → Plans: break RFC into observable features (Planner)
-    → Tasks: break each plan into coding-agent units (Supervisor)
-      → Implement + Test in parallel (1–N Executor / Codex agents)
-        → /simplify per task (post-task cleanup)
-          → Review + Test in parallel (post-plan):
-              1. /code-review:code-review
-              2. /codex:review
-              3. yarn webapp test (or homepage lint)
-            → Auto-fix all critical issues
-              (escalate only: architecture conflicts, strategy gaps, unclear scope)
-              → Commit → Push → Raise MR (Supervisor)
-```
+**Layer 1 — Bash command scope (`allowed-tools`, reliable):**
 
-**Process notes:**
+Each agent's skill file restricts which Bash commands are available via `allowed-tools`. Claude Code enforces this at the tool-call level — commands outside the pattern are not offered. Example: a `programmer` agent has `Bash(yarn *)` and `Bash(git add:*)` but not `Bash(gh pr *)`, so it cannot create PRs. This is the same mechanism used by `playwright-cli`.
 
-- **RFC → Plans:** The Planner breaks a large RFC (e.g. "game lobby") into plans — each plan is one observable feature a Supervisor can verify end-to-end (e.g. "User can list public rooms").
-- **Plans → Tasks:** The Supervisor breaks each plan into tasks — the smallest coding unit an executor can complete independently: implement + test + validate.
-- **Parallel execution:** The Supervisor spawns 1–N Codex executor agents in parallel, one per task. No fixed cap — maximize parallelism across non-overlapping tasks.
-- **Post-task cleanup:** After each task, run `/simplify` to detect and remove redundant code before review.
-- **Post-plan review:** All three checks run in parallel — Claude review, Codex review, and automated tests.
-- **Auto-fix:** Executors fix all critical findings automatically. Human escalation only for architecture conflicts, strategy gaps, or unclear scope.
+**Layer 2 — File-path scope (convention + runtime detection):**
 
-### 4. Code Review Output Format
+Edit/Write file-path patterns in `allowed-tools` (e.g., `Edit(rfc/**)`) document intended scope but have a [known enforcement gap (anthropics/claude-code#18837)](https://github.com/anthropics/claude-code/issues/18837). These are treated as documented convention, not hard tooling enforcement.
 
-All review agents (regardless of role or model) produce findings in this structure:
+Runtime compensation: `/implement` runs `git diff --name-only HEAD~1` after each `programmer` task and cross-references changed files against the task's declared domain. Out-of-scope files are flagged before push.
+
+**Relation to RFC 003:**
+
+`settings.json` (RFC 003) defines the union baseline and the deny list that applies across all agents (protected branches, destructive operations). Skill `allowed-tools` scopes each invocation to a subset of those permissions.
+
+### 9. AGENTS.md
+
+Replace the current generic `AGENTS.md` (254 lines) with a ~10-line pointer:
 
 ```markdown
-## [Domain Name] Review
+# AGENTS.md
 
-### 🔴 Blockers (Critical)
-Must fix before merge.
-- `file/path.ts:42` — Description of the issue
+You are a `programmer` agent. Read `.claude/skills/programmer/SKILL.md` for your full instructions.
 
-### 🟡 Warnings
-Should fix but won't break functionality.
-- `file/path.ts:78` — Description of the concern
-
-### 🔵 Nits
-Style, naming, minor improvements.
-- `file/path.ts:15` — Suggestion
-
-### ✅ Verification
-- [ ] `yarn webapp build` — pass/fail
-- [ ] `yarn webapp test` — pass/fail
-- [ ] `npx tsc --noEmit` — pass/fail
+Summary: implement scoped tasks, run validation before reporting, follow Conventional Commits, stay within your declared domain.
 ```
 
-When multiple agents run in parallel, the Supervisor consolidates their findings into a single structured comment.
-
-### 5. `/code-review:code-review` Skill
-
-A Claude Code plugin skill that maintainers and contributors invoke manually. **Not attached to GitHub hooks or actions.** This skill is a future deliverable of this RFC — it does not exist yet.
-
-**Three invocation modes:**
-
-| Invocation | Behavior |
-|------------|----------|
-| `/code-review:code-review` | Review current branch vs base branch (git diff) |
-| `/code-review:code-review 335` | Review PR #335 by number (via `gh pr diff`) |
-| `/code-review:code-review https://github.com/.../pull/335` | Review PR by URL |
-
-**Skill behavior:**
-
-1. Determine the diff (from branch, PR number, or URL)
-2. Identify affected projects (webapp, homepage, or both)
-3. Map changed files to review domains
-4. Launch one agent per affected domain (soft cap: 3)
-5. Each agent reviews its domain and produces structured findings
-6. Consolidate into a single summary with verification results
-7. Post as PR comment (if PR exists) or output to console
-
-### 6. AGENTS.md Rewrite
-
-Replace the current generic `AGENTS.md` (254 lines, duplicates CLAUDE.md and README) with focused Codex executor instructions (~70 lines). See the updated `AGENTS.md` file for the full content.
-
-**What gets cut:** project overview, repo structure, tech stack, setup instructions, contribution workflow, troubleshooting, future enhancements, resource links — all already in CLAUDE.md or README.
-
-**What gets added:** role context, RFC awareness, domain scoping, commit conventions, validation checklist, code review output format.
-
-### 7. Permission Guidelines (Per-Role)
-
-Claude Code permissions (`.claude/settings.json`) cannot enforce role-based access — all agents share the same permission set. The table below documents the **intended** permissions per role as a convention guideline. The actual `.claude/settings.json` configuration (union of all role permissions, deny list, settings file separation) is defined in [RFC 003](./003-permissions-hands-free-execution.md).
-
-| Permission | Planner | Supervisor | Executor | Notes |
-|------------|:-------:|:----------:|:--------:|-------|
-| `Edit/Write(rfc/**)` | ✅ create | ✅ update | ❌ | Planner drafts RFCs; Supervisor updates progress |
-| `Edit/Write(.claude/commands/**)` | ✅ | ❌ | ❌ | Only Planner creates/updates skills |
-| `Edit/Write(packages/webapp/src/**)` | ❌ | ❌ | ✅ | Executor writes production code |
-| `Edit/Write(homepage/**)` | ❌ | ❌ | ✅ | Executor writes homepage code/content |
-| `gh pr create/edit` | ❌ | ✅ | ❌ | Supervisor manages PRs |
-| `gh pr comment` | ❌ | ✅ | ❌ | Supervisor posts review findings |
-| `gh pr view/diff` | ✅ | ✅ | ❌ | Read-only for Planner context |
-| `yarn build/test/lint`, `tsc` | ❌ | ✅ | ✅ | Validation commands |
-| `git add/commit` | ✅ | ✅ | ✅ | All roles can commit within scope |
-| `git push origin <branch>` | ✅ | ✅ | ✅ | Feature branches only |
-| `git push --force` | ❌ | ✅ | ✅ | Allowed on non-protected branches |
-| `git push origin main/master` | ❌ | ❌ | ❌ | **Always denied** |
-| `git reset --hard` | ❌ | ❌ | ❌ | **Always denied** |
-
-> **Current limitation:** These role boundaries are enforced by convention (AGENTS.md instructions, skill prompts), not by tooling. `.claude/settings.json` grants the union of all role permissions. Future work may explore per-agent permission scoping if Claude Code or Codex CLI adds support.
+All executor-specific content (task intake format, implementation rules, commit convention, validation checklist, reporting format) moves to `.claude/skills/programmer/SKILL.md`.
 
 ## Rejected Solutions
 
 ### Fixed 3-domain agent pattern
-The original issue proposed always using 3 agents (game logic, architecture, UI). Rejected because: (a) the homepage project doesn't have game logic, (b) small changes don't warrant 3 agents, (c) token cost scales linearly with agent count. The project-aware strategy with a soft cap is more flexible and cost-effective.
+Always using 3 agents (game logic, architecture, UI). Rejected because: (a) the homepage project doesn't have game logic, (b) small changes don't warrant 3 agents, (c) token cost scales linearly with agent count. The project-aware strategy is more flexible and cost-effective.
 
 ### Single-agent review
-Using one agent for all review work. Rejected because: PR #335 demonstrated that parallel domain-scoped agents catch more issues than a single pass. The heuristic-based scaling preserves this benefit while avoiding unnecessary agent spawning for small changes.
+Using one agent for all review work. Rejected because: PR #335 demonstrated that parallel domain-scoped agents catch more issues than a single pass.
 
 ### GitHub Action–triggered review
-Attaching the review skill to a GitHub Action that triggers on PR events. Rejected because: any external actor can open a PR or issue, which would consume tokens uncontrollably. Manual invocation by maintainers/contributors keeps token spend intentional.
+Attaching review to a GitHub Action on PR events. Rejected because: any external actor can open a PR, consuming tokens uncontrollably. Manual invocation keeps token spend intentional.
 
 ### Claude-only workflow (no Codex)
-Using Claude for both planning and execution. Rejected because: Opus tokens are significantly more expensive than Codex/gpt-5.4 for implementation tasks. Delegating execution to Codex reduces cost while maintaining quality for mechanical coding work.
+Using Claude for both planning and execution. Rejected because: Opus tokens are significantly more expensive for implementation tasks. Delegating to Codex or Sonnet reduces cost while maintaining quality.
+
+### `/code-review:code-review` in the post-plan loop
+Running `/code-review:code-review` as a post-plan review step alongside `/codex:review`. Rejected because: it duplicates Codex review at higher cost. `/codex:review` and `/codex:adversarial-review` cover the same ground; `/code-review` is retained as a standalone human-invocable skill, not a loop step.
+
+### Supervisor-led task decomposition
+Assigning `Plans → Tasks` to a Supervisor (Sonnet-class). Rejected because: task decomposition requires architectural judgment about dependency ordering and parallelism — this is reasoning work that belongs with the highest-capability model available (`rfc-writer` / Opus or gpt-5.4). Mis-scoped tasks from a weaker model cause executor failures that negate the token savings.
+
+### Role-based boundaries (convention-enforced)
+Defining Planner/Supervisor/Executor roles enforced by documentation and prompts. Rejected because: any agent can deviate without detection. The agent+skill model improves on this: Bash command scope is tooling-enforced, and file-path deviations are caught by the post-commit scope check before push.
+
+### Fixed model assignments (model as identity)
+Tying agent identity to a specific model (e.g., "the Planner must use Opus"). Rejected because: contributors have different tool access (Claude-only, GPT-only, or both). Agent identity is defined by the skill's `allowed-tools` scope; model is a recommendation with explicit fallbacks.
 
 ## Testing Plan
 
-1. **Skill smoke test (webapp):** Create a test branch with webapp changes across multiple domains. Invoke `/code-review:code-review` and verify it:
-   - Correctly identifies affected webapp domains
-   - Launches the right number of agents (≤3)
-   - Produces structured output (Blockers/Warnings/Nits)
-   - Runs verification commands
+1. **Bash command scope check:** Invoke the `programmer` skill and attempt to run `gh pr create` — verify the tool call is rejected by `allowed-tools` (Bash command scoping is reliably enforced). Note: Edit/Write file-path scoping has a known enforcement gap (#18837); file-path boundary violations are caught by the post-commit scope check instead.
 
-2. **Skill smoke test (homepage):** Create a test branch with homepage content changes. Invoke `/code-review:code-review` and verify it:
-   - Uses homepage-specific domain definitions
-   - Launches 1 agent (content + styling combined for small changes)
+2. **Post-commit scope detection:** Run `/implement` on a task declared for `src/game/**`. Have a `programmer` agent touch `src/components/`. Verify `/implement` flags the out-of-scope file before push.
 
-3. **PR number invocation:** Run `/code-review:code-review 335` and verify it fetches the PR diff and reviews it correctly.
+3. **`/code-review` — branch review:** Create a test branch with webapp changes across multiple domains. Invoke `/code-review` and verify it:
+   - Correctly identifies the target as a branch diff
+   - Spawns one `code-reviewer` per affected domain
+   - Produces consolidated P0/P1/P2 output
 
-4. **PR URL invocation:** Run `/code-review:code-review https://github.com/ocftw/open-star-ter-village/pull/335` and verify URL parsing works.
+4. **`/code-review` — PR review:** Run `/code-review` on PR #335 (by number and by URL) and verify it fetches the PR diff correctly.
 
-5. **AGENTS.md validation:** Have a Codex executor agent read the new AGENTS.md and confirm it can extract: its role, the validation commands, commit convention, and review output format.
+5. **`/code-review` — homepage:** Create a test branch with homepage content changes. Verify it spawns 1 agent (content + styling combined).
 
-6. **No regressions:** Run `yarn webapp build` and `yarn webapp test` to confirm doc-only changes don't break anything.
+6. **AGENTS.md pointer:** Have a `programmer` agent read the new AGENTS.md and confirm it correctly redirects to `.claude/skills/programmer/SKILL.md`.
+
+7. **No regressions:** Run `yarn webapp build` and `yarn webapp test` to confirm doc-only changes don't break anything.
 
 ## SLAs
 
 | Metric | Target | Notes |
 |--------|--------|-------|
-| Review turnaround | < 10 minutes for typical PR | From `/code-review:code-review` invocation to consolidated output |
-| Executor agents | 1 per parallel task, no cap | Maximize parallelism across non-overlapping tasks |
-| Token budget guidance | Prefer Codex/gpt-5.4 for execution; reserve Opus for planning and complex analysis | No hard token limit; monitor and adjust |
+| Review turnaround | < 10 minutes for typical PR | From `/code-review` invocation to consolidated P0/P1/P2 output. No hard escalation path yet — revisit once real timing data is collected. |
+| `programmer` agents | 1 per non-overlapping task, no cap | Maximize parallelism |
+| `code-reviewer` agents | 1 per affected domain | Domain count drives agent count, not file count |
+| Token budget guidance | Use suggested model when available; fall back per §2 model matrix | No hard token limit; monitor and adjust |
 | Review coverage | All changed files reviewed by at least one domain agent | Uncategorized files default to the architecture domain |
