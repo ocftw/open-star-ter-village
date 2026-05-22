@@ -36,7 +36,7 @@ jobs:
         with:
           webhook-url: ${{ secrets.DISCORD_DEPLOY_WEBHOOK_URL }}
           content: |
-            Fly Deploy finished with status: ${{ job.status }}
+            Webapp production deployment finished with status: ${{ job.status }}
             Commit: ${{ github.event.workflow_run.head_sha }}
             Author: ${{ github.event.workflow_run.head_commit.author.name || github.event.workflow_run.actor.login }}
             Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
