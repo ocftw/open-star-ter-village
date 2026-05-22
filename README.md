@@ -66,6 +66,47 @@ English version: [README.en.md](./README.en.md)
 | [packages/webapp](./packages/webapp/)       | 網頁版遊戲 - 處理遊戲規則                                                |
 | [homepage](./homepage/)                     | [官方網站 - Official Website](https://openstartervillage.ocf.tw/) |
 
+## 開發環境與專案結構
+
+此 repository 使用 Yarn 3.4.1 管理主要 workspace：
+
+- `packages/webapp/`：主要線上遊戲，包含 Next.js client 與 boardgame.io 遊戲伺服器。
+- `homepage/`：官方網站，獨立部署於 Netlify，使用 Next.js 與 Decap CMS。
+- `google-spreadsheet/`：早期 Google Apps Script 原型，僅作為參考。
+
+基本需求：
+
+- 根目錄與 webapp：Node.js >= 18。
+- Homepage：Node.js >= 24。
+- 使用 repository 指定的 Yarn 版本，不需改用全域 Yarn。
+
+常用指令：
+
+```bash
+yarn all:dev      # 啟動所有 workspace 的開發伺服器
+yarn all:build    # 建置所有 workspace
+yarn all:lint     # 檢查所有 workspace
+```
+
+Webapp 與 homepage 的細節請參考：
+
+- [packages/webapp/README.md](./packages/webapp/README.md)
+- [homepage/README.md](./homepage/README.md)
+
+## Commit Convention
+
+Commit 訊息採用 Conventional Commits：
+
+```text
+<type>(<optional scope>): <short description>
+```
+
+- Type 可使用：`feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `style`, `perf`。
+- Subject line 保持在 72 字元以內。
+- 使用祈使語氣，例如 `add` 而不是 `added`。
+- 每次 commit 只包含一個小範圍的變更，不要把無關變更包在同一個 commit。
+- 除非變更不易理解，否則不需要 commit body。
+
 ## 授權條款
 
 - **遊戲內容：** [創用CC姓名標示4.0授權](./LICENSE)

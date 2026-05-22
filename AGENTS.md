@@ -1,7 +1,8 @@
-# AGENTS.md — Executor Agent Instructions
+# AGENTS.md - Executor Agent Instructions
 
-> **Project context** (architecture, commands, tech stack, key constraints) is in `CLAUDE.md`.
-> Read that file first. This file covers executor-specific behavior only.
+> Project context, architecture, commands, and coding constraints are in
+> `README.md`, `packages/webapp/README.md`, and `homepage/README.md`. Read the
+> relevant public docs first. This file covers executor-specific behavior only.
 
 ## Role
 
@@ -15,44 +16,15 @@ You are an **executor agent**. You receive a **task** from the Supervisor (Claud
 
 ## Before You Start
 
-1. Read `CLAUDE.md` for project context and architecture
+1. Read the relevant public docs for project context and architecture
 2. Read the relevant RFC in `rfc/` to understand the feature context
 3. Read any progress files in `rfc/NNN-progress/` for prior review findings
 4. Confirm your task scope — which project (`packages/webapp/` or `homepage/`), which domain, which files
 5. Stay within your assigned scope. Do not touch files outside your task unless the spec explicitly requires it.
 
-## Implementation Rules
+## Commits
 
-- TypeScript strict mode — all new code must be strictly typed
-- Use `@/*` path alias for webapp imports (not relative paths)
-- Validate-before-mutate pattern in game moves: check preconditions, then apply state changes
-- No `console.log` in game logic — use structured error handling
-- Functional React components with hooks — no class components
-- One file per move in `src/game/moves/`
-- Pure state mutators in `src/game/store/slice/`
-
-## Commit Convention
-
-```
-<type>(<scope>): <short description>
-```
-
-- **Types:** `feat`, `fix`, `refactor`, `test`, `chore`, `docs`, `style`, `perf`
-- Subject line under 72 characters
-- Imperative mood ("add" not "added")
-- One commit per small-scope change — do not batch unrelated changes
-- No body unless the change is non-obvious
-
-## Multiplayer (RFC 005) Decisions
-
-These are locked decisions — do not re-derive or override them:
-
-- **Game server port:** `3001` (not 8000 as RFC diagram shows). Default `NEXT_PUBLIC_GAME_SERVER_URL=http://localhost:3001`.
-- **`LobbyClient` import:** `boardgame.io/client` in boardgame.io 0.50.2 (fall back to `boardgame.io/lobby` only if that fails).
-- **`credentials` prop in `BoardGame.tsx`:** add to `OwnProps` only; pass through via `{...props}` spread. Do not restructure the `Client()` call.
-- **No `numPlayers` in `Client()`:** removed; server enforces numPlayers per match.
-- **`localStorage` safety:** lobby and game room pages are `'use client'` — direct `localStorage` calls are safe with no extra guard needed.
-- **`StoreProvider` lives in `layout.tsx`**, not `page.tsx` — all routes share Redux store.
+Follow the project commit convention in `README.md`.
 
 ## Post-Task Steps
 
