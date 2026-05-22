@@ -125,6 +125,30 @@ post-alpha persistence task lands.
 Run the [external-network smoke test](../../docs/deploy-smoke-test.md) after
 every deploy.
 
+### UptimeRobot Monitoring
+
+Fork maintainers can mirror the alpha uptime checks with a free UptimeRobot
+account. Use the free 5-minute monitoring interval and create two HTTP(s)
+monitors:
+
+1. **Health endpoint**
+   - Monitor Type: `HTTP(s)`
+   - Friendly Name: `<app> health`
+   - URL to monitor: `https://<app>/health`
+   - Monitoring Interval: `5 minutes`
+   - HTTP Method: `GET`
+2. **Game route**
+   - Monitor Type: `HTTP(s)`
+   - Friendly Name: `<app> game route`
+   - URL to monitor: `https://<app>/games/OpenStarTerVillage`
+   - Monitoring Interval: `5 minutes`
+   - HTTP Method: `GET`
+
+To send alerts to Discord, create a webhook for the `#uptime` channel in your
+Discord server. In UptimeRobot, add an alert contact using the Discord webhook
+URL, then attach that contact to both monitors. Keep the webhook URL private;
+do not commit it to this repository or store it in `fly.toml`.
+
 ## Online Multiplayer Configuration
 
 The web app uses a two-process architecture for online multiplayer:
