@@ -175,9 +175,24 @@ these GitHub Actions secrets:
 The deploy workflow uses the Webapp CI commit SHA as `SENTRY_RELEASE` and passes
 it to both the Docker build and Fly runtime environment.
 
-To route errors to Discord, enable Sentry's Discord integration and send new
-issues plus regressions to the `#errors` channel. Do not send every event to
-Discord; use Sentry issue-level notifications to avoid alert noise.
+To route errors to Discord:
+
+1. Open the Sentry project:
+
+   ```bash
+   flyctl apps errors
+   ```
+
+2. In Sentry, go to **Settings** → **Integrations** → **Discord** and connect
+   the Discord server.
+3. Create a project issue alert rule for `open-star-ter-village`.
+4. Trigger notifications only for:
+   - newly created issues
+   - regressions, where a resolved issue becomes unresolved again
+5. Add a Discord notification action and route it to the `#errors` channel.
+
+Do not send every event to Discord; use Sentry issue-level notifications to
+avoid alert noise.
 
 ## Online Multiplayer Configuration
 
