@@ -1,9 +1,6 @@
 name: Fly Deploy
 
 on:
-  # TEMP: manual branch deploy for validating deploy notifications before merge.
-  # Remove after the Discord notification test passes.
-  workflow_dispatch:
   workflow_run:
     workflows: ["Webapp CI"]
     types: [completed]
@@ -15,13 +12,13 @@ concurrency:
 
 jobs:
   deploy:
-    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          ref: ${{ github.event.workflow_run.head_sha }}
 
       - uses: superfly/flyctl-actions/setup-flyctl@master
 
@@ -37,6 +34,6 @@ jobs:
           webhook-url: ${{ secrets.DISCORD_DEPLOY_WEBHOOK_URL }}
           content: |
             Fly Deploy finished with status: ${{ job.status }}
-            Commit: ${{ github.event.workflow_run.head_sha || github.sha }}
-            Author: ${{ github.event.workflow_run.head_commit.author.name || github.event.workflow_run.actor.login || github.actor }}
+            Commit: ${{ github.event.workflow_run.head_sha }}
+            Author: ${{ github.event.workflow_run.head_commit.author.name || github.event.workflow_run.actor.login }}
             Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
