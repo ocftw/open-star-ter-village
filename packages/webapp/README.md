@@ -25,7 +25,7 @@ yarn webapp test       # Run Jest tests
 yarn webapp lint       # Run ESLint
 ```
 
-Run all workspaces from the repository root:
+Run all Yarn workspaces from the repository root:
 
 ```bash
 yarn all:dev
@@ -134,8 +134,7 @@ The web app uses a two-process architecture for online multiplayer:
 
 Important RFC 005 implementation decisions:
 
-- Use `3001` for the game server port. Older RFC diagrams may mention `8000`,
-  but the implemented server uses `3001`.
+- Use `3001` for the game server port.
 - Set `NEXT_PUBLIC_GAME_SERVER_URL=http://localhost:3001` for local development.
 - Use `GAME_SERVER_ORIGINS` on the game server to configure allowed client
   origins in production.

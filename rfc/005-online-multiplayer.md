@@ -53,7 +53,7 @@ Without these, the game cannot be played online by separate users.
 ```
 ┌──────────────┐         ┌──────────────────────┐
 │  Next.js App │  REST   │  boardgame.io Server  │
-│  (port 3000) │────────▶│  (port 8000)          │
+│  (port 3000) │────────▶│  (port 3001)          │
 │              │         │                       │
 │  /lobby      │  Lobby  │  GET/POST /games/     │
 │  /game/[id]  │  API    │  OpenStarTerVillage/* │
@@ -103,12 +103,12 @@ const server = Server({ games: [game], origins });
 | Env var | Side | Purpose |
 |---------|------|---------|
 | `GAME_SERVER_ORIGINS` | Server | Comma-separated allowed origins for CORS |
-| `NEXT_PUBLIC_GAME_SERVER_URL` | Client | Base URL of the game server (default `http://localhost:8000`) |
+| `NEXT_PUBLIC_GAME_SERVER_URL` | Client | Base URL of the game server (default `http://localhost:3001`) |
 
 A `.env.development` file in `packages/webapp/` provides defaults:
 
 ```
-NEXT_PUBLIC_GAME_SERVER_URL=http://localhost:8000
+NEXT_PUBLIC_GAME_SERVER_URL=http://localhost:3001
 ```
 
 ### 3. Lobby Client Utility
@@ -118,10 +118,10 @@ NEXT_PUBLIC_GAME_SERVER_URL=http://localhost:8000
 A thin module that exports a configured `LobbyClient` instance and shared constants:
 
 ```ts
-import { LobbyClient } from 'boardgame.io/lobby';
+import { LobbyClient } from 'boardgame.io/client';
 
 export const GAME_SERVER_URL =
-  process.env.NEXT_PUBLIC_GAME_SERVER_URL || 'http://localhost:8000';
+  process.env.NEXT_PUBLIC_GAME_SERVER_URL || 'http://localhost:3001';
 export const GAME_NAME = 'OpenStarTerVillage';
 
 export const lobbyClient = new LobbyClient({ server: GAME_SERVER_URL });
@@ -167,7 +167,7 @@ export function clearCredentials(matchID: string): void;
 | Change | Reason |
 |--------|--------|
 | Accept optional `credentials` prop | Pass to boardgame.io client for authentication |
-| Use `GAME_SERVER_URL` for SocketIO server | Remove hardcoded `localhost:8000` |
+| Use `GAME_SERVER_URL` for SocketIO server | Remove hardcoded `localhost:3001` |
 | Remove hardcoded `numPlayers: 3` | Server enforces numPlayers per match |
 | Keep `isLocal` / `gameConfig` props | DevView continues working unchanged |
 
@@ -425,7 +425,7 @@ server — an architectural mismatch.
 
 ## Testing Plan
 
-1. `yarn webapp dev` — start Next.js (port 3000) and game server (port 8000)
+1. `yarn webapp dev` — start Next.js (port 3000) and game server (port 3001)
 2. Navigate to `http://localhost:3000/lobby`
 3. Create a 3-player match as "Alice"
 4. Open two more browser tabs → lobby → join the same match as "Bob" and "Charlie"

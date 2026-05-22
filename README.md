@@ -68,7 +68,8 @@ English version: [README.en.md](./README.en.md)
 
 ## 開發環境與專案結構
 
-此 repository 使用 Yarn 3.4.1 管理主要 workspace：
+此 repository 使用 Yarn 3.4.1 管理 webapp workspace；homepage 是同一個
+repository 內的獨立 package：
 
 - `packages/webapp/`：主要線上遊戲，包含 Next.js client 與 boardgame.io 遊戲伺服器。
 - `homepage/`：官方網站，獨立部署於 Netlify，使用 Next.js 與 Decap CMS。
@@ -80,12 +81,12 @@ English version: [README.en.md](./README.en.md)
 - Homepage：Node.js >= 24。
 - 使用 repository 指定的 Yarn 版本，不需改用全域 Yarn。
 
-常用指令：
+根目錄 workspace 常用指令：
 
 ```bash
-yarn all:dev      # 啟動所有 workspace 的開發伺服器
-yarn all:build    # 建置所有 workspace
-yarn all:lint     # 檢查所有 workspace
+yarn all:dev      # 啟動所有 Yarn workspace 的開發伺服器
+yarn all:build    # 建置所有 Yarn workspace
+yarn all:lint     # 檢查所有 Yarn workspace
 ```
 
 Webapp 與 homepage 的細節請參考：
