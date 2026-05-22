@@ -31,6 +31,23 @@
 
 同時，專案也支援[多語言](https://nextjs.org/docs/advanced-features/i18n-routing)，並且使用 [Decap CMS](https://decapcms.org/) 作為網站內容管理工具。
 
+## 專案設定
+
+- Runtime：Node.js >= 24
+- Package manager：Yarn 3.4.1
+- Framework：Next.js 13
+- CMS：Decap CMS
+
+常用指令：
+
+```bash
+yarn dev        # 啟動開發伺服器
+yarn build      # 建置網站
+yarn start      # 啟動 production server
+yarn lint       # Prettier check + ESLint
+yarn lint:fix   # 自動修正格式與 lint 問題
+```
+
 ## 💫 部署
 
 [![部署至 Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/ocftw/open-star-ter-village/tree/homepage)

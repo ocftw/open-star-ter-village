@@ -33,5 +33,5 @@ jobs:
           cache-dependency-path: ./yarn.lock
       - run: yarn install
         working-directory: .
-      - run: yarn run webapp build
+      - run: yarn webapp build
         working-directory: .
