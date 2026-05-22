@@ -39,7 +39,7 @@ English version: [README.en.md](./README.en.md)
 
 **建置中！**
 
-如需自行部署網頁版遊戲，請參考 [Deploy Your Own Village](./WEBAPP.md#deploy-your-own-village)。
+如需自行部署網頁版遊戲，請參考 [Deploy Your Own Village](./packages/webapp/README.md#deploy-your-own-village)。
 
 ## 如何參與
 
