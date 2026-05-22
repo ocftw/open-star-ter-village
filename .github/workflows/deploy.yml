@@ -26,9 +26,39 @@ jobs:
       - uses: superfly/flyctl-actions/setup-flyctl@master
 
       - name: Deploy to Fly.io
-        run: flyctl deploy --remote-only
+        run: |
+          deploy_args=(
+            --remote-only
+            --build-arg SENTRY_ENVIRONMENT=production
+            --build-arg "SENTRY_RELEASE=${GITHUB_EVENT_WORKFLOW_RUN_HEAD_SHA}"
+            --env SENTRY_ENVIRONMENT=production
+            --env "SENTRY_RELEASE=${GITHUB_EVENT_WORKFLOW_RUN_HEAD_SHA}"
+          )
+
+          if [ -n "${SENTRY_DSN:-}" ]; then
+            deploy_args+=(--build-arg "SENTRY_DSN=${SENTRY_DSN}")
+          fi
+
+          if [ -n "${SENTRY_ORG:-}" ]; then
+            deploy_args+=(--build-arg "SENTRY_ORG=${SENTRY_ORG}")
+          fi
+
+          if [ -n "${SENTRY_PROJECT:-}" ]; then
+            deploy_args+=(--build-arg "SENTRY_PROJECT=${SENTRY_PROJECT}")
+          fi
+
+          if [ -n "${SENTRY_AUTH_TOKEN:-}" ]; then
+            deploy_args+=(--build-secret "SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}")
+          fi
+
+          flyctl deploy "${deploy_args[@]}"
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          GITHUB_EVENT_WORKFLOW_RUN_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
 
       - name: Notify Discord deploy result
         if: ${{ always() }}

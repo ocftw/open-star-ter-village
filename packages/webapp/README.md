@@ -149,6 +149,36 @@ Discord server. In UptimeRobot, add an alert contact using the Discord webhook
 URL, then attach that contact to both monitors. Keep the webhook URL private;
 do not commit it to this repository or store it in `fly.toml`.
 
+### Sentry Error Monitoring
+
+The web app can report runtime errors from both the Next.js process and the
+boardgame.io game server. Sentry is optional: if `SENTRY_DSN` is not set, the
+SDKs do not initialize.
+
+For the Fly.io alpha, create the Fly Sentry extension:
+
+```bash
+flyctl ext sentry create --app open-star-ter-village
+```
+
+This creates a Sentry project and sets `SENTRY_DSN` as a Fly secret. To include
+browser-side Sentry initialization in production bundles, also add the DSN as a
+GitHub Actions secret named `SENTRY_DSN`.
+
+For release tracking and source-map upload during GitHub Actions deploys, add
+these GitHub Actions secrets:
+
+- `SENTRY_AUTH_TOKEN`
+- `SENTRY_ORG`
+- `SENTRY_PROJECT`
+
+The deploy workflow uses the Webapp CI commit SHA as `SENTRY_RELEASE` and passes
+it to both the Docker build and Fly runtime environment.
+
+To route errors to Discord, enable Sentry's Discord integration and send new
+issues plus regressions to the `#errors` channel. Do not send every event to
+Discord; use Sentry issue-level notifications to avoid alert noise.
+
 ## Online Multiplayer Configuration
 
 The web app uses a two-process architecture for online multiplayer:

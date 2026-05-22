@@ -1,6 +1,10 @@
 import { withSentryConfig } from '@sentry/nextjs';
 
 const sentryDsn = process.env.SENTRY_DSN;
+const sentryAuthToken = process.env.SENTRY_AUTH_TOKEN;
+const sentryOrg = process.env.SENTRY_ORG;
+const sentryProject = process.env.SENTRY_PROJECT;
+const canUploadSentrySourceMaps = Boolean(sentryDsn && sentryAuthToken && sentryOrg && sentryProject);
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -13,13 +17,13 @@ const nextConfig = {
 };
 
 const sentryConfig = {
-  authToken: process.env.SENTRY_AUTH_TOKEN,
-  org: process.env.SENTRY_ORG,
-  project: process.env.SENTRY_PROJECT,
+  authToken: sentryAuthToken,
+  org: sentryOrg,
+  project: sentryProject,
   release: process.env.SENTRY_RELEASE,
   silent: !process.env.CI,
   widenClientFileUpload: true,
   disableLogger: true,
 };
 
-export default sentryDsn ? withSentryConfig(nextConfig, sentryConfig) : nextConfig;
+export default canUploadSentrySourceMaps ? withSentryConfig(nextConfig, sentryConfig) : nextConfig;
