@@ -125,6 +125,81 @@ post-alpha persistence task lands.
 Run the [external-network smoke test](../../docs/deploy-smoke-test.md) after
 every deploy.
 
+### UptimeRobot Monitoring
+
+Fork maintainers can mirror the alpha uptime checks with a free UptimeRobot
+account. Use the free 5-minute monitoring interval and create two HTTP(s)
+monitors:
+
+1. **Health endpoint**
+   - Monitor Type: `HTTP(s)`
+   - Friendly Name: `<app> health`
+   - URL to monitor: `https://<app>/health`
+   - Monitoring Interval: `5 minutes`
+   - HTTP Method: `GET`
+2. **Game route**
+   - Monitor Type: `HTTP(s)`
+   - Friendly Name: `<app> game route`
+   - URL to monitor: `https://<app>/games/OpenStarTerVillage`
+   - Monitoring Interval: `5 minutes`
+   - HTTP Method: `GET`
+
+To send alerts to Discord, use the same ops channel webhook that receives
+deployment notifications. In UptimeRobot, add an alert contact using the
+Discord webhook URL, then attach that contact to both monitors. Keep the webhook
+URL private; do not commit it to this repository or store it in `fly.toml`.
+
+### Sentry Error Monitoring
+
+The web app can report runtime errors from both the Next.js process and the
+boardgame.io game server. Sentry is optional: if `SENTRY_DSN` is not set, the
+SDKs do not initialize.
+
+For the Fly.io alpha, create the Fly Sentry extension:
+
+```bash
+flyctl ext sentry create --app open-star-ter-village
+```
+
+This creates a Sentry project and sets `SENTRY_DSN` as a Fly secret. To include
+browser-side Sentry initialization in production bundles, also add the DSN as a
+GitHub Actions secret named `SENTRY_DSN`. The DSN is intentionally inlined into
+the browser bundle at build time so the Next.js client can report errors; Sentry
+DSNs identify the project but are not authentication secrets.
+
+For release tracking and source-map upload during GitHub Actions deploys, add
+these GitHub Actions secrets:
+
+- `SENTRY_AUTH_TOKEN`
+- `SENTRY_ORG`
+- `SENTRY_PROJECT`
+
+The deploy workflow uses the Webapp CI commit SHA as `SENTRY_RELEASE` and passes
+it to both the Docker build and Fly runtime environment. Source-map upload is
+enabled only when all four GitHub Actions secrets are present:
+`SENTRY_DSN`, `SENTRY_AUTH_TOKEN`, `SENTRY_ORG`, and `SENTRY_PROJECT`. Without
+the full set, runtime error reporting still works when `SENTRY_DSN` is present,
+but the build skips Sentry source-map upload.
+
+To route errors to Discord:
+
+1. Open the Sentry project:
+
+   ```bash
+   flyctl apps errors
+   ```
+
+2. In Sentry, go to **Settings** → **Integrations** → **Discord** and connect
+   the Discord server.
+3. Create a project issue alert rule for `open-star-ter-village`.
+4. Trigger notifications only for:
+   - newly created issues
+   - regressions, where a resolved issue becomes unresolved again
+5. Add a Discord notification action and route it to the `#errors` channel.
+
+Do not send every event to Discord; use Sentry issue-level notifications to
+avoid alert noise.
+
 ## Online Multiplayer Configuration
 
 The web app uses a two-process architecture for online multiplayer:

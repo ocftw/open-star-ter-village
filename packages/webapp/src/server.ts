@@ -1,10 +1,21 @@
 import { Server, Origins } from "boardgame.io/server";
+import * as Sentry from "@sentry/node";
 import packageJson from "../package.json";
 import game from "./game";
 import { loadWebappEnv } from "./env";
 
 const packageVersion = packageJson.version;
 const gameName = 'OpenStarTerVillage';
+const sentryDsn = process.env.SENTRY_DSN;
+
+if (sentryDsn) {
+  Sentry.init({
+    dsn: sentryDsn,
+    environment: process.env.SENTRY_ENVIRONMENT ?? process.env.NODE_ENV,
+    release: process.env.SENTRY_RELEASE,
+    tracesSampleRate: 0.1,
+  });
+}
 
 async function serve() {
   const env = loadWebappEnv();
@@ -20,6 +31,10 @@ async function serve() {
       Origins.LOCALHOST_IN_DEVELOPMENT,
     ],
   });
+
+  if (sentryDsn) {
+    Sentry.setupKoaErrorHandler(server.app);
+  }
 
   server.router.get('/health', (ctx) => {
     ctx.status = 200;
