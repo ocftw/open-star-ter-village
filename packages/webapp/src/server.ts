@@ -11,10 +11,17 @@ const sentryDsn = process.env.SENTRY_DSN;
 if (sentryDsn) {
   Sentry.init({
     dsn: sentryDsn,
+    defaultIntegrations: false,
     environment: process.env.SENTRY_ENVIRONMENT ?? process.env.NODE_ENV,
     release: process.env.SENTRY_RELEASE,
-    tracesSampleRate: 0.1,
   });
+}
+
+async function captureStartupError(error: unknown) {
+  if (sentryDsn) {
+    Sentry.captureException(error);
+    await Sentry.flush(2000);
+  }
 }
 
 async function serve() {
@@ -31,10 +38,6 @@ async function serve() {
       Origins.LOCALHOST_IN_DEVELOPMENT,
     ],
   });
-
-  if (sentryDsn) {
-    Sentry.setupKoaErrorHandler(server.app);
-  }
 
   server.router.get('/health', (ctx) => {
     ctx.status = 200;
@@ -54,4 +57,8 @@ async function serve() {
   server.run(config);
 }
 
-serve();
+serve().catch(async (error) => {
+  console.error(error);
+  await captureStartupError(error);
+  process.exit(1);
+});
