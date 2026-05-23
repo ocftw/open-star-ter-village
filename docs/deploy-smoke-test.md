@@ -11,7 +11,7 @@ network. Do not rely only on localhost or the Fly private network.
 - [ ] Server restart loses match state, and testers see or receive the
       documented alpha limitation.
 - [ ] `https://<app>/health` returns HTTP 200 JSON from an external probe.
-- [ ] UptimeRobot alerts post to Discord `#uptime` when a probe fails.
+- [ ] UptimeRobot alerts post to the Discord ops channel when a probe fails.
 
 Record the run date, app URL, tester networks, failures, and screenshots as a
 comment on issue #383.

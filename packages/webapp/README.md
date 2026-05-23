@@ -144,10 +144,10 @@ monitors:
    - Monitoring Interval: `5 minutes`
    - HTTP Method: `GET`
 
-To send alerts to Discord, create a webhook for the `#uptime` channel in your
-Discord server. In UptimeRobot, add an alert contact using the Discord webhook
-URL, then attach that contact to both monitors. Keep the webhook URL private;
-do not commit it to this repository or store it in `fly.toml`.
+To send alerts to Discord, use the same ops channel webhook that receives
+deployment notifications. In UptimeRobot, add an alert contact using the
+Discord webhook URL, then attach that contact to both monitors. Keep the webhook
+URL private; do not commit it to this repository or store it in `fly.toml`.
 
 ### Sentry Error Monitoring
 
