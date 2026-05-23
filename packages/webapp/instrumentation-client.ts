@@ -7,7 +7,6 @@ if (sentryDsn) {
     dsn: sentryDsn,
     environment: process.env.SENTRY_ENVIRONMENT ?? process.env.NODE_ENV,
     release: process.env.SENTRY_RELEASE,
-    tracesSampleRate: 0.1,
   });
 }
 

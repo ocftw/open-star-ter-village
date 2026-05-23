@@ -181,6 +181,13 @@ enabled only when all four GitHub Actions secrets are present:
 the full set, runtime error reporting still works when `SENTRY_DSN` is present,
 but the build skips Sentry source-map upload.
 
+Performance tracing is intentionally deferred for the Fly.io alpha. Do not set
+`tracesSampleRate` or `tracesSampler` for the 256 MB shared CPU deployment
+without re-running production smoke checks and monitoring port `3001` health.
+The boardgame.io server uses explicit Sentry error capture only, with default
+Node auto-instrumentation disabled to avoid OpenTelemetry overhead on the game
+server.
+
 To route errors to Discord:
 
 1. Open the Sentry project:
