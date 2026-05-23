@@ -33,7 +33,7 @@ async function serve() {
   });
 
   if (sentryDsn) {
-    Sentry.setupKoaErrorHandler(server.router);
+    Sentry.setupKoaErrorHandler(server.app);
   }
 
   server.router.get('/health', (ctx) => {

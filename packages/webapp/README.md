@@ -163,7 +163,9 @@ flyctl ext sentry create --app open-star-ter-village
 
 This creates a Sentry project and sets `SENTRY_DSN` as a Fly secret. To include
 browser-side Sentry initialization in production bundles, also add the DSN as a
-GitHub Actions secret named `SENTRY_DSN`.
+GitHub Actions secret named `SENTRY_DSN`. The DSN is intentionally inlined into
+the browser bundle at build time so the Next.js client can report errors; Sentry
+DSNs identify the project but are not authentication secrets.
 
 For release tracking and source-map upload during GitHub Actions deploys, add
 these GitHub Actions secrets:
@@ -173,7 +175,11 @@ these GitHub Actions secrets:
 - `SENTRY_PROJECT`
 
 The deploy workflow uses the Webapp CI commit SHA as `SENTRY_RELEASE` and passes
-it to both the Docker build and Fly runtime environment.
+it to both the Docker build and Fly runtime environment. Source-map upload is
+enabled only when all four GitHub Actions secrets are present:
+`SENTRY_DSN`, `SENTRY_AUTH_TOKEN`, `SENTRY_ORG`, and `SENTRY_PROJECT`. Without
+the full set, runtime error reporting still works when `SENTRY_DSN` is present,
+but the build skips Sentry source-map upload.
 
 To route errors to Discord:
 

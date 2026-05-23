@@ -17,6 +17,8 @@ jobs:
   deploy:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
+    env:
+      DISCORD_DEPLOY_WEBHOOK_URL: ${{ secrets.DISCORD_DEPLOY_WEBHOOK_URL }}
 
     steps:
       - uses: actions/checkout@v6.0.2
@@ -61,10 +63,10 @@ jobs:
           SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
 
       - name: Notify Discord deploy result
-        if: ${{ always() }}
+        if: ${{ always() && env.DISCORD_DEPLOY_WEBHOOK_URL != '' }}
         uses: tsickert/discord-webhook@v7.0.0
         with:
-          webhook-url: ${{ secrets.DISCORD_DEPLOY_WEBHOOK_URL }}
+          webhook-url: ${{ env.DISCORD_DEPLOY_WEBHOOK_URL }}
           content: |
             Webapp production deployment finished with status: ${{ job.status }}
             Commit: ${{ github.event.workflow_run.head_sha }}
