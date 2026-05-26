@@ -17,6 +17,13 @@ primary_region = "sin"
   auto_start_machines = true
   min_machines_running = 1
 
+  [[services.http_checks]]
+    interval = "15s"
+    timeout = "2s"
+    method = "GET"
+    path = "/"
+    protocol = "http"
+
   [[services.ports]]
     port = 80
     handlers = ["http"]

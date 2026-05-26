@@ -48,3 +48,16 @@ RFC (Planner)
 | **Task** | Supervisor → Executor | Single coding unit — implement + test, one agent handles end-to-end |
 
 See `rfc/002-agent-workflow-role-separation.md` for background.
+
+## Agent Skills
+
+Project-owned skills live with the project they operate on. From the repository
+root, use:
+
+- Webapp deploy smoke test:
+  `packages/webapp/skills/webapp-deploy-smoke-test/SKILL.md`
+
+From `packages/webapp/`, use:
+
+- Webapp deploy smoke test:
+  `skills/webapp-deploy-smoke-test/SKILL.md`

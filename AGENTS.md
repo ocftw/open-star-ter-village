@@ -22,6 +22,19 @@ You are an **executor agent**. You receive a **task** from the Supervisor (Claud
 4. Confirm your task scope — which project (`packages/webapp/` or `homepage/`), which domain, which files
 5. Stay within your assigned scope. Do not touch files outside your task unless the spec explicitly requires it.
 
+## Agent Skills
+
+Project-owned skills live with the project they operate on. From the repository
+root, use:
+
+- Webapp deploy smoke test:
+  `packages/webapp/skills/webapp-deploy-smoke-test/SKILL.md`
+
+From `packages/webapp/`, use:
+
+- Webapp deploy smoke test:
+  `skills/webapp-deploy-smoke-test/SKILL.md`
+
 ## Commits
 
 Follow the project commit convention in `README.md`.
