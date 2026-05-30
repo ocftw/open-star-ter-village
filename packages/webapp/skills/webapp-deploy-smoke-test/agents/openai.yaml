@@ -1,0 +1,4 @@
+interface:
+  display_name: "Webapp Deploy Smoke Test"
+  short_description: "Verify webapp public deploy health"
+  default_prompt: "Use $webapp-deploy-smoke-test to verify the latest webapp deployment from the public internet."

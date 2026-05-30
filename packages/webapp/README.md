@@ -122,31 +122,37 @@ changes.
 Match state is in memory for alpha. Restarts lose active matches until the
 post-alpha persistence task lands.
 
-Run the [external-network smoke test](../../docs/deploy-smoke-test.md) after
-every deploy.
+Run the [`webapp-deploy-smoke-test` agent skill](skills/webapp-deploy-smoke-test/SKILL.md)
+after every deploy.
 
 ### UptimeRobot Monitoring
 
 Fork maintainers can mirror the alpha uptime checks with a free UptimeRobot
-account. Use the free 5-minute monitoring interval and create two HTTP(s)
+account. Use the free 5-minute monitoring interval and create three HTTP(s)
 monitors:
 
-1. **Health endpoint**
+1. **Frontend**
    - Monitor Type: `HTTP(s)`
-   - Friendly Name: `<app> health`
-   - URL to monitor: `https://<app>/health`
+   - Friendly Name: `<app> frontend`
+   - URL to monitor: `https://<app>/`
    - Monitoring Interval: `5 minutes`
    - HTTP Method: `GET`
-2. **Game route**
+2. **Game server health**
    - Monitor Type: `HTTP(s)`
-   - Friendly Name: `<app> game route`
-   - URL to monitor: `https://<app>/games/OpenStarTerVillage`
+   - Friendly Name: `<app> game server health`
+   - URL to monitor: `https://<app>:3001/health`
+   - Monitoring Interval: `5 minutes`
+   - HTTP Method: `GET`
+3. **Game server lobby REST**
+   - Monitor Type: `HTTP(s)`
+   - Friendly Name: `<app> game server lobby REST`
+   - URL to monitor: `https://<app>:3001/games/OpenStarTerVillage`
    - Monitoring Interval: `5 minutes`
    - HTTP Method: `GET`
 
 To send alerts to Discord, use the same ops channel webhook that receives
 deployment notifications. In UptimeRobot, add an alert contact using the
-Discord webhook URL, then attach that contact to both monitors. Keep the webhook
+Discord webhook URL, then attach that contact to every monitor. Keep the webhook
 URL private; do not commit it to this repository or store it in `fly.toml`.
 
 ### Sentry Error Monitoring

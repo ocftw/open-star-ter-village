@@ -55,7 +55,8 @@ COPY --from=build /app/packages/webapp/.next/static ./packages/webapp/.next/stat
 COPY --from=build /app/packages/webapp/public ./packages/webapp/public
 COPY --from=build /app/packages/webapp/dist ./packages/webapp/dist
 COPY packages/webapp/register-dist-alias.js ./packages/webapp/register-dist-alias.js
+COPY packages/webapp/scripts/start-production.sh ./packages/webapp/scripts/start-production.sh
 
 EXPOSE 3000 3001
 
-CMD ["sh", "-c", "yarn workspace @open-star-ter-village/webapp next start -H 0.0.0.0 -p 3000 & PORT=3001 yarn workspace @open-star-ter-village/webapp start:server & wait"]
+CMD ["sh", "packages/webapp/scripts/start-production.sh"]
