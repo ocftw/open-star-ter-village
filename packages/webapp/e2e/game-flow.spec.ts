@@ -5,7 +5,7 @@
  * Scenarios 5–10 cover actions and UI features added in Tasks 10–12
  * (mirror fix, event banner, turn indicator, endActionTurn, contributions).
  *
- * The game boots in DevView at localhost:3000.
+ * The game boots in DevView at localhost:3000/dev.
  * Alice (player 0) always goes first and is the active tab on load.
  * TabPanel only mounts children for the active tab, so there are no duplicate selectors.
  */
@@ -156,7 +156,7 @@ async function selectCompatibleJobAndProjectSlot(
 
 test.describe('Simplified Mode — Action Flow', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/dev');
     await waitForGameReady(page);
   });
 

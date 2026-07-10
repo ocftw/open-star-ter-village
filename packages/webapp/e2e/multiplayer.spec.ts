@@ -1,41 +1,35 @@
 import { test, expect, Browser, BrowserContext, Page } from '@playwright/test';
 
 test.describe('Landing page', () => {
-  test('shows Play Online button linking to /lobby', async ({ page }) => {
+  test('shows Play button linking to /lobby', async ({ page }) => {
     await page.goto('/');
     const btn = page.getByRole('link', { name: /play online/i });
     await expect(btn).toBeVisible();
     await expect(btn).toHaveAttribute('href', '/lobby');
   });
 
-  test('hides DevView by default in non-production', async ({ page }) => {
+  test('does not render DevView on the landing page', async ({ page }) => {
     await page.goto('/');
-    // DevView section should not be visible on clean landing page
-    // but since NODE_ENV !== 'production' in dev, DevView IS shown
-    // Just verify Play Online is present
-    await expect(page.getByRole('link', { name: /play online/i })).toBeVisible();
+    await expect(page.getByText(/developer view/i)).not.toBeVisible();
   });
 
-  test('shows DevView when ?dev=true', async ({ page }) => {
-    await page.goto('/?dev=true');
-    // DevView renders in dev mode
-    await expect(page.locator('[data-testid="dev-view"], .dev-view, #dev-view').or(
-      page.getByText(/developer/i)
-    ).first()).toBeVisible({ timeout: 10_000 });
+  test('shows DevView on /dev', async ({ page }) => {
+    await page.goto('/dev');
+    await expect(page.getByText(/developer view/i).first()).toBeVisible({ timeout: 10_000 });
   });
 });
 
 test.describe('Lobby page', () => {
-  test('renders Create Match form and Public Matches section', async ({ page }) => {
+  test('renders Create room form and Open lobbies section', async ({ page }) => {
     await page.goto('/lobby');
-    await expect(page.getByRole('heading', { name: /create match/i })).toBeVisible();
-    await expect(page.getByRole('heading', { name: /public matches/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /create room/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /open lobbies/i })).toBeVisible();
     await expect(page.getByLabel(/player name/i)).toBeVisible();
   });
 
   test('shows error on empty player name submit', async ({ page }) => {
     await page.goto('/lobby');
-    await page.getByRole('button', { name: /create game/i }).click();
+    await page.getByRole('button', { name: /建立房間/ }).click();
     await expect(page.getByText(/enter a player name/i)).toBeVisible();
   });
 
@@ -79,7 +73,7 @@ test.describe('Full multiplayer flow', () => {
     await alicePage.goto('/lobby');
     await alicePage.getByLabel(/player name/i).fill('Alice');
     // Select 3 players (should already be default)
-    await alicePage.getByRole('button', { name: /create game/i }).click();
+    await alicePage.getByRole('button', { name: /建立房間/ }).click();
 
     // Should redirect to /game/[matchID]
     await alicePage.waitForURL(/\/game\//, { timeout: 15_000 });
@@ -87,7 +81,7 @@ test.describe('Full multiplayer flow', () => {
     expect(matchID).toBeTruthy();
 
     // Waiting room visible
-    await expect(alicePage.getByRole('heading', { name: /waiting room/i })).toBeVisible({ timeout: 10_000 });
+    await expect(alicePage.getByRole('heading', { name: /waiting room/i, level: 1 })).toBeVisible({ timeout: 10_000 });
   });
 
   test('Bob joins via lobby', async () => {
@@ -97,7 +91,7 @@ test.describe('Full multiplayer flow', () => {
     await expect(bobPage.getByRole('button', { name: /join/i }).first()).toBeVisible({ timeout: 15_000 });
     await bobPage.getByRole('button', { name: /join/i }).first().click();
     await bobPage.waitForURL(/\/game\//, { timeout: 15_000 });
-    await expect(bobPage.getByRole('heading', { name: /waiting room/i })).toBeVisible({ timeout: 10_000 });
+    await expect(bobPage.getByRole('heading', { name: /waiting room/i, level: 1 })).toBeVisible({ timeout: 10_000 });
   });
 
   test('Charlie joins via direct URL', async () => {
@@ -122,11 +116,11 @@ test.describe('Full multiplayer flow', () => {
   test('Alice starts the game — all players see the board', async () => {
     await alicePage.getByRole('button', { name: /start game/i }).click();
     // All should transition to game board — "Waiting Room" heading disappears
-    await expect(alicePage.getByRole('heading', { name: /waiting room/i })).not.toBeVisible({ timeout: 20_000 });
+    await expect(alicePage.getByRole('heading', { name: /waiting room/i, level: 1 })).not.toBeVisible({ timeout: 20_000 });
     // Board view shows "Room <matchID>" heading
     await expect(alicePage.getByRole('heading', { name: /^room /i })).toBeVisible({ timeout: 20_000 });
     // Bob also transitions
-    await expect(bobPage.getByRole('heading', { name: /waiting room/i })).not.toBeVisible({ timeout: 20_000 });
+    await expect(bobPage.getByRole('heading', { name: /waiting room/i, level: 1 })).not.toBeVisible({ timeout: 20_000 });
   });
 
   test('Observer can view game without credentials', async () => {
