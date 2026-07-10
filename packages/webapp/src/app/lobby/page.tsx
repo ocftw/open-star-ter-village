@@ -1,24 +1,13 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import {
-  Alert,
-  Box,
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  Chip,
-  Container,
-  Grid,
-  MenuItem,
-  Snackbar,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Alert, Snackbar } from '@mui/material';
+import { PaperCard, StickerButton } from '@/components/design';
+import Field from '@/components/lobby/Field';
+import LobbyNav from '@/components/lobby/LobbyNav';
+import Note from '@/components/lobby/Note';
+import Segmented from '@/components/lobby/Segmented';
 import { loadCredentials, saveCredentials, type MatchCredentials } from '@/lib/matchCredentials';
 import { usePolling } from '@/lib/usePolling';
 import { useSnackbar } from '@/lib/useSnackbar';
@@ -44,6 +33,125 @@ function formatDate(timestamp: number): string {
     dateStyle: 'medium',
     timeStyle: 'short',
   }).format(timestamp);
+}
+
+function CardHeading({
+  icon,
+  iconBackground,
+  zh,
+  en,
+}: {
+  icon: string;
+  iconBackground: string;
+  zh: string;
+  en: string;
+}) {
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      <div
+        aria-hidden
+        style={{
+          width: 36,
+          height: 36,
+          borderRadius: 12,
+          background: iconBackground,
+          color: 'white',
+          display: 'grid',
+          placeItems: 'center',
+          border: '2px solid var(--ink)',
+          boxShadow: '0 2px 0 var(--ink)',
+          fontSize: 20,
+          fontWeight: 800,
+          flexShrink: 0,
+        }}
+      >
+        {icon}
+      </div>
+      <h2 style={{ display: 'flex', flexDirection: 'column', gap: 2, fontSize: 16, fontWeight: 800 }}>
+        {zh} <span className="en-cap">{en}</span>
+      </h2>
+    </div>
+  );
+}
+
+function MatchRow({
+  match,
+  seatsFilled,
+  totalSeats,
+  status,
+  joining,
+  disabled,
+  onJoin,
+}: {
+  match: VisibleMatch['match'];
+  seatsFilled: number;
+  totalSeats: number;
+  status: string;
+  joining: boolean;
+  disabled: boolean;
+  onJoin: () => void;
+}) {
+  return (
+    <div
+      data-testid={`match-row-${match.matchID}`}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 12,
+        padding: '10px 14px',
+        background: 'white',
+        border: '1.5px solid var(--ink)',
+        borderRadius: 12,
+        boxShadow: '0 2px 0 var(--ink)',
+      }}
+    >
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: 12,
+            fontWeight: 700,
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {match.matchID}
+        </div>
+        <div style={{ fontSize: 11, color: 'var(--ink-mute)', marginTop: 2 }}>
+          {formatDate(match.createdAt)} · {status}
+        </div>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
+        {Array.from({ length: totalSeats }).map((_, i) => (
+          <span
+            key={i}
+            style={{
+              width: 16,
+              height: 16,
+              borderRadius: 999,
+              background: i < seatsFilled ? 'var(--orange)' : 'white',
+              border: '1.5px solid var(--ink)',
+            }}
+          />
+        ))}
+        <span
+          style={{
+            marginLeft: 4,
+            fontSize: 11,
+            fontWeight: 700,
+            color: 'var(--ink-soft)',
+            fontFamily: 'var(--font-en)',
+          }}
+        >
+          {seatsFilled}/{totalSeats}
+        </span>
+      </div>
+      <StickerButton variant="teal" size="sm" onClick={onJoin} disabled={disabled}>
+        {joining ? '加入中… · Joining' : '加入 · Join'}
+      </StickerButton>
+    </div>
+  );
 }
 
 export default function LobbyPage() {
@@ -163,123 +271,98 @@ export default function LobbyPage() {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ py: 6 }}>
-      <Stack spacing={4}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 2, flexWrap: 'wrap' }}>
-          <Box>
-            <Typography variant="h3" component="h1" gutterBottom>
-              Play Online
-            </Typography>
-            <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 720 }}>
-              Create a public room, share the room link, and let the host start the live board once every seat is filled.
-            </Typography>
-          </Box>
-          <Button component={Link} href="/" variant="outlined">
-            Back Home
-          </Button>
-        </Box>
+    <main style={{ minHeight: '100vh' }}>
+      <LobbyNav />
+      <div style={{ padding: '40px 64px', maxWidth: 1280, margin: '0 auto' }}>
+        <h1 style={{ display: 'flex', flexDirection: 'column', gap: 2, fontSize: 22, fontWeight: 800, marginBottom: 28 }}>
+          開始一場遊戲 <span className="en-cap">Start a session</span>
+        </h1>
 
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={4}>
-            <Card variant="outlined">
-              <CardContent>
-                <Stack spacing={2}>
-                  <Typography variant="h5" component="h2">
-                    Create Match
-                  </Typography>
-                  <TextField
-                    label="Player Name"
-                    value={playerName}
-                    onChange={handlePlayerNameChange}
-                    error={playerName.length > 0 && !playerNameIsValid}
-                    helperText="Use 1 to 20 visible characters."
-                    fullWidth
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, alignItems: 'start' }}>
+          {/* Create room */}
+          <PaperCard padding={28} data-testid="create-room-card">
+            <CardHeading icon="＋" iconBackground="var(--orange)" zh="開新房間" en="Create room" />
+            <p style={{ fontSize: 13, color: 'var(--ink-soft)', lineHeight: 1.5, marginTop: 10 }}>
+              當村長，邀請朋友加入，人到齊後開始遊戲。
+              <br />
+              <span className="en-cap">Host a match — invite up to 6 players.</span>
+            </p>
+
+            <div style={{ marginTop: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <Field
+                label="玩家名稱 · Player name"
+                placeholder="你的暱稱"
+                value={playerName}
+                onChange={handlePlayerNameChange}
+                error={playerName.length > 0 && !playerNameIsValid}
+                helper="1 到 20 個字 · Use 1 to 20 visible characters."
+              />
+              <Segmented
+                label="玩家人數 · Players"
+                options={PLAYER_COUNT_OPTIONS}
+                value={numPlayers as (typeof PLAYER_COUNT_OPTIONS)[number]}
+                onChange={(count) => setNumPlayers(count)}
+                disabled={isCreating}
+              />
+            </div>
+            <StickerButton
+              onClick={() => void handleCreateMatch()}
+              disabled={isCreating}
+              style={{ marginTop: 22, width: '100%' }}
+            >
+              {isCreating ? '建立中… · Creating' : '建立房間 · Create'}
+            </StickerButton>
+          </PaperCard>
+
+          {/* Open lobbies */}
+          <PaperCard padding={28} data-testid="open-lobbies-card">
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
+              <CardHeading icon="→" iconBackground="var(--teal)" zh="加入房間" en="Open lobbies" />
+              <StickerButton
+                variant="ghost"
+                size="sm"
+                onClick={() => void handleRefreshMatches()}
+                disabled={isRefreshing || isCreating}
+              >
+                {isRefreshing ? '更新中…' : '重新整理 · Refresh'}
+              </StickerButton>
+            </div>
+            <p style={{ fontSize: 13, color: 'var(--ink-soft)', lineHeight: 1.5, marginTop: 10 }}>
+              從清單裡選一個公開房間加入。
+              <br />
+              <span className="en-cap">Pick a public room from the list.</span>
+            </p>
+
+            <div className="dotted" style={{ margin: '18px 0' }} />
+
+            {isLoading ? (
+              <div style={{ fontSize: 13, color: 'var(--ink-mute)' }}>載入中… Loading matches…</div>
+            ) : loadError ? (
+              <Note tone="error">Unable to load matches. Check your connection and try refreshing.</Note>
+            ) : matches.length === 0 ? (
+              <Note tone="info">
+                目前沒有等待中的公開房間，開一間吧！ No public matches are waiting right now — create
+                one to get started.
+              </Note>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 320, overflow: 'auto' }}>
+                {matches.map(({ match, seatsFilled, totalSeats, status }) => (
+                  <MatchRow
+                    key={match.matchID}
+                    match={match}
+                    seatsFilled={seatsFilled}
+                    totalSeats={totalSeats}
+                    status={status}
+                    joining={joiningMatchID === match.matchID}
+                    disabled={status !== 'Waiting' || joiningMatchID !== null || isCreating}
+                    onJoin={() => void handleJoinMatch(match.matchID)}
                   />
-                  <TextField
-                    select
-                    label="Players"
-                    value={numPlayers}
-                    onChange={(event) => setNumPlayers(Number(event.target.value))}
-                    fullWidth
-                  >
-                    {PLAYER_COUNT_OPTIONS.map((count) => (
-                      <MenuItem key={count} value={count}>
-                        {count} players
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                </Stack>
-              </CardContent>
-              <CardActions sx={{ px: 2, pb: 2 }}>
-                <Button onClick={handleCreateMatch} variant="contained" disabled={isCreating} fullWidth>
-                  {isCreating ? 'Creating…' : 'Create Game'}
-                </Button>
-              </CardActions>
-            </Card>
-          </Grid>
-
-          <Grid item xs={12} md={8}>
-            <Card variant="outlined">
-              <CardContent>
-                <Stack spacing={2}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
-                    <Typography variant="h5" component="h2">
-                      Public Matches
-                    </Typography>
-                    <Button onClick={() => void handleRefreshMatches()} variant="text" disabled={isRefreshing || isCreating}>
-                      {isRefreshing ? 'Refreshing…' : 'Refresh'}
-                    </Button>
-                  </Box>
-
-                  {isLoading ? (
-                    <Typography color="text.secondary">Loading matches…</Typography>
-                  ) : loadError ? (
-                    <Alert severity="error">Unable to load matches. Check your connection and try refreshing.</Alert>
-                  ) : matches.length === 0 ? (
-                    <Alert severity="info">No public matches are waiting right now. Create one to get started.</Alert>
-                  ) : (
-                    <Stack spacing={2}>
-                      {matches.map(({ match, seatsFilled, totalSeats, status }) => (
-                        <Card key={match.matchID} variant="outlined">
-                          <CardContent>
-                            <Stack spacing={1.5}>
-                              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
-                                <Typography variant="h6" component="h3" sx={{ fontFamily: 'monospace' }}>
-                                  {match.matchID}
-                                </Typography>
-                                <Chip
-                                  label={status}
-                                  color={status === 'Waiting' ? 'success' : 'default'}
-                                  size="small"
-                                />
-                              </Box>
-                              <Typography variant="body2" color="text.secondary">
-                                Seats filled: {seatsFilled} / {totalSeats}
-                              </Typography>
-                              <Typography variant="body2" color="text.secondary">
-                                Created: {formatDate(match.createdAt)}
-                              </Typography>
-                            </Stack>
-                          </CardContent>
-                          <CardActions sx={{ px: 2, pb: 2 }}>
-                            <Button
-                              onClick={() => void handleJoinMatch(match.matchID)}
-                              variant="contained"
-                              disabled={status !== 'Waiting' || joiningMatchID !== null || isCreating}
-                            >
-                              {joiningMatchID === match.matchID ? 'Joining…' : 'Join'}
-                            </Button>
-                          </CardActions>
-                        </Card>
-                      ))}
-                    </Stack>
-                  )}
-                </Stack>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-      </Stack>
+                ))}
+              </div>
+            )}
+          </PaperCard>
+        </div>
+      </div>
 
       <Snackbar
         open={snackbar.open}
@@ -290,6 +373,6 @@ export default function LobbyPage() {
           {snackbar.message}
         </Alert>
       </Snackbar>
-    </Container>
+    </main>
   );
 }

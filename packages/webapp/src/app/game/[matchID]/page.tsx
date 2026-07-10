@@ -3,7 +3,6 @@
 import React from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import {
   Alert,
   Box,
@@ -11,17 +10,15 @@ import {
   Card,
   CardContent,
   Container,
-  Divider,
-  IconButton,
-  List,
-  ListItem,
-  ListItemText,
   Snackbar,
   Stack,
-  TextField,
   Typography,
 } from '@mui/material';
 import Boardgame from '@/components/BoardGame';
+import { StickerButton } from '@/components/design';
+import LobbyNav from '@/components/lobby/LobbyNav';
+import Note from '@/components/lobby/Note';
+import SeatCard from '@/components/lobby/SeatCard';
 import { clearCredentials, loadCredentials, type MatchCredentials } from '@/lib/matchCredentials';
 import { usePolling } from '@/lib/usePolling';
 import { useSnackbar } from '@/lib/useSnackbar';
@@ -44,7 +41,6 @@ export default function GameRoomPage() {
   const [match, setMatch] = React.useState<LobbyMatch | null>(null);
   const [credentials, setCredentials] = React.useState<MatchCredentials | null>(null);
   const [credentialsReady, setCredentialsReady] = React.useState(false);
-  const [inviteURL, setInviteURL] = React.useState('');
   const [isLoading, setIsLoading] = React.useState(true);
   const [isLeaving, setIsLeaving] = React.useState(false);
   const [isStarting, setIsStarting] = React.useState(false);
@@ -108,10 +104,6 @@ export default function GameRoomPage() {
       cancelled = true;
     };
   }, [matchID]);
-
-  React.useEffect(() => {
-    setInviteURL(window.location.href);
-  }, []);
 
   const allSeatsFilled = match ? getFilledSeatCount(match) === match.players.length : false;
   const hasStarted = match ? hasHostStarted(match) : false;
@@ -194,22 +186,26 @@ export default function GameRoomPage() {
 
   if (!credentialsReady || isLoading) {
     return (
-      <Container maxWidth="md" sx={{ py: 6 }}>
-        <Typography color="text.secondary">Loading room…</Typography>
-      </Container>
+      <main>
+        <LobbyNav />
+        <div style={{ padding: '40px 64px', color: 'var(--ink-mute)', fontSize: 14 }}>
+          載入房間中… <span className="en-cap">Loading room…</span>
+        </div>
+      </main>
     );
   }
 
   if (errorMessage) {
     return (
-      <Container maxWidth="md" sx={{ py: 6 }}>
-        <Stack spacing={2}>
-          <Alert severity="error">{errorMessage}</Alert>
-          <Button component={Link} href="/lobby" variant="contained">
-            Back to Lobby
-          </Button>
-        </Stack>
-      </Container>
+      <main>
+        <LobbyNav />
+        <div style={{ padding: '40px 64px', display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 640 }}>
+          <Note tone="error">{errorMessage}</Note>
+          <Link href="/lobby" className="btn-sticker" style={{ alignSelf: 'flex-start' }}>
+            回大廳 <span style={{ opacity: 0.8, fontFamily: 'var(--font-en)', fontWeight: 500 }}>· Back to lobby</span>
+          </Link>
+        </div>
+      </main>
     );
   }
 
@@ -257,117 +253,158 @@ export default function GameRoomPage() {
 
   if (match && isAbandoned && !hasStarted) {
     return (
-      <Container maxWidth="md" sx={{ py: 6 }}>
-        <Stack spacing={2}>
-          <Alert severity="info">This room was abandoned.</Alert>
-          <Button component={Link} href="/lobby" variant="contained">
-            Return to Lobby
-          </Button>
-        </Stack>
-      </Container>
+      <main>
+        <LobbyNav />
+        <div style={{ padding: '40px 64px', display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 640 }}>
+          <Note tone="info">這個房間已經解散了。 This room was abandoned.</Note>
+          <Link href="/lobby" className="btn-sticker" style={{ alignSelf: 'flex-start' }}>
+            回大廳 <span style={{ opacity: 0.8, fontFamily: 'var(--font-en)', fontWeight: 500 }}>· Back to lobby</span>
+          </Link>
+        </div>
+      </main>
     );
   }
 
   return (
-    <Container maxWidth="md" sx={{ py: 6 }}>
-      <Stack spacing={3}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 2, flexWrap: 'wrap' }}>
-          <Box>
-            <Typography variant="h4" component="h1" gutterBottom>
-              Waiting Room
-            </Typography>
-            <Typography color="text.secondary">
-              Room ID: <Box component="span" sx={{ fontFamily: 'monospace' }}>{matchID}</Box>
-            </Typography>
-          </Box>
-          <Button component={Link} href="/lobby" variant="outlined">
-            Back to Lobby
-          </Button>
-        </Box>
-
-        {credentials ? (
-          <Alert severity="success">
-            Seat {credentials.playerID} is reserved in this browser. Waiting for everyone to join.
-          </Alert>
-        ) : (
-          <Alert severity="info">
-            This browser has no saved seat for the room. Join from the lobby if you want to claim one.
-          </Alert>
-        )}
-
-        {allSeatsFilled && !hasStarted && (
-          <Alert severity={isHost ? 'info' : 'warning'}>
-            {isHost
-              ? 'All seats are filled. Use Start Game to move everyone into the board.'
-              : 'All seats are filled. Waiting for the host to start the game.'}
-          </Alert>
-        )}
-
-        <Card variant="outlined">
-          <CardContent>
-            <Stack spacing={2}>
-              <Typography variant="h6" component="h2">
-                Players
-              </Typography>
-              <Typography color="text.secondary">
-                {match ? `${getFilledSeatCount(match)} / ${match.players.length} seats filled` : 'Loading seats…'}
-              </Typography>
-              <Divider />
-              <List disablePadding>
-                {match?.players.map((player) => (
-                  <ListItem key={player.id} disableGutters>
-                    <ListItemText
-                      primary={`Seat ${player.id}`}
-                      secondary={hasPlayerName(player) ? player.name : 'Open seat'}
-                    />
-                  </ListItem>
-                ))}
-              </List>
-            </Stack>
-          </CardContent>
-        </Card>
-
-        <Card variant="outlined">
-          <CardContent>
-            <Stack spacing={2}>
-              <Typography variant="h6" component="h2">
-                Invite Link
-              </Typography>
-              <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-start' }}>
-                <TextField
-                  value={inviteURL}
-                  InputProps={{ readOnly: true }}
-                  inputProps={{ 'aria-label': 'Invite URL' }}
-                  fullWidth
-                />
-                <IconButton aria-label="Copy invite URL" onClick={() => void handleCopyInviteURL()}>
-                  <ContentCopyIcon />
-                </IconButton>
-              </Box>
-            </Stack>
-          </CardContent>
-        </Card>
-
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap' }}>
-          <Button onClick={() => void handleRefreshNow()} variant="text" disabled={isRefreshing}>
-            {isRefreshing ? 'Refreshing…' : 'Refresh Now'}
-          </Button>
-          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-            {isHost && credentials && (
-              <Button
-                onClick={handleStartGame}
-                variant="contained"
-                disabled={!allSeatsFilled || isMutating}
+    <main style={{ minHeight: '100vh' }}>
+      <LobbyNav />
+      <div style={{ padding: '32px 64px', maxWidth: 1280, margin: '0 auto' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 32, alignItems: 'start' }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+              <h1 style={{ display: 'flex', flexDirection: 'column', gap: 2, fontSize: 22, fontWeight: 800 }}>
+                等待玩家加入 <span className="en-cap">Waiting room</span>
+              </h1>
+              <span
+                className="sticker"
+                style={{ background: 'var(--orange-soft)', borderColor: 'var(--orange)' }}
+                data-testid="waiting-for-player-alert"
               >
-                {isStarting ? 'Starting…' : 'Start Game'}
-              </Button>
+                <span style={{ width: 6, height: 6, borderRadius: 999, background: 'var(--orange)' }} />
+                等待中 Waiting
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 14, flexWrap: 'wrap' }}>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--ink-soft)' }}>房號</span>
+              <span
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: 16,
+                  fontWeight: 800,
+                  background: 'white',
+                  border: '1.5px solid var(--ink)',
+                  borderRadius: 10,
+                  padding: '4px 14px',
+                  boxShadow: '0 2px 0 var(--ink)',
+                  letterSpacing: '0.04em',
+                  maxWidth: 360,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {matchID}
+              </span>
+              <StickerButton variant="ghost" size="sm" onClick={() => void handleCopyInviteURL()}>
+                複製連結 · Copy invite link
+              </StickerButton>
+            </div>
+
+            <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {credentials ? (
+                <Note tone="success">
+                  你的座位是 Seat {credentials.playerID}，等其他人加入中。 Seat {credentials.playerID} is
+                  reserved in this browser. Waiting for everyone to join.
+                </Note>
+              ) : (
+                <Note tone="info">
+                  這個瀏覽器沒有座位，想入座請從大廳加入。 This browser has no saved seat for the room —
+                  join from the lobby to claim one.
+                </Note>
+              )}
+
+              {allSeatsFilled && !hasStarted && (
+                <Note tone={isHost ? 'info' : 'warning'}>
+                  {isHost
+                    ? '人到齊了！按「開始遊戲」帶大家進牌桌。 All seats are filled — use Start to move everyone into the board.'
+                    : '人到齊了，等待房主開始。 All seats are filled. Waiting for the host to start the game.'}
+                </Note>
+              )}
+            </div>
+
+            <div
+              style={{ marginTop: 24, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}
+              data-testid="seat-grid"
+            >
+              {match?.players.map((player) => (
+                <SeatCard
+                  key={player.id}
+                  seatIndex={player.id}
+                  playerName={hasPlayerName(player) ? player.name : undefined}
+                  isHost={player.id === 0 && hasPlayerName(player)}
+                  isYou={credentials?.playerID === String(player.id)}
+                />
+              ))}
+            </div>
+            <div style={{ marginTop: 10, fontSize: 12, color: 'var(--ink-mute)' }}>
+              {match
+                ? `${getFilledSeatCount(match)} / ${match.players.length} 個座位已入座 · seats filled`
+                : '載入座位中… Loading seats…'}
+            </div>
+
+            <div style={{ marginTop: 24, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+              {isHost && credentials && (
+                <StickerButton onClick={handleStartGame} disabled={!allSeatsFilled || isMutating}>
+                  {isStarting ? '開始中… · Starting' : '開始遊戲 · Start game'}
+                </StickerButton>
+              )}
+              <StickerButton
+                variant="ghost"
+                onClick={() => void handleRefreshNow()}
+                disabled={isRefreshing}
+              >
+                {isRefreshing ? '更新中…' : '重新整理 · Refresh'}
+              </StickerButton>
+              <StickerButton
+                variant="dark"
+                onClick={() => void handleLeaveMatch()}
+                disabled={isMutating}
+                style={{ marginLeft: 'auto' }}
+              >
+                {isLeaving ? '離開中…' : credentials ? '離開 · Leave match' : '回大廳 · Back to lobby'}
+              </StickerButton>
+            </div>
+            {isHost && credentials && (
+              <div style={{ marginTop: 12, fontSize: 12, color: 'var(--ink-mute)' }}>
+                * 房主在所有座位坐滿後可開始遊戲。
+                <span className="en-cap" style={{ marginLeft: 6 }}>
+                  Host can start once every seat is filled.
+                </span>
+              </div>
             )}
-            <Button onClick={handleLeaveMatch} color="error" variant="outlined" disabled={isMutating}>
-              {isLeaving ? 'Leaving…' : credentials ? 'Leave Match' : 'Back to Lobby'}
-            </Button>
-          </Box>
-        </Box>
-      </Stack>
+          </div>
+
+          {/* Rules-at-a-glance panel */}
+          <div className="paper-card" style={{ padding: 22 }}>
+            <h2 style={{ display: 'flex', flexDirection: 'column', gap: 2, fontSize: 15, fontWeight: 800 }}>
+              這場遊戲的目標 <span className="en-cap">Objective</span>
+            </h2>
+            <p style={{ fontSize: 13, lineHeight: 1.55, color: 'var(--ink-soft)', marginTop: 8 }}>
+              收集人力、發起與貢獻開源專案，遊戲結束時影響力分數最高者獲勝。
+            </p>
+            <div className="dotted" style={{ margin: '14px 0' }} />
+            <h2 style={{ display: 'flex', flexDirection: 'column', gap: 2, fontSize: 15, fontWeight: 800 }}>
+              一回合三步驟 <span className="en-cap">One round, three steps</span>
+            </h2>
+            <ol style={{ paddingLeft: 18, fontSize: 13, color: 'var(--ink-soft)', lineHeight: 1.7, marginTop: 8 }}>
+              <li>翻開事件卡</li>
+              <li>所有玩家依序行動</li>
+              <li>清算分數，補滿人力</li>
+            </ol>
+          </div>
+        </div>
+      </div>
 
       <Snackbar
         open={snackbar.open}
@@ -378,6 +415,6 @@ export default function GameRoomPage() {
           {snackbar.message}
         </Alert>
       </Snackbar>
-    </Container>
+    </main>
   );
 }

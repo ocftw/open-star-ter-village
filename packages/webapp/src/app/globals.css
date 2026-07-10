@@ -175,6 +175,12 @@ button {
   transform: translate(0, 3px);
   box-shadow: 0 1px 0 var(--ink);
 }
+.btn-sticker:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 0 2px 0 var(--ink);
+}
 
 .btn-sticker.ghost {
   background: white;
