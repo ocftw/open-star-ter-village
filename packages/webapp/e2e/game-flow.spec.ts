@@ -51,11 +51,30 @@ async function expectScore(page: Page, name: string, score: number) {
   await expect(page.locator(`[data-testid="player-status-${name}"]`)).toHaveAttribute('data-score', String(score));
 }
 
-/** End the current player's action turn: idle bar → 結束我的回合 → confirm. */
+/**
+ * End the current player's action turn: idle bar → 結束我的回合 → confirm.
+ *
+ * When the 四大自由 event is in play and this player is the round's last, the
+ * server intercepts endActionTurn with a forced 2-card discard — handle it so
+ * the turn actually advances regardless of which event was drawn.
+ */
 async function performEndTurn(page: Page): Promise<void> {
   await page.locator('[data-testid="end-turn"]').click();
   await expect(contextAction(page)).toHaveAttribute('data-mode', 'endActionTurn');
   await confirmButton(page).click();
+
+  const discardPanel = page.locator('[data-testid="discard-job-cards-panel"]');
+  const needsDiscard = await discardPanel
+    .waitFor({ state: 'visible', timeout: 2000 })
+    .then(() => true)
+    .catch(() => false);
+  if (needsDiscard) {
+    const jobCards = page.locator('[data-testid^="job-card-"]');
+    await jobCards.nth(0).click();
+    await jobCards.nth(1).click();
+    await page.locator('[data-testid="discard-confirm"]').click();
+    await discardPanel.waitFor({ state: 'hidden', timeout: 5000 });
+  }
 }
 
 /**
@@ -63,34 +82,59 @@ async function performEndTurn(page: Page): Promise<void> {
  * (enters create mode), then tap a matching job card. Returns the job name used.
  *
  * @param requireMultipleJobTypes - when true, prefer hand cards with 2+ different
- *   job requirements so a different job type remains for a subsequent recruit.
+ *   job requirements — and (pass 1) an unclaimed job needing > 2 points — so a
+ *   recruit + contribute on this project stays possible afterwards.
  */
 async function selectCompatibleHandAndJobCard(page: Page, requireMultipleJobTypes = false): Promise<string> {
   const handCards = page.locator('[data-testid^="hand-card-"]');
   const jobCards  = page.locator('[data-testid^="job-card-"]');
 
-  const passes = requireMultipleJobTypes ? [true, false] : [false];
+  // Job names currently available in the market. Creating consumes only the
+  // clicked card, so any OTHER job type present now is still recruitable after.
+  const marketJobs: string[] = [];
+  for (let j = 0, n = await jobCards.count(); j < n; j++) {
+    const name = (await jobCards.nth(j).getAttribute('data-job-name'))?.trim();
+    if (name) marketJobs.push(name);
+  }
 
-  for (const requireMulti of passes) {
+  // Pass 1 (strictest) → pass N (anything compatible).
+  const passes = requireMultipleJobTypes ? ['multi-with-room', 'multi', 'any'] : ['any'];
+
+  for (const pass of passes) {
     const handCount = await handCards.count();
     for (let h = 0; h < handCount; h++) {
       const handCard = handCards.nth(h);
       const requirements = await handCard.getAttribute('data-requirements');
       if (!requirements) continue;
       const reqList = requirements.split(',').map(r => r.trim()).filter(Boolean);
-      if (requireMulti && reqList.length < 2) continue;
+      if (pass !== 'any' && reqList.length < 2) continue;
+      const jobReqJson = await handCard.getAttribute('data-job-requirements');
+      const jobReqMap: Record<string, number> = jobReqJson ? JSON.parse(jobReqJson) : {};
 
       const jobCount = await jobCards.count();
       for (let j = 0; j < jobCount; j++) {
         const jobCard = jobCards.nth(j);
         const jobName = (await jobCard.getAttribute('data-job-name'))?.trim() ?? '';
-        if (reqList.includes(jobName)) {
-          await handCard.click();
-          // Tapping a hand card from idle must enter create mode (inference works).
-          await expect(contextAction(page)).toHaveAttribute('data-mode', 'createProject');
-          await jobCard.click();
-          return jobName;
-        }
+        if (!reqList.includes(jobName)) continue;
+        // Multi passes: some OTHER required job must be available in the market
+        // so the follow-up recruit can find a match; the strictest pass also
+        // wants that job to need > 2 points, so the recruit's initial
+        // contribution (2) still leaves room to contribute afterwards.
+        const INITIAL_CONTRIBUTION = 2;
+        const hasRecruitableOther = (needRoom: boolean) =>
+          reqList.some(
+            (r) =>
+              r !== jobName &&
+              marketJobs.includes(r) &&
+              (!needRoom || (jobReqMap[r] ?? 0) > INITIAL_CONTRIBUTION),
+          );
+        if (pass === 'multi-with-room' && !hasRecruitableOther(true)) continue;
+        if (pass === 'multi' && !hasRecruitableOther(false)) continue;
+        await handCard.click();
+        // Tapping a hand card from idle must enter create mode (inference works).
+        await expect(contextAction(page)).toHaveAttribute('data-mode', 'createProject');
+        await jobCard.click();
+        return jobName;
       }
     }
   }
