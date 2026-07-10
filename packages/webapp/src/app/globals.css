@@ -351,3 +351,59 @@ button {
     var(--paper) 8px 16px
   );
 }
+
+/* ——— Responsive layout utilities (mobile breakpoint: 899px) ——— */
+.page-pad {
+  padding: 40px 64px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* Hero: text + composition side by side, stacks on mobile */
+.grid-hero {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 48px;
+  align-items: center;
+}
+
+/* Two even columns, stacks on mobile */
+.grid-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+/* Wide + narrow rail (waiting room), stacks on mobile */
+.grid-main-rail {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+/* Seat cards */
+.grid-seats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+@media (max-width: 899px) {
+  .page-pad {
+    padding: 20px;
+  }
+  .grid-hero,
+  .grid-2col,
+  .grid-main-rail {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .grid-seats {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+  .h-display {
+    font-size: 34px;
+  }
+}

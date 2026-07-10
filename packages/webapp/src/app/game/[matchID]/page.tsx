@@ -268,8 +268,8 @@ export default function GameRoomPage() {
   return (
     <main style={{ minHeight: '100vh' }}>
       <LobbyNav />
-      <div style={{ padding: '32px 64px', maxWidth: 1280, margin: '0 auto' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 32, alignItems: 'start' }}>
+      <div className="page-pad">
+        <div className="grid-main-rail">
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
               <h1 style={{ display: 'flex', flexDirection: 'column', gap: 2, fontSize: 22, fontWeight: 800 }}>
