@@ -26,6 +26,7 @@ export default function ProjectCardFace({
     <div
       onClick={onClick}
       data-requirements={Object.keys(card.requirements).join(',')}
+      data-job-requirements={JSON.stringify(card.requirements)}
       {...rest}
       style={{
         position: 'relative',

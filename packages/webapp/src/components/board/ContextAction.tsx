@@ -289,7 +289,8 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: 14,
+        flexWrap: 'wrap',
+        gap: 12,
         background: 'white',
         border: '2px solid var(--ink)',
         borderRadius: 18,
@@ -315,7 +316,9 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
       >
         {copy.icon}
       </div>
-      <div style={{ flex: 1, minWidth: 0 }}>
+      {/* flex-basis 180px: on narrow screens the text keeps a readable column
+          and the AP dots + buttons wrap to the next row instead of squeezing it */}
+      <div style={{ flex: '1 1 180px', minWidth: 0 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
           <strong style={{ fontSize: 15 }}>{copy.title}</strong>
           <span className="en-cap">{copy.en}</span>
