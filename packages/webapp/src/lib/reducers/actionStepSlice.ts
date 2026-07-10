@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { MirrorableActionName } from '@/components/ActionBoard/ActionStepper/actionConfig';
+import { MirrorableActionName } from '@/components/board/actionConfig';
 
 export enum UserActionMoves {
   CreateProject = 'createProject',
