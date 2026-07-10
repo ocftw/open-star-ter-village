@@ -1,0 +1,335 @@
+import React from 'react';
+import { PlayerID } from 'boardgame.io';
+import { ProjectSlotState } from '@/game';
+import { CharacterAvatar, getJobMetaByName, getProjectTypeMetaByName } from '@/components/design';
+import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import {
+  isJoinedContributionInteractive,
+  isOwnedContributionInteractive,
+  isProjectSlotsInteractive,
+} from '@/lib/reducers/actionStepSlice';
+import {
+  getSelectedProjectSlots,
+  resetProjectSlotSelection,
+  toggleProjectSlotSelection,
+} from '@/lib/reducers/projectSlotSlice';
+import { getContributions, updateContribute } from '@/lib/reducers/contributionSlice';
+import { playerNameMap } from '@/components/playerNameMap';
+
+type BoardProjectSlotProps = {
+  slot: ProjectSlotState;
+  playerID: PlayerID | null;
+  /** Called when the slot is tapped while no action is in progress (idle inference). */
+  onIdleTap?: (slot: ProjectSlotState) => void;
+  idle: boolean;
+};
+
+const seatColor = (worker: PlayerID) => `var(--p${worker})`;
+
+/** Occupied/empty project slot on the table (design: ProjectSlot). */
+export default function BoardProjectSlot({ slot, playerID, onIdleTap, idle }: BoardProjectSlotProps) {
+  const dispatch = useAppDispatch();
+  const slotsInteractive = useAppSelector(isProjectSlotsInteractive);
+  const ownedInteractive = useAppSelector(isOwnedContributionInteractive);
+  const joinedInteractive = useAppSelector(isJoinedContributionInteractive);
+  const selectedSlots = useAppSelector(getSelectedProjectSlots);
+  const pendingContributions = useAppSelector(getContributions);
+
+  if (!slot.card) {
+    return (
+      <div
+        className="hatch"
+        data-testid={slot.id}
+        style={{
+          minHeight: 168,
+          height: '100%',
+          border: '2px dashed var(--ink-mute)',
+          borderRadius: 18,
+          display: 'grid',
+          placeItems: 'center',
+          color: 'var(--ink-mute)',
+          fontSize: 12,
+          fontFamily: 'var(--font-mono)',
+        }}
+      >
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: 24, marginBottom: 6 }}>＋</div>
+          <div>Empty slot</div>
+        </div>
+      </div>
+    );
+  }
+
+  const card = slot.card;
+  const typeMeta = getProjectTypeMetaByName(card.type);
+  const isOwn = playerID !== null && slot.owner === playerID;
+  const selected = slotsInteractive && !!selectedSlots[slot.id];
+  // In contribute mode, only this player's worker rows on the right slots are adjustable.
+  const contributionEditable =
+    playerID !== null && ((ownedInteractive && isOwn) || (joinedInteractive && !isOwn));
+
+  const handleClick = () => {
+    if (slotsInteractive) {
+      // Single-select: recruit (and its mirror) targets exactly one slot.
+      if (!selectedSlots[slot.id]) dispatch(resetProjectSlotSelection());
+      dispatch(toggleProjectSlotSelection(slot.id));
+    } else if (idle && onIdleTap) {
+      onIdleTap(slot);
+    }
+  };
+
+  const pendingFor = (jobName: string) =>
+    pendingContributions.find((c) => c.projectSlotId === slot.id && c.jobName === jobName)?.value ?? 0;
+
+  const requiredJobs = Object.keys(card.requirements);
+  const clickable = slotsInteractive || (idle && !!onIdleTap);
+
+  // contributor legend totals (committed only)
+  const totals: Record<string, number> = {};
+  slot.contributions.forEach((c) => {
+    if (c.value > 0) totals[c.worker] = (totals[c.worker] ?? 0) + c.value;
+  });
+
+  return (
+    <div
+      data-testid={slot.id}
+      data-requirements={requiredJobs.join(',')}
+      data-job-requirements={JSON.stringify(card.requirements)}
+      onClick={handleClick}
+      style={{
+        background: 'white',
+        border: selected ? '2.5px solid var(--orange)' : '2px solid var(--ink)',
+        borderRadius: 18,
+        boxShadow: selected ? '0 4px 0 var(--orange)' : 'var(--shadow-sticker)',
+        padding: '12px 12px 10px',
+        cursor: clickable ? 'pointer' : 'default',
+        position: 'relative',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 8,
+        minHeight: 168,
+        height: '100%',
+        transition: 'transform 0.12s',
+        transform: selected ? 'translateY(-3px)' : 'none',
+      }}
+    >
+      {/* corner type tab */}
+      <div
+        style={{
+          position: 'absolute',
+          top: -10,
+          left: 12,
+          background: typeMeta?.color ?? 'var(--ink-soft)',
+          color: 'white',
+          padding: '2px 10px',
+          borderRadius: 999,
+          border: '1.5px solid var(--ink)',
+          boxShadow: '0 2px 0 var(--ink)',
+          fontSize: 10,
+          fontWeight: 800,
+          letterSpacing: '0.04em',
+        }}
+      >
+        {card.type}
+      </div>
+      {isOwn && (
+        <div
+          style={{
+            position: 'absolute',
+            top: -10,
+            right: 12,
+            background: 'var(--orange)',
+            color: 'white',
+            padding: '2px 10px',
+            borderRadius: 999,
+            border: '1.5px solid var(--ink)',
+            boxShadow: '0 2px 0 var(--ink)',
+            fontSize: 10,
+            fontWeight: 800,
+            letterSpacing: '0.04em',
+          }}
+        >
+          YOUR PROJECT
+        </div>
+      )}
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6 }}>
+        <span
+          title={playerNameMap[slot.owner]}
+          style={{
+            width: 24,
+            height: 24,
+            borderRadius: 999,
+            background: seatColor(slot.owner),
+            color: 'white',
+            border: '1.5px solid var(--ink)',
+            display: 'grid',
+            placeItems: 'center',
+            fontFamily: 'var(--font-en)',
+            fontWeight: 800,
+            fontSize: 11,
+            flexShrink: 0,
+          }}
+        >
+          {playerNameMap[slot.owner]?.[0]}
+        </span>
+        <div style={{ fontWeight: 800, fontSize: 14, lineHeight: 1.15 }}>{card.name}</div>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        {requiredJobs.map((jobName) => {
+          const need = card.requirements[jobName];
+          const jobMeta = getJobMetaByName(jobName);
+          const jobContributions = slot.contributions.filter((c) => c.jobName === jobName);
+          const committed = jobContributions.reduce((acc, c) => acc + c.value, 0);
+          const pending = pendingFor(jobName);
+          const myRow = playerID !== null && jobContributions.some((c) => c.worker === playerID);
+          const showStepper = contributionEditable && myRow;
+          const remaining = need - committed - pending;
+          return (
+            <div key={jobName} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              {jobMeta ? (
+                <CharacterAvatar role={jobMeta.role} size="sm" title={jobName} />
+              ) : (
+                <span style={{ fontSize: 11 }}>{jobName}</span>
+              )}
+              <div
+                style={{
+                  flex: 1,
+                  height: 11,
+                  borderRadius: 6,
+                  background: 'white',
+                  border: '1.5px solid var(--ink)',
+                  overflow: 'hidden',
+                  display: 'flex',
+                }}
+              >
+                {jobContributions.map(
+                  (c) =>
+                    c.value > 0 && (
+                      <div
+                        key={c.worker}
+                        title={`${playerNameMap[c.worker]} +${c.value}`}
+                        style={{
+                          width: `${(c.value / need) * 100}%`,
+                          height: '100%',
+                          background: seatColor(c.worker),
+                          boxShadow: 'inset -1.5px 0 0 rgba(255,255,255,0.75)',
+                        }}
+                      />
+                    ),
+                )}
+                {pending > 0 && (
+                  <div
+                    style={{
+                      width: `${(pending / need) * 100}%`,
+                      height: '100%',
+                      background: 'repeating-linear-gradient(45deg, var(--orange) 0 4px, var(--orange-soft) 4px 8px)',
+                    }}
+                  />
+                )}
+              </div>
+              {showStepper && (
+                <span
+                  style={{ display: 'inline-flex', gap: 2 }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <button
+                    type="button"
+                    aria-label={`減少 ${jobName} 貢獻`}
+                    data-testid="contribution-decrement"
+                    disabled={pending <= 0}
+                    onClick={() =>
+                      dispatch(updateContribute({ slotId: slot.id, jobName, diffAmount: pending - 1 }))
+                    }
+                    style={stepperButtonStyle}
+                  >
+                    −
+                  </button>
+                  <button
+                    type="button"
+                    aria-label={`增加 ${jobName} 貢獻`}
+                    data-testid="contribution-increment"
+                    data-remaining={remaining}
+                    disabled={remaining <= 0}
+                    onClick={() =>
+                      dispatch(updateContribute({ slotId: slot.id, jobName, diffAmount: pending + 1 }))
+                    }
+                    style={stepperButtonStyle}
+                  >
+                    ＋
+                  </button>
+                </span>
+              )}
+              <span
+                style={{
+                  fontFamily: 'var(--font-en)',
+                  fontSize: 11,
+                  fontWeight: 800,
+                  minWidth: 32,
+                  textAlign: 'right',
+                }}
+              >
+                {committed + pending}/{need}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+
+      {Object.keys(totals).length > 0 && (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            flexWrap: 'wrap',
+            marginTop: 'auto',
+            paddingTop: 7,
+            borderTop: '1.5px dashed var(--paper-3)',
+          }}
+        >
+          <span className="tag-en">貢獻者 CONTRIBUTORS</span>
+          {Object.entries(totals)
+            .sort(([, a], [, b]) => b - a)
+            .map(([worker, value]) => (
+              <span key={worker} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                <span
+                  style={{
+                    width: 14,
+                    height: 14,
+                    borderRadius: 999,
+                    background: seatColor(worker),
+                    color: 'white',
+                    border: '1.5px solid var(--ink)',
+                    fontFamily: 'var(--font-en)',
+                    fontSize: 8,
+                    fontWeight: 800,
+                    display: 'grid',
+                    placeItems: 'center',
+                  }}
+                >
+                  {playerNameMap[worker]?.[0]}
+                </span>
+                <strong style={{ fontFamily: 'var(--font-en)', fontSize: 11 }}>{value}</strong>
+              </span>
+            ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+const stepperButtonStyle: React.CSSProperties = {
+  width: 22,
+  height: 22,
+  borderRadius: 999,
+  border: '1.5px solid var(--ink)',
+  background: 'white',
+  fontWeight: 800,
+  fontSize: 13,
+  lineHeight: 1,
+  display: 'grid',
+  placeItems: 'center',
+  boxShadow: '0 1.5px 0 var(--ink)',
+};

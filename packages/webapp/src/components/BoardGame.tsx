@@ -3,20 +3,27 @@ import { SocketIO, Local } from 'boardgame.io/multiplayer'
 import game from '@/game';
 import React from 'react';
 import { Game } from 'boardgame.io';
-import { GameState } from '@/game';
-import Table from '@/components/Table/Table';
-import ActionBar from './ActionBoard/ActionBar/ActionBar';
-import GameHeader from './GameHeader/GameHeader';
-import UserPanel from './UserPanel/UserPanel';
-import { Alert, Box, Button, Dialog, DialogContent, DialogTitle, List, ListItem, ListItemText, Typography } from '@mui/material';
+import { GameState, ProjectSlotState } from '@/game';
+import { Dialog, DialogContent } from '@mui/material';
 import { GameContext } from './GameContextHelpers';
-import ActionStepper from './ActionBoard/ActionStepper/ActionStepper';
-import DiscardJobCardsPanel from './DiscardJobCards/DiscardJobCardsPanel';
-import { ScoreBoardSelector } from '@/game/store/slice/scoreBoard';
 import { GAME_SERVER_URL } from '@/lib/lobbyClient';
+import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { UserActionMoves, getCurrentAction, setCurrentAction } from '@/lib/reducers/actionStepSlice';
+import { PLAYER_COLORS, StickerButton } from '@/components/design';
+import { ScoreBoardSelector } from '@/game/store/slice/scoreBoard';
+import { playerNameMap } from './playerNameMap';
+import GameHeader from './board/GameHeader';
+import HandPanel from './board/HandPanel';
+import JobMarket from './board/JobMarket';
+import ContextAction from './board/ContextAction';
+import DiscardPanel from './board/DiscardPanel';
+import BoardProjectSlot from './board/BoardProjectSlot';
+import { ScorePanel, TurnOrderPanel } from './board/SidePanels';
 
 const Board: React.FC<GameContext> = (gameContext) => {
   const { G, playerID, ctx } = gameContext;
+  const dispatch = useAppDispatch();
+  const currentAction = useAppSelector(getCurrentAction);
   const isMyTurn = playerID === ctx.currentPlayer;
   const gameover = ctx.gameover as { winners: string[] } | undefined;
 
@@ -30,57 +37,200 @@ const Board: React.FC<GameContext> = (gameContext) => {
   const showDiscardPanel = isMyTurn && isLastPlayer && hasPendingDiscard &&
     (outOfAP || G.table.actionPhaseDone);
 
+  const idle = isMyTurn && currentAction === null && !showDiscardPanel && !gameover;
+
+  // Idle tap on a board project → contribute; ownership picks the move.
+  const handleProjectIdleTap = (slot: ProjectSlotState) => {
+    if (playerID === null) return;
+    dispatch(
+      setCurrentAction(
+        slot.owner === playerID
+          ? UserActionMoves.ContributeOwnedProjects
+          : UserActionMoves.ContributeJoinedProjects,
+      ),
+    );
+  };
+
   return (
-    <Box sx={{ display: 'flex' }}>
-      {!!playerID && <UserPanel gameContext={gameContext} />}
-      <Box sx={{ flex: 1, padding: '16px', marginLeft: { xs: 0 } }}>
-        <GameHeader players={G.players} scoreBoard={G.table.scoreBoard} />
-        {isMyTurn
-          ? showDiscardPanel
-            ? <DiscardJobCardsPanel gameContext={gameContext} />
-            : <><ActionBar gameContext={gameContext} /><ActionStepper gameContext={gameContext} /></>
-          : !!playerID && (
-            <Alert severity="info" sx={{ mt: 1 }} data-testid="waiting-for-player-alert">
-              Waiting for Player {ctx.currentPlayer}…
-            </Alert>
-          )
-        }
-        <Box sx={{ marginTop: '16px' }}>
-          <Table table={G.table} playerID={playerID} />
-        </Box>
-      </Box>
+    <div
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        background: 'var(--paper)',
+        backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(42,36,34,0.06) 1px, transparent 0)',
+        backgroundSize: '22px 22px',
+      }}
+    >
+      <GameHeader gameContext={gameContext} />
+
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: playerID !== null ? '250px 1fr 260px' : '1fr 260px',
+          gap: 16,
+          padding: 16,
+          flex: 1,
+          alignItems: 'start',
+        }}
+      >
+        {/* LEFT — hand + event (players only) */}
+        {playerID !== null && <HandPanel gameContext={gameContext} idle={idle} />}
+
+        {/* CENTER — contextual action + projects + job market */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14, minWidth: 0 }}>
+          {isMyTurn ? (
+            showDiscardPanel ? (
+              <DiscardPanel gameContext={gameContext} />
+            ) : (
+              <ContextAction gameContext={gameContext} />
+            )
+          ) : (
+            playerID !== null && (
+              <div
+                data-testid="waiting-for-player-alert"
+                className="paper-card"
+                style={{
+                  padding: '10px 16px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 10,
+                  fontSize: 13,
+                  color: 'var(--ink-soft)',
+                }}
+              >
+                <span
+                  style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: 999,
+                    background: 'var(--orange)',
+                    flexShrink: 0,
+                  }}
+                />
+                等待 {playerNameMap[ctx.currentPlayer]} 行動中… Waiting for Player {ctx.currentPlayer}…
+              </div>
+            )
+          )}
+
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, paddingLeft: 4 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <span style={{ fontWeight: 800, fontSize: 14 }}>專案區</span>
+                <span className="en-cap">Projects</span>
+              </div>
+              <span
+                style={{
+                  fontSize: 11,
+                  color: 'var(--ink-mute)',
+                  background: 'white',
+                  border: '1.5px solid var(--paper-3)',
+                  borderRadius: 999,
+                  padding: '3px 10px',
+                }}
+              >
+                ⓘ 點桌上的專案來貢獻
+              </span>
+            </div>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+                gap: 14,
+                marginTop: 12,
+              }}
+            >
+              {G.table.projectBoard.map((slot) => (
+                <BoardProjectSlot
+                  key={slot.id}
+                  slot={slot}
+                  playerID={playerID}
+                  idle={idle}
+                  onIdleTap={slot.card ? handleProjectIdleTap : undefined}
+                />
+              ))}
+            </div>
+          </div>
+
+          <JobMarket gameContext={gameContext} idle={idle} discardActive={showDiscardPanel} />
+        </div>
+
+        {/* RIGHT — score + turn order */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <ScorePanel gameContext={gameContext} />
+          <TurnOrderPanel gameContext={gameContext} />
+        </div>
+      </div>
 
       <Dialog open={!!gameover && showGameOver} onClose={() => setShowGameOver(false)} maxWidth="xs" fullWidth>
-        <DialogTitle sx={{ textAlign: 'center' }}>Game Over</DialogTitle>
-        <DialogContent>
+        <DialogContent sx={{ p: 0 }}>
           {gameover && (
-            <>
-              <Typography variant="h6" align="center" gutterBottom>
-                {gameover.winners.length > 1
-                  ? `Tie: Players ${gameover.winners.join(', ')}`
-                  : `Winner: Player ${gameover.winners[0]}`}
-              </Typography>
-              <Typography variant="subtitle1" gutterBottom>Final Scores:</Typography>
-              <List dense>
+            <div style={{ padding: 24, background: 'var(--paper)', fontFamily: 'var(--font-zh)' }}>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: 40 }}>🏆</div>
+                <h2 style={{ fontWeight: 900, fontSize: 22, color: 'var(--ink)' }}>遊戲結束</h2>
+                <div className="en-cap" style={{ marginTop: 2 }}>
+                  Game over
+                </div>
+                <div style={{ marginTop: 8, fontWeight: 700, color: 'var(--ink-soft)' }}>
+                  {gameover.winners.length > 1
+                    ? `平手：${gameover.winners.map((id) => playerNameMap[id]).join('、')}`
+                    : `${playerNameMap[gameover.winners[0]]} 獲勝！`}
+                </div>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 18 }}>
                 {Object.entries(ScoreBoardSelector.getAllPlayerPoints(G.table.scoreBoard))
                   .sort(([, a], [, b]) => b - a)
-                  .map(([playerId, points]) => (
-                    <ListItem key={playerId} sx={gameover.winners.includes(playerId) ? { fontWeight: 'bold', bgcolor: 'action.selected', borderRadius: 1 } : {}}>
-                      <ListItemText
-                        primary={`Player ${playerId}`}
-                        secondary={`${points} VP`}
-                      />
-                    </ListItem>
-                  ))}
-              </List>
-              <Button onClick={() => setShowGameOver(false)} fullWidth sx={{ mt: 2 }}>
-                Close
-              </Button>
-            </>
+                  .map(([id, points]) => {
+                    const winner = gameover.winners.includes(id);
+                    return (
+                      <div
+                        key={id}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 10,
+                          padding: '8px 12px',
+                          background: winner ? 'var(--orange-soft)' : 'white',
+                          border: winner ? '2px solid var(--orange)' : '1.5px solid var(--ink)',
+                          borderRadius: 12,
+                          boxShadow: '0 2px 0 var(--ink)',
+                        }}
+                      >
+                        <span
+                          style={{
+                            width: 26,
+                            height: 26,
+                            borderRadius: 999,
+                            background: PLAYER_COLORS[Number(id) % PLAYER_COLORS.length],
+                            color: 'white',
+                            border: '1.5px solid var(--ink)',
+                            display: 'grid',
+                            placeItems: 'center',
+                            fontFamily: 'var(--font-en)',
+                            fontWeight: 800,
+                            fontSize: 12,
+                          }}
+                        >
+                          {playerNameMap[id]?.[0]}
+                        </span>
+                        <span style={{ fontWeight: 700, flex: 1 }}>{playerNameMap[id]}</span>
+                        <strong style={{ fontFamily: 'var(--font-en)' }}>{points} VP</strong>
+                      </div>
+                    );
+                  })}
+              </div>
+              <StickerButton
+                onClick={() => setShowGameOver(false)}
+                style={{ width: '100%', marginTop: 18 }}
+              >
+                關閉 · Close
+              </StickerButton>
+            </div>
           )}
         </DialogContent>
       </Dialog>
-    </Box>
+    </div>
   );
 };
 
