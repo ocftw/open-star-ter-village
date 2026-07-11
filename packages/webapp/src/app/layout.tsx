@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Noto_Sans_TC, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
 import "./globals.css";
-import { CssBaseline } from "@mui/material";
 import StoreProvider from './StoreProvider';
 
 const notoSansTC = Noto_Sans_TC({
@@ -43,10 +42,7 @@ export default function RootLayout({
     >
       <body className="app-root">
         <AppRouterCacheProvider>
-          <StoreProvider>
-            <CssBaseline />
-            {children}
-          </StoreProvider>
+          <StoreProvider>{children}</StoreProvider>
         </AppRouterCacheProvider>
       </body>
     </html>

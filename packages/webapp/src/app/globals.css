@@ -84,8 +84,8 @@ body {
   overflow-x: hidden;
 }
 
-/* body.app-root outranks MUI CssBaseline's `body { … }` rules regardless of
-   style injection order */
+/* .app-root keeps these rules winning over any library-injected `body { … }`
+   styles regardless of injection order */
 body.app-root {
   font-family: var(--font-zh);
   color: var(--ink);
@@ -315,32 +315,6 @@ button {
 .job-char.xl {
   width: 88px;
   height: 88px;
-}
-
-/* Player chip */
-.player-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 12px 6px 6px;
-  background: white;
-  border: 1.5px solid var(--ink);
-  border-radius: 999px;
-  box-shadow: 0 2px 0 var(--ink);
-  font-weight: 600;
-  font-size: 13px;
-}
-.player-chip .dot {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  border: 1.5px solid var(--ink);
-  display: grid;
-  place-items: center;
-  font-size: 11px;
-  font-weight: 800;
-  color: white;
-  font-family: var(--font-en);
 }
 
 /* placeholder bg pattern */
