@@ -117,8 +117,8 @@ test.describe('Full multiplayer flow', () => {
     await alicePage.getByRole('button', { name: /start game/i }).click();
     // All should transition to game board — "Waiting Room" heading disappears
     await expect(alicePage.getByRole('heading', { name: /waiting room/i, level: 1 })).not.toBeVisible({ timeout: 20_000 });
-    // Board view shows "Room <matchID>" heading
-    await expect(alicePage.getByRole('heading', { name: /^room /i })).toBeVisible({ timeout: 20_000 });
+    // Board view shows the game header with player chips
+    await expect(alicePage.locator('[data-testid^="player-status-"]').first()).toBeVisible({ timeout: 20_000 });
     // Bob also transitions
     await expect(bobPage.getByRole('heading', { name: /waiting room/i, level: 1 })).not.toBeVisible({ timeout: 20_000 });
   });
@@ -127,8 +127,10 @@ test.describe('Full multiplayer flow', () => {
     const observer = await browser.newContext();
     const observerPage = await observer.newPage();
     await observerPage.goto(`/game/${matchID}`);
-    // Should render board without controls
-    await expect(observerPage.locator('canvas, [data-testid], .board').first()).toBeVisible({ timeout: 15_000 });
+    // Should render the board in observer mode: banner + player chips, no hand/action controls
+    await expect(observerPage.locator('[data-testid="observer-mode-banner"]')).toBeVisible({ timeout: 15_000 });
+    await expect(observerPage.locator('[data-testid^="player-status-"]').first()).toBeVisible({ timeout: 15_000 });
+    await expect(observerPage.locator('[data-testid="context-action"]')).toHaveCount(0);
     await observer.close();
   });
 });
