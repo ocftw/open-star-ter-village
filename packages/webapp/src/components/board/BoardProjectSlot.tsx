@@ -1,5 +1,5 @@
 import React from 'react';
-import { PlayerID } from 'boardgame.io';
+import { FilteredMetadata, PlayerID } from 'boardgame.io';
 import { ProjectSlotState } from '@/game';
 import { CharacterAvatar, getJobMetaByName, getProjectTypeMetaByName } from '@/components/design';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
@@ -14,11 +14,12 @@ import {
   toggleProjectSlotSelection,
 } from '@/lib/reducers/projectSlotSlice';
 import { getContributions, updateContribute } from '@/lib/reducers/contributionSlice';
-import { playerNameMap } from '@/components/playerNameMap';
+import { getPlayerName } from '@/components/playerNameMap';
 
 type BoardProjectSlotProps = {
   slot: ProjectSlotState;
   playerID: PlayerID | null;
+  matchData?: FilteredMetadata;
   /** Called when the slot is tapped while no action is in progress (idle inference). */
   onIdleTap?: (slot: ProjectSlotState) => void;
   idle: boolean;
@@ -26,8 +27,8 @@ type BoardProjectSlotProps = {
 
 const seatColor = (worker: PlayerID) => `var(--p${worker})`;
 
-/** Occupied/empty project slot on the table (design: ProjectSlot). */
-export default function BoardProjectSlot({ slot, playerID, onIdleTap, idle }: BoardProjectSlotProps) {
+/** Occupied project slot on the table (design: ProjectSlot). */
+export default function BoardProjectSlot({ slot, playerID, matchData, onIdleTap, idle }: BoardProjectSlotProps) {
   const dispatch = useAppDispatch();
   const slotsInteractive = useAppSelector(isProjectSlotsInteractive);
   const ownedInteractive = useAppSelector(isOwnedContributionInteractive);
@@ -35,30 +36,8 @@ export default function BoardProjectSlot({ slot, playerID, onIdleTap, idle }: Bo
   const selectedSlots = useAppSelector(getSelectedProjectSlots);
   const pendingContributions = useAppSelector(getContributions);
 
-  if (!slot.card) {
-    return (
-      <div
-        className="hatch"
-        data-testid={slot.id}
-        style={{
-          minHeight: 168,
-          height: '100%',
-          border: '2px dashed var(--ink-mute)',
-          borderRadius: 18,
-          display: 'grid',
-          placeItems: 'center',
-          color: 'var(--ink-mute)',
-          fontSize: 12,
-          fontFamily: 'var(--font-mono)',
-        }}
-      >
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: 24, marginBottom: 6 }}>＋</div>
-          <div>Empty slot</div>
-        </div>
-      </div>
-    );
-  }
+  // Empty slots never render as cards — the board shows a capacity indicator instead (F-003).
+  if (!slot.card) return null;
 
   const card = slot.card;
   const typeMeta = getProjectTypeMetaByName(card.type);
@@ -155,7 +134,7 @@ export default function BoardProjectSlot({ slot, playerID, onIdleTap, idle }: Bo
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6 }}>
         <span
-          title={playerNameMap[slot.owner]}
+          title={getPlayerName(matchData, slot.owner)}
           style={{
             width: 24,
             height: 24,
@@ -171,7 +150,7 @@ export default function BoardProjectSlot({ slot, playerID, onIdleTap, idle }: Bo
             flexShrink: 0,
           }}
         >
-          {playerNameMap[slot.owner]?.[0]}
+          {getPlayerName(matchData, slot.owner)[0]}
         </span>
         <div style={{ fontWeight: 800, fontSize: 14, lineHeight: 1.15 }}>{card.name}</div>
       </div>
@@ -209,7 +188,7 @@ export default function BoardProjectSlot({ slot, playerID, onIdleTap, idle }: Bo
                     c.value > 0 && (
                       <div
                         key={c.worker}
-                        title={`${playerNameMap[c.worker]} +${c.value}`}
+                        title={`${getPlayerName(matchData, c.worker)} +${c.value}`}
                         style={{
                           width: `${(c.value / need) * 100}%`,
                           height: '100%',
@@ -309,7 +288,7 @@ export default function BoardProjectSlot({ slot, playerID, onIdleTap, idle }: Bo
                     placeItems: 'center',
                   }}
                 >
-                  {playerNameMap[worker]?.[0]}
+                  {getPlayerName(matchData, worker)[0]}
                 </span>
                 <strong style={{ fontFamily: 'var(--font-en)', fontSize: 11 }}>{value}</strong>
               </span>

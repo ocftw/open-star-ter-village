@@ -11,7 +11,7 @@ import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import { UserActionMoves, getCurrentAction, setCurrentAction } from '@/lib/reducers/actionStepSlice';
 import { PLAYER_COLORS, StickerButton } from '@/components/design';
 import { ScoreBoardSelector } from '@/game/store/slice/scoreBoard';
-import { playerNameMap } from './playerNameMap';
+import { getPlayerName } from './playerNameMap';
 import GameHeader from './board/GameHeader';
 import HandPanel from './board/HandPanel';
 import JobMarket from './board/JobMarket';
@@ -24,7 +24,7 @@ import { ScorePanel, TurnOrderPanel } from './board/SidePanels';
 import { useIsMobile } from '@/lib/useIsMobile';
 
 const Board: React.FC<GameContext> = (gameContext) => {
-  const { G, playerID, ctx } = gameContext;
+  const { G, playerID, ctx, matchData } = gameContext;
   const dispatch = useAppDispatch();
   const currentAction = useAppSelector(getCurrentAction);
   const isMyTurn = playerID === ctx.currentPlayer;
@@ -85,14 +85,20 @@ const Board: React.FC<GameContext> = (gameContext) => {
             flexShrink: 0,
           }}
         />
-        等待 {playerNameMap[ctx.currentPlayer]} 行動中… Waiting for Player {ctx.currentPlayer}…
+        等待 {getPlayerName(matchData, ctx.currentPlayer)} 行動中… Waiting for{' '}
+        {getPlayerName(matchData, ctx.currentPlayer)}…
       </div>
     )
   );
 
+  // Only occupied slots take card space; capacity is one compact indicator (F-003).
+  const occupiedSlots = G.table.projectBoard.filter((slot) => slot.card);
+  const slotCapacity = G.table.projectBoard.length;
+  const slotsAvailable = slotCapacity - occupiedSlots.length;
+
   const projectsSection = (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, paddingLeft: 4 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, paddingLeft: 4, flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <span style={{ fontWeight: 800, fontSize: 14 }}>專案區</span>
           <span className="en-cap">Projects</span>
@@ -109,25 +115,57 @@ const Board: React.FC<GameContext> = (gameContext) => {
         >
           ⓘ 點桌上的專案來貢獻
         </span>
+        <span
+          className="sticker"
+          data-testid="project-capacity"
+          data-available={slotsAvailable}
+          style={
+            slotsAvailable === 0
+              ? { background: 'var(--orange-soft)', borderColor: 'var(--orange-deep)', color: 'var(--orange-deep)' }
+              : undefined
+          }
+        >
+          {slotsAvailable > 0
+            ? `專案空位 ${slotsAvailable}/${slotCapacity} · ${slotsAvailable} slots available`
+            : '專案區已滿 · No slots available'}
+        </span>
       </div>
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
-          gap: 14,
-          marginTop: 12,
-        }}
-      >
-        {G.table.projectBoard.map((slot) => (
-          <BoardProjectSlot
-            key={slot.id}
-            slot={slot}
-            playerID={playerID}
-            idle={idle}
-            onIdleTap={slot.card ? handleProjectIdleTap : undefined}
-          />
-        ))}
-      </div>
+      {occupiedSlots.length > 0 ? (
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+            gap: 14,
+            marginTop: 12,
+          }}
+        >
+          {occupiedSlots.map((slot) => (
+            <BoardProjectSlot
+              key={slot.id}
+              slot={slot}
+              playerID={playerID}
+              matchData={matchData}
+              idle={idle}
+              onIdleTap={handleProjectIdleTap}
+            />
+          ))}
+        </div>
+      ) : (
+        <div
+          className="hatch"
+          style={{
+            marginTop: 12,
+            border: '2px dashed var(--ink-mute)',
+            borderRadius: 18,
+            padding: '18px 16px',
+            textAlign: 'center',
+            color: 'var(--ink-mute)',
+            fontSize: 12,
+          }}
+        >
+          還沒有專案 — 點手牌發起第一個專案。 No projects yet — tap a hand card to create one.
+        </div>
+      )}
     </div>
   );
 
@@ -220,7 +258,7 @@ function GameOverDialog({
   open: boolean;
   onClose: () => void;
 }) {
-  const { G, ctx } = gameContext;
+  const { G, ctx, matchData } = gameContext;
   const gameover = ctx.gameover as { winners: string[] } | undefined;
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
@@ -235,8 +273,8 @@ function GameOverDialog({
               </div>
               <div style={{ marginTop: 8, fontWeight: 700, color: 'var(--ink-soft)' }}>
                 {gameover.winners.length > 1
-                  ? `平手：${gameover.winners.map((id) => playerNameMap[id]).join('、')}`
-                  : `${playerNameMap[gameover.winners[0]]} 獲勝！`}
+                  ? `平手：${gameover.winners.map((id) => getPlayerName(matchData, id)).join('、')}`
+                  : `${getPlayerName(matchData, gameover.winners[0])} 獲勝！`}
               </div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 18 }}>
@@ -273,9 +311,9 @@ function GameOverDialog({
                           fontSize: 12,
                         }}
                       >
-                        {playerNameMap[id]?.[0]}
+                        {getPlayerName(matchData, id)[0]}
                       </span>
-                      <span style={{ fontWeight: 700, flex: 1 }}>{playerNameMap[id]}</span>
+                      <span style={{ fontWeight: 700, flex: 1 }}>{getPlayerName(matchData, id)}</span>
                       <strong style={{ fontFamily: 'var(--font-en)' }}>{points} VP</strong>
                     </div>
                   );

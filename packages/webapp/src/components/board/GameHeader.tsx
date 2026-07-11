@@ -4,7 +4,7 @@ import { Logo, PLAYER_COLORS } from '@/components/design';
 import { GameContext } from '@/components/GameContextHelpers';
 import { PlayersSelector } from '@/game/store/slice/players';
 import { ScoreBoardSelector } from '@/game/store/slice/scoreBoard';
-import { playerNameMap } from '@/components/playerNameMap';
+import { getPlayerName } from '@/components/playerNameMap';
 
 /** Sticky table header: logo + per-player status chips (design: GameHeader).
  *  `compact` (mobile): chips scroll horizontally instead of wrapping. */
@@ -15,7 +15,7 @@ export default function GameHeader({
   gameContext: GameContext;
   compact?: boolean;
 }) {
-  const { G, ctx, playerID } = gameContext;
+  const { G, ctx, playerID, matchData } = gameContext;
   return (
     <div
       style={{
@@ -48,7 +48,7 @@ export default function GameHeader({
           <PlayerHeaderChip
             key={id}
             id={id}
-            name={playerNameMap[id]}
+            name={getPlayerName(matchData, id)}
             workers={PlayersSelector.getNumWorkerTokens(G.players, id)}
             actions={PlayersSelector.getNumActionTokens(G.players, id)}
             score={ScoreBoardSelector.getPlayerPoints(G.table.scoreBoard, id)}
