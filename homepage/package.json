@@ -14,7 +14,8 @@
     "lint:fix": "yarn prettier --write . && next lint --fix",
     "test:visual": "playwright test e2e/visual.spec.mjs",
     "test:visual:update": "playwright test e2e/visual.spec.mjs --update-snapshots",
-    "test:admin": "playwright test e2e/admin.spec.mjs --project=desktop"
+    "test:admin": "playwright test e2e/admin.spec.mjs --project=desktop",
+    "test:preview": "playwright test --config=playwright.preview.config.mjs"
   },
   "repository": {
     "type": "git",
