@@ -6,16 +6,23 @@ import { PlayersSelector } from '@/game/store/slice/players';
 import { ScoreBoardSelector } from '@/game/store/slice/scoreBoard';
 import { playerNameMap } from '@/components/playerNameMap';
 
-/** Sticky table header: logo + per-player status chips (design: GameHeader). */
-export default function GameHeader({ gameContext }: { gameContext: GameContext }) {
+/** Sticky table header: logo + per-player status chips (design: GameHeader).
+ *  `compact` (mobile): chips scroll horizontally instead of wrapping. */
+export default function GameHeader({
+  gameContext,
+  compact = false,
+}: {
+  gameContext: GameContext;
+  compact?: boolean;
+}) {
   const { G, ctx, playerID } = gameContext;
   return (
     <div
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: 14,
-        padding: '10px 20px',
+        gap: compact ? 8 : 14,
+        padding: compact ? '8px 12px' : '10px 20px',
         background: 'white',
         borderBottom: '2px solid var(--ink)',
         position: 'sticky',
@@ -23,8 +30,20 @@ export default function GameHeader({ gameContext }: { gameContext: GameContext }
         zIndex: 10,
       }}
     >
-      <Logo size="sm" />
-      <div style={{ display: 'flex', gap: 8, marginLeft: 'auto', alignItems: 'center', flexWrap: 'wrap' }}>
+      {!compact && <Logo size="sm" />}
+      <div
+        style={{
+          display: 'flex',
+          gap: 8,
+          marginLeft: compact ? 0 : 'auto',
+          alignItems: 'center',
+          flexWrap: compact ? 'nowrap' : 'wrap',
+          overflowX: compact ? 'auto' : 'visible',
+          minWidth: 0,
+          flex: compact ? 1 : undefined,
+          paddingTop: 8,
+        }}
+      >
         {Object.keys(G.players).map((id) => (
           <PlayerHeaderChip
             key={id}
@@ -38,8 +57,8 @@ export default function GameHeader({ gameContext }: { gameContext: GameContext }
           />
         ))}
       </div>
-      <Link href="/lobby" className="btn-sticker sm ghost" style={{ marginLeft: 12 }}>
-        離開 <span className="tag-en">Leave</span>
+      <Link href="/lobby" className="btn-sticker sm ghost" style={{ marginLeft: compact ? 4 : 12, flexShrink: 0 }}>
+        離開 {!compact && <span className="tag-en">Leave</span>}
       </Link>
     </div>
   );
@@ -78,6 +97,7 @@ function PlayerHeaderChip({
         borderRadius: 999,
         boxShadow: active ? '0 3px 0 var(--orange)' : '0 2px 0 var(--ink)',
         position: 'relative',
+        flexShrink: 0,
       }}
     >
       <span

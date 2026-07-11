@@ -1,0 +1,55 @@
+/**
+ * Mobile smoke tests (390×844 viewport): the bottom-sheet board layout
+ * (design: MobileVariantA, RFC #399 PR 4) plus responsive lobby screens.
+ */
+import { test, expect } from '@playwright/test';
+
+test.use({ viewport: { width: 390, height: 844 } });
+
+test.describe('Mobile layout', () => {
+  test('homepage stacks and keeps the Play CTA reachable', async ({ page }) => {
+    await page.goto('/');
+    const cta = page.getByRole('link', { name: /play online/i });
+    await expect(cta).toBeVisible();
+    await expect(cta).toHaveAttribute('href', '/lobby');
+    // No horizontal overflow
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    );
+    expect(overflow).toBeLessThanOrEqual(0);
+  });
+
+  test('lobby stacks create form above open lobbies', async ({ page }) => {
+    await page.goto('/lobby');
+    await expect(page.getByRole('heading', { name: /create room/i })).toBeVisible();
+    await expect(page.getByLabel(/player name/i)).toBeVisible();
+  });
+
+  test('board uses the bottom sheet; tap-driven create works', async ({ page }) => {
+    await page.goto('/dev');
+    const sheet = page.locator('[data-testid="mobile-sheet"]');
+    await sheet.waitFor({ state: 'visible', timeout: 20000 });
+
+    // Contextual bar lives in the sheet; hand is collapsed by default.
+    await expect(sheet.locator('[data-testid="context-action"][data-mode="idle"]')).toBeVisible();
+    await expect(sheet.locator('[data-testid^="hand-card-"]')).toHaveCount(0);
+
+    // The handle expands the hand strip (and collapses it again).
+    await page.locator('[data-testid="mobile-sheet-handle"]').click();
+    await expect(sheet.locator('[data-testid^="hand-card-"]').first()).toBeVisible();
+    await page.locator('[data-testid="mobile-sheet-handle"]').click();
+    await expect(sheet.locator('[data-testid^="hand-card-"]')).toHaveCount(0);
+    await page.locator('[data-testid="mobile-sheet-handle"]').click();
+    await expect(sheet.locator('[data-testid^="hand-card-"]').first()).toBeVisible();
+
+    // Card-driven create still works on mobile: tap hand card → create mode.
+    await sheet.locator('[data-testid^="hand-card-"]').first().click();
+    await expect(page.locator('[data-testid="context-action"]')).toHaveAttribute(
+      'data-mode',
+      'createProject',
+    );
+    // Cancel returns to idle.
+    await page.locator('[data-testid="ca-cancel"]').click();
+    await expect(page.locator('[data-testid="context-action"]')).toHaveAttribute('data-mode', 'idle');
+  });
+});

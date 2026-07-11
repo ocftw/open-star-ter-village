@@ -273,12 +273,12 @@ export default function LobbyPage() {
   return (
     <main style={{ minHeight: '100vh' }}>
       <LobbyNav />
-      <div style={{ padding: '40px 64px', maxWidth: 1280, margin: '0 auto' }}>
+      <div className="page-pad">
         <h1 style={{ display: 'flex', flexDirection: 'column', gap: 2, fontSize: 22, fontWeight: 800, marginBottom: 28 }}>
           開始一場遊戲 <span className="en-cap">Start a session</span>
         </h1>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, alignItems: 'start' }}>
+        <div className="grid-2col">
           {/* Create room */}
           <PaperCard padding={28} data-testid="create-room-card">
             <CardHeading icon="＋" iconBackground="var(--orange)" zh="開新房間" en="Create room" />

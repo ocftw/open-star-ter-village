@@ -24,17 +24,7 @@ export default function Home() {
   return (
     <main style={{ minHeight: '100vh' }}>
       <LobbyNav />
-      <div
-        style={{
-          padding: '48px 64px',
-          display: 'grid',
-          gridTemplateColumns: '1.1fr 0.9fr',
-          gap: 48,
-          alignItems: 'center',
-          maxWidth: 1280,
-          margin: '0 auto',
-        }}
-      >
+      <div className="page-pad grid-hero">
         <div>
           <div
             style={{
