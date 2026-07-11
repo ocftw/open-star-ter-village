@@ -1,0 +1,33 @@
+name: PR Evidence
+
+on:
+  pull_request_target:
+    branches: [main]
+    types: [opened, edited, reopened, synchronize, ready_for_review, converted_to_draft]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Required evidence
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Allow incomplete draft evidence
+        if: ${{ github.event.pull_request.draft }}
+        run: echo "Draft PRs may collect evidence before becoming ready."
+
+      - name: Check out validator from the protected base revision
+        if: ${{ !github.event.pull_request.draft }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          sparse-checkout: .github/scripts/validate-pr-evidence.mjs
+          sparse-checkout-cone-mode: false
+
+      - name: Validate ready PR body
+        if: ${{ !github.event.pull_request.draft }}
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: node .github/scripts/validate-pr-evidence.mjs

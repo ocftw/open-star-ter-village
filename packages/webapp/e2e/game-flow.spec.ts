@@ -152,7 +152,8 @@ async function selectCompatibleJobAndProjectSlot(
 
 test.describe('Simplified Mode — Action Flow', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/dev');
+    // Fixed boardgame.io seed keeps card and job deals deterministic in CI.
+    await page.goto('/dev?seed=e2e-2');
     await waitForGameReady(page);
   });
 

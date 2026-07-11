@@ -1,34 +1,38 @@
-# Description
+<!-- pr-evidence-template:v1 -->
 
-Please add the description of the changes here.
+## Summary
 
-## BREAKING CHANGE
+<!-- Required: explain the outcome and why this change is needed in 1-3 sentences. -->
 
-- breaking change items. If you don't have any breaking change items, please remove this section.
+## Changes
 
-## Major
+<!-- Required: list the material implementation or behavior changes. -->
 
-- major change items. If you don't have any major change items, please remove this section.
+## Evidence
 
-## minor
+<!--
+Required when this PR is ready for review. Draft PRs may leave this incomplete.
+Map every material claim or changed surface to a realistic scenario and durable
+proof. Do not repeat routine CI results here.
 
-- minor change items. If you don't have any minor change items, please remove this section.
+Use screenshots/video for UI, request/response examples for APIs, and observed
+smoke-test results for workflows or components. Include before and after when
+an existing state is meaningfully comparable. The final evidence must be in the
+PR body; comments may only supplement it.
 
-# Impaction
+After material commits or evidence changes, update this body and re-request
+Copilot review. Resolve every human and Copilot review conversation before merge.
+-->
 
-## Screenshots
+- [ ] Evidence provided
+- [ ] Evidence not applicable
 
-Please attach screenshots of UI accordingly. If you don't have any UI changes, please remove this section.
+**N/A reason:** <!-- Required when "Evidence not applicable" is selected. -->
 
-| Scenarios  | Before | After |
-| ---------- | ------ | ----- |
-| Scenario 1 | img 1  | img 2 |
+| Changed surface or material claim | Scenario exercised | Evidence |
+| --- | --- | --- |
+<!-- Add one completed row per material claim. Related minor claims may share a row. -->
 
-## Performance
+## Risks and limitations
 
-### Build and deploy time
-
-| item       | Before | After  |
-| ---------- | ------ | ------ |
-| w/ Cached  | 00m00s | 00m00s |
-| w/o Cached | 00m00s | 00m00s |
+<!-- Optional: describe known limitations, follow-ups, rollout concerns, or write "None." -->

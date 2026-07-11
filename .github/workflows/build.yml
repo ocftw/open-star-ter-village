@@ -1,37 +1,159 @@
-# This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
-
-name: Webapp CI
+name: Repository CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
     paths:
       - 'packages/webapp/**'
+      - 'package.json'
+      - 'yarn.lock'
+      - '.yarnrc.yml'
+      - '.yarn/**'
   pull_request:
-    branches: [ main ]
-    paths:
-      - 'packages/webapp/**'
+    branches: [main]
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
-  build:
-
+  changes:
+    name: Detect affected projects
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [24.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+    outputs:
+      webapp: ${{ steps.filter.outputs.webapp }}
+      homepage: ${{ steps.filter.outputs.homepage }}
+      policy: ${{ steps.filter.outputs.policy }}
 
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js ${{ matrix.node-version }}
+        with:
+          fetch-depth: 0
+
+      - name: Detect changed paths
+        id: filter
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          if [[ "$BASE_SHA" =~ ^0+$ ]]; then
+            changed_files=$(git ls-tree -r --name-only "$HEAD_SHA")
+          else
+            changed_files=$(git diff --name-only "$BASE_SHA" "$HEAD_SHA")
+          fi
+
+          webapp=false
+          homepage=false
+          policy=false
+
+          while IFS= read -r file; do
+            case "$file" in
+              packages/webapp/*|package.json|yarn.lock|.yarnrc.yml|.yarn/*)
+                webapp=true
+                ;;
+              homepage/*)
+                homepage=true
+                ;;
+              .github/scripts/validate-pr-evidence.*|.github/workflows/pr-evidence.yml|.github/pull_request_template.md|.github/copilot-instructions.md|CONTRIBUTING.md|AGENTS.md|CLAUDE.md)
+                policy=true
+                ;;
+              .github/workflows/build.yml)
+                webapp=true
+                homepage=true
+                policy=true
+                ;;
+            esac
+          done <<< "$changed_files"
+
+          echo "webapp=$webapp" >> "$GITHUB_OUTPUT"
+          echo "homepage=$homepage" >> "$GITHUB_OUTPUT"
+          echo "policy=$policy" >> "$GITHUB_OUTPUT"
+
+  webapp:
+    name: Webapp baseline
+    needs: changes
+    if: ${{ needs.changes.outputs.webapp == 'true' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js 24
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'yarn'
-          cache-dependency-path: ./yarn.lock
-      - run: yarn install
-        working-directory: .
+          node-version: 24.x
+          cache: yarn
+          cache-dependency-path: yarn.lock
+      - run: corepack enable
+      - run: yarn install --immutable
+      - run: yarn webapp lint
+      - run: yarn webapp exec tsc --noEmit
+      - run: yarn webapp test --runInBand
       - run: yarn webapp build
-        working-directory: .
+      - name: Install Chromium
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: /tmp/pw-browsers
+        run: yarn webapp exec playwright install --with-deps chromium
+      - run: yarn webapp e2e
+
+  homepage:
+    name: Homepage baseline
+    needs: changes
+    if: ${{ needs.changes.outputs.homepage == 'true' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: homepage
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+          cache: yarn
+          cache-dependency-path: homepage/yarn.lock
+      - run: corepack enable
+      - run: yarn install --immutable
+      - run: yarn lint
+      - run: yarn build
+
+  policy:
+    name: Evidence validator tests
+    needs: changes
+    if: ${{ needs.changes.outputs.policy == 'true' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+      - run: node --test .github/scripts/validate-pr-evidence.test.mjs
+
+  required:
+    name: Required baseline
+    if: ${{ always() }}
+    needs: [changes, webapp, homepage, policy]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Require all applicable baseline jobs
+        env:
+          CHANGES_RESULT: ${{ needs.changes.result }}
+          WEBAPP_RESULT: ${{ needs.webapp.result }}
+          HOMEPAGE_RESULT: ${{ needs.homepage.result }}
+          POLICY_RESULT: ${{ needs.policy.result }}
+        run: |
+          if [[ "$CHANGES_RESULT" != "success" ]]; then
+            echo "Change detection did not succeed: $CHANGES_RESULT"
+            exit 1
+          fi
+
+          for result in "$WEBAPP_RESULT" "$HOMEPAGE_RESULT" "$POLICY_RESULT"; do
+            if [[ "$result" != "success" && "$result" != "skipped" ]]; then
+              echo "An applicable baseline job did not succeed: $result"
+              exit 1
+            fi
+          done
+
+          echo "All applicable baseline jobs passed."

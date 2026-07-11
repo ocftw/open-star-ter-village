@@ -17,7 +17,12 @@ function a11yProps(index: number) {
   };
 }
 
-const DevView: React.FC<{ demo?: string; initialMode?: 'offline' | 'online'; isDev?: boolean }> = ({ demo, initialMode = 'offline', isDev = false }) => {
+const DevView: React.FC<{
+  demo?: string;
+  seed?: string;
+  initialMode?: 'offline' | 'online';
+  isDev?: boolean;
+}> = ({ demo, seed, initialMode = 'offline', isDev = false }) => {
   const [value, setValue] = useState(0);
   const [mode, setMode] = useState<'offline' | 'online'>(initialMode);
   const [matchID, setMatchID] = useState(() => `dev-${Date.now()}`);
@@ -32,12 +37,11 @@ const DevView: React.FC<{ demo?: string; initialMode?: 'offline' | 'online'; isD
   // boardgame.io's Local transport caches the master by game object reference (gameKey),
   // so all clients for the same match must share the same game object.
   const gameConfig = React.useMemo((): Game<GameState> => {
-    if (demo !== 'four-freedoms') return game;
+    const seededGame = seed ? { ...game, seed } : game;
+    if (demo !== 'four-freedoms') return seededGame;
     const setupData: GameSetupData = { forcedFirstEvent: 'add_two_worker_slots' };
-    return { ...game, setup: (ctx: Parameters<typeof setup>[0]) => setup(ctx, setupData) };
-  // demo is derived from URL — stable for the lifetime of this DevView
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    return { ...seededGame, setup: (ctx: Parameters<typeof setup>[0]) => setup(ctx, setupData) };
+  }, [demo, seed]);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
