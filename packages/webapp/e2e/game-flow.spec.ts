@@ -331,14 +331,16 @@ test.describe('Simplified Mode — Action Flow', () => {
     await expectActions(page, 'Alice', INITIAL_ACTION_TOKENS - TALENT_SCOUTING_COST);
     await expectScore(page, 'Alice', TALENT_SCOUTING_VP);
 
-    // Step B: 加班 mirror — a board affordance; pick the occupied action to repeat.
+    // Step B: 加班 overtime is contextual (F-005) — re-tapping the occupied
+    // refill deck offers to repeat it.
     await waitForGameReady(page);
-    await page.locator('[data-testid="mirror-slot"]').click();
-    await expect(contextAction(page)).toHaveAttribute('data-mode', 'mirror');
-    await page.locator('[data-testid="mirror-pick-removeAndRefillJobs"]').click();
+    await page.locator('[data-testid="refill-jobs"]').click();
+    await expect(contextAction(page)).toHaveAttribute('data-mode', 'removeAndRefillJobs');
+    await page.locator('[data-testid="overtime-confirm"]').click();
+    await expect(contextAction(page)).toHaveAttribute('data-overtime', 'true');
 
-    // Mirror step 1: configure the repeated action (same UX as refill,
-    // including multi-select of the cards to remove).
+    // Then the normal refill selection flow continues, including multi-select
+    // of the cards to remove.
     await page.locator('[data-testid^="job-card-"]').nth(0).click();
     await page.locator('[data-testid^="job-card-"]').nth(1).click();
     await expect(page.locator('[data-testid^="job-card-"][data-selected]')).toHaveCount(2);

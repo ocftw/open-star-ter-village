@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { MirrorableActionName } from '@/components/board/actionConfig';
 
 export enum UserActionMoves {
   CreateProject = 'createProject',
@@ -7,14 +6,11 @@ export enum UserActionMoves {
   ContributeOwnedProjects = 'contributeOwnedProjects',
   ContributeJoinedProjects = 'contributeJoinedProjects',
   RemoveAndRefillJobs = 'removeAndRefillJobs',
-  Mirror = 'mirror',
   EndActionTurn = 'endActionTurn'
 }
 
 interface ActionStepState {
-  currentStep: number;
   currentAction: UserActionMoves | null;
-  mirrorTarget: MirrorableActionName | null;
   interactiveState: {
     handProjectCards: boolean;
     jobSlots: boolean;
@@ -33,9 +29,7 @@ const initialInteractiveState: ActionStepState['interactiveState'] = {
 };
 
 const initialState: ActionStepState = {
-  currentStep: 0,
   currentAction: null,
-  mirrorTarget: null,
   interactiveState: initialInteractiveState,
 };
 
@@ -43,20 +37,12 @@ const actionStepSlice = createSlice({
   name: 'actionSteps',
   initialState,
   reducers: {
-    setActionStep: (state, action: PayloadAction<number>) => {
-      state.currentStep = action.payload;
-    },
     setCurrentAction: (state, action: PayloadAction<UserActionMoves | null>) => {
       state.currentAction = action.payload;
     },
     resetAction: (state) => {
-      state.currentStep = 0;
       state.currentAction = null;
-      state.mirrorTarget = null;
       state.interactiveState = initialInteractiveState;
-    },
-    setMirrorTarget: (state, action: PayloadAction<MirrorableActionName | null>) => {
-      state.mirrorTarget = action.payload;
     },
     setHandProjectCardsInteractive: (state) => {
       state.interactiveState.handProjectCards = true;
@@ -78,9 +64,7 @@ const actionStepSlice = createSlice({
     }
   },
   selectors: {
-    getCurrentStep: (state: ActionStepState) => state.currentStep,
     getCurrentAction: (state: ActionStepState) => state.currentAction,
-    getMirrorTarget: (state: ActionStepState): MirrorableActionName | null => state.mirrorTarget,
     isHandProjectCardsInteractive: (state: ActionStepState) => state.interactiveState.handProjectCards,
     isJobSlotsInteractive: (state: ActionStepState) => state.interactiveState.jobSlots,
     isProjectSlotsInteractive: (state: ActionStepState) => state.interactiveState.projectSlots,
@@ -90,10 +74,8 @@ const actionStepSlice = createSlice({
 });
 
 export const {
-  setActionStep,
   setCurrentAction,
   resetAction,
-  setMirrorTarget,
   setHandProjectCardsInteractive,
   setJobSlotsInteractive,
   clearJobSlotsInteractive,
@@ -103,9 +85,7 @@ export const {
 } = actionStepSlice.actions;
 
 export const {
-  getCurrentStep,
   getCurrentAction,
-  getMirrorTarget,
   isHandProjectCardsInteractive,
   isJobSlotsInteractive,
   isProjectSlotsInteractive,
