@@ -55,6 +55,7 @@ jobs:
         with:
           ref: ${{ steps.target.outputs.sha }}
           fetch-depth: 0
+          lfs: true
 
       - name: Use Node.js 24
         uses: actions/setup-node@v4
