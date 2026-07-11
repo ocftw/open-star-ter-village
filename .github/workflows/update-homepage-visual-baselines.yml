@@ -1,0 +1,123 @@
+name: Update homepage visual baselines
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: Same-repository branch to update
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  PLAYWRIGHT_BROWSERS_PATH: /tmp/pw-browsers
+
+jobs:
+  update:
+    name: Update visual baselines
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Resolve and validate branch
+        id: target
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TARGET_BRANCH: ${{ inputs.branch }}
+        run: |
+          if [[ -z "$TARGET_BRANCH" || "$TARGET_BRANCH" == refs/* ]]; then
+            echo "Enter a branch name without a refs/ prefix."
+            exit 1
+          fi
+
+          encoded_branch=$(jq -rn --arg value "$TARGET_BRANCH" '$value | @uri')
+          branch_json=$(gh api "repos/$GITHUB_REPOSITORY/branches/$encoded_branch")
+          default_branch=$(gh api "repos/$GITHUB_REPOSITORY" --jq '.default_branch')
+
+          if [[ "$TARGET_BRANCH" == "$default_branch" ]]; then
+            echo "Refusing to update the default branch: $TARGET_BRANCH"
+            exit 1
+          fi
+
+          if [[ "$(jq -r '.protected' <<< "$branch_json")" == "true" ]]; then
+            echo "Refusing to update protected branch: $TARGET_BRANCH"
+            exit 1
+          fi
+
+          target_sha=$(jq -r '.commit.sha' <<< "$branch_json")
+          echo "branch=$TARGET_BRANCH" >> "$GITHUB_OUTPUT"
+          echo "sha=$target_sha" >> "$GITHUB_OUTPUT"
+
+      - name: Check out target branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.target.outputs.sha }}
+          fetch-depth: 0
+          lfs: true
+
+      - name: Use Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+          cache: yarn
+          cache-dependency-path: homepage/yarn.lock
+
+      - run: corepack enable
+
+      - name: Install homepage dependencies
+        working-directory: homepage
+        run: yarn install --immutable
+
+      - name: Install pinned Chromium
+        working-directory: homepage
+        run: yarn exec playwright install --with-deps chromium
+
+      - name: Build homepage
+        working-directory: homepage
+        run: yarn build
+
+      - name: Regenerate all visual baselines
+        working-directory: homepage
+        run: yarn test:visual:update
+
+      - name: Validate generated files
+        id: changes
+        run: |
+          snapshot_dir=homepage/e2e/__screenshots__
+          snapshot_count=$(find "$snapshot_dir" -type f -name '*.png' | wc -l | tr -d ' ')
+
+          if [[ "$snapshot_count" != "16" ]]; then
+            echo "Expected exactly 16 baseline PNGs, found $snapshot_count."
+            exit 1
+          fi
+
+          unexpected=$(git status --short | awk '{print $2}' | grep -Ev '^homepage/e2e/__screenshots__/.*\.png$' || true)
+          if [[ -n "$unexpected" ]]; then
+            echo "Snapshot generation changed unexpected files:"
+            echo "$unexpected"
+            exit 1
+          fi
+
+          if [[ -z "$(git status --short -- "$snapshot_dir")" ]]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit visual baselines
+        if: steps.changes.outputs.changed == 'true'
+        env:
+          TARGET_BRANCH: ${{ steps.target.outputs.branch }}
+          TARGET_SHA: ${{ steps.target.outputs.sha }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add homepage/e2e/__screenshots__
+          git commit -m "test(homepage): update visual baselines"
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH" --force-with-lease="refs/heads/$TARGET_BRANCH:$TARGET_SHA"
+
+      - name: Report unchanged baselines
+        if: steps.changes.outputs.changed == 'false'
+        run: echo "All 16 visual baselines are already current."
