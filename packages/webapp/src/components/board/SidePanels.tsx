@@ -1,11 +1,11 @@
 import { GameContext } from '@/components/GameContextHelpers';
 import { PLAYER_COLORS } from '@/components/design';
 import { ScoreBoardSelector } from '@/game/store/slice/scoreBoard';
-import { playerNameMap } from '@/components/playerNameMap';
+import { getPlayerName } from '@/components/playerNameMap';
 
 /** Right-rail victory point board (design: ScoreBoard). */
 export function ScorePanel({ gameContext }: { gameContext: GameContext }) {
-  const { G } = gameContext;
+  const { G, matchData } = gameContext;
   const points = ScoreBoardSelector.getAllPlayerPoints(G.table.scoreBoard);
   const entries = Object.entries(points).sort(([, a], [, b]) => b - a);
   const max = Math.max(...entries.map(([, p]) => p), 6);
@@ -37,9 +37,9 @@ export function ScorePanel({ gameContext }: { gameContext: GameContext }) {
                 flexShrink: 0,
               }}
             >
-              {playerNameMap[id]?.[0]}
+              {getPlayerName(matchData, id)[0]}
             </span>
-            <span style={{ fontSize: 13, fontWeight: 700, flex: 1 }}>{playerNameMap[id]}</span>
+            <span style={{ fontSize: 13, fontWeight: 700, flex: 1 }}>{getPlayerName(matchData, id)}</span>
             <div
               style={{
                 flex: 2,
@@ -72,7 +72,7 @@ export function ScorePanel({ gameContext }: { gameContext: GameContext }) {
 
 /** Right-rail turn order strip (design: RoundProgress). */
 export function TurnOrderPanel({ gameContext }: { gameContext: GameContext }) {
-  const { G, ctx } = gameContext;
+  const { G, ctx, matchData } = gameContext;
   const ids = Object.keys(G.players);
   return (
     <div className="paper-card" style={{ padding: 16 }}>
@@ -86,7 +86,7 @@ export function TurnOrderPanel({ gameContext }: { gameContext: GameContext }) {
           return (
             <span key={id} style={{ display: 'contents' }}>
               <span
-                title={playerNameMap[id]}
+                title={getPlayerName(matchData, id)}
                 style={{
                   width: 28,
                   height: 28,
@@ -104,7 +104,7 @@ export function TurnOrderPanel({ gameContext }: { gameContext: GameContext }) {
                   flexShrink: 0,
                 }}
               >
-                {playerNameMap[id]?.[0]}
+                {getPlayerName(matchData, id)[0]}
               </span>
               {i < ids.length - 1 && (
                 <span style={{ flex: 1, height: 2, background: 'var(--paper-3)', borderRadius: 1 }} />
@@ -114,7 +114,7 @@ export function TurnOrderPanel({ gameContext }: { gameContext: GameContext }) {
         })}
       </div>
       <div style={{ marginTop: 12, fontSize: 12, color: 'var(--ink-soft)' }}>
-        現在輪到 <strong>{playerNameMap[ctx.currentPlayer]}</strong>
+        現在輪到 <strong>{getPlayerName(matchData, ctx.currentPlayer)}</strong>
       </div>
     </div>
   );

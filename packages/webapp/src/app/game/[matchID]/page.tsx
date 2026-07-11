@@ -3,17 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import {
-  Alert,
-  Box,
-  Button,
-  Card,
-  CardContent,
-  Container,
-  Snackbar,
-  Stack,
-  Typography,
-} from '@mui/material';
+import { Alert, Snackbar } from '@mui/material';
 import Boardgame from '@/components/BoardGame';
 import { StickerButton } from '@/components/design';
 import LobbyNav from '@/components/lobby/LobbyNav';
@@ -188,7 +178,7 @@ export default function GameRoomPage() {
     return (
       <main>
         <LobbyNav />
-        <div style={{ padding: '40px 64px', color: 'var(--ink-mute)', fontSize: 14 }}>
+        <div className="page-pad" style={{ color: 'var(--ink-mute)', fontSize: 14 }}>
           載入房間中… <span className="en-cap">Loading room…</span>
         </div>
       </main>
@@ -199,7 +189,7 @@ export default function GameRoomPage() {
     return (
       <main>
         <LobbyNav />
-        <div style={{ padding: '40px 64px', display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 640 }}>
+        <div className="page-pad" style={{ display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 640 }}>
           <Note tone="error">{errorMessage}</Note>
           <Link href="/lobby" className="btn-sticker" style={{ alignSelf: 'flex-start' }}>
             回大廳 <span style={{ opacity: 0.8, fontFamily: 'var(--font-en)', fontWeight: 500 }}>· Back to lobby</span>
@@ -211,43 +201,35 @@ export default function GameRoomPage() {
 
   if (match && shouldShowBoard) {
     return (
-      <Container maxWidth="xl" sx={{ py: 4 }}>
-        <Stack spacing={3}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 2, flexWrap: 'wrap' }}>
-            <Box>
-              <Typography variant="h4" component="h1" gutterBottom>
-                Room {matchID}
-              </Typography>
-              <Typography color="text.secondary">
-                {credentials
-                  ? `Connected as seat ${credentials.playerID}.`
-                  : 'Observer mode: this browser has no saved credentials for the room.'}
-              </Typography>
-            </Box>
-            <Button component={Link} href="/lobby" variant="outlined">
-              Back to Lobby
-            </Button>
-          </Box>
-
-          {!credentials && (
-            <Alert severity="info">
-              You are viewing the room without a claimed seat. The board is running in observer mode.
-            </Alert>
-          )}
-
-          <Card variant="outlined">
-            <CardContent>
-              <Boardgame
-                isLocal={false}
-                matchID={matchID}
-                playerID={credentials?.playerID}
-                credentials={credentials?.credential}
-                numPlayers={match.players.length}
-              />
-            </CardContent>
-          </Card>
-        </Stack>
-      </Container>
+      <main>
+        {!credentials && (
+          <div
+            data-testid="observer-mode-banner"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '8px 20px',
+              background: 'var(--ink)',
+              color: 'white',
+              fontSize: 13,
+            }}
+          >
+            <span aria-hidden>👀</span>
+            觀戰模式：這個瀏覽器沒有座位。
+            <span className="en-cap" style={{ color: 'rgba(255,255,255,0.7)' }}>
+              Observer mode — no seat claimed in this browser
+            </span>
+          </div>
+        )}
+        <Boardgame
+          isLocal={false}
+          matchID={matchID}
+          playerID={credentials?.playerID}
+          credentials={credentials?.credential}
+          numPlayers={match.players.length}
+        />
+      </main>
     );
   }
 
@@ -255,7 +237,7 @@ export default function GameRoomPage() {
     return (
       <main>
         <LobbyNav />
-        <div style={{ padding: '40px 64px', display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 640 }}>
+        <div className="page-pad" style={{ display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 640 }}>
           <Note tone="info">這個房間已經解散了。 This room was abandoned.</Note>
           <Link href="/lobby" className="btn-sticker" style={{ alignSelf: 'flex-start' }}>
             回大廳 <span style={{ opacity: 0.8, fontFamily: 'var(--font-en)', fontWeight: 500 }}>· Back to lobby</span>
@@ -333,10 +315,7 @@ export default function GameRoomPage() {
               )}
             </div>
 
-            <div
-              style={{ marginTop: 24, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}
-              data-testid="seat-grid"
-            >
+            <div className="grid-seats" style={{ marginTop: 24 }} data-testid="seat-grid">
               {match?.players.map((player) => (
                 <SeatCard
                   key={player.id}

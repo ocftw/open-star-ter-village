@@ -4,12 +4,8 @@ import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import {
   UserActionMoves,
   getCurrentAction,
-  getCurrentStep,
-  getMirrorTarget,
   resetAction,
-  setActionStep,
   setCurrentAction,
-  setMirrorTarget,
   setHandProjectCardsInteractive,
   setJobSlotsInteractive,
   setProjectSlotsInteractive,
@@ -35,22 +31,6 @@ import {
 
 type ExtendedMoves = ActionMoves & { endActionTurn: () => void };
 
-const MIRRORABLE_NAMES: MirrorableActionName[] = [
-  'createProject',
-  'recruit',
-  'contributeOwnedProjects',
-  'contributeJoinedProjects',
-  'removeAndRefillJobs',
-];
-
-const MIRROR_LABELS: Record<MirrorableActionName, string> = {
-  createProject: '發起專案',
-  recruit: '招募人力',
-  contributeOwnedProjects: '貢獻自有專案',
-  contributeJoinedProjects: '貢獻參與專案',
-  removeAndRefillJobs: '換人力市場',
-};
-
 type ModeCopy = {
   icon: string;
   title: string;
@@ -70,8 +50,6 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
   const dispatch = useAppDispatch();
 
   const currentAction = useAppSelector(getCurrentAction);
-  const currentStep = useAppSelector(getCurrentStep);
-  const mirrorTarget = useAppSelector(getMirrorTarget);
   const handSelection = useAppSelector(getSelectedHandProjectCards);
   const jobSelection = useAppSelector(getSelectedJobSlots);
   const projectSelection = useAppSelector(getSelectedProjectSlots);
@@ -93,8 +71,15 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
     dispatch(resetContribution());
   }, [dispatch]);
 
-  // Entering an action (or a mirror target) enables the matching board elements;
-  // leaving it clears all selections. Ported unchanged from the old ActionStepper.
+  // Repeating an occupied action via 加班 Overtime (F-005). Confirming keeps the
+  // same currentAction and selections; only the executed move changes to mirror().
+  const [overtime, setOvertime] = React.useState(false);
+  useEffect(() => {
+    setOvertime(false);
+  }, [currentAction]);
+
+  // Entering an action enables the matching board elements; leaving it clears
+  // all selections. Ported unchanged from the old ActionStepper.
   useEffect(() => {
     const activators: ActionBoardActivators = {
       setHandProjectCardsInteractive: () => dispatch(setHandProjectCardsInteractive()),
@@ -107,17 +92,13 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
       resetSelections();
       return;
     }
-    if (currentAction === UserActionMoves.Mirror) {
-      if (currentStep === 1 && mirrorTarget) {
-        ACTION_CONFIGS[mirrorTarget].activateBoard(activators);
-      }
-    } else if (currentAction !== UserActionMoves.EndActionTurn) {
+    if (currentAction !== UserActionMoves.EndActionTurn) {
       ACTION_CONFIGS[currentAction as MirrorableActionName].activateBoard(activators);
     }
     return () => {
       resetSelections();
     };
-  }, [currentAction, currentStep, mirrorTarget, dispatch, resetSelections]);
+  }, [currentAction, dispatch, resetSelections]);
 
   if (playerID === null) return null;
 
@@ -127,38 +108,51 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
 
   const isSlotOccupied = (name: MirrorableActionName) =>
     ActionSlotSelector.isOccupied(G.table.actionSlots[name]);
-  const isSlotAvailable = (name: MirrorableActionName) =>
-    RuleSelector.isActionSlotAvailable(G.rules, name);
-  const occupiedMirrorableActions = MIRRORABLE_NAMES.filter(isSlotOccupied);
 
-  const effectiveAction =
-    currentAction === UserActionMoves.Mirror ? mirrorTarget : (currentAction as MirrorableActionName | null);
-  // The tapped action's worker-placement slot is already taken (and this isn't a
-  // mirror, whose whole point is repeating an occupied slot).
-  const blockedByOccupancy =
-    currentAction !== null &&
-    currentAction !== UserActionMoves.Mirror &&
-    currentAction !== UserActionMoves.EndActionTurn &&
-    (isSlotOccupied(currentAction as MirrorableActionName) ||
-      !isSlotAvailable(currentAction as MirrorableActionName));
+  const actionName =
+    currentAction && currentAction !== UserActionMoves.EndActionTurn
+      ? (currentAction as MirrorableActionName)
+      : null;
+
+  // The tapped action is disabled by the current rule set (rare).
+  const ruleUnavailable = actionName !== null && !RuleSelector.isActionSlotAvailable(G.rules, actionName);
+  // The tapped action's worker-placement slot is already taken this round —
+  // the contextual entry point for 加班 Overtime (F-005).
+  const occupied = actionName !== null && !ruleUnavailable && isSlotOccupied(actionName);
+
+  // Overtime eligibility mirrors the game's mirror() move validation.
+  const mirrorCost = RuleSelector.getActionTokenCost(G.rules, 'mirror');
+  const overtimeBlockReason: string | null = !occupied
+    ? null
+    : !RuleSelector.isActionSlotAvailable(G.rules, 'mirror') ||
+        ActionSlotSelector.isOccupied(G.table.actionSlots.mirror)
+      ? '加班本輪已被使用，無法再重複行動。 Overtime is already used this round.'
+      : RuleSelector.getActionTokenCost(G.rules, actionName!) > mirrorCost
+        ? '這個行動需要 2 AP，加班只能重複 1 AP 的行動。 Overtime can only repeat 1-AP actions.'
+        : actionTokens < mirrorCost
+          ? '行動點不足，無法加班。 Not enough AP for overtime.'
+          : null;
+  const canOfferOvertime = occupied && overtimeBlockReason === null;
+
+  // The board is full — creating is blocked even though the slot is free (F-003).
+  const createBlockedByCapacity =
+    currentAction === UserActionMoves.CreateProject &&
+    G.table.projectBoard.every((slot) => slot.card);
 
   const isValid = (): boolean => {
-    if (!currentAction) return false;
+    if (!currentAction || ruleUnavailable) return false;
     if (currentAction === UserActionMoves.EndActionTurn) return true;
-    if (blockedByOccupancy) return false;
-    if (currentAction === UserActionMoves.Mirror) {
-      if (currentStep === 0) return false;
-      return mirrorTarget ? ACTION_CONFIGS[mirrorTarget].isStepValid(selectionState) : false;
-    }
-    return ACTION_CONFIGS[currentAction as MirrorableActionName].isStepValid(selectionState);
+    if (createBlockedByCapacity) return false;
+    if (occupied && !overtime) return false;
+    return ACTION_CONFIGS[actionName!].isStepValid(selectionState);
   };
 
   const handleConfirm = () => {
     if (currentAction === UserActionMoves.EndActionTurn) {
       typedMoves.endActionTurn();
-    } else if (currentAction === UserActionMoves.Mirror && mirrorTarget) {
-      typedMoves.mirror(mirrorTarget, ...ACTION_CONFIGS[mirrorTarget].getParams(selectionState));
-    } else if (currentAction) {
+    } else if (actionName && overtime) {
+      typedMoves.mirror(actionName, ...ACTION_CONFIGS[actionName].getParams(selectionState));
+    } else if (actionName) {
       const executors: ActionExecutors = {
         createProject: typedMoves.createProject,
         recruit: typedMoves.recruit,
@@ -166,18 +160,12 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
         contributeJoinedProjects: typedMoves.contributeJoinedProjects,
         removeAndRefillJobs: typedMoves.removeAndRefillJobs,
       };
-      ACTION_CONFIGS[currentAction as MirrorableActionName].execute(executors, selectionState);
+      ACTION_CONFIGS[actionName].execute(executors, selectionState);
     }
     dispatch(resetAction());
   };
 
   const handleCancel = () => dispatch(resetAction());
-
-  const pickMirrorTarget = (name: MirrorableActionName) => {
-    resetSelections();
-    dispatch(setMirrorTarget(name));
-    dispatch(setActionStep(1));
-  };
 
   const selectionProgress = (name: MirrorableActionName): string => {
     const s = selectionState;
@@ -194,7 +182,7 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
     }
   };
 
-  const copy = ((): ModeCopy => {
+  let copy = ((): ModeCopy => {
     switch (currentAction) {
       case null:
         return {
@@ -250,24 +238,6 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
           tone: 'var(--job-civil)',
           cta: '確認更換',
         };
-      case UserActionMoves.Mirror:
-        return currentStep === 0
-          ? {
-              icon: '⏰',
-              title: '加班：要重複哪個行動？',
-              en: 'Mirror an action',
-              hint: '選一個本輪已被使用過的行動。',
-              tone: 'var(--job-legal)',
-              cta: null,
-            }
-          : {
-              icon: '⏰',
-              title: `加班：${mirrorTarget ? MIRROR_LABELS[mirrorTarget] : ''}`,
-              en: 'Mirror',
-              hint: mirrorTarget ? selectionProgress(mirrorTarget) : '',
-              tone: 'var(--job-legal)',
-              cta: '確認加班',
-            };
       case UserActionMoves.EndActionTurn:
         return {
           icon: '🏁',
@@ -282,10 +252,52 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
     }
   })();
 
+  // Contextual overrides: rule-blocked, occupied (→ overtime prompt), overtime
+  // in progress, or project board full (F-003/F-005).
+  const showOvertimePrompt = occupied && !overtime && canOfferOvertime;
+  if (ruleUnavailable) {
+    copy = { ...copy, icon: '🚫', hint: '這個行動在本局的規則下不可用。 This action is unavailable under the current rules.', cta: null };
+  } else if (occupied && !overtime) {
+    copy = canOfferOvertime
+      ? {
+          ...copy,
+          icon: '⏰',
+          title: '此行動已被使用 — 要加班重複嗎？',
+          en: 'Use overtime?',
+          tone: 'var(--job-legal)',
+          hint: `這個行動的格子本輪已被佔用。確認後花 ${mirrorCost} AP 加班，就能照原本的流程再做一次。`,
+          cta: null,
+        }
+      : {
+          ...copy,
+          icon: '🚫',
+          title: '此行動已被使用',
+          en: 'Slot occupied',
+          tone: 'var(--ink-soft)',
+          hint: overtimeBlockReason ?? '',
+          cta: null,
+        };
+  } else if (overtime) {
+    copy = {
+      ...copy,
+      icon: '⏰',
+      title: `加班：${copy.title}`,
+      en: `Overtime · ${copy.en}`,
+      tone: 'var(--job-legal)',
+      cta: '確認加班',
+    };
+  } else if (createBlockedByCapacity) {
+    copy = {
+      ...copy,
+      hint: '專案區已滿，等專案完成釋出空位後再發起。 The project board is full — no slot for a new project.',
+    };
+  }
+
   return (
     <div
       data-testid="context-action"
       data-mode={currentAction ?? 'idle'}
+      data-overtime={overtime || undefined}
       style={{
         display: 'flex',
         alignItems: 'center',
@@ -322,40 +334,26 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
           <strong style={{ fontSize: 15 }}>{copy.title}</strong>
           <span className="en-cap">{copy.en}</span>
-          {blockedByOccupancy && (
+          {overtime && (
+            <span
+              className="sticker"
+              style={{ background: 'var(--job-legal-soft)', borderColor: 'var(--job-legal)', color: 'var(--job-legal)' }}
+            >
+              ⏰ 加班中 OVERTIME
+            </span>
+          )}
+          {createBlockedByCapacity && (
             <span
               className="sticker"
               style={{ background: 'var(--orange-soft)', borderColor: 'var(--orange-deep)', color: 'var(--orange-deep)' }}
             >
-              已佔用 · 用「加班」重複此行動
+              專案區已滿
             </span>
           )}
         </div>
         <div style={{ fontSize: 12, color: 'var(--ink-soft)', marginTop: 3, lineHeight: 1.4 }}>
           {copy.hint}
         </div>
-        {currentAction === UserActionMoves.Mirror && currentStep === 0 && (
-          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 8 }}>
-            {occupiedMirrorableActions.length === 0 ? (
-              <span style={{ fontSize: 12, color: 'var(--ink-mute)' }}>
-                本輪還沒有可重複的行動。 No occupied action to repeat yet.
-              </span>
-            ) : (
-              occupiedMirrorableActions.map((name) => (
-                <button
-                  key={name}
-                  type="button"
-                  data-testid={`mirror-pick-${name}`}
-                  className="sticker"
-                  style={{ cursor: 'pointer' }}
-                  onClick={() => pickMirrorTarget(name)}
-                >
-                  {MIRROR_LABELS[name]}
-                </button>
-              ))
-            )}
-          </div>
-        )}
       </div>
 
       {/* AP dots */}
@@ -393,6 +391,17 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
           <button type="button" data-testid="ca-cancel" onClick={handleCancel} className="btn-sticker sm ghost">
             取消
           </button>
+          {showOvertimePrompt && (
+            <button
+              type="button"
+              data-testid="overtime-confirm"
+              onClick={() => setOvertime(true)}
+              className="btn-sticker sm"
+              style={{ background: 'var(--job-legal)' }}
+            >
+              加班重複 · Overtime
+            </button>
+          )}
           {copy.cta && (
             <button
               type="button"

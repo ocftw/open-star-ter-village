@@ -3,20 +3,17 @@ import { CharacterAvatar, getJobMetaByName, getProjectTypeMetaByName } from '@/c
 
 type ProjectCardFaceProps = {
   card: ProjectCard;
-  /** contributed amount per job name (omit for hand cards — shows 0/need) */
-  contributed?: Record<string, number>;
   selected?: boolean;
   onClick?: () => void;
   'data-testid'?: string;
 };
 
 /**
- * Portrait project card (design: ProjectCardA) — used for the hand and
- * anywhere a full card face is needed.
+ * Portrait project card (design: ProjectCardA) — the requirement-only face
+ * used for hand cards. Active projects (BoardProjectSlot) show progress.
  */
 export default function ProjectCardFace({
   card,
-  contributed,
   selected = false,
   onClick,
   ...rest
@@ -87,7 +84,6 @@ export default function ProjectCardFace({
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 12 }}>
           {Object.entries(card.requirements).map(([jobName, need]) => {
             const jobMeta = getJobMetaByName(jobName);
-            const done = contributed?.[jobName] ?? 0;
             return (
               <div
                 key={jobName}
@@ -104,7 +100,7 @@ export default function ProjectCardFace({
                 {jobMeta && <CharacterAvatar role={jobMeta.role} size="sm" />}
                 <span style={{ fontSize: 12, fontWeight: 600, flex: 1 }}>{jobName}</span>
                 <span style={{ fontFamily: 'var(--font-en)', fontWeight: 800, fontSize: 12 }}>
-                  {done}/{need}
+                  ×{need}
                 </span>
               </div>
             );

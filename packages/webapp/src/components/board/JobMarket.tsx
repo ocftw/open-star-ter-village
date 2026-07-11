@@ -75,16 +75,21 @@ export default function JobMarket({
             >
               🔄 換人力 <span className="tag-en">Refill</span>
             </button>
-            <button
-              type="button"
-              data-testid="mirror-slot"
-              className="btn-sticker sm ghost"
-              onClick={() => dispatch(setCurrentAction(UserActionMoves.Mirror))}
-              style={mirrorOccupied ? { opacity: 0.45 } : undefined}
-              title={mirrorOccupied ? '加班本輪已被使用' : '重複一個已被使用的行動'}
+            {/* Overtime is entered contextually by re-tapping an occupied action
+                (F-005); this is just a status legend. */}
+            <span
+              className="sticker"
+              data-testid="overtime-status"
+              data-used={mirrorOccupied || undefined}
+              style={mirrorOccupied ? { opacity: 0.55 } : undefined}
+              title={
+                mirrorOccupied
+                  ? '加班本輪已被使用'
+                  : '再點一個已被使用的行動即可加班重複'
+              }
             >
-              ⏰ 加班 <span className="tag-en">Mirror</span>
-            </button>
+              ⏰ 加班 {mirrorOccupied ? '已用' : '可用'}
+            </span>
           </div>
         )}
       </div>
