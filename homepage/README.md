@@ -1,29 +1,6 @@
 # 開源星手村 首頁
 
-## 專案版本紀錄
-
-|                                       版本 | 更新摘要                                                             |
-| -----------------------------------------: | :------------------------------------------------------------------- |
-| [`v3.2.0`](./releases/tag/homepage-v3.2.0) | 升級 Netlify CMS 為 Decap CMS 以修復陳舊相依套件所引起的問題。       |
-| [`v3.1.0`](./releases/tag/homepage-v3.1.0) | 新增多語言支援與 Netlify CMS 功能。                                  |
-| [`v3.0.0`](./releases/tag/homepage-v3.0.0) | 轉換為 Next.js 架構。                                                |
-| [`v2.1.0`](./releases/tag/homepage-v2.1.0) | 將 `homepage` 分支合併到 `main` 作為子專案，同時改用 Yarn 管理套件。 |
-|                                   `v2.0.0` | 移除 Gatsby 及 Contentful CMS。                                      |
-|                                   `v1.0.0` | 初始新增網站首頁。                                                   |
-
-<details>
-<summary>
-詳細版本更新
-</summary>
-
-- `v3.2.0` 升級 Netlify CMS 為 Decap CMS，修復陳舊相依套件所引起的問題。
-- `v3.1.0` 新增多語言支援與 Netlify CMS 功能。
-- `v3.0.0` 隨著專案擴展，計劃支援多語言，考慮引入 CMS 以降低團隊維護成本，因此轉換至 Next.js 結構。
-- `v2.1.0` 將 `homepage` 分支合併至 `main`，視為子專案，同時改用 Yarn 管理套件，以維持桌遊網頁版專案一致性，並刪除 `homepage` 分支。
-- `v2.0.0` 移除 Gatsby，改為純粹的 React JS 靜態網站生成，降低專案入門門檻，同時移除 Contentful CMS 部分，減少團隊金錢支出。
-- `v1.0.0` 以 [RG-Portfolio Gatsby starter](https://github.com/Rohitguptab/rg-portfolio.git) 為基礎新增網站首頁。
-
-</details>
+版本紀錄請參閱 [`CHANGELOG.md`](./CHANGELOG.md)。
 
 目前，模板設計基於 [首頁 wireframe](https://drive.google.com/file/d/1mHfiHLZPNvAGKtlY788Ojkmap9SXupH-/view?usp=sharing)，並使用 [Bootstrap v4.6.x](https://getbootstrap.com/docs/4.6/getting-started/introduction/) 和 [Font Awesome v5.15.4](https://fontawesome.com/v5/docs) 進行 CSS 設計。
 
