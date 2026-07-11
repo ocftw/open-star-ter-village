@@ -337,8 +337,11 @@ test.describe('Simplified Mode — Action Flow', () => {
     await expect(contextAction(page)).toHaveAttribute('data-mode', 'mirror');
     await page.locator('[data-testid="mirror-pick-removeAndRefillJobs"]').click();
 
-    // Mirror step 1: configure the repeated action (same UX as refill).
-    await page.locator('[data-testid^="job-card-"]').first().click();
+    // Mirror step 1: configure the repeated action (same UX as refill,
+    // including multi-select of the cards to remove).
+    await page.locator('[data-testid^="job-card-"]').nth(0).click();
+    await page.locator('[data-testid^="job-card-"]').nth(1).click();
+    await expect(page.locator('[data-testid^="job-card-"][data-selected]')).toHaveCount(2);
     await expect(confirmButton(page)).toBeEnabled();
     await confirmButton(page).click();
 

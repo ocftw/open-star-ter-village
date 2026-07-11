@@ -14,6 +14,7 @@ export default function JobTile({ id, name, selected = false, onClick }: JobTile
     <div
       data-testid={`job-card-${id}`}
       data-job-name={name}
+      data-selected={selected || undefined}
       onClick={onClick}
       style={{
         background: 'white',

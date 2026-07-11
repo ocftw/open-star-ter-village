@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import {
   UserActionMoves,
   getCurrentAction,
+  getMirrorTarget,
   isJobSlotsInteractive,
   setCurrentAction,
 } from '@/lib/reducers/actionStepSlice';
@@ -32,8 +33,12 @@ export default function JobMarket({
   const jobsInteractive = useAppSelector(isJobSlotsInteractive);
   const selectedSlots = useAppSelector(getSelectedJobSlots);
   const currentAction = useAppSelector(getCurrentAction);
+  const mirrorTarget = useAppSelector(getMirrorTarget);
 
-  const multiSelect = currentAction === UserActionMoves.RemoveAndRefillJobs || discardActive;
+  const multiSelect =
+    currentAction === UserActionMoves.RemoveAndRefillJobs ||
+    (currentAction === UserActionMoves.Mirror && mirrorTarget === 'removeAndRefillJobs') ||
+    discardActive;
   const mirrorOccupied = ActionSlotSelector.isOccupied(G.table.actionSlots.mirror);
 
   const handleTap = (id: string) => {
