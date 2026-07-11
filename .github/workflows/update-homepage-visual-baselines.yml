@@ -73,6 +73,10 @@ jobs:
         working-directory: homepage
         run: yarn exec playwright install --with-deps chromium
 
+      - name: Build homepage
+        working-directory: homepage
+        run: yarn build
+
       - name: Regenerate all visual baselines
         working-directory: homepage
         run: yarn test:visual:update
