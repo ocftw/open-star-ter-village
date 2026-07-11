@@ -6,6 +6,8 @@ Shared project context belongs in the public docs:
 - Root project overview and package layout: `README.md`
 - Web app architecture, commands, and coding constraints: `packages/webapp/README.md`
 - Homepage commands and content workflow: `homepage/README.md`
+- Pull request process and evidence requirements: `CONTRIBUTING.md` and
+  `.github/pull_request_template.md`
 
 Read those files first when you need project structure, business context, runtime
 configuration, or implementation constraints.
@@ -36,7 +38,7 @@ RFC (Planner)
               3. yarn webapp test (or homepage lint)
             → Auto-fix all critical issues
               (escalate to human only for: architecture conflicts, strategy gaps, unclear scope)
-              → Commit → Push → Raise MR
+              → Commit → Push → Open draft MR with evidence
 ```
 
 ### Scope hierarchy
@@ -48,6 +50,15 @@ RFC (Planner)
 | **Task** | Supervisor → Executor | Single coding unit — implement + test, one agent handles end-to-end |
 
 See `rfc/002-agent-workflow-role-separation.md` for background.
+
+## Pull Requests
+
+Before creating or updating a pull request, read `CONTRIBUTING.md` and
+`.github/pull_request_template.md`. Open it as a draft until every material
+claim has durable evidence in the PR body and required CI passes. Never mark a
+PR ready based on unexecuted or inferred verification. After material commits or
+evidence changes, update the PR body and re-request Copilot review. Resolve every
+human and Copilot review conversation before merge.
 
 ## Agent Skills
 

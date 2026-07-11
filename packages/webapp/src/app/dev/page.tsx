@@ -15,10 +15,11 @@ function getSearchParamValue(value: SearchParamValue): string | undefined {
 export default function DevPage({
   searchParams,
 }: {
-  searchParams?: { demo?: SearchParamValue; dev?: SearchParamValue };
+  searchParams?: { demo?: SearchParamValue; dev?: SearchParamValue; seed?: SearchParamValue };
 }) {
   const demo = getSearchParamValue(searchParams?.demo);
   const dev = getSearchParamValue(searchParams?.dev);
+  const seed = getSearchParamValue(searchParams?.seed);
   const showDevView = process.env.NODE_ENV !== 'production' || dev === 'true';
 
   if (!showDevView) {
@@ -37,7 +38,7 @@ export default function DevPage({
         <Typography variant="h4" component="h1" gutterBottom>
           Developer View
         </Typography>
-        <DevView demo={demo} initialMode="offline" isDev={showDevView} />
+        <DevView demo={demo} seed={seed} initialMode="offline" isDev={showDevView} />
       </Container>
     </main>
   );

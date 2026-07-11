@@ -39,6 +39,16 @@ From `packages/webapp/`, use:
 
 Follow the project commit convention in `README.md`.
 
+## Pull Requests
+
+If asked to create or update a pull request, first read `CONTRIBUTING.md` and
+`.github/pull_request_template.md`. Open it as a draft while evidence is
+incomplete, put durable evidence for each material claim in the PR body, and do
+not mark it ready until the evidence gate and required CI pass. Never fabricate
+or infer evidence from code alone. After material commits or evidence changes,
+update the PR body and re-request Copilot review. Resolve every human and Copilot
+review conversation before merge.
+
 ## Post-Task Steps
 
 After implementing your task, run these in order:
@@ -49,7 +59,7 @@ After implementing your task, run these in order:
 ```bash
 yarn webapp build        # must pass
 yarn webapp test         # must pass
-npx tsc --noEmit         # must pass
+yarn webapp exec tsc --noEmit  # must pass
 ```
 
 **For homepage changes:**
