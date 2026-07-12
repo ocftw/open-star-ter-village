@@ -1,3 +1,4 @@
+export { default as AppHeader } from './AppHeader';
 export { default as Logo } from './Logo';
 export { default as StickerButton } from './StickerButton';
 export { default as PaperCard } from './PaperCard';

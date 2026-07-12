@@ -1,12 +1,12 @@
 import Link from 'next/link';
 import { PlayerID } from 'boardgame.io';
-import { Logo, PLAYER_COLORS } from '@/components/design';
+import { AppHeader, PLAYER_COLORS } from '@/components/design';
 import { GameContext } from '@/components/GameContextHelpers';
 import { PlayersSelector } from '@/game/store/slice/players';
 import { ScoreBoardSelector } from '@/game/store/slice/scoreBoard';
 import { getPlayerName } from '@/components/playerNameMap';
 
-/** Sticky table header: logo + per-player status chips (design: GameHeader).
+/** Sticky table header: shared app shell + per-player status chips (design: GameHeader).
  *  `compact` (mobile): chips scroll horizontally instead of wrapping. */
 export default function GameHeader({
   gameContext,
@@ -17,50 +17,43 @@ export default function GameHeader({
 }) {
   const { G, ctx, playerID, matchData } = gameContext;
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: compact ? 8 : 14,
-        padding: compact ? '8px 12px' : '10px 20px',
-        background: 'white',
-        borderBottom: '2px solid var(--ink)',
-        position: 'sticky',
-        top: 0,
-        zIndex: 10,
-      }}
-    >
-      {!compact && <Logo size="sm" />}
-      <div
-        style={{
-          display: 'flex',
-          gap: 8,
-          marginLeft: compact ? 0 : 'auto',
-          alignItems: 'center',
-          flexWrap: compact ? 'nowrap' : 'wrap',
-          overflowX: compact ? 'auto' : 'visible',
-          minWidth: 0,
-          flex: compact ? 1 : undefined,
-          paddingTop: 8,
-        }}
-      >
-        {Object.keys(G.players).map((id) => (
-          <PlayerHeaderChip
-            key={id}
-            id={id}
-            name={getPlayerName(matchData, id)}
-            workers={PlayersSelector.getNumWorkerTokens(G.players, id)}
-            actions={PlayersSelector.getNumActionTokens(G.players, id)}
-            score={ScoreBoardSelector.getPlayerPoints(G.table.scoreBoard, id)}
-            active={id === ctx.currentPlayer}
-            you={id === playerID}
-          />
-        ))}
-      </div>
-      <Link href="/lobby" className="btn-sticker sm ghost" style={{ marginLeft: compact ? 4 : 12, flexShrink: 0 }}>
-        離開 {!compact && <span className="tag-en">Leave</span>}
-      </Link>
-    </div>
+    <AppHeader
+      sticky
+      compact={compact}
+      right={
+        <>
+          <div
+            style={{
+              display: 'flex',
+              gap: 8,
+              alignItems: 'center',
+              flexWrap: compact ? 'nowrap' : 'wrap',
+              overflowX: compact ? 'auto' : 'visible',
+              minWidth: 0,
+              flex: compact ? 1 : undefined,
+              // Headroom for the TURN badge that overflows the active chip.
+              paddingTop: 8,
+            }}
+          >
+            {Object.keys(G.players).map((id) => (
+              <PlayerHeaderChip
+                key={id}
+                id={id}
+                name={getPlayerName(matchData, id)}
+                workers={PlayersSelector.getNumWorkerTokens(G.players, id)}
+                actions={PlayersSelector.getNumActionTokens(G.players, id)}
+                score={ScoreBoardSelector.getPlayerPoints(G.table.scoreBoard, id)}
+                active={id === ctx.currentPlayer}
+                you={id === playerID}
+              />
+            ))}
+          </div>
+          <Link href="/lobby" className="btn-sticker sm ghost" style={{ flexShrink: 0 }}>
+            離開 {!compact && <span className="tag-en">Leave</span>}
+          </Link>
+        </>
+      }
+    />
   );
 }
 
