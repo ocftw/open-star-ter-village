@@ -7,46 +7,23 @@ import { ScoreBoardMutator } from '@/game/store/slice/scoreBoard';
 import { PlayersMutator, PlayersSelector } from '@/game/store/slice/players';
 import { JobSlotsMutator, JobSlotsSelector } from '@/game/store/slice/jobSlots';
 import { RuleMutator, RuleSelector } from '@/game/store/slice/rule';
+import { ActionValidationError, validateCreateProject } from '@/game/core/stage/action/validate';
 
 export type CreateProject = (projectCardId: string, jobCardId: string) => void;
 
 export const createProject: GameMove<CreateProject> = ({ G, playerID }, projectCardId, jobCardId) => {
-  if (!RuleSelector.isActionSlotAvailable(G.rules, 'createProject')) {
-    throw new Error('Action slot not available');
-  }
-  if (ActionSlotSelector.isOccupied(G.table.actionSlots.createProject)) {
-    throw new Error('Action slot is occupied');
+  // Shared validation: same predicates the client preflight runs.
+  const result = validateCreateProject(G, playerID, projectCardId, jobCardId);
+  if (!result.valid) {
+    throw new ActionValidationError(result);
   }
 
-  // Validate token balances before mutating state
   const actionTokenCosts = RuleSelector.getActionTokenCost(G.rules, 'createProject');
-  if (PlayersSelector.getNumActionTokens(G.players, playerID) < actionTokenCosts) {
-    throw new Error('Not enough action tokens');
-  }
   const projectOwnerWorkerTokenCosts = RuleSelector.getProjectOwnerWorkerTokenCost(G.rules, 'createProject');
   const assignWorkerTokenCosts = RuleSelector.getAssignWorkerTokenCost(G.rules, 'createProject');
-  const totalWorkerTokenCosts = projectOwnerWorkerTokenCosts + assignWorkerTokenCosts;
-  if (PlayersSelector.getNumWorkerTokens(G.players, playerID) < totalWorkerTokenCosts) {
-    throw new Error('Not enough worker tokens');
-  }
-
-  // Validate project card is in hand
-  const projectCard = PlayersSelector.getProjectCardById(G.players, playerID, projectCardId);
-  if (!projectCard) {
-    throw new Error('Project card not found');
-  }
-
-  // Validate job card is on the table
-  const jobCard = JobSlotsSelector.getJobCardById(G.table.jobSlots, jobCardId);
-  if (!jobCard) {
-    throw new Error('Job card not found');
-  }
-
-  // Validate job card is required in project
+  const projectCard = PlayersSelector.getProjectCardById(G.players, playerID, projectCardId)!;
+  const jobCard = JobSlotsSelector.getJobCardById(G.table.jobSlots, jobCardId)!;
   const ignoreRequirement = RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, playerID);
-  if (!ignoreRequirement && !Object.keys(projectCard.requirements).includes(jobCard.name)) {
-    throw new Error('Job card is not required in project');
-  }
 
   // All checks passed — now mutate state
   PlayersMutator.useActionTokens(G.players, playerID, actionTokenCosts);
