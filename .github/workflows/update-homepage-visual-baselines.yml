@@ -78,6 +78,12 @@ jobs:
         working-directory: homepage
         run: yarn build
 
+      - name: Record pre-generation worktree state
+        run: |
+          git status --porcelain=v1 -uall \
+            | grep -Ev '^.. homepage/e2e/__screenshots__/.*\.png$' \
+            > "$RUNNER_TEMP/pre-generation-status" || true
+
       - name: Regenerate all visual baselines
         working-directory: homepage
         run: yarn test:visual:update
@@ -93,10 +99,14 @@ jobs:
             exit 1
           fi
 
-          unexpected=$(git status --short | awk '{print $2}' | grep -Ev '^homepage/e2e/__screenshots__/.*\.png$' || true)
-          if [[ -n "$unexpected" ]]; then
-            echo "Snapshot generation changed unexpected files:"
-            echo "$unexpected"
+          git status --porcelain=v1 -uall \
+            | grep -Ev '^.. homepage/e2e/__screenshots__/.*\.png$' \
+            > "$RUNNER_TEMP/post-generation-status" || true
+
+          if ! diff -u \
+            "$RUNNER_TEMP/pre-generation-status" \
+            "$RUNNER_TEMP/post-generation-status"; then
+            echo "Snapshot generation changed files outside the baseline directory."
             exit 1
           fi
 
