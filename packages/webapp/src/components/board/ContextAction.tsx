@@ -1,5 +1,19 @@
 import React, { useEffect } from 'react';
+import { Alert, Snackbar } from '@mui/material';
 import { GameContext } from '@/components/GameContextHelpers';
+import { useSnackbar } from '@/lib/useSnackbar';
+import {
+  GENERIC_ACTION_ERROR_MESSAGE,
+  ValidationFailure,
+  ValidationResult,
+  getActionErrorMessage,
+  validateContributeJoinedProjects,
+  validateContributeOwnedProjects,
+  validateCreateProject,
+  validateMirror,
+  validateRecruit,
+  validateRemoveAndRefillJobs,
+} from '@/game/core/stage/action/validate';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import {
   UserActionMoves,
@@ -78,6 +92,25 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
     setOvertime(false);
   }, [currentAction]);
 
+  // Generic fallback for unexpected rejections: the server processes
+  // moves asynchronously and INVALID_MOVE leaves state unchanged, so watch
+  // ctx.numMoves after a dispatch. If it never advances, tell the player their
+  // action did not happen.
+  const { snackbar, showSnackbar, closeSnackbar } = useSnackbar();
+  const latestMoveStateRef = React.useRef({ numMoves: ctx.numMoves ?? 0, turn: ctx.turn });
+  useEffect(() => {
+    latestMoveStateRef.current = { numMoves: ctx.numMoves ?? 0, turn: ctx.turn };
+  });
+  const watchForSilentRejection = React.useCallback(() => {
+    const captured = { numMoves: ctx.numMoves ?? 0, turn: ctx.turn };
+    window.setTimeout(() => {
+      const latest = latestMoveStateRef.current;
+      if (latest.turn === captured.turn && latest.numMoves === captured.numMoves) {
+        showSnackbar(GENERIC_ACTION_ERROR_MESSAGE, 'error');
+      }
+    }, 2000);
+  }, [ctx.numMoves, ctx.turn, showSnackbar]);
+
   // Entering an action enables the matching board elements; leaving it clears
   // all selections. Ported unchanged from the old ActionStepper.
   useEffect(() => {
@@ -120,19 +153,47 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
   // the contextual entry point for 加班 Overtime (F-005).
   const occupied = actionName !== null && !ruleUnavailable && isSlotOccupied(actionName);
 
-  // Overtime eligibility mirrors the game's mirror() move validation.
+  // Overtime eligibility uses the same shared validator as the mirror() move
+  //, so the UI reason can never drift from the server rule.
   const mirrorCost = RuleSelector.getActionTokenCost(G.rules, 'mirror');
-  const overtimeBlockReason: string | null = !occupied
-    ? null
-    : !RuleSelector.isActionSlotAvailable(G.rules, 'mirror') ||
-        ActionSlotSelector.isOccupied(G.table.actionSlots.mirror)
-      ? '加班本輪已被使用，無法再重複行動。 Overtime is already used this round.'
-      : RuleSelector.getActionTokenCost(G.rules, actionName!) > mirrorCost
-        ? '這個行動需要 2 AP，加班只能重複 1 AP 的行動。 Overtime can only repeat 1-AP actions.'
-        : actionTokens < mirrorCost
-          ? '行動點不足，無法加班。 Not enough AP for overtime.'
-          : null;
+  const overtimeValidation = occupied ? validateMirror(G, playerID, actionName!) : null;
+  const overtimeBlockReason: string | null =
+    overtimeValidation && !overtimeValidation.valid ? getActionErrorMessage(overtimeValidation) : null;
   const canOfferOvertime = occupied && overtimeBlockReason === null;
+
+  // Preflight validation: once the selection is complete, run the same
+  // pure validators the server move will run. Failures are shown inline and
+  // block the confirm button before a doomed dispatch.
+  const runPreflight = (name: MirrorableActionName, opts?: { ignoreOccupied?: boolean }): ValidationResult => {
+    const s = selectionState;
+    switch (name) {
+      case 'createProject':
+        return validateCreateProject(G, playerID, s.selectedHandProjectCards[0], s.selectedJobSlots[0], opts);
+      case 'recruit':
+        return validateRecruit(G, playerID, s.selectedJobSlots[0], s.selectedProjectSlots[0], opts);
+      case 'contributeOwnedProjects':
+        return validateContributeOwnedProjects(G, playerID, s.contributions, opts);
+      case 'contributeJoinedProjects':
+        return validateContributeJoinedProjects(G, playerID, s.contributions, opts);
+      case 'removeAndRefillJobs':
+        return validateRemoveAndRefillJobs(G, playerID, s.selectedJobSlots, opts);
+    }
+  };
+
+  const getPreflightFailure = (): ValidationFailure | null => {
+    if (!actionName || ruleUnavailable) return null;
+    if (occupied && !overtime) return null; // the overtime prompt handles this state
+    if (!ACTION_CONFIGS[actionName].isStepValid(selectionState)) return null;
+    if (overtime) {
+      const mirrorResult = validateMirror(G, playerID, actionName);
+      if (!mirrorResult.valid) return mirrorResult;
+      const targetResult = runPreflight(actionName, { ignoreOccupied: true });
+      return targetResult.valid ? null : targetResult;
+    }
+    const result = runPreflight(actionName);
+    return result.valid ? null : result;
+  };
+  const preflightFailure = getPreflightFailure();
 
   // The board is full — creating is blocked even though the slot is free (F-003).
   const createBlockedByCapacity =
@@ -144,15 +205,29 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
     if (currentAction === UserActionMoves.EndActionTurn) return true;
     if (createBlockedByCapacity) return false;
     if (occupied && !overtime) return false;
+    if (preflightFailure) return false;
     return ACTION_CONFIGS[actionName!].isStepValid(selectionState);
   };
 
   const handleConfirm = () => {
     if (currentAction === UserActionMoves.EndActionTurn) {
       typedMoves.endActionTurn();
-    } else if (actionName && overtime) {
+      dispatch(resetAction());
+      return;
+    }
+    if (!actionName) return;
+
+    // Re-validate at click time: multiplayer state may have moved under the
+    // selection. On failure keep the selection intact and explain why.
+    const failure = getPreflightFailure();
+    if (failure) {
+      showSnackbar(getActionErrorMessage(failure), 'error');
+      return;
+    }
+
+    if (overtime) {
       typedMoves.mirror(actionName, ...ACTION_CONFIGS[actionName].getParams(selectionState));
-    } else if (actionName) {
+    } else {
       const executors: ActionExecutors = {
         createProject: typedMoves.createProject,
         recruit: typedMoves.recruit,
@@ -162,6 +237,7 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
       };
       ACTION_CONFIGS[actionName].execute(executors, selectionState);
     }
+    watchForSilentRejection();
     dispatch(resetAction());
   };
 
@@ -354,6 +430,17 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
         <div style={{ fontSize: 12, color: 'var(--ink-soft)', marginTop: 3, lineHeight: 1.4 }}>
           {copy.hint}
         </div>
+        {/* Inline preflight reason: announced politely, never looks like a success. */}
+        <div role="status" aria-live="polite">
+          {preflightFailure && (
+            <div
+              data-testid="preflight-error"
+              style={{ fontSize: 12, color: 'var(--orange-deep)', marginTop: 3, lineHeight: 1.4, fontWeight: 700 }}
+            >
+              ⚠ {getActionErrorMessage(preflightFailure)}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* AP dots */}
@@ -425,6 +512,20 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
           結束我的回合
         </button>
       )}
+
+      {/* Error toast: click-time validation failures and the generic
+          unexpected-rejection fallback. Single-slot, so repeats replace
+          rather than queue. */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={closeSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert severity={snackbar.severity} onClose={closeSnackbar} data-testid="action-error-toast">
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }
