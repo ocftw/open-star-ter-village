@@ -8,10 +8,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
-- Upgrade the supported homepage frontend, CMS, lint, and browser-test stack.
+- Upgrade to Next.js 16.2.10, React 19.2.7, Decap CMS App 3.14.1,
+  react-markdown 10.1.0, ESLint 9.39.5, and current compatible supporting
+  packages.
 - Validate public rendering against pre-upgrade desktop and mobile snapshots.
 - Validate the Decap CMS shell locally and on Netlify Deploy Previews.
 - Move homepage release history out of the README.
+
+### Deferred
+
+- ESLint 10 is deferred because the current Next.js plugin stack fails at
+  runtime while linting with `scopeManager.addGlobals is not a function`.
 
 ### Removed
 

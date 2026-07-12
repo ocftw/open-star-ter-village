@@ -12,7 +12,7 @@
 
 - Runtime：Node.js >= 24
 - Package manager：Yarn 3.4.1
-- Framework：Next.js 13
+- Framework：Next.js 16
 - CMS：Decap CMS
 
 常用指令：
@@ -23,6 +23,8 @@ yarn build      # 建置網站
 yarn start      # 啟動 production server
 yarn lint       # Prettier check + ESLint
 yarn lint:fix   # 自動修正格式與 lint 問題
+yarn test:admin # 驗證 production build 的 Decap CMS shell
+yarn test:visual # 比對 public pages 的 Playwright 視覺快照
 ```
 
 ## 💫 部署

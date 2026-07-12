@@ -10,8 +10,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "yarn prettier --check . && next lint",
-    "lint:fix": "yarn prettier --write . && next lint --fix",
+    "lint": "yarn prettier --check . && eslint .",
+    "lint:fix": "yarn prettier --write . && eslint . --fix",
     "test:visual": "playwright test e2e/visual.spec.mjs",
     "test:visual:update": "playwright test e2e/visual.spec.mjs --update-snapshots",
     "test:admin": "playwright test e2e/admin.spec.mjs --project=desktop",
@@ -29,20 +29,21 @@
   },
   "packageManager": "yarn@3.4.1",
   "dependencies": {
-    "decap-cms-app": "^3.1.9",
-    "next": "13.5.11",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-markdown": "^8.0.7",
-    "rehype-raw": "^7.0.0",
-    "remark": "^14.0.3",
-    "remark-html": "^15.0.2"
+    "decap-cms-app": "3.14.1",
+    "gray-matter": "4.0.3",
+    "next": "16.2.10",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "react-markdown": "10.1.0",
+    "rehype-raw": "7.0.0"
   },
   "devDependencies": {
     "@playwright/test": "1.61.1",
-    "eslint": "^8.35.0",
-    "eslint-config-next": "13.5.11",
-    "eslint-config-prettier": "^8.8.0",
-    "prettier": "^3.0.0"
+    "@types/react": "19.2.17",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.2.10",
+    "eslint-config-prettier": "10.1.8",
+    "prettier": "3.9.5",
+    "typescript": "6.0.3"
   }
 }

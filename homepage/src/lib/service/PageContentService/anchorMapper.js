@@ -20,11 +20,15 @@ export const anchorMapper = (layout, cards = []) => {
       break;
     }
     case 'layout_image_text': {
-      (id = titleToAnchorId(layout.title)), (title = layout.title), (level = 2);
+      ((id = titleToAnchorId(layout.title)),
+        (title = layout.title),
+        (level = 2));
       break;
     }
     case 'layout_section': {
-      (id = titleToAnchorId(layout.title)), (title = layout.title), (level = 2);
+      ((id = titleToAnchorId(layout.title)),
+        (title = layout.title),
+        (level = 2));
       break;
     }
     case 'layout_cards': {
@@ -42,7 +46,9 @@ export const anchorMapper = (layout, cards = []) => {
         );
       }
 
-      (id = titleToAnchorId(layout.title)), (title = layout.title), (level = 2);
+      ((id = titleToAnchorId(layout.title)),
+        (title = layout.title),
+        (level = 2));
       subAnchors = filteredCards.map((card) => ({
         id: titleToAnchorId(card.data.title),
         title: card.data.title,
