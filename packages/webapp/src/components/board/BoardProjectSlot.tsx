@@ -208,38 +208,43 @@ export default function BoardProjectSlot({ slot, playerID, matchData, onIdleTap,
                   />
                 )}
               </div>
-              {showStepper && (
-                <span
-                  style={{ display: 'inline-flex', gap: 2 }}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <button
-                    type="button"
-                    aria-label={`減少 ${jobName} 貢獻`}
-                    data-testid="contribution-decrement"
-                    disabled={pending <= 0}
-                    onClick={() =>
-                      dispatch(updateContribute({ slotId: slot.id, jobName, diffAmount: pending - 1 }))
-                    }
-                    style={stepperButtonStyle}
-                  >
-                    −
-                  </button>
-                  <button
-                    type="button"
-                    aria-label={`增加 ${jobName} 貢獻`}
-                    data-testid="contribution-increment"
-                    data-remaining={remaining}
-                    disabled={remaining <= 0}
-                    onClick={() =>
-                      dispatch(updateContribute({ slotId: slot.id, jobName, diffAmount: pending + 1 }))
-                    }
-                    style={stepperButtonStyle}
-                  >
-                    ＋
-                  </button>
-                </span>
-              )}
+              {/* Fixed-width control column keeps every row's progress bar aligned */}
+              <span
+                data-testid="contribution-controls"
+                aria-hidden={showStepper ? undefined : true}
+                style={{ display: 'inline-flex', gap: 2, width: STEPPER_COLUMN_WIDTH, flexShrink: 0 }}
+                onClick={showStepper ? (e) => e.stopPropagation() : undefined}
+              >
+                {showStepper && (
+                  <>
+                    <button
+                      type="button"
+                      aria-label={`減少 ${jobName} 貢獻`}
+                      data-testid="contribution-decrement"
+                      disabled={pending <= 0}
+                      onClick={() =>
+                        dispatch(updateContribute({ slotId: slot.id, jobName, diffAmount: pending - 1 }))
+                      }
+                      style={stepperButtonStyle}
+                    >
+                      −
+                    </button>
+                    <button
+                      type="button"
+                      aria-label={`增加 ${jobName} 貢獻`}
+                      data-testid="contribution-increment"
+                      data-remaining={remaining}
+                      disabled={remaining <= 0}
+                      onClick={() =>
+                        dispatch(updateContribute({ slotId: slot.id, jobName, diffAmount: pending + 1 }))
+                      }
+                      style={stepperButtonStyle}
+                    >
+                      ＋
+                    </button>
+                  </>
+                )}
+              </span>
               <span
                 style={{
                   fontFamily: 'var(--font-en)',
@@ -298,6 +303,9 @@ export default function BoardProjectSlot({ slot, playerID, matchData, onIdleTap,
     </div>
   );
 }
+
+// Two 22px stepper buttons plus their 2px gap; reserved in every row so bars align.
+const STEPPER_COLUMN_WIDTH = 46;
 
 const stepperButtonStyle: React.CSSProperties = {
   width: 22,
