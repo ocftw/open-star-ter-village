@@ -29,6 +29,10 @@ const MESSAGES: Record<ActionErrorCode, (d: Details) => string> = {
     '專案區已滿，無法發起新專案。 · The project board is full.',
   PROJECT_JOB_NOT_REQUIRED: (d) =>
     `這個專案沒有「${d.jobName}」的職業位置。 · This project has no ${d.jobName} position.`,
+  PROFESSION_TARGET_REQUIRED: () =>
+    '這張人力卡不符合專案需求 — 請點選要指派的職業位置（斜槓青年）。 · Pick the profession position to assign this worker to (斜槓青年).',
+  PROFESSION_TARGET_UNAVAILABLE: () =>
+    '這個職業位置已無法使用，請重新選擇。 · This profession position is no longer available; please select again.',
   PROJECT_SLOT_NOT_FOUND: () =>
     '目標專案已經改變，請重新選擇。 · The target project changed; please select again.',
   WORKER_ALREADY_ASSIGNED: (d) =>

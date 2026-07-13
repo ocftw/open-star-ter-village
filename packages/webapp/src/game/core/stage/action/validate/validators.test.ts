@@ -8,7 +8,8 @@ import { ProjectBoardMutator, ProjectBoardSelector } from '@/game/store/slice/pr
 import { ProjectSlotMutator } from '@/game/store/slice/projectSlot/projectSlot';
 import { JobSlotsMutator } from '@/game/store/slice/jobSlots';
 import { ActionSlotMutator } from '@/game/store/slice/actionSlot';
-import { RuleMutator } from '@/game/store/slice/rule';
+import { RuleMutator, RuleSelector } from '@/game/store/slice/rule';
+import { recruit } from '@/game/core/stage/action/move/recruit';
 import { ProjectCard } from '@/game/card';
 import {
   getActionErrorMessage,
@@ -74,7 +75,7 @@ describe('validateCreateProject', () => {
   it('ignoreOccupied skips only the occupancy check (overtime preflight)', () => {
     const G = makeG();
     ActionSlotMutator.occupy(G.table.actionSlots.createProject);
-    expect(validateCreateProject(G, '0', 'p1', 'j1', { ignoreOccupied: true }).valid).toBe(true);
+    expect(validateCreateProject(G, '0', 'p1', 'j1', undefined, { ignoreOccupied: true }).valid).toBe(true);
   });
 
   it('INSUFFICIENT_ACTION_TOKENS with required/available details', () => {
@@ -113,10 +114,27 @@ describe('validateCreateProject', () => {
     if (!result.valid) expect(result.details).toEqual({ jobName: '法務專家' });
   });
 
-  it('passes for a mismatched card while 斜槓青年 grants the override', () => {
+  it('PROFESSION_TARGET_REQUIRED for a mismatched card under 斜槓青年 without a target', () => {
     const G = makeG();
     RuleMutator.setEventIgnoreFirstWorkerRequirement(G.rules, ['0'], true);
-    expect(validateCreateProject(G, '0', 'p1', 'j2').valid).toBe(true);
+    expectReason(validateCreateProject(G, '0', 'p1', 'j2'), 'PROFESSION_TARGET_REQUIRED');
+  });
+
+  it('PROFESSION_TARGET_UNAVAILABLE for a target the project does not require', () => {
+    const G = makeG();
+    RuleMutator.setEventIgnoreFirstWorkerRequirement(G.rules, ['0'], true);
+    expectReason(validateCreateProject(G, '0', 'p1', 'j2', '主廚'), 'PROFESSION_TARGET_UNAVAILABLE');
+  });
+
+  it('passes for a mismatched card under 斜槓青年 with a valid target', () => {
+    const G = makeG();
+    RuleMutator.setEventIgnoreFirstWorkerRequirement(G.rules, ['0'], true);
+    expect(validateCreateProject(G, '0', 'p1', 'j2', '工程師').valid).toBe(true);
+  });
+
+  it('ignores assignedJobName for a matching card', () => {
+    const G = makeG();
+    expect(validateCreateProject(G, '0', 'p1', 'j1', '主廚').valid).toBe(true);
   });
 });
 
@@ -158,6 +176,41 @@ describe('validateRecruit', () => {
     const G = makeG();
     const slot = withActiveProject(G);
     expectReason(validateRecruit(G, '0', 'j2', slot.id), 'PROJECT_JOB_NOT_REQUIRED');
+  });
+
+  describe('斜槓青年 target selection', () => {
+    const withEvent = () => {
+      const G = makeG();
+      RuleMutator.setEventIgnoreFirstWorkerRequirement(G.rules, ['0'], true);
+      const slot = withActiveProject(G); // '0' already holds 工程師
+      return { G, slot };
+    };
+
+    it('PROFESSION_TARGET_REQUIRED without a chosen target', () => {
+      const { G, slot } = withEvent();
+      expectReason(validateRecruit(G, '0', 'j2', slot.id), 'PROFESSION_TARGET_REQUIRED');
+    });
+
+    it('PROFESSION_TARGET_UNAVAILABLE for a stale/unrequired target', () => {
+      const { G, slot } = withEvent();
+      expectReason(validateRecruit(G, '0', 'j2', slot.id, '主廚'), 'PROFESSION_TARGET_UNAVAILABLE');
+    });
+
+    it('WORKER_ALREADY_ASSIGNED evaluated against the TARGET profession', () => {
+      const { G, slot } = withEvent();
+      expectReason(validateRecruit(G, '0', 'j2', slot.id, '工程師'), 'WORKER_ALREADY_ASSIGNED');
+    });
+
+    it('JOB_REQUIREMENT_FULFILLED for a fulfilled target position', () => {
+      const { G, slot } = withEvent();
+      ProjectSlotMutator.assignWorker(slot, '美術設計', '1', 2); // 2/2 fulfilled by another player
+      expectReason(validateRecruit(G, '0', 'j2', slot.id, '美術設計'), 'JOB_REQUIREMENT_FULFILLED');
+    });
+
+    it('passes with a valid open target position', () => {
+      const { G, slot } = withEvent();
+      expect(validateRecruit(G, '0', 'j2', slot.id, '美術設計').valid).toBe(true);
+    });
   });
 });
 
@@ -293,6 +346,7 @@ describe('bilingual messages', () => {
       'PROJECT_NOT_JOINED', 'NO_WORKER_ON_JOB', 'CONTRIBUTION_EMPTY', 'CONTRIBUTION_EXCEEDS_LIMIT',
       'NO_JOB_CARDS_SELECTED', 'JOB_CARDS_NOT_ON_TABLE', 'NO_PENDING_DISCARDS', 'DISCARD_COUNT_INVALID',
       'OVERTIME_UNAVAILABLE', 'OVERTIME_INELIGIBLE_ACTION', 'OVERTIME_TARGET_NOT_USED',
+      'PROFESSION_TARGET_REQUIRED', 'PROFESSION_TARGET_UNAVAILABLE',
     ] as const;
     codes.forEach((reason) => {
       const message = getActionErrorMessage({ valid: false, reason });
@@ -303,5 +357,39 @@ describe('bilingual messages', () => {
 
   it('unknown codes fall back to the generic state-unchanged message', () => {
     expect(getActionErrorMessage({ valid: false, reason: 'WHAT' as never })).toBe(GENERIC_ACTION_ERROR_MESSAGE);
+  });
+});
+
+describe('recruit move with 斜槓青年 target', () => {
+  it('records the contribution under the TARGET profession and settles costs exactly once', () => {
+    const G = makeG();
+    RuleMutator.setEventIgnoreFirstWorkerRequirement(G.rules, ['0'], true);
+    const slot = withActiveProject(G); // '0' already holds 工程師 on the project
+    const apBefore = G.players['0'].token.actions;
+    const workersBefore = G.players['0'].token.workers;
+
+    const result = recruit({ G, playerID: '0' } as never, 'j2', slot.id, '美術設計');
+
+    expect(result).toBeUndefined(); // move completed, no INVALID_MOVE
+    // Contribution lands under the chosen required position — never the card's own name.
+    // recruit's initial contribution value is 2 under the current rules
+    expect(slot.contributions).toContainEqual({ jobName: '美術設計', worker: '0', value: 2 });
+    expect(slot.contributions.some((c) => c.jobName === '法務專家')).toBe(false);
+    // Card removed from the market, costs charged once, entitlement consumed.
+    expect(G.table.jobSlots.some((c) => c.id === 'j2')).toBe(false);
+    expect(G.players['0'].token.actions).toBe(apBefore - 1);
+    expect(G.players['0'].token.workers).toBe(workersBefore - 1);
+    expect(RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, '0')).toBe(false);
+  });
+
+  it('does not consume the entitlement when validation rejects the move', () => {
+    const G = makeG();
+    RuleMutator.setEventIgnoreFirstWorkerRequirement(G.rules, ['0'], true);
+    const slot = withActiveProject(G);
+
+    // Invalid target: throws before any mutation, entitlement intact.
+    expect(() => recruit({ G, playerID: '0' } as never, 'j2', slot.id, '主廚')).toThrow();
+    expect(RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, '0')).toBe(true);
+    expect(G.table.jobSlots.some((c) => c.id === 'j2')).toBe(true);
   });
 });

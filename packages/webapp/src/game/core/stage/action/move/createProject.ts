@@ -9,11 +9,13 @@ import { JobSlotsMutator, JobSlotsSelector } from '@/game/store/slice/jobSlots';
 import { RuleMutator, RuleSelector } from '@/game/store/slice/rule';
 import { ActionValidationError, validateCreateProject } from '@/game/core/stage/action/validate';
 
-export type CreateProject = (projectCardId: string, jobCardId: string) => void;
+export type CreateProject = (projectCardId: string, jobCardId: string, assignedJobName?: string) => void;
 
-export const createProject: GameMove<CreateProject> = ({ G, playerID }, projectCardId, jobCardId) => {
-  // Shared validation: same predicates the client preflight runs.
-  const result = validateCreateProject(G, playerID, projectCardId, jobCardId);
+export const createProject: GameMove<CreateProject> = ({ G, playerID }, projectCardId, jobCardId, assignedJobName) => {
+  // Shared validation: same predicates the client preflight runs. Whether
+  // assignedJobName may override the requirement is derived from
+  // authoritative event state inside the validator.
+  const result = validateCreateProject(G, playerID, projectCardId, jobCardId, assignedJobName);
   if (!result.valid) {
     throw new ActionValidationError(result);
   }
@@ -45,7 +47,11 @@ export const createProject: GameMove<CreateProject> = ({ G, playerID }, projectC
 
   PlayersMutator.useWorkerTokens(G.players, playerID, assignWorkerTokenCosts);
   const initialContributionValue = RuleSelector.getAssignWorkerInitialContributionValue(G.rules, 'createProject');
-  ProjectSlotMutator.assignWorker(projectSlot, jobCard.name, playerID, initialContributionValue);
+  // 斜槓青年: a mismatched card records its contribution under the
+  // player-chosen required position, never under an unrequired profession.
+  const matchesRequirement = Object.keys(projectCard.requirements).includes(jobCard.name);
+  const effectiveJobName = matchesRequirement ? jobCard.name : assignedJobName!;
+  ProjectSlotMutator.assignWorker(projectSlot, effectiveJobName, playerID, initialContributionValue);
 
   // Refill job card
   const maxJobSlots = RuleSelector.getTableMaxJobSlots(G.rules);
