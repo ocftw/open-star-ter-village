@@ -17,6 +17,7 @@ import {
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import {
   UserActionMoves,
+  getAssignedJobName,
   getCurrentAction,
   resetAction,
   setCurrentAction,
@@ -68,11 +69,13 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
   const jobSelection = useAppSelector(getSelectedJobSlots);
   const projectSelection = useAppSelector(getSelectedProjectSlots);
   const contributions = useAppSelector(getContributions);
+  const assignedJobName = useAppSelector(getAssignedJobName);
 
   const selectionState: ActionSelectionState = {
     selectedHandProjectCards: Object.keys(handSelection).filter((id) => handSelection[id]),
     selectedJobSlots: Object.keys(jobSelection).filter((id) => jobSelection[id]),
     selectedProjectSlots: Object.keys(projectSelection).filter((id) => projectSelection[id]),
+    assignedJobName,
     contributions,
     totalContributionValue: getTotalContributionValue(contributions),
     getMaxContributionValue: (name) => RuleSelector.getMaxContributionValue(G.rules, name),
@@ -168,9 +171,13 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
     const s = selectionState;
     switch (name) {
       case 'createProject':
-        return validateCreateProject(G, playerID, s.selectedHandProjectCards[0], s.selectedJobSlots[0], opts);
+        return validateCreateProject(
+          G, playerID, s.selectedHandProjectCards[0], s.selectedJobSlots[0], s.assignedJobName ?? undefined, opts,
+        );
       case 'recruit':
-        return validateRecruit(G, playerID, s.selectedJobSlots[0], s.selectedProjectSlots[0], opts);
+        return validateRecruit(
+          G, playerID, s.selectedJobSlots[0], s.selectedProjectSlots[0], s.assignedJobName ?? undefined, opts,
+        );
       case 'contributeOwnedProjects':
         return validateContributeOwnedProjects(G, playerID, s.contributions, opts);
       case 'contributeJoinedProjects':

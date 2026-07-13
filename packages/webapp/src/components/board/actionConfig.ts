@@ -9,6 +9,8 @@ export interface ActionSelectionState {
   selectedHandProjectCards: string[];
   selectedJobSlots: string[];
   selectedProjectSlots: string[];
+  /** 斜槓青年: chosen target position for a mismatched job card. */
+  assignedJobName: string | null;
   contributions: ContributionAction[];
   totalContributionValue: number;
   getMaxContributionValue: (name: MirrorableActionName) => number;
@@ -54,10 +56,10 @@ export const ACTION_CONFIGS: Record<MirrorableActionName, ActionConfig> = {
       selectedHandProjectCards.length === 1 && selectedJobSlots.length === 1,
     progressMessage: ({ selectedHandProjectCards, selectedJobSlots }) =>
       `Select ${selectedHandProjectCards.length} Hand Project Card, Select ${selectedJobSlots.length} Job Slot`,
-    getParams: ({ selectedHandProjectCards, selectedJobSlots }) =>
-      [selectedHandProjectCards[0], selectedJobSlots[0]],
-    execute: ({ createProject }, { selectedHandProjectCards, selectedJobSlots }) =>
-      createProject(selectedHandProjectCards[0], selectedJobSlots[0]),
+    getParams: ({ selectedHandProjectCards, selectedJobSlots, assignedJobName }) =>
+      [selectedHandProjectCards[0], selectedJobSlots[0], assignedJobName ?? undefined],
+    execute: ({ createProject }, { selectedHandProjectCards, selectedJobSlots, assignedJobName }) =>
+      createProject(selectedHandProjectCards[0], selectedJobSlots[0], assignedJobName ?? undefined),
   },
 
   recruit: {
@@ -71,10 +73,10 @@ export const ACTION_CONFIGS: Record<MirrorableActionName, ActionConfig> = {
       selectedJobSlots.length === 1 && selectedProjectSlots.length === 1,
     progressMessage: ({ selectedJobSlots, selectedProjectSlots }) =>
       `Select ${selectedJobSlots.length} Job Slot, Select ${selectedProjectSlots.length} Project Slot`,
-    getParams: ({ selectedJobSlots, selectedProjectSlots }) =>
-      [selectedJobSlots[0], selectedProjectSlots[0]],
-    execute: ({ recruit }, { selectedJobSlots, selectedProjectSlots }) =>
-      recruit(selectedJobSlots[0], selectedProjectSlots[0]),
+    getParams: ({ selectedJobSlots, selectedProjectSlots, assignedJobName }) =>
+      [selectedJobSlots[0], selectedProjectSlots[0], assignedJobName ?? undefined],
+    execute: ({ recruit }, { selectedJobSlots, selectedProjectSlots, assignedJobName }) =>
+      recruit(selectedJobSlots[0], selectedProjectSlots[0], assignedJobName ?? undefined),
   },
 
   contributeOwnedProjects: {

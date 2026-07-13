@@ -1,11 +1,14 @@
 import { ProjectCard } from '@/game';
 import { CharacterAvatar, getJobMetaByName, getProjectTypeMetaByName } from '@/components/design';
+import { ProfessionPicker } from './professionPicker';
 
 type ProjectCardFaceProps = {
   card: ProjectCard;
   selected?: boolean;
   onClick?: () => void;
   'data-testid'?: string;
+  /** 斜槓青年: makes requirement rows tappable target positions. */
+  professionPicker?: ProfessionPicker;
 };
 
 /**
@@ -16,6 +19,7 @@ export default function ProjectCardFace({
   card,
   selected = false,
   onClick,
+  professionPicker,
   ...rest
 }: ProjectCardFaceProps) {
   const typeMeta = getProjectTypeMetaByName(card.type);
@@ -84,17 +88,35 @@ export default function ProjectCardFace({
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 12 }}>
           {Object.entries(card.requirements).map(([jobName, need]) => {
             const jobMeta = getJobMetaByName(jobName);
+            // 斜槓青年 target picking: rows become tap targets.
+            const pickerEligible = !!professionPicker?.eligibleJobNames.includes(jobName);
+            const pickerSelected = pickerEligible && professionPicker!.selectedJobName === jobName;
             return (
               <div
                 key={jobName}
+                role={pickerEligible ? 'button' : undefined}
+                aria-pressed={pickerEligible ? pickerSelected : undefined}
+                data-testid={pickerEligible ? `profession-target-${jobName}` : undefined}
+                onClick={
+                  pickerEligible
+                    ? (e) => {
+                        e.stopPropagation();
+                        professionPicker!.onPick(jobName);
+                      }
+                    : undefined
+                }
                 style={{
                   display: 'flex',
                   alignItems: 'center',
                   gap: 8,
-                  background: jobMeta?.softColor ?? 'var(--paper-2)',
+                  background: pickerSelected ? 'var(--orange-soft)' : jobMeta?.softColor ?? 'var(--paper-2)',
                   border: '1.5px solid var(--ink)',
                   borderRadius: 999,
                   padding: '3px 10px 3px 3px',
+                  ...(pickerEligible && {
+                    outline: pickerSelected ? '2px solid var(--orange)' : '2px dashed var(--orange)',
+                    cursor: 'pointer',
+                  }),
                 }}
               >
                 {jobMeta && <CharacterAvatar role={jobMeta.role} size="sm" />}
