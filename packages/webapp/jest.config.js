@@ -13,13 +13,14 @@ const config = {
         esModuleInterop: true,
         resolveJsonModule: true,
         strict: true,
+        jsx: 'react-jsx',
         paths: {
           '@/*': ['./src/*'],
         },
       },
     }],
   },
-  testMatch: ['**/*.test.ts'],
+  testMatch: ['**/*.test.ts', '**/*.test.tsx'],
 };
 
 module.exports = config;
