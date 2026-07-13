@@ -31,7 +31,6 @@ export const getStaticProps = async ({ locales }) => {
 };
 
 const Admin = ({ assetsByLocale }) => {
-  const Cms = DecapCms(assetsByLocale);
   return (
     <>
       <Head>
@@ -41,7 +40,7 @@ const Admin = ({ assetsByLocale }) => {
         id="netlify-identity-widget"
         src="https://identity.netlify.com/v1/netlify-identity-widget.js"
       />
-      <Cms />
+      <DecapCms assetsByLocale={assetsByLocale} />
     </>
   );
 };

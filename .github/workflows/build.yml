@@ -105,6 +105,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          lfs: true
       - name: Use Node.js 24
         uses: actions/setup-node@v4
         with:
@@ -115,6 +117,138 @@ jobs:
       - run: yarn install --immutable
       - run: yarn lint
       - run: yarn build
+      - name: Install Chromium
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: /tmp/pw-browsers
+        run: yarn exec playwright install --with-deps chromium
+      - name: Run production browser checks
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: /tmp/pw-browsers
+        run: yarn test:admin && yarn test:visual
+      - name: Upload browser failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: homepage-browser-failure
+          path: |
+            homepage/playwright-report
+            homepage/test-results
+          if-no-files-found: ignore
+          retention-days: 7
+
+  homepage-preview:
+    name: Homepage preview smoke
+    needs: changes
+    if: ${{ github.event_name == 'pull_request' && needs.changes.outputs.homepage == 'true' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Determine preview applicability
+        id: applicability
+        env:
+          HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
+        run: |
+          if [[ "$HEAD_REPOSITORY" == "$GITHUB_REPOSITORY" ]]; then
+            echo "applicable=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "applicable=false" >> "$GITHUB_OUTPUT"
+            echo "Netlify preview smoke is not applicable to fork pull requests."
+          fi
+
+      - name: Wait for Netlify Deploy Preview
+        id: preview
+        if: steps.applicability.outputs.applicable == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          for attempt in {1..120}; do
+            status_json=$(gh api "repos/$GITHUB_REPOSITORY/commits/$HEAD_SHA/status")
+            preview=$(jq -c '
+              [.statuses[] | select(.context == "netlify/openstartervillage/deploy-preview")]
+              | sort_by(.created_at)
+              | last // empty
+            ' <<< "$status_json")
+
+            if [[ -n "$preview" ]]; then
+              state=$(jq -r '.state' <<< "$preview")
+              target_url=$(jq -r '.target_url // empty' <<< "$preview")
+              description=$(jq -r '.description // empty' <<< "$preview")
+
+              case "$state" in
+                success)
+                  if [[ "$target_url" == https://deploy-preview-*--openstartervillage.netlify.app* ]]; then
+                    preview_url=$target_url
+                  elif [[ "$description" == "Deploy Preview canceled." && "$target_url" == https://app.netlify.com/projects/openstartervillage/deploys/* ]]; then
+                    preview_url="https://deploy-preview-${PR_NUMBER}--openstartervillage.netlify.app"
+                    echo "Netlify canceled a duplicate deploy; reusing $preview_url"
+                  else
+                    echo "Netlify returned an unexpected preview URL: $target_url"
+                    exit 1
+                  fi
+                  echo "url=$preview_url" >> "$GITHUB_OUTPUT"
+                  exit 0
+                  ;;
+                error|failure)
+                  echo "Netlify Deploy Preview failed with state: $state"
+                  exit 1
+                  ;;
+              esac
+            fi
+
+            sleep 5
+          done
+
+          echo "Timed out after 10 minutes waiting for Netlify Deploy Preview."
+          exit 1
+
+      - uses: actions/checkout@v4
+        if: steps.applicability.outputs.applicable == 'true'
+        with:
+          lfs: true
+
+      - name: Use Node.js 24
+        if: steps.applicability.outputs.applicable == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.x
+          cache: yarn
+          cache-dependency-path: homepage/yarn.lock
+
+      - if: steps.applicability.outputs.applicable == 'true'
+        run: corepack enable
+
+      - name: Install homepage dependencies
+        if: steps.applicability.outputs.applicable == 'true'
+        working-directory: homepage
+        run: yarn install --immutable
+
+      - name: Install Chromium
+        if: steps.applicability.outputs.applicable == 'true'
+        working-directory: homepage
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: /tmp/pw-browsers
+        run: yarn exec playwright install --with-deps chromium
+
+      - name: Run preview smoke suite
+        if: steps.applicability.outputs.applicable == 'true'
+        working-directory: homepage
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: /tmp/pw-browsers
+          PREVIEW_URL: ${{ steps.preview.outputs.url }}
+        run: yarn test:preview
+
+      - name: Upload preview failure artifacts
+        if: failure() && steps.applicability.outputs.applicable == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: homepage-preview-smoke-failure
+          path: |
+            homepage/playwright-report
+            homepage/test-results
+          if-no-files-found: ignore
+          retention-days: 7
 
   policy:
     name: Evidence validator tests
@@ -133,7 +267,7 @@ jobs:
   required:
     name: Required baseline
     if: ${{ always() }}
-    needs: [changes, webapp, homepage, policy]
+    needs: [changes, webapp, homepage, homepage-preview, policy]
     runs-on: ubuntu-latest
 
     steps:
@@ -142,6 +276,7 @@ jobs:
           CHANGES_RESULT: ${{ needs.changes.result }}
           WEBAPP_RESULT: ${{ needs.webapp.result }}
           HOMEPAGE_RESULT: ${{ needs.homepage.result }}
+          HOMEPAGE_PREVIEW_RESULT: ${{ needs.homepage-preview.result }}
           POLICY_RESULT: ${{ needs.policy.result }}
         run: |
           if [[ "$CHANGES_RESULT" != "success" ]]; then
@@ -149,7 +284,7 @@ jobs:
             exit 1
           fi
 
-          for result in "$WEBAPP_RESULT" "$HOMEPAGE_RESULT" "$POLICY_RESULT"; do
+          for result in "$WEBAPP_RESULT" "$HOMEPAGE_RESULT" "$HOMEPAGE_PREVIEW_RESULT" "$POLICY_RESULT"; do
             if [[ "$result" != "success" && "$result" != "skipped" ]]; then
               echo "An applicable baseline job did not succeed: $result"
               exit 1

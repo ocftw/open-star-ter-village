@@ -2,7 +2,9 @@
  * @type {import('next').NextConfig}
  */
 module.exports = {
-  swcMinify: true,
+  turbopack: {
+    root: __dirname,
+  },
   i18n: {
     locales: ['zh-Hant', 'en'],
     defaultLocale: 'zh-Hant',
