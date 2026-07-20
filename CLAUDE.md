@@ -35,7 +35,7 @@ RFC (Planner)
           → Review + Test in parallel:
               1. /code-review:code-review
               2. /codex:review
-              3. yarn webapp test (or homepage lint)
+              3. yarn webapp test (or yarn homepage lint)
             → Auto-fix all critical issues
               (escalate to human only for: architecture conflicts, strategy gaps, unclear scope)
               → Commit → Push → Open draft MR with evidence

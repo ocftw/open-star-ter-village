@@ -10,8 +10,8 @@ Rulebook: [Rulebook of Open StarTer Village](https://drive.google.com/file/d/1gB
 
 - Next.js client: `http://localhost:3000`
 - Game server: `http://localhost:3001`
-- Node.js: `>=18`
-- Package manager: repository Yarn `3.4.1`
+- Node.js: `>=24`
+- Package manager: repository Yarn `4.17.1`
 
 ## Commands
 
@@ -25,7 +25,8 @@ yarn webapp test       # Run Jest tests
 yarn webapp lint       # Run ESLint
 ```
 
-Run all Yarn workspaces from the repository root:
+Run both Yarn workspaces from the repository root (`all:dev` uses port 3002 for
+the homepage so it does not conflict with the webapp):
 
 ```bash
 yarn all:dev
@@ -71,7 +72,9 @@ Prerequisites:
 
 - A Fly.io account.
 - The `flyctl` CLI.
-- Node.js 18+ and Yarn 3.4.1 for local verification.
+- Node.js 24+ and Corepack for local verification. The repository pins Yarn
+  4.17.1; install all workspace dependencies from the repository root with
+  `corepack enable` followed by `yarn install --immutable`.
 
 Create an app from the repository root:
 

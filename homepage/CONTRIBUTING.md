@@ -2,13 +2,14 @@
 
 ## 系統需求
 
-| 工具 | 版本 |
-| ---: | ---: |
-| Node | >=24 |
-| yarn |  >=2 |
+| 工具 |                                         版本 |
+| ---: | -------------------------------------------: |
+| Node |                                         >=24 |
+| Yarn | 4.17.1（由 Corepack 依 repository 設定提供） |
 
 若尚未安裝 Node，請前往[此處](https://nodejs.org/en/)進行安裝。
-若尚未安裝 Yarn 或版本過舊，請前往[此處](https://yarnpkg.com/getting-started/install)進行安裝。
+Node.js 隨附 Corepack；repository 根目錄的 `packageManager` 會選用正確的
+Yarn 版本，不需另外安裝全域 Yarn。
 
 ## 網站架構
 
@@ -60,6 +61,10 @@ graph TB
 
 如果您不熟悉 Netlify，請參考[Netlify 文件](https://docs.netlify.com/)。
 
+Netlify 使用 monorepo 設定：Base directory 保持未設定（repository root），
+Package directory 設為 `homepage`。Root `netlify.toml` 會從 root workspace
+安裝 dependencies，再以 `yarn homepage build` 建置網站。
+
 ### 主要網站
 
 [https://openstartervillage.netlify.app](https://openstartervillage.netlify.app)
@@ -84,8 +89,8 @@ cd open-star-ter-village
 ### 安裝開發環境所需的套件
 
 ```shell
-cd homepage
-yarn
+corepack enable
+yarn install --immutable
 ```
 
 ## 開發專案
@@ -108,19 +113,19 @@ yarn
 以下指令將立即監控 `src/` 和 `public/` 資料夾中的檔案，並啟動本地網頁伺服器，用於測試和預覽結果。伺服器預設運行於端口 3000。<http://localhost:3000>
 
 ```shell
-yarn dev
+yarn homepage dev
 ```
 
 ### 建置發布版本
 
 ```shell
-yarn build
+yarn homepage build
 ```
 
 ### 啟動伺服器端
 
 ```shell
-yarn start
+yarn homepage start
 ```
 
 ## Decap CMS 設定

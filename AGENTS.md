@@ -64,7 +64,7 @@ yarn webapp exec tsc --noEmit  # must pass
 
 **For homepage changes:**
 ```bash
-cd homepage && yarn lint  # must pass
+yarn homepage lint        # must pass
 ```
 
 ### 2. Simplify
@@ -79,7 +79,7 @@ When the Supervisor runs a post-plan review, all three checks run in parallel:
 
 1. `/code-review:code-review` — Claude structural review
 2. `/codex:review` — Codex review
-3. `yarn webapp test` (or `cd homepage && yarn lint`) — automated tests
+3. `yarn webapp test` (or `yarn homepage lint`) — automated tests
 
 Findings are structured as:
 

@@ -68,8 +68,7 @@ English version: [README.en.md](./README.en.md)
 
 ## 開發環境與專案結構
 
-此 repository 使用 Yarn 3.4.1 管理 webapp workspace；homepage 是同一個
-repository 內的獨立 package：
+此 repository 使用 Yarn 4.17.1 monorepo 統一管理 webapp 與 homepage：
 
 - `packages/webapp/`：主要線上遊戲，包含 Next.js client 與 boardgame.io 遊戲伺服器。
 - `homepage/`：官方網站，獨立部署於 Netlify，使用 Next.js 與 Decap CMS。
@@ -77,14 +76,19 @@ repository 內的獨立 package：
 
 基本需求：
 
-- 根目錄與 webapp：Node.js >= 18。
-- Homepage：Node.js >= 24。
-- 使用 repository 指定的 Yarn 版本，不需改用全域 Yarn。
+- Node.js >= 24。
+- Corepack（Node.js 隨附）會依根目錄 `packageManager` 使用指定的 Yarn 版本。
+- 所有 dependencies 從 repository 根目錄以 `yarn install --immutable` 安裝；
+  homepage 與 webapp 共用一份 `yarn.lock`。
 
 根目錄 workspace 常用指令：
 
 ```bash
-yarn all:dev      # 啟動所有 Yarn workspace 的開發伺服器
+corepack enable
+yarn install --immutable
+yarn webapp dev   # 啟動 webapp（ports 3000 和 3001）
+yarn homepage dev # 啟動 homepage（port 3000）
+yarn all:dev      # 同時啟動 webapp 與 homepage（homepage port 3002）
 yarn all:build    # 建置所有 Yarn workspace
 yarn all:lint     # 檢查所有 Yarn workspace
 ```

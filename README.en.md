@@ -62,6 +62,25 @@ You can join our discussions on [Discord](https://discord.gg/JnTHGnxwYS).
 | [packages/webapp](./packages/webapp/)       | Webapp - web game website                              |
 | [homepage](./homepage/)                     | [Official Website](https://openstartervillage.ocf.tw/) |
 
+## Development Environment
+
+Yarn 4.17.1 manages the active webapp and homepage as one monorepo. Use Node.js
+24 or newer and run all package-manager commands from the repository root:
+
+```bash
+corepack enable
+yarn install --immutable
+yarn webapp dev       # webapp on ports 3000 and 3001
+yarn homepage dev     # homepage on port 3000
+yarn all:dev           # both applications; homepage moves to port 3002
+yarn all:build
+yarn all:lint
+```
+
+Corepack reads the pinned Yarn version from the root `packageManager` field.
+Both applications share the root workspace definition and `yarn.lock`; the
+legacy `google-spreadsheet` prototype remains outside the workspace.
+
 ## Licensing Terms
 
 - **Game Content:** [CC BY 4.0 License](./LICENSE)
