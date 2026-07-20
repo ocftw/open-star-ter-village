@@ -8,8 +8,10 @@
   "license": "MIT",
   "scripts": {
     "dev": "next dev",
+    "dev:all": "next dev -p 3100",
     "build": "next build",
     "start": "next start",
+    "start:all": "next start -p 3100",
     "lint": "prettier --check . && eslint .",
     "lint:fix": "prettier --write . && eslint . --fix",
     "test:visual": "playwright test e2e/visual.spec.mjs",

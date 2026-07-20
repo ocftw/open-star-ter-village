@@ -10,9 +10,9 @@
   "scripts": {
     "webapp": "pnpm --filter @open-star-ter-village/webapp",
     "homepage": "pnpm --filter @open-starter-village/homepage",
-    "all:dev": "pnpm --recursive --parallel run dev",
+    "all:dev": "pnpm --recursive --parallel run dev:all",
     "all:build": "pnpm --recursive run build",
-    "all:start": "pnpm --recursive --parallel run start",
+    "all:start": "pnpm --recursive --parallel run start:all",
     "all:lint": "pnpm --recursive run lint"
   },
   "devDependencies": {
