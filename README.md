@@ -89,6 +89,8 @@ pnpm all:build    # 建置所有 pnpm workspace
 pnpm all:lint     # 檢查所有 pnpm workspace
 ```
 
+`all:dev` 使用 webapp 的 `3000`/`3001` port，homepage 使用 `3100` port。
+
 Webapp 與 homepage 的細節請參考：
 
 - [packages/webapp/README.md](./packages/webapp/README.md)

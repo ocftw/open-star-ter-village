@@ -33,6 +33,9 @@ pnpm all:build
 pnpm all:lint
 ```
 
+The aggregate development command runs the homepage on port `3100` so it does
+not conflict with the webapp on ports `3000` and `3001`.
+
 Run a single Jest test file from this package:
 
 ```bash
