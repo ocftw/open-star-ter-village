@@ -123,11 +123,5 @@ dist/
 .claude/settings.local.json
 .claude/worktrees/
 
-# yarn
-.yarn/*
-!.yarn/cache
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
+# Yarn uses Corepack and the global cache; no project-local runtime or cache is tracked.
+.yarn/

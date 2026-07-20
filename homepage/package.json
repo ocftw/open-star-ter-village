@@ -10,8 +10,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "yarn prettier --check . && eslint .",
-    "lint:fix": "yarn prettier --write . && eslint . --fix",
+    "lint": "prettier --check . && eslint .",
+    "lint:fix": "prettier --write . && eslint . --fix",
     "test:visual": "playwright test e2e/visual.spec.mjs",
     "test:visual:update": "playwright test e2e/visual.spec.mjs --update-snapshots",
     "test:admin": "playwright test e2e/admin.spec.mjs --project=desktop",
@@ -27,7 +27,6 @@
   "bugs": {
     "url": "https://github.com/ocftw/open-star-ter-village/issues"
   },
-  "packageManager": "yarn@3.4.1",
   "dependencies": {
     "decap-cms-app": "3.14.1",
     "gray-matter": "4.0.3",

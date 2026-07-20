@@ -3,27 +3,34 @@
   "version": "0.0.1",
   "author": "Ben Liu <ben196888@gmail.com>, renovirtony <renovirtony@gmail.com>",
   "private": true,
-  "packageManager": "yarn@3.4.1",
+  "packageManager": "yarn@4.17.1",
   "workspaces": [
+    "homepage",
     "packages/*"
   ],
   "engines": {
-    "node": ">=18"
+    "node": ">=24"
   },
   "scripts": {
     "webapp": "yarn workspace @open-star-ter-village/webapp",
-    "all:dev": "yarn workspaces foreach -pi run dev",
-    "all:build": "yarn workspaces foreach -pt run build",
-    "all:start": "yarn workspaces foreach -pt run start",
-    "all:lint": "yarn workspaces foreach -pt run lint"
+    "homepage": "yarn workspace @open-starter-village/homepage",
+    "all:dev": "concurrently -n webapp,homepage \"yarn webapp dev\" \"yarn homepage dev --port 3002\"",
+    "all:build": "yarn workspaces foreach -Apt run build",
+    "all:start": "concurrently -n webapp,homepage \"yarn webapp start\" \"yarn homepage start --port 3002\"",
+    "all:lint": "yarn workspaces foreach -Apt run lint"
   },
   "resolutions": {
     "reselect": "^5.1.0"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.29.2",
-    "@babel/preset-typescript": "^7.28.5",
-    "babel-plugin-module-resolver": "^5.0.3",
-    "ts-jest": "^29.4.6"
+    "concurrently": "^8.2.2"
+  },
+  "dependenciesMeta": {
+    "@sentry/cli": {
+      "built": true
+    },
+    "sharp": {
+      "built": true
+    }
   }
 }
