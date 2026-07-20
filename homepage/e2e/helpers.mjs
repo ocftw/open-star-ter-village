@@ -1,38 +1,61 @@
 import { expect } from '@playwright/test';
 
 export const publicRoutes = [
-  { name: 'zh-home', path: '/', text: '開源星手村', status: 200 },
-  { name: 'zh-cards', path: '/cards/', text: '卡片介紹', status: 200 },
+  {
+    name: 'zh-home',
+    path: '/',
+    text: '開源星手村',
+    status: 200,
+    locale: 'zh-Hant',
+  },
+  {
+    name: 'zh-cards',
+    path: '/cards/',
+    text: '卡片介紹',
+    status: 200,
+    locale: 'zh-Hant',
+  },
   {
     name: 'zh-resource',
     path: '/resource/',
     text: '資源分享',
     status: 200,
+    locale: 'zh-Hant',
   },
   {
     name: 'zh-not-found',
     path: '/missing-page/',
     text: 'NOT FOUND',
     status: 404,
+    locale: 'zh-Hant',
   },
-  { name: 'en-home', path: '/en/', text: 'Open StarTer Village', status: 200 },
+  {
+    name: 'en-home',
+    path: '/en/',
+    text: 'Open StarTer Village',
+    status: 200,
+    locale: 'en',
+  },
   {
     name: 'en-cards',
     path: '/en/cards/',
     text: 'Talent, Event & Project Cards',
     status: 200,
+    locale: 'en',
   },
   {
     name: 'en-resource',
     path: '/en/resource/',
     text: 'Resource Sharing',
     status: 200,
+    locale: 'en',
   },
   {
     name: 'en-not-found',
     path: '/en/missing-page/',
     text: 'NOT FOUND',
     status: 404,
+    locale: 'en',
   },
 ];
 
