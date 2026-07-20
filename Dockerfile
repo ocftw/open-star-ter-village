@@ -1,13 +1,17 @@
 # syntax=docker/dockerfile:1
 
-FROM node:20-alpine AS deps
+FROM node:24-alpine AS base
 WORKDIR /app
 
 RUN corepack enable
-COPY package.json yarn.lock .yarnrc.yml ./
-COPY .yarn ./.yarn
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY packages/webapp/package.json ./packages/webapp/package.json
-RUN yarn install --immutable
+COPY homepage/package.json ./homepage/package.json
+
+FROM base AS deps
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+  pnpm config set store-dir /pnpm/store && \
+  pnpm install --frozen-lockfile --filter @open-star-ter-village/webapp...
 
 FROM deps AS build
 WORKDIR /app
@@ -29,9 +33,14 @@ ENV NEXT_TELEMETRY_DISABLED=1
 COPY packages/webapp ./packages/webapp
 RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN,required=false \
   SENTRY_AUTH_TOKEN="$(cat /run/secrets/SENTRY_AUTH_TOKEN 2>/dev/null || true)" \
-  yarn webapp build
+  pnpm webapp build
 
-FROM node:20-alpine AS runtime
+FROM base AS production-deps
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+  pnpm config set store-dir /pnpm/store && \
+  pnpm install --prod --frozen-lockfile --filter @open-star-ter-village/webapp...
+
+FROM node:24-alpine AS runtime
 WORKDIR /app
 
 ARG NEXT_PUBLIC_GAME_SERVER_URL=http://localhost:3001
@@ -43,12 +52,8 @@ ENV NEXT_PUBLIC_GAME_SERVER_URL=$NEXT_PUBLIC_GAME_SERVER_URL
 ENV SENTRY_ENVIRONMENT=$SENTRY_ENVIRONMENT
 ENV SENTRY_RELEASE=$SENTRY_RELEASE
 
-RUN corepack enable
-
-COPY package.json yarn.lock .yarnrc.yml ./
-COPY .yarn ./.yarn
-COPY packages/webapp/package.json ./packages/webapp/package.json
-RUN yarn workspaces focus @open-star-ter-village/webapp --production
+COPY --from=production-deps /app/node_modules ./node_modules
+COPY --from=production-deps /app/packages/webapp/node_modules ./packages/webapp/node_modules
 
 COPY --from=build /app/packages/webapp/.next/standalone ./
 COPY --from=build /app/packages/webapp/.next/static ./packages/webapp/.next/static

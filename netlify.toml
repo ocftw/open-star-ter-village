@@ -1,0 +1,7 @@
+[build]
+  base      = "/"
+  command   = "pnpm homepage build"
+  publish   = "homepage/.next"
+
+[build.environment]
+  NODE_VERSION = "24"

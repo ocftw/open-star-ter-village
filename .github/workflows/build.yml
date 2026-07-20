@@ -5,10 +5,13 @@ on:
     branches: [main]
     paths:
       - 'packages/webapp/**'
+      - 'homepage/**'
       - 'package.json'
-      - 'yarn.lock'
-      - '.yarnrc.yml'
-      - '.yarn/**'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      - 'Dockerfile'
+      - 'fly.toml'
+      - 'netlify.toml'
   pull_request:
     branches: [main]
 
@@ -47,10 +50,17 @@ jobs:
 
           while IFS= read -r file; do
             case "$file" in
-              packages/webapp/*|package.json|yarn.lock|.yarnrc.yml|.yarn/*)
+              packages/webapp/*|Dockerfile|fly.toml)
                 webapp=true
                 ;;
               homepage/*)
+                homepage=true
+                ;;
+              netlify.toml)
+                homepage=true
+                ;;
+              package.json|pnpm-lock.yaml|pnpm-workspace.yaml)
+                webapp=true
                 homepage=true
                 ;;
               .github/scripts/validate-pr-evidence.*|.github/workflows/pr-evidence.yml|.github/pull_request_template.md|.github/copilot-instructions.md|CONTRIBUTING.md|AGENTS.md|CLAUDE.md)
@@ -76,55 +86,51 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
       - name: Use Node.js 24
         uses: actions/setup-node@v4
         with:
           node-version: 24.x
-          cache: yarn
-          cache-dependency-path: yarn.lock
-      - run: corepack enable
-      - run: yarn install --immutable
-      - run: yarn webapp lint
-      - run: yarn webapp exec tsc --noEmit
-      - run: yarn webapp test --runInBand
-      - run: yarn webapp build
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm webapp lint
+      - run: pnpm webapp exec tsc --noEmit
+      - run: pnpm webapp test --runInBand
+      - run: pnpm webapp build
       - name: Install Chromium
         env:
           PLAYWRIGHT_BROWSERS_PATH: /tmp/pw-browsers
-        run: yarn webapp exec playwright install --with-deps chromium
-      - run: yarn webapp e2e
+        run: pnpm webapp exec playwright install --with-deps chromium
+      - run: pnpm webapp e2e
 
   homepage:
     name: Homepage baseline
     needs: changes
     if: ${{ needs.changes.outputs.homepage == 'true' }}
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: homepage
-
     steps:
       - uses: actions/checkout@v4
         with:
           lfs: true
+      - uses: pnpm/action-setup@v4
       - name: Use Node.js 24
         uses: actions/setup-node@v4
         with:
           node-version: 24.x
-          cache: yarn
-          cache-dependency-path: homepage/yarn.lock
-      - run: corepack enable
-      - run: yarn install --immutable
-      - run: yarn lint
-      - run: yarn build
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm homepage lint
+      - run: pnpm homepage build
       - name: Install Chromium
         env:
           PLAYWRIGHT_BROWSERS_PATH: /tmp/pw-browsers
-        run: yarn exec playwright install --with-deps chromium
+        run: pnpm homepage exec playwright install --with-deps chromium
       - name: Run production browser checks
         env:
           PLAYWRIGHT_BROWSERS_PATH: /tmp/pw-browsers
-        run: yarn test:admin && yarn test:visual
+        run: pnpm homepage test:admin && pnpm homepage test:visual
       - name: Upload browser failure artifacts
         if: failure()
         uses: actions/upload-artifact@v4
@@ -208,36 +214,33 @@ jobs:
         with:
           lfs: true
 
+      - uses: pnpm/action-setup@v4
+        if: steps.applicability.outputs.applicable == 'true'
+
       - name: Use Node.js 24
         if: steps.applicability.outputs.applicable == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: 24.x
-          cache: yarn
-          cache-dependency-path: homepage/yarn.lock
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
-      - if: steps.applicability.outputs.applicable == 'true'
-        run: corepack enable
-
-      - name: Install homepage dependencies
+      - name: Install workspace dependencies
         if: steps.applicability.outputs.applicable == 'true'
-        working-directory: homepage
-        run: yarn install --immutable
+        run: pnpm install --frozen-lockfile
 
       - name: Install Chromium
         if: steps.applicability.outputs.applicable == 'true'
-        working-directory: homepage
         env:
           PLAYWRIGHT_BROWSERS_PATH: /tmp/pw-browsers
-        run: yarn exec playwright install --with-deps chromium
+        run: pnpm homepage exec playwright install --with-deps chromium
 
       - name: Run preview smoke suite
         if: steps.applicability.outputs.applicable == 'true'
-        working-directory: homepage
         env:
           PLAYWRIGHT_BROWSERS_PATH: /tmp/pw-browsers
           PREVIEW_URL: ${{ steps.preview.outputs.url }}
-        run: yarn test:preview
+        run: pnpm homepage test:preview
 
       - name: Upload preview failure artifacts
         if: failure() && steps.applicability.outputs.applicable == 'true'

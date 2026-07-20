@@ -57,26 +57,23 @@ jobs:
           fetch-depth: 0
           lfs: true
 
+      - uses: pnpm/action-setup@v4
+
       - name: Use Node.js 24
         uses: actions/setup-node@v4
         with:
           node-version: 24.x
-          cache: yarn
-          cache-dependency-path: homepage/yarn.lock
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
-      - run: corepack enable
-
-      - name: Install homepage dependencies
-        working-directory: homepage
-        run: yarn install --immutable
+      - name: Install workspace dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Install pinned Chromium
-        working-directory: homepage
-        run: yarn exec playwright install --with-deps chromium
+        run: pnpm homepage exec playwright install --with-deps chromium
 
       - name: Build homepage
-        working-directory: homepage
-        run: yarn build
+        run: pnpm homepage build
 
       - name: Record pre-generation worktree state
         run: |
@@ -85,8 +82,7 @@ jobs:
             > "$RUNNER_TEMP/pre-generation-status" || true
 
       - name: Regenerate all visual baselines
-        working-directory: homepage
-        run: yarn test:visual:update
+        run: pnpm homepage test:visual:update
 
       - name: Validate generated files
         id: changes

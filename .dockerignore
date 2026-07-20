@@ -1,7 +1,6 @@
 .git
 .github
-.yarn/cache
-.yarn/install-state.gz
+.pnpm-store
 **/.next
 **/dist
 **/node_modules
@@ -13,7 +12,8 @@
 **/*.spec.ts
 **/*.spec.tsx
 docs
-homepage
+homepage/**
+!homepage/package.json
 google-spreadsheet
 rfc
 README.md
