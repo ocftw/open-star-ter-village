@@ -1,13 +1,15 @@
 # syntax=docker/dockerfile:1
 
-FROM node:20-alpine AS deps
+FROM node:24-alpine AS deps
 WORKDIR /app
 
 RUN corepack enable
 COPY package.json yarn.lock .yarnrc.yml ./
-COPY .yarn ./.yarn
 COPY packages/webapp/package.json ./packages/webapp/package.json
-RUN yarn install --immutable
+COPY homepage/package.json ./homepage/package.json
+RUN --mount=type=cache,target=/root/.yarn/berry/cache \
+  YARN_ENABLE_IMMUTABLE_INSTALLS=1 \
+  yarn workspaces focus @open-star-ter-village/webapp
 
 FROM deps AS build
 WORKDIR /app
@@ -31,7 +33,7 @@ RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN,required=false \
   SENTRY_AUTH_TOKEN="$(cat /run/secrets/SENTRY_AUTH_TOKEN 2>/dev/null || true)" \
   yarn webapp build
 
-FROM node:20-alpine AS runtime
+FROM node:24-alpine AS runtime
 WORKDIR /app
 
 ARG NEXT_PUBLIC_GAME_SERVER_URL=http://localhost:3001
@@ -46,9 +48,11 @@ ENV SENTRY_RELEASE=$SENTRY_RELEASE
 RUN corepack enable
 
 COPY package.json yarn.lock .yarnrc.yml ./
-COPY .yarn ./.yarn
 COPY packages/webapp/package.json ./packages/webapp/package.json
-RUN yarn workspaces focus @open-star-ter-village/webapp --production
+COPY homepage/package.json ./homepage/package.json
+RUN --mount=type=cache,target=/root/.yarn/berry/cache \
+  YARN_ENABLE_IMMUTABLE_INSTALLS=1 \
+  yarn workspaces focus @open-star-ter-village/webapp --production
 
 COPY --from=build /app/packages/webapp/.next/standalone ./
 COPY --from=build /app/packages/webapp/.next/static ./packages/webapp/.next/static

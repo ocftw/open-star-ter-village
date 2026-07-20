@@ -1,0 +1,7 @@
+[build]
+  base      = "/"
+  command   = "yarn homepage build"
+  publish   = "homepage/.next"
+
+[build.environment]
+  NODE_VERSION = "24"

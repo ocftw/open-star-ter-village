@@ -5,10 +5,17 @@ on:
     branches: [main]
     paths:
       - 'packages/webapp/**'
+      - 'homepage/**'
       - 'package.json'
       - 'yarn.lock'
       - '.yarnrc.yml'
-      - '.yarn/**'
+      - 'Dockerfile'
+      - '.dockerignore'
+      - 'fly.toml'
+      - 'netlify.toml'
+      - '.github/workflows/build.yml'
+      - '.github/workflows/deploy.yml'
+      - '.github/workflows/update-homepage-visual-baselines.yml'
   pull_request:
     branches: [main]
 
@@ -47,10 +54,14 @@ jobs:
 
           while IFS= read -r file; do
             case "$file" in
-              packages/webapp/*|package.json|yarn.lock|.yarnrc.yml|.yarn/*)
+              packages/webapp/*|Dockerfile|.dockerignore|fly.toml|.github/workflows/deploy.yml)
                 webapp=true
                 ;;
-              homepage/*)
+              homepage/*|netlify.toml|.github/workflows/update-homepage-visual-baselines.yml)
+                homepage=true
+                ;;
+              package.json|yarn.lock|.yarnrc.yml)
+                webapp=true
                 homepage=true
                 ;;
               .github/scripts/validate-pr-evidence.*|.github/workflows/pr-evidence.yml|.github/pull_request_template.md|.github/copilot-instructions.md|CONTRIBUTING.md|AGENTS.md|CLAUDE.md)
@@ -80,9 +91,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 24.x
-          cache: yarn
-          cache-dependency-path: yarn.lock
       - run: corepack enable
+      - name: Restore Yarn cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.yarn/berry/cache
+          key: ${{ runner.os }}-node24-yarn-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-node24-yarn-
       - run: yarn install --immutable
       - run: yarn webapp lint
       - run: yarn webapp exec tsc --noEmit
@@ -99,10 +115,6 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.homepage == 'true' }}
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: homepage
-
     steps:
       - uses: actions/checkout@v4
         with:
@@ -111,20 +123,25 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 24.x
-          cache: yarn
-          cache-dependency-path: homepage/yarn.lock
       - run: corepack enable
+      - name: Restore Yarn cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.yarn/berry/cache
+          key: ${{ runner.os }}-node24-yarn-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-node24-yarn-
       - run: yarn install --immutable
-      - run: yarn lint
-      - run: yarn build
+      - run: yarn homepage lint
+      - run: yarn homepage build
       - name: Install Chromium
         env:
           PLAYWRIGHT_BROWSERS_PATH: /tmp/pw-browsers
-        run: yarn exec playwright install --with-deps chromium
+        run: yarn homepage exec playwright install --with-deps chromium
       - name: Run production browser checks
         env:
           PLAYWRIGHT_BROWSERS_PATH: /tmp/pw-browsers
-        run: yarn test:admin && yarn test:visual
+        run: yarn homepage test:admin && yarn homepage test:visual
       - name: Upload browser failure artifacts
         if: failure()
         uses: actions/upload-artifact@v4
@@ -213,31 +230,35 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 24.x
-          cache: yarn
-          cache-dependency-path: homepage/yarn.lock
 
       - if: steps.applicability.outputs.applicable == 'true'
         run: corepack enable
 
+      - name: Restore Yarn cache
+        if: steps.applicability.outputs.applicable == 'true'
+        uses: actions/cache@v4
+        with:
+          path: ~/.yarn/berry/cache
+          key: ${{ runner.os }}-node24-yarn-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-node24-yarn-
+
       - name: Install homepage dependencies
         if: steps.applicability.outputs.applicable == 'true'
-        working-directory: homepage
         run: yarn install --immutable
 
       - name: Install Chromium
         if: steps.applicability.outputs.applicable == 'true'
-        working-directory: homepage
         env:
           PLAYWRIGHT_BROWSERS_PATH: /tmp/pw-browsers
-        run: yarn exec playwright install --with-deps chromium
+        run: yarn homepage exec playwright install --with-deps chromium
 
       - name: Run preview smoke suite
         if: steps.applicability.outputs.applicable == 'true'
-        working-directory: homepage
         env:
           PLAYWRIGHT_BROWSERS_PATH: /tmp/pw-browsers
           PREVIEW_URL: ${{ steps.preview.outputs.url }}
-        run: yarn test:preview
+        run: yarn homepage test:preview
 
       - name: Upload preview failure artifacts
         if: failure() && steps.applicability.outputs.applicable == 'true'
