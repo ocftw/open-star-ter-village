@@ -31,12 +31,6 @@ yarn homepage test:visual # 比對 public pages 的 Playwright 視覺快照
 
 ## 💫 部署
 
-Netlify 必須從 repository 根目錄讀取 `yarn.lock` 與 `netlify.toml`：
-
-- Base directory 保持空白（repository root）。
-- Package directory 設為 `homepage`。
-- Build command 與 Publish directory 由根目錄的 `netlify.toml` 管理。
-
 [![部署至 Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/ocftw/open-star-ter-village)
 
 ### 線上展示
