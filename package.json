@@ -23,7 +23,11 @@
     "reselect": "^5.1.0"
   },
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "@babel/preset-env": "^7.29.2",
+    "@babel/preset-typescript": "^7.28.5",
+    "babel-plugin-module-resolver": "^5.0.3",
+    "concurrently": "^8.2.2",
+    "ts-jest": "^29.4.6"
   },
   "dependenciesMeta": {
     "@sentry/cli": {
