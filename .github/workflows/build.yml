@@ -10,8 +10,12 @@ on:
       - 'pnpm-lock.yaml'
       - 'pnpm-workspace.yaml'
       - 'Dockerfile'
+      - '.dockerignore'
       - 'fly.toml'
       - 'netlify.toml'
+      - '.github/workflows/build.yml'
+      - '.github/workflows/deploy.yml'
+      - '.github/workflows/update-homepage-visual-baselines.yml'
   pull_request:
     branches: [main]
 
@@ -50,10 +54,10 @@ jobs:
 
           while IFS= read -r file; do
             case "$file" in
-              packages/webapp/*|Dockerfile|fly.toml)
+              packages/webapp/*|Dockerfile|.dockerignore|fly.toml|.github/workflows/deploy.yml)
                 webapp=true
                 ;;
-              homepage/*)
+              homepage/*|.github/workflows/update-homepage-visual-baselines.yml)
                 homepage=true
                 ;;
               netlify.toml)
