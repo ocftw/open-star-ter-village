@@ -1,0 +1,251 @@
+import { PlayerID } from 'boardgame.io';
+import { RuleSelector } from '@/game/store/slice/rule';
+import { ActionSlotSelector } from '@/game/store/slice/actionSlot';
+import { PlayersSelector } from '@/game/store/slice/players';
+import { JobSlotsSelector } from '@/game/store/slice/jobSlots';
+import { ProjectBoardSelector } from '@/game/store/slice/projectBoard';
+import { ProjectSlotSelector } from '@/game/store/slice/projectSlot/projectSlot';
+import { ContributionAction, getTotalContributionValue } from '@/game/core/ContributionAction';
+import { ActionMoveName } from '@/game/core/stage/action/move/type';
+import { invalid, VALID, ValidatableState, ValidationResult } from './types';
+
+/**
+ * Shared pure validators for every action move. The server moves and
+ * the client preflight both call these, so rules cannot drift between the two.
+ * Each returns the FIRST failure in the same order the moves check them.
+ */
+
+type SlotOptions = {
+  /**
+   * Skip the ACTION_OCCUPIED check. Used when preflight-validating an action
+   * executed through 加班 Overtime (mirror), which repeats an occupied action.
+   */
+  ignoreOccupied?: boolean;
+};
+
+const validateSlotAndActionTokens = (
+  G: ValidatableState,
+  playerID: PlayerID,
+  actionName: Exclude<ActionMoveName, 'mirror'>,
+  opts?: SlotOptions,
+): ValidationResult => {
+  if (!RuleSelector.isActionSlotAvailable(G.rules, actionName)) {
+    return invalid('ACTION_UNAVAILABLE');
+  }
+  if (!opts?.ignoreOccupied && ActionSlotSelector.isOccupied(G.table.actionSlots[actionName])) {
+    return invalid('ACTION_OCCUPIED');
+  }
+  const required = RuleSelector.getActionTokenCost(G.rules, actionName);
+  const available = PlayersSelector.getNumActionTokens(G.players, playerID);
+  if (available < required) {
+    return invalid('INSUFFICIENT_ACTION_TOKENS', { required, available });
+  }
+  return VALID;
+};
+
+export const validateCreateProject = (
+  G: ValidatableState,
+  playerID: PlayerID,
+  projectCardId: string,
+  jobCardId: string,
+  opts?: SlotOptions,
+): ValidationResult => {
+  const base = validateSlotAndActionTokens(G, playerID, 'createProject', opts);
+  if (!base.valid) return base;
+
+  const projectOwnerWorkerTokenCosts = RuleSelector.getProjectOwnerWorkerTokenCost(G.rules, 'createProject');
+  const assignWorkerTokenCosts = RuleSelector.getAssignWorkerTokenCost(G.rules, 'createProject');
+  const requiredWorkers = projectOwnerWorkerTokenCosts + assignWorkerTokenCosts;
+  const availableWorkers = PlayersSelector.getNumWorkerTokens(G.players, playerID);
+  if (availableWorkers < requiredWorkers) {
+    return invalid('INSUFFICIENT_WORKER_TOKENS', { required: requiredWorkers, available: availableWorkers });
+  }
+
+  if (G.table.projectBoard.every((slot) => slot.card)) {
+    return invalid('PROJECT_BOARD_FULL');
+  }
+
+  const projectCard = PlayersSelector.getProjectCardById(G.players, playerID, projectCardId);
+  if (!projectCard) {
+    return invalid('PROJECT_CARD_NOT_IN_HAND');
+  }
+
+  const jobCard = JobSlotsSelector.getJobCardById(G.table.jobSlots, jobCardId);
+  if (!jobCard) {
+    return invalid('JOB_CARD_NOT_ON_TABLE');
+  }
+
+  const ignoreRequirement = RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, playerID);
+  if (!ignoreRequirement && !Object.keys(projectCard.requirements).includes(jobCard.name)) {
+    return invalid('PROJECT_JOB_NOT_REQUIRED', { jobName: jobCard.name });
+  }
+
+  return VALID;
+};
+
+export const validateRecruit = (
+  G: ValidatableState,
+  playerID: PlayerID,
+  jobCardId: string,
+  projectSlotId: string,
+  opts?: SlotOptions,
+): ValidationResult => {
+  const base = validateSlotAndActionTokens(G, playerID, 'recruit', opts);
+  if (!base.valid) return base;
+
+  const requiredWorkers = RuleSelector.getAssignWorkerTokenCost(G.rules, 'recruit');
+  const availableWorkers = PlayersSelector.getNumWorkerTokens(G.players, playerID);
+  if (availableWorkers < requiredWorkers) {
+    return invalid('INSUFFICIENT_WORKER_TOKENS', { required: requiredWorkers, available: availableWorkers });
+  }
+
+  const jobCard = JobSlotsSelector.getJobCardById(G.table.jobSlots, jobCardId);
+  if (!jobCard) {
+    return invalid('JOB_CARD_NOT_ON_TABLE');
+  }
+
+  const activeProject = ProjectBoardSelector.getBySlotId(G.table.projectBoard, projectSlotId);
+  if (!activeProject || !activeProject.card) {
+    return invalid('PROJECT_SLOT_NOT_FOUND');
+  }
+
+  if (ProjectSlotSelector.hasWorker(activeProject, jobCard.name, playerID)) {
+    return invalid('WORKER_ALREADY_ASSIGNED', { jobName: jobCard.name });
+  }
+
+  const ignoreRequirement = RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, playerID);
+  if (!ignoreRequirement && !Object.keys(activeProject.card.requirements).includes(jobCard.name)) {
+    return invalid('PROJECT_JOB_NOT_REQUIRED', { jobName: jobCard.name });
+  }
+
+  const jobContribution = ProjectSlotSelector.getJobContribution(activeProject, jobCard.name);
+  if (jobContribution >= activeProject.card.requirements[jobCard.name]) {
+    return invalid('JOB_REQUIREMENT_FULFILLED', { jobName: jobCard.name });
+  }
+
+  return VALID;
+};
+
+const validateContributions = (
+  G: ValidatableState,
+  playerID: PlayerID,
+  actionName: 'contributeOwnedProjects' | 'contributeJoinedProjects',
+  contributions: ContributionAction[],
+  opts?: SlotOptions,
+): ValidationResult => {
+  const base = validateSlotAndActionTokens(G, playerID, actionName, opts);
+  if (!base.valid) return base;
+
+  if (contributions.length === 0) {
+    return invalid('CONTRIBUTION_EMPTY');
+  }
+
+  for (const { projectSlotId, jobName } of contributions) {
+    const projectSlot = ProjectBoardSelector.getBySlotId(G.table.projectBoard, projectSlotId);
+    if (!projectSlot || !projectSlot.card) {
+      return invalid('PROJECT_SLOT_NOT_FOUND');
+    }
+    const projectOwner = ProjectSlotSelector.getOwner(projectSlot);
+    if (actionName === 'contributeOwnedProjects' && projectOwner.owner !== playerID) {
+      return invalid('PROJECT_NOT_OWNED');
+    }
+    if (actionName === 'contributeJoinedProjects' && projectOwner.owner === playerID) {
+      return invalid('PROJECT_NOT_JOINED');
+    }
+    if (!ProjectSlotSelector.hasWorker(projectSlot, jobName, playerID)) {
+      return invalid('NO_WORKER_ON_JOB', { jobName });
+    }
+  }
+
+  const totalContributions = getTotalContributionValue(contributions);
+  const limit = RuleSelector.getMaxContributionValue(G.rules, actionName);
+  if (totalContributions > limit) {
+    return invalid('CONTRIBUTION_EXCEEDS_LIMIT', { limit });
+  }
+
+  return VALID;
+};
+
+export const validateContributeOwnedProjects = (
+  G: ValidatableState,
+  playerID: PlayerID,
+  contributions: ContributionAction[],
+  opts?: SlotOptions,
+): ValidationResult => validateContributions(G, playerID, 'contributeOwnedProjects', contributions, opts);
+
+export const validateContributeJoinedProjects = (
+  G: ValidatableState,
+  playerID: PlayerID,
+  contributions: ContributionAction[],
+  opts?: SlotOptions,
+): ValidationResult => validateContributions(G, playerID, 'contributeJoinedProjects', contributions, opts);
+
+export const validateRemoveAndRefillJobs = (
+  G: ValidatableState,
+  playerID: PlayerID,
+  jobCardIds: string[],
+  opts?: SlotOptions,
+): ValidationResult => {
+  const base = validateSlotAndActionTokens(G, playerID, 'removeAndRefillJobs', opts);
+  if (!base.valid) return base;
+
+  if (jobCardIds.length === 0) {
+    return invalid('NO_JOB_CARDS_SELECTED');
+  }
+
+  const jobCardsToRemove = JobSlotsSelector.getJobCardsByIds(G.table.jobSlots, jobCardIds);
+  if (jobCardsToRemove.length !== jobCardIds.length) {
+    return invalid('JOB_CARDS_NOT_ON_TABLE');
+  }
+
+  return VALID;
+};
+
+export const validateDiscardExcessJobCards = (
+  G: ValidatableState,
+  cardIds: string[],
+): ValidationResult => {
+  if (G.table.fourFreedomsPendingDiscards.length === 0) {
+    return invalid('NO_PENDING_DISCARDS');
+  }
+  if (cardIds.length !== 2) {
+    return invalid('DISCARD_COUNT_INVALID', { required: 2, selected: cardIds.length });
+  }
+  for (const id of cardIds) {
+    if (!G.table.jobSlots.find((c) => c.id === id)) {
+      return invalid('JOB_CARDS_NOT_ON_TABLE');
+    }
+  }
+  return VALID;
+};
+
+/**
+ * 加班 Overtime (mirror) preconditions: rule available, mirror slot free,
+ * enough AP for the mirror cost, the target action is 1-AP-eligible, and the
+ * target's slot has already been used this turn.
+ */
+export const validateMirror = (
+  G: ValidatableState,
+  playerID: PlayerID,
+  actionName: Exclude<ActionMoveName, 'mirror'>,
+): ValidationResult => {
+  if (
+    !RuleSelector.isActionSlotAvailable(G.rules, 'mirror') ||
+    ActionSlotSelector.isOccupied(G.table.actionSlots.mirror)
+  ) {
+    return invalid('OVERTIME_UNAVAILABLE');
+  }
+  const mirrorCost = RuleSelector.getActionTokenCost(G.rules, 'mirror');
+  const targetCost = RuleSelector.getActionTokenCost(G.rules, actionName);
+  if (targetCost > mirrorCost) {
+    return invalid('OVERTIME_INELIGIBLE_ACTION', { cost: targetCost });
+  }
+  const available = PlayersSelector.getNumActionTokens(G.players, playerID);
+  if (available < mirrorCost) {
+    return invalid('INSUFFICIENT_ACTION_TOKENS', { required: mirrorCost, available });
+  }
+  if (!ActionSlotSelector.isOccupied(G.table.actionSlots[actionName])) {
+    return invalid('OVERTIME_TARGET_NOT_USED');
+  }
+  return VALID;
+};

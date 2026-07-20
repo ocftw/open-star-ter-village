@@ -1,32 +1,22 @@
-import { JobCard } from '@/game/card';
 import { GameMove } from '@/game/core/type';
 import { DeckMutator } from '@/game/store/slice/deck';
 import { JobSlotsMutator } from '@/game/store/slice/jobSlots';
+import { ActionValidationError, validateDiscardExcessJobCards } from '@/game/core/stage/action/validate';
 
 export type DiscardExcessJobCards = (cardIds: string[]) => void;
 
 /**
  * Last-player move for 四大自由 (add_two_worker_slots): select exactly 2 job cards from
  * the table to discard, then end the turn.
- *
- * Validation:
- *   - Exactly 2 card IDs must be provided.
- *   - Both IDs must correspond to cards currently on the table.
  */
 export const discardExcessJobCards: GameMove<DiscardExcessJobCards> = ({ G, events }, cardIds) => {
-  if (G.table.fourFreedomsPendingDiscards.length === 0) {
-    throw new Error('No pending discards');
-  }
-  if (cardIds.length !== 2) {
-    throw new Error('Must select exactly 2 job cards to discard');
+  // Shared validation: same predicates the client preflight runs.
+  const result = validateDiscardExcessJobCards(G, cardIds);
+  if (!result.valid) {
+    throw new ActionValidationError(result);
   }
 
-  const cardsToDiscard: JobCard[] = [];
-  for (const id of cardIds) {
-    const card = G.table.jobSlots.find(c => c.id === id);
-    if (!card) throw new Error(`Job card ${id} not found on table`);
-    cardsToDiscard.push(card);
-  }
+  const cardsToDiscard = cardIds.map((id) => G.table.jobSlots.find((c) => c.id === id)!);
 
   JobSlotsMutator.removeJobCards(G.table.jobSlots, cardsToDiscard);
   DeckMutator.discard(G.decks.jobs, cardsToDiscard);
