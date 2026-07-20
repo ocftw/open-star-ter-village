@@ -1,0 +1,29 @@
+packages:
+  - homepage
+  - packages/*
+
+minimumReleaseAge: 1440
+
+overrides:
+  reselect: ^5.1.0
+
+allowBuilds:
+  '@sentry/cli': true
+  sharp: true
+  unrs-resolver: true
+
+packageExtensions:
+  boardgame.io@0.50.2:
+    peerDependencies:
+      '@types/react': ^18
+      '@types/react-dom': ^18
+      react: ^18
+      react-dom: ^18
+  next@14.2.3:
+    peerDependencies:
+      '@types/react': ^18
+      '@types/react-dom': ^18
+  next@16.2.10:
+    peerDependencies:
+      '@types/react': ^19
+      '@types/react-dom': ^19

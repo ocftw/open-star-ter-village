@@ -1,3 +1,1 @@
-.yarn/plugins/** binary
-.yarn/releases/** binary
 homepage/e2e/__screenshots__/** filter=lfs diff=lfs merge=lfs -text

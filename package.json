@@ -3,22 +3,17 @@
   "version": "0.0.1",
   "author": "Ben Liu <ben196888@gmail.com>, renovirtony <renovirtony@gmail.com>",
   "private": true,
-  "packageManager": "yarn@3.4.1",
-  "workspaces": [
-    "packages/*"
-  ],
+  "packageManager": "pnpm@11.15.1",
   "engines": {
-    "node": ">=18"
+    "node": ">=24"
   },
   "scripts": {
-    "webapp": "yarn workspace @open-star-ter-village/webapp",
-    "all:dev": "yarn workspaces foreach -pi run dev",
-    "all:build": "yarn workspaces foreach -pt run build",
-    "all:start": "yarn workspaces foreach -pt run start",
-    "all:lint": "yarn workspaces foreach -pt run lint"
-  },
-  "resolutions": {
-    "reselect": "^5.1.0"
+    "webapp": "pnpm --filter @open-star-ter-village/webapp",
+    "homepage": "pnpm --filter @open-starter-village/homepage",
+    "all:dev": "pnpm --recursive --parallel run dev",
+    "all:build": "pnpm --recursive run build",
+    "all:start": "pnpm --recursive --parallel run start",
+    "all:lint": "pnpm --recursive run lint"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.29.2",
