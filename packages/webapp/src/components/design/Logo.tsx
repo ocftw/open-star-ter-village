@@ -1,5 +1,7 @@
 type LogoProps = {
   size?: 'sm' | 'md' | 'lg';
+  /** Render only the star tile — for bars too narrow for the wordmark. */
+  iconOnly?: boolean;
 };
 
 const STAR_BOX: Record<NonNullable<LogoProps['size']>, number> = {
@@ -8,7 +10,14 @@ const STAR_BOX: Record<NonNullable<LogoProps['size']>, number> = {
   lg: 44,
 };
 
-export default function Logo({ size = 'md' }: LogoProps) {
+// Radius scales with the tile so small sizes stay a rounded square, not a circle.
+const STAR_RADIUS: Record<NonNullable<LogoProps['size']>, number> = {
+  sm: 10,
+  md: 12,
+  lg: 12,
+};
+
+export default function Logo({ size = 'md', iconOnly = false }: LogoProps) {
   const box = STAR_BOX[size];
   const big = size === 'lg';
   return (
@@ -19,7 +28,7 @@ export default function Logo({ size = 'md' }: LogoProps) {
           height: box,
           background: 'var(--orange)',
           border: '2px solid var(--ink)',
-          borderRadius: 12,
+          borderRadius: STAR_RADIUS[size],
           display: 'grid',
           placeItems: 'center',
           boxShadow: '0 3px 0 var(--ink)',
@@ -39,30 +48,32 @@ export default function Logo({ size = 'md' }: LogoProps) {
           ★
         </span>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
-        <div
-          style={{
-            fontFamily: 'var(--font-zh)',
-            fontWeight: 900,
-            fontSize: big ? 22 : 16,
-            color: 'var(--ink)',
-          }}
-        >
-          開源星手村
+      {!iconOnly && (
+        <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
+          <div
+            style={{
+              fontFamily: 'var(--font-zh)',
+              fontWeight: 900,
+              fontSize: big ? 22 : 16,
+              color: 'var(--ink)',
+            }}
+          >
+            開源星手村
+          </div>
+          <div
+            style={{
+              fontFamily: 'var(--font-en)',
+              fontSize: big ? 11 : 9,
+              color: 'var(--ink-mute)',
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+              marginTop: 2,
+            }}
+          >
+            Open StarTer Village
+          </div>
         </div>
-        <div
-          style={{
-            fontFamily: 'var(--font-en)',
-            fontSize: big ? 11 : 9,
-            color: 'var(--ink-mute)',
-            letterSpacing: '0.08em',
-            textTransform: 'uppercase',
-            marginTop: 2,
-          }}
-        >
-          Open StarTer Village
-        </div>
-      </div>
+      )}
     </div>
   );
 }
