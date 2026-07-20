@@ -11,25 +11,31 @@
 ## 專案設定
 
 - Runtime：Node.js >= 24
-- Package manager：Yarn 3.4.1
+- Package manager：pnpm 11.15.1（repository root workspace）
 - Framework：Next.js 16
 - CMS：Decap CMS
 
 常用指令：
 
 ```bash
-yarn dev        # 啟動開發伺服器
-yarn build      # 建置網站
-yarn start      # 啟動 production server
-yarn lint       # Prettier check + ESLint
-yarn lint:fix   # 自動修正格式與 lint 問題
-yarn test:admin # 驗證 production build 的 Decap CMS shell
-yarn test:visual # 比對 public pages 的 Playwright 視覺快照
+pnpm homepage dev         # 啟動開發伺服器
+pnpm homepage build       # 建置網站
+pnpm homepage start       # 啟動 production server
+pnpm homepage lint        # Prettier check + ESLint
+pnpm homepage lint:fix    # 自動修正格式與 lint 問題
+pnpm homepage test:admin  # 驗證 production build 的 Decap CMS shell
+pnpm homepage test:visual # 比對 public pages 的 Playwright 視覺快照
 ```
 
 ## 💫 部署
 
-[![部署至 Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/ocftw/open-star-ter-village/tree/homepage)
+Netlify 必須從 repository 根目錄讀取 `pnpm-lock.yaml` 與 `netlify.toml`：
+
+- Base directory 保持空白（repository root）。
+- Package directory 設為 `homepage`。
+- Build command 與 Publish directory 由根目錄的 `netlify.toml` 管理。
+
+[![部署至 Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/ocftw/open-star-ter-village)
 
 ### 線上展示
 

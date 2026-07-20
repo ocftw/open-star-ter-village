@@ -68,8 +68,8 @@ English version: [README.en.md](./README.en.md)
 
 ## 開發環境與專案結構
 
-此 repository 使用 Yarn 3.4.1 管理 webapp workspace；homepage 是同一個
-repository 內的獨立 package：
+此 repository 使用 pnpm 11.15.1 monorepo workspace 統一管理 webapp 與
+homepage：
 
 - `packages/webapp/`：主要線上遊戲，包含 Next.js client 與 boardgame.io 遊戲伺服器。
 - `homepage/`：官方網站，獨立部署於 Netlify，使用 Next.js 與 Decap CMS。
@@ -77,16 +77,16 @@ repository 內的獨立 package：
 
 基本需求：
 
-- 根目錄與 webapp：Node.js >= 18。
-- Homepage：Node.js >= 24。
-- 使用 repository 指定的 Yarn 版本，不需改用全域 Yarn。
+- Node.js >= 24。
+- 使用 repository 指定的 pnpm 版本，不需另行安裝全域 pnpm。
+- 從 repository 根目錄執行 `pnpm install --frozen-lockfile` 安裝所有 workspace 套件。
 
 根目錄 workspace 常用指令：
 
 ```bash
-yarn all:dev      # 啟動所有 Yarn workspace 的開發伺服器
-yarn all:build    # 建置所有 Yarn workspace
-yarn all:lint     # 檢查所有 Yarn workspace
+pnpm all:dev      # 啟動所有 pnpm workspace 的開發伺服器
+pnpm all:build    # 建置所有 pnpm workspace
+pnpm all:lint     # 檢查所有 pnpm workspace
 ```
 
 Webapp 與 homepage 的細節請參考：

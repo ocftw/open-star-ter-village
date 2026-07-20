@@ -57,14 +57,14 @@ After implementing your task, run these in order:
 
 **For webapp changes:**
 ```bash
-yarn webapp build        # must pass
-yarn webapp test         # must pass
-yarn webapp exec tsc --noEmit  # must pass
+pnpm webapp build        # must pass
+pnpm webapp test         # must pass
+pnpm webapp exec tsc --noEmit  # must pass
 ```
 
 **For homepage changes:**
 ```bash
-cd homepage && yarn lint  # must pass
+pnpm homepage lint       # must pass
 ```
 
 ### 2. Simplify
@@ -79,7 +79,7 @@ When the Supervisor runs a post-plan review, all three checks run in parallel:
 
 1. `/code-review:code-review` — Claude structural review
 2. `/codex:review` — Codex review
-3. `yarn webapp test` (or `cd homepage && yarn lint`) — automated tests
+3. `pnpm webapp test` (or `pnpm homepage lint`) — automated tests
 
 Findings are structured as:
 
