@@ -1,63 +1,81 @@
-import { useState } from 'react';
-import Modal from 'react-bootstrap/Modal';
-import Button from 'react-bootstrap/Button';
+import { useRef } from 'react';
 import { ParseMarkdownAndHtml } from '../parseMarkdownAndHtml';
 
 function CardModal({ card }) {
-  const [show, setShow] = useState(false);
+  const dialogRef = useRef(null);
+  const titleId = `${card.data.id}-modal-title`;
 
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  const handleClose = () => dialogRef.current?.close();
+  const handleShow = () => dialogRef.current?.showModal();
+  const handleBackdropClick = (event) => {
+    if (event.target === event.currentTarget) {
+      handleClose();
+    }
+  };
 
   return (
     <>
-      <Button variant="light" onClick={handleShow}>
-        More...
-      </Button>
+      <button
+        type="button"
+        className="btn project-card-more"
+        onClick={handleShow}
+      >
+        More…
+      </button>
 
-      <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton></Modal.Header>
-        <Modal.Body>
-          <div
-            className="col-md-6 col-xl-4 mb-3"
-            id={card.data.id}
-            style={{ maxWidth: '100%' }} // fix card modal content size
-          >
-            <div
-              className="section-main"
-              style={{ border: `1rem solid ${card.data.color.background}` }}
+      <dialog
+        ref={dialogRef}
+        className="project-card-modal"
+        aria-labelledby={titleId}
+        onClick={handleBackdropClick}
+      >
+        <div
+          className="project-card-modal-frame"
+          style={{ borderColor: card.data.color.background }}
+        >
+          <header className="project-card-modal-header">
+            <h2 id={titleId}>{card.data.title}</h2>
+            <button
+              type="button"
+              className="project-card-modal-close"
+              aria-label="Close"
+              onClick={handleClose}
             >
-              <h3>{card.data.title}</h3>
-              <div className="d-flex flex-column">
-                <div className="d-flex flex-wrap mb-3 justify-content-evenly">
-                  {card.data.avatarList.map((avatar) => (
+              ×
+            </button>
+          </header>
+          <div className="project-card-modal-body">
+            <div className="d-flex flex-column">
+              <div className="d-flex flex-wrap mb-3 justify-content-evenly">
+                {card.data.avatarList.map((avatar) => (
+                  <div
+                    key={avatar.data.title}
+                    className="col-3 avatar avatar-list"
+                    style={{
+                      backgroundColor: avatar.data.color.background,
+                      border: `3px solid ${avatar.data.color.border}`,
+                    }}
+                  >
                     <div
-                      key={avatar.data.title}
-                      className="col-3 avatar avatar-list"
                       style={{
-                        backgroundColor: `${avatar.data.color.background}`,
-                        border: `3px solid ${avatar.data.color.border}`,
+                        backgroundImage: `url(${avatar.data.image})`,
                       }}
                     >
-                      <div
-                        style={{
-                          backgroundImage: `url(${avatar.data.image})`,
-                        }}
-                      >
-                        &nbsp;
-                      </div>
+                      &nbsp;
                     </div>
-                  ))}
-                </div>
-                <strong className="mb-3">{card.data.description}</strong>
+                  </div>
+                ))}
+              </div>
+              <strong className="mb-3">{card.data.description}</strong>
+              <div className="project-card-modal-content">
                 <ParseMarkdownAndHtml markdown={true}>
                   {card.content}
                 </ParseMarkdownAndHtml>
               </div>
             </div>
           </div>
-        </Modal.Body>
-      </Modal>
+        </div>
+      </dialog>
     </>
   );
 }

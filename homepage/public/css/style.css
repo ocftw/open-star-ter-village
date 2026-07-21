@@ -212,13 +212,64 @@ h6 {
 .margin-3-percent {
   margin: 3%;
 }
-/* .btn {
+.btn {
   background: #1ea6b9 0% 0% no-repeat padding-box;
   border-radius: 10px;
   text-align: center;
   letter-spacing: 2.7px;
   color: #ffffff;
-} */
+}
+.project-card-more.btn {
+  align-self: center;
+  background: #f8f9fa;
+  color: #212529;
+}
+.project-card-modal {
+  width: min(42rem, calc(100% - 2rem));
+  max-height: calc(100% - 2rem);
+  padding: 0;
+  overflow: auto;
+  border: 0;
+  border-radius: 0.5rem;
+}
+.project-card-modal::backdrop {
+  background: rgb(0 0 0 / 50%);
+}
+.project-card-modal-frame {
+  border: 1rem solid;
+  background: #ffffff;
+}
+.project-card-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 1rem;
+  border-bottom: 1px solid #dee2e6;
+}
+.project-card-modal-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  text-align: left;
+}
+.project-card-modal-close {
+  padding: 0 0.25rem;
+  border: 0;
+  background: transparent;
+  color: #6c757d;
+  font-size: 2rem;
+  line-height: 1;
+}
+.project-card-modal-body {
+  padding: 1rem;
+}
+.project-card-modal-content ul {
+  padding: 0;
+  list-style-type: none;
+}
+.project-card-modal-content ul li::before {
+  content: '🔗';
+  margin-right: 10px;
+}
 .section-main .four-items .box {
   background: #fefefe 0% 0% no-repeat padding-box;
   box-shadow: 3px 0.52px 10px #2b120229;

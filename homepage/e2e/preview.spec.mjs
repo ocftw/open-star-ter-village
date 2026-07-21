@@ -59,3 +59,24 @@ test('Decap CMS shell is healthy on Netlify', async ({ page, baseURL }) => {
   expect(failures.pageErrors).toEqual([]);
   expect(failures.requestFailures).toEqual([]);
 });
+
+test('project card modal is interactive on Netlify', async ({
+  page,
+  baseURL,
+}) => {
+  const failures = monitorFirstPartyFailures(page, baseURL);
+  const response = await page.goto('/cards/', {
+    waitUntil: 'domcontentloaded',
+  });
+
+  expect(response?.status()).toBe(200);
+  await page.getByRole('button', { name: 'More…' }).first().click();
+
+  const dialog = page.getByRole('dialog');
+  await expect(dialog).toBeVisible();
+  await expect(
+    dialog.getByRole('heading', { name: 'Democracy OS' }),
+  ).toBeVisible();
+  expect(failures.pageErrors).toEqual([]);
+  expect(failures.requestFailures).toEqual([]);
+});
