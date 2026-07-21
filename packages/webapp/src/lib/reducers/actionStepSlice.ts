@@ -11,6 +11,11 @@ export enum UserActionMoves {
 
 interface ActionStepState {
   currentAction: UserActionMoves | null;
+  /**
+   * 斜槓青年: the required profession position chosen for a job card
+   * that does not match the target project's requirements.
+   */
+  assignedJobName: string | null;
   interactiveState: {
     handProjectCards: boolean;
     jobSlots: boolean;
@@ -30,6 +35,7 @@ const initialInteractiveState: ActionStepState['interactiveState'] = {
 
 const initialState: ActionStepState = {
   currentAction: null,
+  assignedJobName: null,
   interactiveState: initialInteractiveState,
 };
 
@@ -39,9 +45,14 @@ const actionStepSlice = createSlice({
   reducers: {
     setCurrentAction: (state, action: PayloadAction<UserActionMoves | null>) => {
       state.currentAction = action.payload;
+      state.assignedJobName = null;
+    },
+    setAssignedJobName: (state, action: PayloadAction<string | null>) => {
+      state.assignedJobName = action.payload;
     },
     resetAction: (state) => {
       state.currentAction = null;
+      state.assignedJobName = null;
       state.interactiveState = initialInteractiveState;
     },
     setHandProjectCardsInteractive: (state) => {
@@ -65,6 +76,7 @@ const actionStepSlice = createSlice({
   },
   selectors: {
     getCurrentAction: (state: ActionStepState) => state.currentAction,
+    getAssignedJobName: (state: ActionStepState) => state.assignedJobName,
     isHandProjectCardsInteractive: (state: ActionStepState) => state.interactiveState.handProjectCards,
     isJobSlotsInteractive: (state: ActionStepState) => state.interactiveState.jobSlots,
     isProjectSlotsInteractive: (state: ActionStepState) => state.interactiveState.projectSlots,
@@ -75,6 +87,7 @@ const actionStepSlice = createSlice({
 
 export const {
   setCurrentAction,
+  setAssignedJobName,
   resetAction,
   setHandProjectCardsInteractive,
   setJobSlotsInteractive,
@@ -86,6 +99,7 @@ export const {
 
 export const {
   getCurrentAction,
+  getAssignedJobName,
   isHandProjectCardsInteractive,
   isJobSlotsInteractive,
   isProjectSlotsInteractive,

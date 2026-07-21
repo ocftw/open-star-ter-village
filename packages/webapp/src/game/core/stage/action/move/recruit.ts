@@ -8,11 +8,13 @@ import { RuleMutator, RuleSelector } from '@/game/store/slice/rule';
 import { JobSlotsMutator, JobSlotsSelector } from '@/game/store/slice/jobSlots';
 import { ActionValidationError, validateRecruit } from '@/game/core/stage/action/validate';
 
-export type Recruit = (jobCardId: string, projectSlotId: string) => void;
+export type Recruit = (jobCardId: string, projectSlotId: string, assignedJobName?: string) => void;
 
-export const recruit: GameMove<Recruit> = ({ G, playerID }, jobCardId, projectSlotId) => {
-  // Shared validation: same predicates the client preflight runs.
-  const result = validateRecruit(G, playerID, jobCardId, projectSlotId);
+export const recruit: GameMove<Recruit> = ({ G, playerID }, jobCardId, projectSlotId, assignedJobName) => {
+  // Shared validation: same predicates the client preflight runs. Whether
+  // assignedJobName may override the requirement is derived from
+  // authoritative event state inside the validator.
+  const result = validateRecruit(G, playerID, jobCardId, projectSlotId, assignedJobName);
   if (!result.valid) {
     throw new ActionValidationError(result);
   }
@@ -37,7 +39,11 @@ export const recruit: GameMove<Recruit> = ({ G, playerID }, jobCardId, projectSl
   PlayersMutator.useWorkerTokens(G.players, playerID, assignWorkerTokenCosts);
 
   const initialContributionValue = RuleSelector.getAssignWorkerInitialContributionValue(G.rules, 'recruit');
-  ProjectSlotMutator.assignWorker(activeProject, jobCard.name, playerID, initialContributionValue);
+  // 斜槓青年: a mismatched card records its contribution under the
+  // player-chosen required position, never under an unrequired profession.
+  const matchesRequirement = Object.keys(activeProject.card!.requirements).includes(jobCard.name);
+  const effectiveJobName = matchesRequirement ? jobCard.name : assignedJobName!;
+  ProjectSlotMutator.assignWorker(activeProject, effectiveJobName, playerID, initialContributionValue);
 
   // Refill job card
   const maxJobSlots = RuleSelector.getTableMaxJobSlots(G.rules);

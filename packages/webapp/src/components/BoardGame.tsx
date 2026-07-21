@@ -8,7 +8,18 @@ import { Dialog, DialogContent } from '@mui/material';
 import { GameContext } from './GameContextHelpers';
 import { GAME_SERVER_URL } from '@/lib/lobbyClient';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { UserActionMoves, getCurrentAction, setCurrentAction } from '@/lib/reducers/actionStepSlice';
+import {
+  UserActionMoves,
+  getAssignedJobName,
+  getCurrentAction,
+  setAssignedJobName,
+  setCurrentAction,
+} from '@/lib/reducers/actionStepSlice';
+import { getSelectedJobSlots } from '@/lib/reducers/jobSlotSlice';
+import { getSelectedProjectSlots } from '@/lib/reducers/projectSlotSlice';
+import { JobSlotsSelector } from '@/game/store/slice/jobSlots';
+import { RuleSelector } from '@/game/store/slice/rule';
+import { ProfessionPicker, getEligibleTargetJobNames } from './board/professionPicker';
 import { PLAYER_COLORS, StickerButton } from '@/components/design';
 import { ScoreBoardSelector } from '@/game/store/slice/scoreBoard';
 import { getPlayerName } from './playerNameMap';
@@ -42,6 +53,30 @@ const Board: React.FC<GameContext> = (gameContext) => {
 
   const idle = isMyTurn && currentAction === null && !showDiscardPanel && !gameover;
   const isMobile = useIsMobile();
+
+  // 斜槓青年 target-position picker: during Recruit with a mismatched
+  // job card and the event entitlement available, the selected project's
+  // eligible requirement rows become tappable targets.
+  const jobSelectionMap = useAppSelector(getSelectedJobSlots);
+  const projectSelectionMap = useAppSelector(getSelectedProjectSlots);
+  const assignedJobName = useAppSelector(getAssignedJobName);
+  const selectedJobId = Object.keys(jobSelectionMap).find((id) => jobSelectionMap[id]);
+  const selectedJobCard = selectedJobId
+    ? JobSlotsSelector.getJobCardById(G.table.jobSlots, selectedJobId)
+    : undefined;
+  const overrideAvailable =
+    playerID !== null && RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, playerID);
+  const professionPickerFor = (slot: ProjectSlotState): ProfessionPicker | undefined => {
+    if (currentAction !== UserActionMoves.Recruit) return undefined;
+    if (!overrideAvailable || !selectedJobCard || !slot.card) return undefined;
+    if (!projectSelectionMap[slot.id]) return undefined;
+    if (Object.keys(slot.card.requirements).includes(selectedJobCard.name)) return undefined;
+    return {
+      eligibleJobNames: getEligibleTargetJobNames(slot, playerID!),
+      selectedJobName: assignedJobName,
+      onPick: (jobName) => dispatch(setAssignedJobName(assignedJobName === jobName ? null : jobName)),
+    };
+  };
 
   // Idle tap on a board project → contribute; ownership picks the move.
   const handleProjectIdleTap = (slot: ProjectSlotState) => {
@@ -147,6 +182,7 @@ const Board: React.FC<GameContext> = (gameContext) => {
               matchData={matchData}
               idle={idle}
               onIdleTap={handleProjectIdleTap}
+              professionPicker={professionPickerFor(slot)}
             />
           ))}
         </div>

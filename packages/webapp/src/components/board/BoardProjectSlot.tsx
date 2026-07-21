@@ -15,6 +15,7 @@ import {
 } from '@/lib/reducers/projectSlotSlice';
 import { getContributions, updateContribute } from '@/lib/reducers/contributionSlice';
 import { getPlayerName } from '@/components/playerNameMap';
+import { ProfessionPicker } from './professionPicker';
 
 type BoardProjectSlotProps = {
   slot: ProjectSlotState;
@@ -23,12 +24,21 @@ type BoardProjectSlotProps = {
   /** Called when the slot is tapped while no action is in progress (idle inference). */
   onIdleTap?: (slot: ProjectSlotState) => void;
   idle: boolean;
+  /** 斜槓青年: makes eligible requirement rows tappable targets. */
+  professionPicker?: ProfessionPicker;
 };
 
 const seatColor = (worker: PlayerID) => `var(--p${worker})`;
 
 /** Occupied project slot on the table (design: ProjectSlot). */
-export default function BoardProjectSlot({ slot, playerID, matchData, onIdleTap, idle }: BoardProjectSlotProps) {
+export default function BoardProjectSlot({
+  slot,
+  playerID,
+  matchData,
+  onIdleTap,
+  idle,
+  professionPicker,
+}: BoardProjectSlotProps) {
   const dispatch = useAppDispatch();
   const slotsInteractive = useAppSelector(isProjectSlotsInteractive);
   const ownedInteractive = useAppSelector(isOwnedContributionInteractive);
@@ -63,10 +73,13 @@ export default function BoardProjectSlot({ slot, playerID, matchData, onIdleTap,
   const requiredJobs = Object.keys(card.requirements);
   const clickable = slotsInteractive || (idle && !!onIdleTap);
 
-  // contributor legend totals (committed only)
+  // contributor legend totals (committed only). Entries whose jobName is not a
+  // requirement (orphans from the pre-fix bug) are ignored defensively.
   const totals: Record<string, number> = {};
   slot.contributions.forEach((c) => {
-    if (c.value > 0) totals[c.worker] = (totals[c.worker] ?? 0) + c.value;
+    if (c.value > 0 && requiredJobs.includes(c.jobName)) {
+      totals[c.worker] = (totals[c.worker] ?? 0) + c.value;
+    }
   });
 
   return (
@@ -165,8 +178,47 @@ export default function BoardProjectSlot({ slot, playerID, matchData, onIdleTap,
           const myRow = playerID !== null && jobContributions.some((c) => c.worker === playerID);
           const showStepper = contributionEditable && myRow;
           const remaining = need - committed - pending;
+          // 斜槓青年 target picking: eligible rows become tap targets.
+          const pickerActive = !!professionPicker;
+          const pickerEligible = pickerActive && professionPicker!.eligibleJobNames.includes(jobName);
+          const pickerSelected = pickerEligible && professionPicker!.selectedJobName === jobName;
           return (
-            <div key={jobName} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div
+              key={jobName}
+              role={pickerEligible ? 'button' : undefined}
+              aria-pressed={pickerEligible ? pickerSelected : undefined}
+              data-testid={pickerEligible ? `profession-target-${jobName}` : undefined}
+              title={
+                pickerActive && !pickerEligible
+                  ? '這個職業位置無法選擇（已滿或已指派）。 · Position unavailable (full or already yours).'
+                  : undefined
+              }
+              onClick={
+                pickerEligible
+                  ? (e) => {
+                      e.stopPropagation();
+                      professionPicker!.onPick(jobName);
+                    }
+                  : undefined
+              }
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                ...(pickerActive && {
+                  borderRadius: 10,
+                  padding: '2px 4px',
+                  outline: pickerEligible
+                    ? pickerSelected
+                      ? '2px solid var(--orange)'
+                      : '2px dashed var(--orange)'
+                    : undefined,
+                  background: pickerSelected ? 'var(--orange-soft)' : undefined,
+                  cursor: pickerEligible ? 'pointer' : undefined,
+                  opacity: pickerEligible ? 1 : 0.5,
+                }),
+              }}
+            >
               {jobMeta ? (
                 <CharacterAvatar role={jobMeta.role} size="sm" title={jobName} />
               ) : (

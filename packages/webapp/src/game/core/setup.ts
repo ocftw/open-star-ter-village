@@ -96,15 +96,19 @@ export const setup: SetupFn<GameState> = ({ ctx, random }, setupData?: GameSetup
   const basicEventCards = eventCards.filter(card => card.type === 'basic');
   const nonEndGameEventCardCount = RuleSelector.getNonEndGameNumberOfEventCards(G.rules);
 
-  // Support a demo/test mode: when the URL contains ?demo=four-freedoms, force
-  // 四大自由 as the first event card so screenshots can be captured deterministically.
+  // Support a demo/test mode: when the URL contains ?demo=<key>, force that
+  // event as the first event card so screenshots can be captured deterministically.
   // This is only active in development (Local transport runs in the browser).
+  const demoForcedEvents: Record<string, string> = {
+    'four-freedoms': 'add_two_worker_slots',
+    'slash-youth': 'ignore_first_worker_requirement',
+  };
   const _window = (globalThis as { window?: { location: { search: string } } }).window;
   const demoParam = _window !== undefined
     ? new URLSearchParams(_window.location.search).get('demo')
     : null;
   const forcedFirstEvent = setupData?.forcedFirstEvent
-    ?? (demoParam === 'four-freedoms' ? 'add_two_worker_slots' : undefined);
+    ?? (demoParam !== null ? demoForcedEvents[demoParam] : undefined);
 
   let shuffledEventCards: EventCard[];
   if (forcedFirstEvent) {

@@ -1,7 +1,18 @@
 import { GameContext } from '@/components/GameContextHelpers';
+import { ProjectCard } from '@/game';
 import { PlayersSelector } from '@/game/store/slice/players';
+import { JobSlotsSelector } from '@/game/store/slice/jobSlots';
+import { RuleSelector } from '@/game/store/slice/rule';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { UserActionMoves, isHandProjectCardsInteractive, setCurrentAction } from '@/lib/reducers/actionStepSlice';
+import {
+  UserActionMoves,
+  getAssignedJobName,
+  getCurrentAction,
+  isHandProjectCardsInteractive,
+  setAssignedJobName,
+  setCurrentAction,
+} from '@/lib/reducers/actionStepSlice';
+import { getSelectedJobSlots } from '@/lib/reducers/jobSlotSlice';
 import {
   getSelectedHandProjectCards,
   resetHandProjectCardSelection,
@@ -9,6 +20,7 @@ import {
 } from '@/lib/reducers/handProjectCardSlice';
 import EventBanner from './EventBanner';
 import ProjectCardFace from './ProjectCardFace';
+import { ProfessionPicker } from './professionPicker';
 
 /**
  * Your hand. `rail` = desktop left column with the event card below;
@@ -27,10 +39,33 @@ export default function HandPanel({
   const dispatch = useAppDispatch();
   const handInteractive = useAppSelector(isHandProjectCardsInteractive);
   const selectedCards = useAppSelector(getSelectedHandProjectCards);
+  const currentAction = useAppSelector(getCurrentAction);
+  const jobSelectionMap = useAppSelector(getSelectedJobSlots);
+  const assignedJobName = useAppSelector(getAssignedJobName);
 
   if (playerID === null) return null;
   const hand = PlayersSelector.getProjectCards(G.players, playerID);
   const event = G.table.eventSlot;
+
+  // 斜槓青年 target-position picker: during Create Project with a
+  // mismatched job card and the event entitlement available, the selected hand
+  // card's requirement rows become tappable targets (all positions are open on
+  // a new project).
+  const selectedJobId = Object.keys(jobSelectionMap).find((id) => jobSelectionMap[id]);
+  const selectedJobCard = selectedJobId
+    ? JobSlotsSelector.getJobCardById(G.table.jobSlots, selectedJobId)
+    : undefined;
+  const overrideAvailable = RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, playerID);
+  const professionPickerFor = (card: ProjectCard): ProfessionPicker | undefined => {
+    if (currentAction !== UserActionMoves.CreateProject) return undefined;
+    if (!overrideAvailable || !selectedJobCard || !selectedCards[card.id]) return undefined;
+    if (Object.keys(card.requirements).includes(selectedJobCard.name)) return undefined;
+    return {
+      eligibleJobNames: Object.keys(card.requirements),
+      selectedJobName: assignedJobName,
+      onPick: (jobName) => dispatch(setAssignedJobName(assignedJobName === jobName ? null : jobName)),
+    };
+  };
 
   const handleTap = (cardId: string) => {
     if (handInteractive) {
@@ -76,6 +111,7 @@ export default function HandPanel({
               data-testid={`hand-card-${card.id}`}
               selected={handInteractive && !!selectedCards[card.id]}
               onClick={idle || handInteractive ? () => handleTap(card.id) : undefined}
+              professionPicker={professionPickerFor(card)}
             />
           </div>
         ))}

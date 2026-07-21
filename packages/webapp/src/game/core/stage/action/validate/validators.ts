@@ -48,6 +48,7 @@ export const validateCreateProject = (
   playerID: PlayerID,
   projectCardId: string,
   jobCardId: string,
+  assignedJobName?: string,
   opts?: SlotOptions,
 ): ValidationResult => {
   const base = validateSlotAndActionTokens(G, playerID, 'createProject', opts);
@@ -75,9 +76,20 @@ export const validateCreateProject = (
     return invalid('JOB_CARD_NOT_ON_TABLE');
   }
 
-  const ignoreRequirement = RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, playerID);
-  if (!ignoreRequirement && !Object.keys(projectCard.requirements).includes(jobCard.name)) {
+  // Matching cards use their own profession; assignedJobName is ignored.
+  if (Object.keys(projectCard.requirements).includes(jobCard.name)) {
+    return VALID;
+  }
+
+  // Mismatched card: only valid through 斜槓青年, and it must name a target position.
+  if (!RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, playerID)) {
     return invalid('PROJECT_JOB_NOT_REQUIRED', { jobName: jobCard.name });
+  }
+  if (!assignedJobName) {
+    return invalid('PROFESSION_TARGET_REQUIRED');
+  }
+  if (!Object.keys(projectCard.requirements).includes(assignedJobName)) {
+    return invalid('PROFESSION_TARGET_UNAVAILABLE');
   }
 
   return VALID;
@@ -88,6 +100,7 @@ export const validateRecruit = (
   playerID: PlayerID,
   jobCardId: string,
   projectSlotId: string,
+  assignedJobName?: string,
   opts?: SlotOptions,
 ): ValidationResult => {
   const base = validateSlotAndActionTokens(G, playerID, 'recruit', opts);
@@ -109,18 +122,35 @@ export const validateRecruit = (
     return invalid('PROJECT_SLOT_NOT_FOUND');
   }
 
-  if (ProjectSlotSelector.hasWorker(activeProject, jobCard.name, playerID)) {
-    return invalid('WORKER_ALREADY_ASSIGNED', { jobName: jobCard.name });
+  // Matching cards use their own profession; assignedJobName is ignored.
+  if (Object.keys(activeProject.card.requirements).includes(jobCard.name)) {
+    if (ProjectSlotSelector.hasWorker(activeProject, jobCard.name, playerID)) {
+      return invalid('WORKER_ALREADY_ASSIGNED', { jobName: jobCard.name });
+    }
+    const jobContribution = ProjectSlotSelector.getJobContribution(activeProject, jobCard.name);
+    if (jobContribution >= activeProject.card.requirements[jobCard.name]) {
+      return invalid('JOB_REQUIREMENT_FULFILLED', { jobName: jobCard.name });
+    }
+    return VALID;
   }
 
-  const ignoreRequirement = RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, playerID);
-  if (!ignoreRequirement && !Object.keys(activeProject.card.requirements).includes(jobCard.name)) {
+  // Mismatched card: only valid through 斜槓青年, targeting a chosen position.
+  if (!RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, playerID)) {
     return invalid('PROJECT_JOB_NOT_REQUIRED', { jobName: jobCard.name });
   }
-
-  const jobContribution = ProjectSlotSelector.getJobContribution(activeProject, jobCard.name);
-  if (jobContribution >= activeProject.card.requirements[jobCard.name]) {
-    return invalid('JOB_REQUIREMENT_FULFILLED', { jobName: jobCard.name });
+  if (!assignedJobName) {
+    return invalid('PROFESSION_TARGET_REQUIRED');
+  }
+  if (!Object.keys(activeProject.card.requirements).includes(assignedJobName)) {
+    return invalid('PROFESSION_TARGET_UNAVAILABLE');
+  }
+  // Per-player duplicate restriction applies to the TARGET profession.
+  if (ProjectSlotSelector.hasWorker(activeProject, assignedJobName, playerID)) {
+    return invalid('WORKER_ALREADY_ASSIGNED', { jobName: assignedJobName });
+  }
+  const targetContribution = ProjectSlotSelector.getJobContribution(activeProject, assignedJobName);
+  if (targetContribution >= activeProject.card.requirements[assignedJobName]) {
+    return invalid('JOB_REQUIREMENT_FULFILLED', { jobName: assignedJobName });
   }
 
   return VALID;
