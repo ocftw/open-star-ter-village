@@ -101,7 +101,6 @@ pnpm install --frozen-lockfile
 > 若要在本地端開發並測試 CMS，需要先在 **開源星手村 git 專案根目錄** 啟動 `decap-server`：
 >
 > ```shell
-> cd ../ # 返回 open-star-ter-village (git 根目錄)
 > npx decap-server
 > ```
 

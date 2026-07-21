@@ -39,7 +39,7 @@ not conflict with the webapp on ports `3000` and `3001`.
 Run a single Jest test file from this package:
 
 ```bash
-pnpm test --testPathPattern=utils
+pnpm webapp test --testPathPattern=game.test
 ```
 
 ## Deployment
