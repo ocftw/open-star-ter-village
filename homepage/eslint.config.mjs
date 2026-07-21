@@ -7,7 +7,7 @@ export default defineConfig([
   prettier,
   globalIgnores([
     '.next/**',
-    '.yarn/**',
+    '.pnpm-store/**',
     'coverage/**',
     'playwright-report/**',
     'test-results/**',

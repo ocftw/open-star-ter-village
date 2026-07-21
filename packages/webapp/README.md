@@ -10,33 +10,36 @@ Rulebook: [Rulebook of Open StarTer Village](https://drive.google.com/file/d/1gB
 
 - Next.js client: `http://localhost:3000`
 - Game server: `http://localhost:3001`
-- Node.js: `>=18`
-- Package manager: repository Yarn `3.4.1`
+- Node.js: `>=24`
+- Package manager: repository pnpm `11.15.1`
 
 ## Commands
 
 Run these from the repository root:
 
 ```bash
-yarn webapp dev        # Start the Next.js client and game server
-yarn webapp build      # Build Next.js and compile the game server
-yarn webapp start      # Start the built app and game server
-yarn webapp test       # Run Jest tests
-yarn webapp lint       # Run ESLint
+pnpm webapp dev        # Start the Next.js client and game server
+pnpm webapp build      # Build Next.js and compile the game server
+pnpm webapp start      # Start the built app and game server
+pnpm webapp test       # Run Jest tests
+pnpm webapp lint       # Run ESLint
 ```
 
-Run all Yarn workspaces from the repository root:
+Run all pnpm workspaces from the repository root:
 
 ```bash
-yarn all:dev
-yarn all:build
-yarn all:lint
+pnpm all:dev
+pnpm all:build
+pnpm all:lint
 ```
+
+The aggregate development command runs the homepage on port `3100` so it does
+not conflict with the webapp on ports `3000` and `3001`.
 
 Run a single Jest test file from this package:
 
 ```bash
-yarn test --testPathPattern=utils
+pnpm webapp test --testPathPattern=game.test
 ```
 
 ## Deployment
@@ -71,7 +74,7 @@ Prerequisites:
 
 - A Fly.io account.
 - The `flyctl` CLI.
-- Node.js 18+ and Yarn 3.4.1 for local verification.
+- Node.js 24+ and the repository pnpm 11.15.1 for local verification.
 
 Create an app from the repository root:
 
@@ -244,7 +247,7 @@ The web app has two runtime processes:
    boardgame.io server with Socket.IO transport, compiled to
    `packages/webapp/dist/` by `tsconfig.server.json`.
 
-Both processes are started by `yarn webapp dev`.
+Both processes are started by `pnpm webapp dev`.
 
 ### Game State
 

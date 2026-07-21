@@ -27,6 +27,13 @@ const monitorFirstPartyFailures = (page, baseURL) => {
 for (const route of publicRoutes) {
   test(`${route.name} is healthy on Netlify`, async ({ page, baseURL }) => {
     const failures = monitorFirstPartyFailures(page, baseURL);
+    await page.context().addCookies([
+      {
+        name: 'NEXT_LOCALE',
+        value: route.locale,
+        url: new URL('/', baseURL).href,
+      },
+    ]);
     const response = await page.goto(route.path, {
       waitUntil: 'domcontentloaded',
     });

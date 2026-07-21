@@ -2,13 +2,13 @@
 
 ## 系統需求
 
-| 工具 | 版本 |
-| ---: | ---: |
-| Node | >=24 |
-| yarn |  >=2 |
+| 工具 |    版本 |
+| ---: | ------: |
+| Node |    >=24 |
+| pnpm | 11.15.1 |
 
 若尚未安裝 Node，請前往[此處](https://nodejs.org/en/)進行安裝。
-若尚未安裝 Yarn 或版本過舊，請前往[此處](https://yarnpkg.com/getting-started/install)進行安裝。
+pnpm 由 repository 根目錄的 `packageManager` 欄位固定版本，透過 Corepack 使用即可。
 
 ## 網站架構
 
@@ -84,8 +84,8 @@ cd open-star-ter-village
 ### 安裝開發環境所需的套件
 
 ```shell
-cd homepage
-yarn
+corepack enable
+pnpm install --frozen-lockfile
 ```
 
 ## 開發專案
@@ -101,26 +101,25 @@ yarn
 > 若要在本地端開發並測試 CMS，需要先在 **開源星手村 git 專案根目錄** 啟動 `decap-server`：
 >
 > ```shell
-> cd ../ # 返回 open-star-ter-village (git 根目錄)
 > npx decap-server
 > ```
 
 以下指令將立即監控 `src/` 和 `public/` 資料夾中的檔案，並啟動本地網頁伺服器，用於測試和預覽結果。伺服器預設運行於端口 3000。<http://localhost:3000>
 
 ```shell
-yarn dev
+pnpm homepage dev
 ```
 
 ### 建置發布版本
 
 ```shell
-yarn build
+pnpm homepage build
 ```
 
 ### 啟動伺服器端
 
 ```shell
-yarn start
+pnpm homepage start
 ```
 
 ## Decap CMS 設定

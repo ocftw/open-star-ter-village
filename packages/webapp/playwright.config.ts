@@ -21,7 +21,7 @@ export default defineConfig({
   ],
   webServer: [
     {
-      command: `yarn dev:next --port ${webPort}`,
+      command: `pnpm run dev:next --port ${webPort}`,
       url: webURL,
       env: {
         NEXT_PUBLIC_GAME_SERVER_URL: gameServerURL,
@@ -30,7 +30,7 @@ export default defineConfig({
       timeout: 120 * 1000,
     },
     {
-      command: 'yarn dev:server',
+      command: 'pnpm run dev:server',
       url: `${gameServerURL}/health`,
       env: {
         GAME_SERVER_ORIGINS: webURL,

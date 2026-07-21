@@ -3,9 +3,10 @@
     "allow": [
       "Edit(**)",
       "Write(**)",
-      "Bash(yarn *)",
-      "Bash(cd packages/webapp && yarn *)",
-      "Bash(cd homepage && yarn *)",
+      "Bash(pnpm *)",
+      "Bash(cd packages/webapp && pnpm *)",
+      "Bash(cd homepage && pnpm *)",
+      "Bash(corepack *)",
       "Bash(npx *)",
       "Bash(git add:*)",
       "Bash(git branch:*)",

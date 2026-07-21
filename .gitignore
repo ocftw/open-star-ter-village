@@ -39,6 +39,7 @@ build/Release
 
 # Dependency directories
 node_modules/
+.pnpm-store/
 jspm_packages/
 
 # TypeScript v1 declaration files
@@ -122,12 +123,3 @@ dist/
 # Claude Code local config
 .claude/settings.local.json
 .claude/worktrees/
-
-# yarn
-.yarn/*
-!.yarn/cache
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions

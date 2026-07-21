@@ -62,6 +62,25 @@ You can join our discussions on [Discord](https://discord.gg/JnTHGnxwYS).
 | [packages/webapp](./packages/webapp/)       | Webapp - web game website                              |
 | [homepage](./homepage/)                     | [Official Website](https://openstartervillage.ocf.tw/) |
 
+## Development Environment
+
+pnpm 11.15.1 manages the active webapp and homepage as one monorepo. Use
+Node.js 24 or newer and run package-manager commands from the repository root:
+
+```bash
+corepack enable
+pnpm install --frozen-lockfile
+pnpm webapp dev       # webapp on ports 3000 and 3001
+pnpm homepage dev     # homepage on port 3000
+pnpm all:dev           # both applications; homepage moves to port 3100
+pnpm all:build
+pnpm all:lint
+```
+
+Corepack reads the pinned pnpm version from the root `packageManager` field.
+Both applications share `pnpm-workspace.yaml` and `pnpm-lock.yaml`; the legacy
+`google-spreadsheet` prototype remains outside the workspace.
+
 ## Licensing Terms
 
 - **Game Content:** [CC BY 4.0 License](./LICENSE)
