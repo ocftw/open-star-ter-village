@@ -1,4 +1,4 @@
-import { ParseMarkdownAndHtml } from '../parseMarkdownAndHtml';
+import CardModal from './cardModal';
 
 const ProjectCard = ({ card }) => (
   <div className="col-md-6 col-xl-4 mb-3" id={card.data.id}>
@@ -29,9 +29,7 @@ const ProjectCard = ({ card }) => (
           ))}
         </div>
         <strong className="mb-3">{card.data.description}</strong>
-        <ParseMarkdownAndHtml markdown={true}>
-          {card.content}
-        </ParseMarkdownAndHtml>
+        <CardModal card={card} />
       </div>
     </div>
   </div>

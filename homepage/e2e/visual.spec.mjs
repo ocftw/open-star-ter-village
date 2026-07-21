@@ -27,3 +27,20 @@ for (const route of publicRoutes) {
     });
   });
 }
+
+test('project card details open in an accessible modal', async ({ page }) => {
+  const response = await page.goto('/cards/', {
+    waitUntil: 'domcontentloaded',
+  });
+
+  expect(response?.status()).toBe(200);
+  await page.getByRole('button', { name: 'More…' }).first().click();
+
+  const dialog = page.getByRole('dialog');
+  await expect(dialog).toBeVisible();
+  await expect(
+    dialog.getByRole('heading', { name: 'Democracy OS' }),
+  ).toBeVisible();
+  await dialog.getByRole('button', { name: 'Close' }).click();
+  await expect(dialog).not.toBeVisible();
+});
