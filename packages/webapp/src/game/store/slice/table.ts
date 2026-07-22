@@ -48,7 +48,8 @@ const getCurrentEvent = (state: Table): EventCard | null => {
 }
 
 const getRound = (state: Table): number => {
-  return state.round;
+  // Fallback for state persisted before the round counter existed.
+  return state.round ?? 0;
 }
 
 const TableSlice = {
