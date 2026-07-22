@@ -26,6 +26,46 @@ import {
 
 const MATCH_EXPIRED_MESSAGE = '房間不存在或已過期 · Match not found or expired';
 
+/** Full-screen non-dismissible notice: a player released their seat, ending the match (#420). */
+function MatchTerminatedOverlay() {
+  return (
+    <div
+      data-testid="match-terminated-overlay"
+      role="alertdialog"
+      aria-modal="true"
+      aria-label="遊戲已終止"
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 1400,
+        background: 'rgba(42, 36, 34, 0.55)',
+        display: 'grid',
+        placeItems: 'center',
+        padding: 20,
+      }}
+    >
+      <div
+        className="paper-card"
+        style={{ padding: 26, maxWidth: 420, width: '100%', textAlign: 'center', background: 'var(--paper)' }}
+      >
+        <div aria-hidden style={{ fontSize: 36 }}>🚪</div>
+        <strong style={{ display: 'block', fontSize: 18, marginTop: 8, color: 'var(--ink)' }}>
+          有玩家離席，遊戲已終止
+        </strong>
+        <div className="en-cap" style={{ marginTop: 4 }}>
+          A player left their seat — this game has ended
+        </div>
+        <p style={{ fontSize: 13, color: 'var(--ink-soft)', lineHeight: 1.55, margin: '10px 0 18px' }}>
+          這局不會計算勝負。回到大廳開新的一局吧。
+        </p>
+        <Link href="/lobby" className="btn-sticker" style={{ width: '100%' }}>
+          回大廳 <span className="tag-en" style={{ color: 'rgba(255,255,255,0.85)' }}>Back to lobby</span>
+        </Link>
+      </div>
+    </div>
+  );
+}
+
 export default function GameRoomPage() {
   const params = useParams<{ matchID: string }>();
   const router = useRouter();
@@ -111,13 +151,19 @@ export default function GameRoomPage() {
     ? match.players.every((player) => !player.name?.trim() || player.isConnected === false)
     : false;
   const isHost = credentials?.playerID === '0';
-  const isFinished = match ? match.gameover !== undefined : false;
+  // A vacated seat in a started match means someone chose 離開座位 — the
+  // game is terminated for everyone (#420). Detected from authoritative
+  // lobby metadata (the socket does not push metadata changes mid-game).
+  const isTerminated =
+    Boolean(match) && hasStarted && match!.players.some((player) => !hasPlayerName(player));
   const shouldShowBoard = Boolean(match) && allSeatsFilled && hasStarted && !isExpired;
   const isMutating = isStarting || isLeaving || isRefreshing;
 
-  // Keep polling after game over so a purged room switches to the expired
-  // state instead of letting the socket silently re-create fresh match state.
-  usePolling(pollMatch, 3_000, (!shouldShowBoard || isFinished) && !isExpired);
+  // Poll for the whole room lifetime (not just the waiting room): mid-game it
+  // detects leave-termination, and after game over it detects the TTL purge so
+  // the page switches to the expired state instead of letting the socket
+  // silently re-create fresh match state.
+  usePolling(pollMatch, 3_000, !isExpired);
 
   const handleLeaveMatch = async () => {
     if (!credentials) {
@@ -248,6 +294,17 @@ export default function GameRoomPage() {
           credentials={credentials?.credential}
           numPlayers={match.players.length}
         />
+      </main>
+    );
+  }
+
+  if (match && isTerminated) {
+    // A seat was released mid-game (#420): the board unmounts (the vacated
+    // seat empties allSeatsFilled) and every remaining browser lands here.
+    return (
+      <main>
+        <LobbyNav />
+        <MatchTerminatedOverlay />
       </main>
     );
   }
