@@ -340,10 +340,12 @@ describe('validateOvertime (加班 Overtime token)', () => {
     expect(validateRemoveAndRefillJobs(G, '0', ['j1'], { useOvertime: true }).valid).toBe(true);
   });
 
-  it('move validators treat useOvertime on a free slot as a normal execution', () => {
+  it('move validators reject useOvertime on a free slot', () => {
     const G = makeG();
-    PlayersMutator.resetOvertimeTokens(G.players, '0', 0); // spent token must not block a normal run
-    expect(validateRemoveAndRefillJobs(G, '0', ['j1'], { useOvertime: true }).valid).toBe(true);
+    expectReason(
+      validateRemoveAndRefillJobs(G, '0', ['j1'], { useOvertime: true }),
+      'OVERTIME_TARGET_NOT_USED',
+    );
   });
 
   it('move validators reject useOvertime when the token is spent', () => {

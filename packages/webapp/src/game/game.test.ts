@@ -603,11 +603,17 @@ describe('加班 Overtime token — regular moves with { useOvertime }', () => {
     expect(JobSlotsSelector.getJobCardById(ctx.G.table.jobSlots, 'j1')).toBeUndefined();
   });
 
-  it('executes normally without consuming the token when the slot is free', () => {
+  it('rejects overtime on a free slot without mutating state', () => {
     const ctx = makeOvertimeContext();
-    removeAndRefillJobs(ctx, ['j1'], { useOvertime: true });
+    const apBefore = PlayersSelector.getNumActionTokens(ctx.G.players, 'alice');
+
+    expect(() => removeAndRefillJobs(ctx, ['j1'], { useOvertime: true }))
+      .toThrow(ActionValidationError);
+
+    expect(PlayersSelector.getNumActionTokens(ctx.G.players, 'alice')).toBe(apBefore);
     expect(PlayersSelector.getNumOvertimeTokens(ctx.G.players, 'alice')).toBe(1);
-    expect(ActionSlotSelector.isOccupied(ctx.G.table.actionSlots.removeAndRefillJobs)).toBe(true);
+    expect(ActionSlotSelector.isOccupied(ctx.G.table.actionSlots.removeAndRefillJobs)).toBe(false);
+    expect(JobSlotsSelector.getJobCardById(ctx.G.table.jobSlots, 'j1')).toBeDefined();
   });
 
   it('normal repeat of an occupied action still fails (ACTION_OCCUPIED)', () => {

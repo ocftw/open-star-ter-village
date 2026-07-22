@@ -27,16 +27,9 @@ const validateSlotAndActionTokens = (
     return invalid('ACTION_UNAVAILABLE');
   }
   const occupied = ActionSlotSelector.isOccupied(G.table.actionSlots[actionName]);
-  if (opts?.useOvertime && occupied) {
-    // 加班 Overtime: repeat an occupied action by redeeming the per-player
-    // token; the only AP charged is the action's own cost (checked below).
-    if (PlayersSelector.getNumOvertimeTokens(G.players, playerID) < 1) {
-      return invalid('OVERTIME_UNAVAILABLE');
-    }
-    const cost = RuleSelector.getActionTokenCost(G.rules, actionName);
-    if (cost > RuleSelector.getOvertimeMaxActionCost(G.rules)) {
-      return invalid('OVERTIME_INELIGIBLE_ACTION', { cost });
-    }
+  if (opts?.useOvertime) {
+    const overtime = validateOvertime(G, playerID, actionName);
+    if (!overtime.valid) return overtime;
   } else if (occupied) {
     return invalid('ACTION_OCCUPIED');
   }
