@@ -13,6 +13,9 @@ export interface Table {
   jobSlots: JobSlots;
   actionSlots: ActionSlots;
   scoreBoard: ScoreBoard;
+  /** Current round, 1-based; incremented each time an event card is played.
+   *  Lives on the table because clients cannot see the event deck. */
+  round: number;
   /** IDs of the 2 job cards added by 四大自由 that the last player must choose to discard. */
   fourFreedomsPendingDiscards: string[];
   /** Set to true by endActionTurn when the last player still has AP but signals they are done
@@ -26,12 +29,14 @@ const initialState = (): Table => ({
   jobSlots: JobSlotsSlice.initialState(),
   actionSlots: ActionSlotsSlice.initialState(),
   scoreBoard: ScoreBoardSlice.initialState(),
+  round: 0,
   fourFreedomsPendingDiscards: [],
   actionPhaseDone: false,
 });
 
 const playEvent = (state: Table, eventCard: EventCard): void => {
   state.eventSlot = eventCard;
+  state.round += 1;
 };
 
 const removeEvent = (state: Table): void => {
@@ -42,6 +47,10 @@ const getCurrentEvent = (state: Table): EventCard | null => {
   return state.eventSlot;
 }
 
+const getRound = (state: Table): number => {
+  return state.round;
+}
+
 const TableSlice = {
   initialState,
   mutators: {
@@ -50,6 +59,7 @@ const TableSlice = {
   },
   selectors: {
     getCurrentEvent,
+    getRound,
   },
 };
 
