@@ -205,6 +205,8 @@ test.describe('Simplified Mode — Action Flow', () => {
   // ── Scenario 1: Turn start ─────────────────────────────────────────────────
   test('Scenario 1: Alice starts her turn with 4 action tokens', async ({ page }) => {
     await expectActions(page, 'Alice', INITIAL_ACTION_TOKENS);
+    // Round badge shows the first round out of the rule-derived total.
+    await expect(page.locator('[data-testid="round-badge"]')).toHaveAttribute('data-round', '1');
   });
 
   // ── Scenario 2: Initiate a Project ────────────────────────────────────────
@@ -218,9 +220,11 @@ test.describe('Simplified Mode — Action Flow', () => {
     await expect(confirmButton(page)).toBeEnabled();
     await confirmButton(page).click();
 
-    // Verify outcome: 2 AP spent, 2 VP gained
+    // Verify outcome: 2 AP spent, 2 VP gained, and an action-result toast
+    // confirming the create (design: GpToasts).
     await expectActions(page, 'Alice', INITIAL_ACTION_TOKENS - CREATE_PROJECT_COST);
     await expectScore(page, 'Alice', CREATE_PROJECT_VP);
+    await expect(page.locator('[data-testid="toast"]').filter({ hasText: '發起' })).toBeVisible();
   });
 
   // ── Scenario 3: Recruit Talents ───────────────────────────────────────────

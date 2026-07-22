@@ -22,7 +22,9 @@ import { getSelectedProjectSlots } from '@/lib/reducers/projectSlotSlice';
 import { JobSlotsSelector } from '@/game/store/slice/jobSlots';
 import { RuleSelector } from '@/game/store/slice/rule';
 import { ProfessionPicker, getEligibleTargetJobNames } from './board/professionPicker';
-import { Modal, PLAYER_COLORS, StickerButton } from '@/components/design';
+import { Modal, PLAYER_COLORS, StickerButton, ToastProvider, useToast } from '@/components/design';
+import { TableSelector } from '@/game/store/slice/table';
+import { useHints } from '@/lib/useHints';
 import { ScoreBoardSelector } from '@/game/store/slice/scoreBoard';
 import { getPlayerName } from './playerNameMap';
 import GameHeader from './board/GameHeader';
@@ -36,7 +38,13 @@ import MobileSheet from './board/MobileSheet';
 import { ScorePanel, TurnOrderPanel } from './board/SidePanels';
 import { useIsMobile } from '@/lib/useIsMobile';
 
-const Board: React.FC<GameContext> = (gameContext) => {
+const Board: React.FC<GameContext> = (gameContext) => (
+  <ToastProvider>
+    <BoardInner {...gameContext} />
+  </ToastProvider>
+);
+
+const BoardInner: React.FC<GameContext> = (gameContext) => {
   const { G, playerID, ctx, matchData } = gameContext;
   const dispatch = useAppDispatch();
   const currentAction = useAppSelector(getCurrentAction);
@@ -44,6 +52,41 @@ const Board: React.FC<GameContext> = (gameContext) => {
   const gameover = ctx.gameover as { winners: string[] } | undefined;
 
   const [showGameOver, setShowGameOver] = React.useState(true);
+  const [hintsOn, toggleHints] = useHints();
+  const toast = useToast();
+
+  // Game-event toasts derived from authoritative state transitions so every
+  // seat (and observers) see them: round start and project settlement 🎉.
+  const round = TableSelector.getRound(G.table);
+  const prevRoundRef = React.useRef(round);
+  React.useEffect(() => {
+    if (round > prevRoundRef.current && round > 1 && !gameover) {
+      toast(`🔄 第 ${round} 回合開始 — 行動格已重置。`, 'success', 4500);
+    }
+    prevRoundRef.current = round;
+  }, [round, gameover, toast]);
+
+  const settledNamesKey = G.table.projectBoard
+    .map((slot) => (slot.card ? `${slot.id}:${slot.card.name}` : `${slot.id}:`))
+    .join('|');
+  const prevSlotCardsRef = React.useRef<Map<string, string>>(new Map());
+  React.useEffect(() => {
+    const previous = prevSlotCardsRef.current;
+    const next = new Map<string, string>();
+    G.table.projectBoard.forEach((slot) => {
+      if (slot.card) next.set(slot.id, slot.card.name);
+    });
+    if (!gameover) {
+      previous.forEach((name, slotId) => {
+        if (!next.has(slotId)) {
+          toast(`🎉 「${name}」完成！貢獻者獲得影響力，工人回到玩家手上。`, 'success');
+        }
+      });
+    }
+    prevSlotCardsRef.current = next;
+    // settledNamesKey encodes exactly the state this effect reads.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [settledNamesKey, gameover, toast]);
   const isLastPlayer = ctx.playOrderPos === ctx.numPlayers - 1;
   const hasPendingDiscard = G.table.fourFreedomsPendingDiscards.length > 0;
   const outOfAP = playerID != null && (G.players[playerID]?.token?.actions ?? 1) === 0;
@@ -140,18 +183,20 @@ const Board: React.FC<GameContext> = (gameContext) => {
           <span style={{ fontWeight: 800, fontSize: 14 }}>專案區</span>
           <span className="en-cap">Projects</span>
         </div>
-        <span
-          style={{
-            fontSize: 11,
-            color: 'var(--ink-mute)',
-            background: 'white',
-            border: '1.5px solid var(--paper-3)',
-            borderRadius: 999,
-            padding: '3px 10px',
-          }}
-        >
-          ⓘ 點桌上的專案來貢獻
-        </span>
+        {hintsOn && (
+          <span
+            style={{
+              fontSize: 11,
+              color: 'var(--ink-mute)',
+              background: 'white',
+              border: '1.5px solid var(--paper-3)',
+              borderRadius: 999,
+              padding: '3px 10px',
+            }}
+          >
+            ⓘ 點桌上的專案來貢獻
+          </span>
+        )}
         <span
           className="sticker"
           data-testid="project-capacity"
@@ -207,7 +252,22 @@ const Board: React.FC<GameContext> = (gameContext) => {
     </div>
   );
 
-  const jobMarket = <JobMarket gameContext={gameContext} idle={idle} discardActive={showDiscardPanel} />;
+  const jobMarket = (
+    <JobMarket gameContext={gameContext} idle={idle} discardActive={showDiscardPanel} showHints={hintsOn} />
+  );
+
+  // #419 AC: closing the result dialog must not lose access to the result.
+  const viewResultsChip = gameover && !showGameOver && (
+    <button
+      type="button"
+      className="btn-sticker sm"
+      data-testid="view-results"
+      onClick={() => setShowGameOver(true)}
+      style={{ position: 'fixed', right: 16, bottom: 16, zIndex: 1300 }}
+    >
+      🏆 查看結果 <span className="tag-en" style={{ color: 'rgba(255,255,255,0.85)' }}>Results</span>
+    </button>
+  );
 
   return isMobile ? (
     <div
@@ -220,7 +280,7 @@ const Board: React.FC<GameContext> = (gameContext) => {
         backgroundSize: '22px 22px',
       }}
     >
-      <GameHeader gameContext={gameContext} compact />
+      <GameHeader gameContext={gameContext} compact hintsOn={hintsOn} onToggleHints={toggleHints} />
       <div
         style={{
           flex: 1,
@@ -240,6 +300,7 @@ const Board: React.FC<GameContext> = (gameContext) => {
         hand={playerID !== null && <HandPanel gameContext={gameContext} idle={idle} layout="strip" />}
       />
 
+      {viewResultsChip}
       <GameOverDialog gameContext={gameContext} open={!!gameover && showGameOver} onClose={() => setShowGameOver(false)} />
     </div>
   ) : (
@@ -253,7 +314,7 @@ const Board: React.FC<GameContext> = (gameContext) => {
         backgroundSize: '22px 22px',
       }}
     >
-      <GameHeader gameContext={gameContext} />
+      <GameHeader gameContext={gameContext} hintsOn={hintsOn} onToggleHints={toggleHints} />
 
       <div
         style={{
@@ -282,6 +343,7 @@ const Board: React.FC<GameContext> = (gameContext) => {
         </div>
       </div>
 
+      {viewResultsChip}
       <GameOverDialog gameContext={gameContext} open={!!gameover && showGameOver} onClose={() => setShowGameOver(false)} />
     </div>
   );
@@ -296,7 +358,7 @@ export function GameOverDialog({
   open: boolean;
   onClose: () => void;
 }) {
-  const { G, ctx, matchData, matchID, isMultiplayer } = gameContext;
+  const { G, ctx, matchData, matchID, isMultiplayer, playerID } = gameContext;
   const gameover = ctx.gameover as { winners: string[] } | undefined;
   const router = useRouter();
 
@@ -350,7 +412,7 @@ export function GameOverDialog({
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 18 }}>
               {Object.entries(ScoreBoardSelector.getAllPlayerPoints(G.table.scoreBoard))
                 .sort(([, a], [, b]) => b - a)
-                .map(([id, points]) => {
+                .map(([id, points], rank) => {
                   const winner = gameover.winners.includes(id);
                   return (
                     <div
@@ -366,6 +428,18 @@ export function GameOverDialog({
                         boxShadow: '0 2px 0 var(--ink)',
                       }}
                     >
+                      <span
+                        aria-hidden
+                        style={{
+                          fontFamily: 'var(--font-en)',
+                          fontWeight: 800,
+                          fontSize: 14,
+                          width: 18,
+                          color: 'var(--ink-mute)',
+                        }}
+                      >
+                        {rank + 1}
+                      </span>
                       <span
                         style={{
                           width: 26,
@@ -383,7 +457,13 @@ export function GameOverDialog({
                       >
                         {getPlayerName(matchData, id)[0]}
                       </span>
-                      <span style={{ fontWeight: 700, flex: 1 }}>{getPlayerName(matchData, id)}</span>
+                      <span style={{ fontWeight: 700, flex: 1 }}>
+                        {getPlayerName(matchData, id)}
+                        {id === playerID && (
+                          <span style={{ color: 'var(--orange)', marginLeft: 4, fontSize: 11 }}>YOU</span>
+                        )}
+                      </span>
+                      {winner && <span aria-label="優勝">👑</span>}
                       <strong style={{ fontFamily: 'var(--font-en)' }}>{points} VP</strong>
                     </div>
                   );

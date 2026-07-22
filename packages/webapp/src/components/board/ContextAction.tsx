@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
-import { Alert, Snackbar } from '@mui/material';
 import { GameContext } from '@/components/GameContextHelpers';
-import { useSnackbar } from '@/lib/useSnackbar';
+import { useToast } from '@/components/design';
+import { JobSlotsSelector } from '@/game/store/slice/jobSlots';
+import { ProjectBoardSelector } from '@/game/store/slice/projectBoard';
 import {
   ActionExecutionOptions,
   GENERIC_ACTION_ERROR_MESSAGE,
@@ -94,7 +95,7 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
   // moves asynchronously and INVALID_MOVE leaves state unchanged, so watch
   // ctx.numMoves after a dispatch. If it never advances, tell the player their
   // action did not happen.
-  const { snackbar, showSnackbar, closeSnackbar } = useSnackbar();
+  const toast = useToast();
   const latestMoveStateRef = React.useRef({ numMoves: ctx.numMoves ?? 0, turn: ctx.turn });
   useEffect(() => {
     latestMoveStateRef.current = { numMoves: ctx.numMoves ?? 0, turn: ctx.turn };
@@ -104,10 +105,10 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
     window.setTimeout(() => {
       const latest = latestMoveStateRef.current;
       if (latest.turn === captured.turn && latest.numMoves === captured.numMoves) {
-        showSnackbar(GENERIC_ACTION_ERROR_MESSAGE, 'error');
+        toast(GENERIC_ACTION_ERROR_MESSAGE, 'error');
       }
     }, 2000);
-  }, [ctx.numMoves, ctx.turn, showSnackbar]);
+  }, [ctx.numMoves, ctx.turn, toast]);
 
   // Entering an action enables the matching board elements; leaving it clears
   // all selections.
@@ -232,6 +233,32 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
     return isSelectionComplete(actionName!);
   };
 
+  // Action-result toast copy (design: gpApply): names come from canonical
+  // game data, costs and VP from the rule set — nothing hardcoded.
+  const actionResultMessage = (name: RegularActionName): string => {
+    const cost = RuleSelector.getActionTokenCost(G.rules, name);
+    switch (name) {
+      case 'createProject': {
+        const card = PlayersSelector.getProjectCardById(G.players, playerID!, selectionState.selectedHandProjectCards[0]);
+        const job = JobSlotsSelector.getJobCardById(G.table.jobSlots, selectionState.selectedJobSlots[0]);
+        const vp = RuleSelector.getActionVictoryPoints(G.rules, 'createProject');
+        return `🚀 發起「${card?.name ?? '專案'}」，指派 1 名${job?.name ?? '人力'}。 −${cost} AP · +${vp} VP`;
+      }
+      case 'recruit': {
+        const job = JobSlotsSelector.getJobCardById(G.table.jobSlots, selectionState.selectedJobSlots[0]);
+        const slot = ProjectBoardSelector.getBySlotId(G.table.projectBoard, selectionState.selectedProjectSlots[0]);
+        return `👥 招募${job?.name ?? '人力'}投入「${slot?.card?.name ?? '專案'}」。 −${cost} AP`;
+      }
+      case 'contributeOwnedProjects':
+      case 'contributeJoinedProjects':
+        return `✨ 貢獻 ${selectionState.totalContributionValue} 點。 −${cost} AP`;
+      case 'removeAndRefillJobs': {
+        const vp = RuleSelector.getActionVictoryPoints(G.rules, 'removeAndRefillJobs');
+        return `🔄 更換 ${selectionState.selectedJobSlots.length} 張人力卡並補滿。 −${cost} AP · +${vp} VP`;
+      }
+    }
+  };
+
   const handleConfirm = () => {
     if (currentAction === UserActionMoves.EndActionTurn) {
       typedMoves.endActionTurn();
@@ -244,7 +271,7 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
     // selection. On failure keep the selection intact and explain why.
     const failure = getPreflightFailure();
     if (failure) {
-      showSnackbar(getActionErrorMessage(failure), 'error');
+      toast(getActionErrorMessage(failure), 'error');
       return;
     }
 
@@ -275,6 +302,10 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
       case 'removeAndRefillJobs':
         typedMoves.removeAndRefillJobs(selectionState.selectedJobSlots, options);
         break;
+    }
+    toast(actionResultMessage(actionName), 'info');
+    if (overtime) {
+      toast('⏰ 加班完成 — 本輪加班 token 已用畢。', 'info', 4000);
     }
     watchForSilentRejection();
     dispatch(resetAction());
@@ -358,7 +389,7 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
           icon: '🏁',
           title: '結束這回合？',
           en: 'End your turn',
-          hint: '剩下的行動點會被放棄。',
+          hint: `剩下的 ${actionTokens} 點行動點會被放棄。`,
           tone: 'var(--ink)',
           cta: '確認結束',
         };
@@ -593,19 +624,6 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
         </button>
       )}
 
-      {/* Error toast: click-time validation failures and the generic
-          unexpected-rejection fallback. Single-slot, so repeats replace
-          rather than queue. */}
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={6000}
-        onClose={closeSnackbar}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      >
-        <Alert severity={snackbar.severity} onClose={closeSnackbar} data-testid="action-error-toast">
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
     </div>
   );
 }
