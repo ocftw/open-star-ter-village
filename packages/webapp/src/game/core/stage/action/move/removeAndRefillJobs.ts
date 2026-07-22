@@ -1,26 +1,23 @@
 import { DeckMutator, DeckSelector } from '@/game/store/slice/deck';
 import { GameMove } from '@/game/core/type';
-import { ActionSlotMutator } from '@/game/store/slice/actionSlot';
-import { PlayersMutator } from '@/game/store/slice/players';
 import { RuleSelector } from '@/game/store/slice/rule';
 import { ScoreBoardMutator } from '@/game/store/slice/scoreBoard';
 import { JobSlotsMutator, JobSlotsSelector } from '@/game/store/slice/jobSlots';
-import { ActionValidationError, validateRemoveAndRefillJobs } from '@/game/core/stage/action/validate';
+import { ActionExecutionOptions, ActionValidationError, validateRemoveAndRefillJobs } from '@/game/core/stage/action/validate';
+import { applyActionCost } from './applyActionCost';
 
-export type RemoveAndRefillJobs = (jobCardIds: string[]) => void;
-export const removeAndRefillJobs: GameMove<RemoveAndRefillJobs> = ({ G, playerID }, jobCardIds) => {
+export type RemoveAndRefillJobs = (jobCardIds: string[], options?: ActionExecutionOptions) => void;
+export const removeAndRefillJobs: GameMove<RemoveAndRefillJobs> = ({ G, playerID }, jobCardIds, options) => {
   // Shared validation: same predicates the client preflight runs.
-  const result = validateRemoveAndRefillJobs(G, playerID, jobCardIds);
+  const result = validateRemoveAndRefillJobs(G, playerID, jobCardIds, options);
   if (!result.valid) {
     throw new ActionValidationError(result);
   }
 
-  const actionTokenCosts = RuleSelector.getActionTokenCost(G.rules, 'removeAndRefillJobs');
   const jobCardsToRemove = JobSlotsSelector.getJobCardsByIds(G.table.jobSlots, jobCardIds);
 
   // All checks passed — now mutate state
-  PlayersMutator.useActionTokens(G.players, playerID, actionTokenCosts);
-  ActionSlotMutator.occupy(G.table.actionSlots.removeAndRefillJobs);
+  applyActionCost(G, playerID, 'removeAndRefillJobs', options);
 
   // remove and discard job card
   JobSlotsMutator.removeJobCards(G.table.jobSlots, jobCardsToRemove);

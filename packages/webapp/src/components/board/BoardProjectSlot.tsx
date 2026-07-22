@@ -59,7 +59,7 @@ export default function BoardProjectSlot({
 
   const handleClick = () => {
     if (slotsInteractive) {
-      // Single-select: recruit (and its mirror) targets exactly one slot.
+      // Single-select: recruit (normal or overtime) targets exactly one slot.
       if (!selectedSlots[slot.id]) dispatch(resetProjectSlotSelection());
       dispatch(toggleProjectSlotSelection(slot.id));
     } else if (idle && onIdleTap) {

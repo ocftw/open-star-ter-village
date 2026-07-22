@@ -2,25 +2,29 @@ import { ProjectBoardMutator, ProjectBoardSelector } from '@/game/store/slice/pr
 import { DeckMutator, DeckSelector } from '@/game/store/slice/deck';
 import { ProjectSlotMutator } from '@/game/store/slice/projectSlot/projectSlot';
 import { GameMove } from '@/game/core/type';
-import { ActionSlotMutator, ActionSlotSelector } from '@/game/store/slice/actionSlot';
 import { ScoreBoardMutator } from '@/game/store/slice/scoreBoard';
 import { PlayersMutator, PlayersSelector } from '@/game/store/slice/players';
 import { JobSlotsMutator, JobSlotsSelector } from '@/game/store/slice/jobSlots';
 import { RuleMutator, RuleSelector } from '@/game/store/slice/rule';
-import { ActionValidationError, validateCreateProject } from '@/game/core/stage/action/validate';
+import { ActionExecutionOptions, ActionValidationError, validateCreateProject } from '@/game/core/stage/action/validate';
+import { applyActionCost } from './applyActionCost';
 
-export type CreateProject = (projectCardId: string, jobCardId: string, assignedJobName?: string) => void;
+export type CreateProject = (
+  projectCardId: string,
+  jobCardId: string,
+  assignedJobName?: string,
+  options?: ActionExecutionOptions,
+) => void;
 
-export const createProject: GameMove<CreateProject> = ({ G, playerID }, projectCardId, jobCardId, assignedJobName) => {
+export const createProject: GameMove<CreateProject> = ({ G, playerID }, projectCardId, jobCardId, assignedJobName, options) => {
   // Shared validation: same predicates the client preflight runs. Whether
   // assignedJobName may override the requirement is derived from
   // authoritative event state inside the validator.
-  const result = validateCreateProject(G, playerID, projectCardId, jobCardId, assignedJobName);
+  const result = validateCreateProject(G, playerID, projectCardId, jobCardId, assignedJobName, options);
   if (!result.valid) {
     throw new ActionValidationError(result);
   }
 
-  const actionTokenCosts = RuleSelector.getActionTokenCost(G.rules, 'createProject');
   const projectOwnerWorkerTokenCosts = RuleSelector.getProjectOwnerWorkerTokenCost(G.rules, 'createProject');
   const assignWorkerTokenCosts = RuleSelector.getAssignWorkerTokenCost(G.rules, 'createProject');
   const projectCard = PlayersSelector.getProjectCardById(G.players, playerID, projectCardId)!;
@@ -28,8 +32,7 @@ export const createProject: GameMove<CreateProject> = ({ G, playerID }, projectC
   const ignoreRequirement = RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, playerID);
 
   // All checks passed — now mutate state
-  PlayersMutator.useActionTokens(G.players, playerID, actionTokenCosts);
-  ActionSlotMutator.occupy(G.table.actionSlots.createProject);
+  applyActionCost(G, playerID, 'createProject', options);
   PlayersMutator.useWorkerTokens(G.players, playerID, projectOwnerWorkerTokenCosts);
 
   PlayersMutator.useProject(G.players, playerID, projectCard);

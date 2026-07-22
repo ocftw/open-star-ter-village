@@ -2,32 +2,35 @@ import { ProjectBoardSelector } from '@/game/store/slice/projectBoard';
 import { DeckMutator, DeckSelector } from '@/game/store/slice/deck';
 import { ProjectSlotMutator } from '@/game/store/slice/projectSlot/projectSlot';
 import { GameMove } from '@/game/core/type';
-import { ActionSlotMutator } from '@/game/store/slice/actionSlot';
 import { PlayersMutator } from '@/game/store/slice/players';
 import { RuleMutator, RuleSelector } from '@/game/store/slice/rule';
 import { JobSlotsMutator, JobSlotsSelector } from '@/game/store/slice/jobSlots';
-import { ActionValidationError, validateRecruit } from '@/game/core/stage/action/validate';
+import { ActionExecutionOptions, ActionValidationError, validateRecruit } from '@/game/core/stage/action/validate';
+import { applyActionCost } from './applyActionCost';
 
-export type Recruit = (jobCardId: string, projectSlotId: string, assignedJobName?: string) => void;
+export type Recruit = (
+  jobCardId: string,
+  projectSlotId: string,
+  assignedJobName?: string,
+  options?: ActionExecutionOptions,
+) => void;
 
-export const recruit: GameMove<Recruit> = ({ G, playerID }, jobCardId, projectSlotId, assignedJobName) => {
+export const recruit: GameMove<Recruit> = ({ G, playerID }, jobCardId, projectSlotId, assignedJobName, options) => {
   // Shared validation: same predicates the client preflight runs. Whether
   // assignedJobName may override the requirement is derived from
   // authoritative event state inside the validator.
-  const result = validateRecruit(G, playerID, jobCardId, projectSlotId, assignedJobName);
+  const result = validateRecruit(G, playerID, jobCardId, projectSlotId, assignedJobName, options);
   if (!result.valid) {
     throw new ActionValidationError(result);
   }
 
-  const actionTokenCosts = RuleSelector.getActionTokenCost(G.rules, 'recruit');
   const assignWorkerTokenCosts = RuleSelector.getAssignWorkerTokenCost(G.rules, 'recruit');
   const jobCard = JobSlotsSelector.getJobCardById(G.table.jobSlots, jobCardId)!;
   const activeProject = ProjectBoardSelector.getBySlotId(G.table.projectBoard, projectSlotId)!;
   const ignoreRequirement = RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, playerID);
 
   // All checks passed — now mutate state
-  PlayersMutator.useActionTokens(G.players, playerID, actionTokenCosts);
-  ActionSlotMutator.occupy(G.table.actionSlots.recruit);
+  applyActionCost(G, playerID, 'recruit', options);
 
   JobSlotsMutator.removeJobCard(G.table.jobSlots, jobCard);
   DeckMutator.discard(G.decks.jobs, [jobCard]);

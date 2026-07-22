@@ -7,7 +7,7 @@ import { ProjectBoardSelector } from '@/game/store/slice/projectBoard';
 import { ProjectSlotSelector } from '@/game/store/slice/projectSlot/projectSlot';
 import { ContributionAction, getTotalContributionValue } from '@/game/core/ContributionAction';
 import { ActionMoveName } from '@/game/core/stage/action/move/type';
-import { invalid, VALID, ValidatableState, ValidationResult } from './types';
+import { ActionExecutionOptions, invalid, VALID, ValidatableState, ValidationResult } from './types';
 
 /**
  * Shared pure validators for every action move. The server moves and
@@ -15,24 +15,29 @@ import { invalid, VALID, ValidatableState, ValidationResult } from './types';
  * Each returns the FIRST failure in the same order the moves check them.
  */
 
-type SlotOptions = {
-  /**
-   * Skip the ACTION_OCCUPIED check. Used when preflight-validating an action
-   * executed through 加班 Overtime (mirror), which repeats an occupied action.
-   */
-  ignoreOccupied?: boolean;
-};
+type SlotOptions = ActionExecutionOptions;
 
 const validateSlotAndActionTokens = (
   G: ValidatableState,
   playerID: PlayerID,
-  actionName: Exclude<ActionMoveName, 'mirror'>,
+  actionName: ActionMoveName,
   opts?: SlotOptions,
 ): ValidationResult => {
   if (!RuleSelector.isActionSlotAvailable(G.rules, actionName)) {
     return invalid('ACTION_UNAVAILABLE');
   }
-  if (!opts?.ignoreOccupied && ActionSlotSelector.isOccupied(G.table.actionSlots[actionName])) {
+  const occupied = ActionSlotSelector.isOccupied(G.table.actionSlots[actionName]);
+  if (opts?.useOvertime && occupied) {
+    // 加班 Overtime: repeat an occupied action by redeeming the per-player
+    // token; the only AP charged is the action's own cost (checked below).
+    if (PlayersSelector.getNumOvertimeTokens(G.players, playerID) < 1) {
+      return invalid('OVERTIME_UNAVAILABLE');
+    }
+    const cost = RuleSelector.getActionTokenCost(G.rules, actionName);
+    if (cost > RuleSelector.getOvertimeMaxActionCost(G.rules)) {
+      return invalid('OVERTIME_INELIGIBLE_ACTION', { cost });
+    }
+  } else if (occupied) {
     return invalid('ACTION_OCCUPIED');
   }
   const required = RuleSelector.getActionTokenCost(G.rules, actionName);
@@ -250,29 +255,29 @@ export const validateDiscardExcessJobCards = (
 };
 
 /**
- * 加班 Overtime (mirror) preconditions: rule available, mirror slot free,
- * enough AP for the mirror cost, the target action is 1-AP-eligible, and the
- * target's slot has already been used this turn.
+ * 加班 Overtime preconditions: the player still holds their per-turn token,
+ * the target action is 1-AP-eligible, there is enough AP for the action's own
+ * cost (the only AP charged), and the target's slot has already been used
+ * this turn. Used by the UI to decide whether to offer redemption.
  */
-export const validateMirror = (
+export const validateOvertime = (
   G: ValidatableState,
   playerID: PlayerID,
-  actionName: Exclude<ActionMoveName, 'mirror'>,
+  actionName: ActionMoveName,
 ): ValidationResult => {
-  if (
-    !RuleSelector.isActionSlotAvailable(G.rules, 'mirror') ||
-    ActionSlotSelector.isOccupied(G.table.actionSlots.mirror)
-  ) {
+  if (!RuleSelector.isActionSlotAvailable(G.rules, actionName)) {
+    return invalid('ACTION_UNAVAILABLE');
+  }
+  if (PlayersSelector.getNumOvertimeTokens(G.players, playerID) < 1) {
     return invalid('OVERTIME_UNAVAILABLE');
   }
-  const mirrorCost = RuleSelector.getActionTokenCost(G.rules, 'mirror');
-  const targetCost = RuleSelector.getActionTokenCost(G.rules, actionName);
-  if (targetCost > mirrorCost) {
-    return invalid('OVERTIME_INELIGIBLE_ACTION', { cost: targetCost });
+  const cost = RuleSelector.getActionTokenCost(G.rules, actionName);
+  if (cost > RuleSelector.getOvertimeMaxActionCost(G.rules)) {
+    return invalid('OVERTIME_INELIGIBLE_ACTION', { cost });
   }
   const available = PlayersSelector.getNumActionTokens(G.players, playerID);
-  if (available < mirrorCost) {
-    return invalid('INSUFFICIENT_ACTION_TOKENS', { required: mirrorCost, available });
+  if (available < cost) {
+    return invalid('INSUFFICIENT_ACTION_TOKENS', { required: cost, available });
   }
   if (!ActionSlotSelector.isOccupied(G.table.actionSlots[actionName])) {
     return invalid('OVERTIME_TARGET_NOT_USED');

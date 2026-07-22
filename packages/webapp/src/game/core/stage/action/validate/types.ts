@@ -63,3 +63,13 @@ export class ActionValidationError extends Error {
  * (ClientGameState, where only the acting player's hand is visible).
  */
 export type ValidatableState = GameState | ClientGameState;
+
+/**
+ * Execution mode shared by moves, validators, and the UI. `useOvertime`
+ * redeems the player's 加班 Overtime token to repeat an action whose slot is
+ * already occupied this turn (base cost ≤ 1 AP; total cost is the action's
+ * own AP — no surcharge).
+ */
+export type ActionExecutionOptions = {
+  useOvertime?: boolean;
+};

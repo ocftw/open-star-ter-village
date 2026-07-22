@@ -9,7 +9,6 @@ const initialState = (): ActionSlots => ({
   createProject: ActionSlotSlice.initialState(),
   recruit: ActionSlotSlice.initialState(),
   removeAndRefillJobs: ActionSlotSlice.initialState(),
-  mirror: ActionSlotSlice.initialState(),
 });
 
 const reset = (state: ActionSlots) => {
@@ -18,7 +17,6 @@ const reset = (state: ActionSlots) => {
   ActionSlotMutator.reset(state.createProject);
   ActionSlotMutator.reset(state.recruit);
   ActionSlotMutator.reset(state.removeAndRefillJobs);
-  ActionSlotMutator.reset(state.mirror);
 }
 
 const ActionSlotsSlice = {

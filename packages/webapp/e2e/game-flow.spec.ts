@@ -3,13 +3,14 @@
  *
  * Scenarios 1–4 are based on the rulebook demo (pages 10–12).
  * Scenarios 5–10 cover event banner, turn indicator, endActionTurn,
- * contributions, and mirror.
+ * contributions, and the 加班 Overtime token.
  *
  * Interaction model (redesign, RFC #399): there is no action toolbar.
  * - Tap a hand card  → create-project mode (then tap a job card to assign)
  * - Tap a job card   → recruit mode (then tap a project slot)
  * - Tap a project    → contribute mode (own vs joined inferred by ownership)
- * - 換人力 Refill / 加班 Mirror are affordances next to the job market
+ * - 換人力 Refill is an affordance next to the job market; 加班 Overtime is
+ *   offered contextually when re-tapping an occupied 1-AP action
  * - The contextual bar [data-testid="context-action"] carries mode
  *   (data-mode) and the confirm/cancel buttons (ca-confirm / ca-cancel).
  *
@@ -26,7 +27,6 @@ const RECRUIT_COST             = 1;
 const TALENT_SCOUTING_COST     = 1;
 const CONTRIBUTE_OWN_COST      = 1;
 const CONTRIBUTE_JOIN_COST     = 1;
-const MIRROR_COST              = 1;
 const CREATE_PROJECT_VP        = 2;
 const TALENT_SCOUTING_VP       = 1;
 
@@ -319,8 +319,11 @@ test.describe('Simplified Mode — Action Flow', () => {
     await expectActions(page, 'Alice', INITIAL_ACTION_TOKENS - CREATE_PROJECT_COST - CONTRIBUTE_OWN_COST);
   });
 
-  // ── Scenario 9: Doin' Overtime (mirror) ───────────────────────────────────
-  test('Scenario 9: Doin\' Overtime (mirror) — repeats a prior 1-AP action', async ({ page }) => {
+  // ── Scenario 9: Doin' Overtime (per-player token) ─────────────────────────
+  test('Scenario 9: Doin\' Overtime — token repeats a prior 1-AP action for 1 AP', async ({ page }) => {
+    // The token starts available.
+    await expect(page.locator('[data-testid="overtime-token"]')).toHaveAttribute('data-available', 'true');
+
     // Step A: Alice performs Talent Scouting (refill) — 1 AP, 1 VP.
     await page.locator('[data-testid="refill-jobs"]').click();
     await expect(contextAction(page)).toHaveAttribute('data-mode', 'removeAndRefillJobs');
@@ -332,7 +335,7 @@ test.describe('Simplified Mode — Action Flow', () => {
     await expectScore(page, 'Alice', TALENT_SCOUTING_VP);
 
     // Step B: 加班 overtime is contextual (F-005) — re-tapping the occupied
-    // refill deck offers to repeat it.
+    // refill deck offers to redeem the token.
     await waitForGameReady(page);
     await page.locator('[data-testid="refill-jobs"]').click();
     await expect(contextAction(page)).toHaveAttribute('data-mode', 'removeAndRefillJobs');
@@ -347,12 +350,14 @@ test.describe('Simplified Mode — Action Flow', () => {
     await expect(confirmButton(page)).toBeEnabled();
     await confirmButton(page).click();
 
-    // Verify: 3 AP spent total (refill + mirror overhead + sub-action), 2 VP earned.
+    // Verify: 2 AP spent total — the redeemed action costs only its own AP,
+    // no overtime surcharge. 2 VP earned; the token is now spent.
     await expectActions(
       page, 'Alice',
-      INITIAL_ACTION_TOKENS - TALENT_SCOUTING_COST - MIRROR_COST - TALENT_SCOUTING_COST,
+      INITIAL_ACTION_TOKENS - TALENT_SCOUTING_COST - TALENT_SCOUTING_COST,
     );
     await expectScore(page, 'Alice', TALENT_SCOUTING_VP + TALENT_SCOUTING_VP);
+    await expect(page.locator('[data-testid="overtime-token"]')).not.toHaveAttribute('data-available', 'true');
   });
 
   // ── Scenario 10: contributeJoinedProjects ─────────────────────────────────

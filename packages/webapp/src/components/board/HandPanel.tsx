@@ -69,7 +69,7 @@ export default function HandPanel({
 
   const handleTap = (cardId: string) => {
     if (handInteractive) {
-      // Single-select: create (and its mirror) plays exactly one card.
+      // Single-select: create (normal or overtime) plays exactly one card.
       if (!selectedCards[cardId]) dispatch(resetHandProjectCardSelection());
       dispatch(toggleHandProjectCardSelection(cardId));
     } else if (idle) {
