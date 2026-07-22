@@ -78,11 +78,19 @@ export function getLobbyStatus(match: LobbyMatch): LobbyStatus {
     return 'Abandoned';
   }
 
+  const started = hasHostStarted(match);
+
+  // A started match with a vacated seat was terminated by a mid-game leave
+  // (#420): hide it from the lobby instead of offering it as joinable.
+  if (started && match.players.some((player) => !hasPlayerName(player))) {
+    return 'Abandoned';
+  }
+
   if (seatsFilled < totalSeats) {
     return 'Waiting';
   }
 
-  if (!hasHostStarted(match)) {
+  if (!started) {
     return 'Full';
   }
 
@@ -180,6 +188,11 @@ export async function startRoom(matchID: string, playerID: string, credential: s
       started: true,
     },
   });
+}
+
+/** True when the server says the match does not exist (deleted, expired, or never created). */
+export function isMatchNotFoundError(error: unknown): boolean {
+  return error instanceof LobbyClientError && /\b404\b/.test(error.message);
 }
 
 export function getLobbyErrorMessage(error: unknown, defaultMessage: string): string {

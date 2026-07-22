@@ -18,10 +18,13 @@ import {
   getMatch,
   hasHostStarted,
   hasPlayerName,
+  isMatchNotFoundError,
   leaveRoom,
   startRoom,
   type LobbyMatch,
 } from '@/app/lobby/actions';
+
+const MATCH_EXPIRED_MESSAGE = '房間不存在或已過期 · Match not found or expired';
 
 export default function GameRoomPage() {
   const params = useParams<{ matchID: string }>();
@@ -36,6 +39,7 @@ export default function GameRoomPage() {
   const [isStarting, setIsStarting] = React.useState(false);
   const [isRefreshing, setIsRefreshing] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
+  const [isExpired, setIsExpired] = React.useState(false);
   const { snackbar, showSnackbar, closeSnackbar } = useSnackbar();
 
   const pollMatch = React.useCallback(async () => {
@@ -45,7 +49,13 @@ export default function GameRoomPage() {
       setErrorMessage(null);
       hasLoaded.current = true;
     } catch (error) {
-      if (!hasLoaded.current) {
+      // A missing match must never mount a fresh board under the old URL —
+      // show the expired state instead (#419), whether on first load or after
+      // the server purged a finished room.
+      if (isMatchNotFoundError(error)) {
+        clearCredentials(matchID);
+        setIsExpired(true);
+      } else if (!hasLoaded.current) {
         setErrorMessage(getLobbyErrorMessage(error, 'Unable to load this room.'));
       } else {
         showSnackbar('Connection issue — retrying…', 'info');
@@ -101,10 +111,13 @@ export default function GameRoomPage() {
     ? match.players.every((player) => !player.name?.trim() || player.isConnected === false)
     : false;
   const isHost = credentials?.playerID === '0';
-  const shouldShowBoard = Boolean(match) && allSeatsFilled && hasStarted;
+  const isFinished = match ? match.gameover !== undefined : false;
+  const shouldShowBoard = Boolean(match) && allSeatsFilled && hasStarted && !isExpired;
   const isMutating = isStarting || isLeaving || isRefreshing;
 
-  usePolling(pollMatch, 3_000, !shouldShowBoard);
+  // Keep polling after game over so a purged room switches to the expired
+  // state instead of letting the socket silently re-create fresh match state.
+  usePolling(pollMatch, 3_000, (!shouldShowBoard || isFinished) && !isExpired);
 
   const handleLeaveMatch = async () => {
     if (!credentials) {
@@ -180,6 +193,22 @@ export default function GameRoomPage() {
         <LobbyNav />
         <div className="page-pad" style={{ color: 'var(--ink-mute)', fontSize: 14 }}>
           載入房間中… <span className="en-cap">Loading room…</span>
+        </div>
+      </main>
+    );
+  }
+
+  if (isExpired) {
+    return (
+      <main>
+        <LobbyNav />
+        <div className="page-pad" style={{ display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 640 }}>
+          <Note tone="error">
+            <span data-testid="match-expired-note">{MATCH_EXPIRED_MESSAGE}</span>
+          </Note>
+          <Link href="/lobby" className="btn-sticker" style={{ alignSelf: 'flex-start' }}>
+            回大廳 <span style={{ opacity: 0.8, fontFamily: 'var(--font-en)', fontWeight: 500 }}>· Back to lobby</span>
+          </Link>
         </div>
       </main>
     );
