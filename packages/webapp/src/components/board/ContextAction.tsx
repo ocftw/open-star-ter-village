@@ -33,19 +33,13 @@ import { getSelectedJobSlots, resetJobSlotSelection } from '@/lib/reducers/jobSl
 import { getSelectedProjectSlots, resetProjectSlotSelection } from '@/lib/reducers/projectSlotSlice';
 import { getContributions, resetContribution } from '@/lib/reducers/contributionSlice';
 import { getTotalContributionValue } from '@/game/core/ContributionAction';
-import { ActionMoves } from '@/game/core/stage/action/move/type';
+import { ActionMoveName, ActionMoves } from '@/game/core/stage/action/move/type';
 import { RuleSelector } from '@/game/store/slice/rule';
 import { ActionSlotSelector } from '@/game/store/slice/actionSlot';
 import { PlayersSelector } from '@/game/store/slice/players';
-import {
-  ACTION_CONFIGS,
-  ActionBoardActivators,
-  ActionExecutors,
-  ActionSelectionState,
-  RegularActionName,
-} from './actionConfig';
 
 type ExtendedMoves = ActionMoves & { endActionTurn: () => void };
+type RegularActionName = ActionMoveName;
 
 type ModeCopy = {
   icon: string;
@@ -72,14 +66,14 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
   const contributions = useAppSelector(getContributions);
   const assignedJobName = useAppSelector(getAssignedJobName);
 
-  const selectionState: ActionSelectionState = {
+  const selectionState = {
     selectedHandProjectCards: Object.keys(handSelection).filter((id) => handSelection[id]),
     selectedJobSlots: Object.keys(jobSelection).filter((id) => jobSelection[id]),
     selectedProjectSlots: Object.keys(projectSelection).filter((id) => projectSelection[id]),
     assignedJobName,
     contributions,
     totalContributionValue: getTotalContributionValue(contributions),
-    getMaxContributionValue: (name) => RuleSelector.getMaxContributionValue(G.rules, name),
+    getMaxContributionValue: (name: RegularActionName) => RuleSelector.getMaxContributionValue(G.rules, name),
   };
 
   const resetSelections = React.useCallback(() => {
@@ -116,21 +110,32 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
   }, [ctx.numMoves, ctx.turn, showSnackbar]);
 
   // Entering an action enables the matching board elements; leaving it clears
-  // all selections. Ported unchanged from the old ActionStepper.
+  // all selections.
   useEffect(() => {
-    const activators: ActionBoardActivators = {
-      setHandProjectCardsInteractive: () => dispatch(setHandProjectCardsInteractive()),
-      setJobSlotsInteractive: () => dispatch(setJobSlotsInteractive()),
-      setProjectSlotsInteractive: () => dispatch(setProjectSlotsInteractive()),
-      setOwnedContributionInteractive: () => dispatch(setOwnedContributionInteractive()),
-      setJoinedContributionInteractive: () => dispatch(setJoinedContributionInteractive()),
-    };
     if (!currentAction) {
       resetSelections();
       return;
     }
-    if (currentAction !== UserActionMoves.EndActionTurn) {
-      ACTION_CONFIGS[currentAction as RegularActionName].activateBoard(activators);
+    switch (currentAction) {
+      case UserActionMoves.CreateProject:
+        dispatch(setHandProjectCardsInteractive());
+        dispatch(setJobSlotsInteractive());
+        break;
+      case UserActionMoves.Recruit:
+        dispatch(setJobSlotsInteractive());
+        dispatch(setProjectSlotsInteractive());
+        break;
+      case UserActionMoves.ContributeOwnedProjects:
+        dispatch(setOwnedContributionInteractive());
+        break;
+      case UserActionMoves.ContributeJoinedProjects:
+        dispatch(setJoinedContributionInteractive());
+        break;
+      case UserActionMoves.RemoveAndRefillJobs:
+        dispatch(setJobSlotsInteractive());
+        break;
+      case UserActionMoves.EndActionTurn:
+        break;
     }
     return () => {
       resetSelections();
@@ -188,10 +193,26 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
     }
   };
 
+  const isSelectionComplete = (name: RegularActionName): boolean => {
+    switch (name) {
+      case 'createProject':
+        return selectionState.selectedHandProjectCards.length === 1 && selectionState.selectedJobSlots.length === 1;
+      case 'recruit':
+        return selectionState.selectedJobSlots.length === 1 && selectionState.selectedProjectSlots.length === 1;
+      case 'contributeOwnedProjects':
+      case 'contributeJoinedProjects': {
+        const max = selectionState.getMaxContributionValue(name);
+        return selectionState.totalContributionValue > 0 && selectionState.totalContributionValue <= max;
+      }
+      case 'removeAndRefillJobs':
+        return selectionState.selectedJobSlots.length > 0;
+    }
+  };
+
   const getPreflightFailure = (): ValidationFailure | null => {
     if (!actionName || ruleUnavailable) return null;
     if (occupied && !overtime) return null; // the overtime prompt handles this state
-    if (!ACTION_CONFIGS[actionName].isStepValid(selectionState)) return null;
+    if (!isSelectionComplete(actionName)) return null;
     const result = runPreflight(actionName, overtime ? { useOvertime: true } : undefined);
     return result.valid ? null : result;
   };
@@ -208,7 +229,7 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
     if (createBlockedByCapacity) return false;
     if (occupied && !overtime) return false;
     if (preflightFailure) return false;
-    return ACTION_CONFIGS[actionName!].isStepValid(selectionState);
+    return isSelectionComplete(actionName!);
   };
 
   const handleConfirm = () => {
@@ -227,14 +248,34 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
       return;
     }
 
-    const executors: ActionExecutors = {
-      createProject: typedMoves.createProject,
-      recruit: typedMoves.recruit,
-      contributeOwnedProjects: typedMoves.contributeOwnedProjects,
-      contributeJoinedProjects: typedMoves.contributeJoinedProjects,
-      removeAndRefillJobs: typedMoves.removeAndRefillJobs,
-    };
-    ACTION_CONFIGS[actionName].execute(executors, selectionState, overtime ? { useOvertime: true } : undefined);
+    const options = overtime ? { useOvertime: true } : undefined;
+    switch (actionName) {
+      case 'createProject':
+        typedMoves.createProject(
+          selectionState.selectedHandProjectCards[0],
+          selectionState.selectedJobSlots[0],
+          selectionState.assignedJobName ?? undefined,
+          options,
+        );
+        break;
+      case 'recruit':
+        typedMoves.recruit(
+          selectionState.selectedJobSlots[0],
+          selectionState.selectedProjectSlots[0],
+          selectionState.assignedJobName ?? undefined,
+          options,
+        );
+        break;
+      case 'contributeOwnedProjects':
+        typedMoves.contributeOwnedProjects(selectionState.contributions, options);
+        break;
+      case 'contributeJoinedProjects':
+        typedMoves.contributeJoinedProjects(selectionState.contributions, options);
+        break;
+      case 'removeAndRefillJobs':
+        typedMoves.removeAndRefillJobs(selectionState.selectedJobSlots, options);
+        break;
+    }
     watchForSilentRejection();
     dispatch(resetAction());
   };
