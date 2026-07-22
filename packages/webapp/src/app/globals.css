@@ -392,3 +392,46 @@ button {
     transform: scale(1.18);
   }
 }
+
+/* Icon button + menu items (design: icon-btn / menu-item) — the compact game
+   header's ⋯ menu and other square tap targets. 44px minimum touch size. */
+.icon-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 2px solid var(--ink);
+  background: white;
+  box-shadow: 0 2px 0 var(--ink);
+  display: grid;
+  place-items: center;
+  font-size: 17px;
+  cursor: pointer;
+  transition: transform 0.08s;
+}
+.icon-btn:hover {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 var(--ink);
+}
+.icon-btn[data-on='true'] {
+  background: var(--orange-soft);
+  border-color: var(--orange-deep);
+}
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: none;
+  background: none;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: left;
+  color: var(--ink);
+  cursor: pointer;
+}
+.menu-item:hover {
+  background: var(--paper-2);
+}
