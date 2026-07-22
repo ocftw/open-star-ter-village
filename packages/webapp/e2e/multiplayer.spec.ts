@@ -133,6 +133,54 @@ test.describe('Full multiplayer flow', () => {
     await expect(observerPage.locator('[data-testid="context-action"]')).toHaveCount(0);
     await observer.close();
   });
+
+  test('Lobby offers 觀戰 for an in-progress room without a seat (#421)', async () => {
+    const visitor = await browser.newContext();
+    const visitorPage = await visitor.newPage();
+    await visitorPage.goto('/lobby');
+    const row = visitorPage.locator(`[data-testid="match-row-${matchID}"]`);
+    await expect(row).toBeVisible({ timeout: 15_000 });
+    await expect(row.locator('[data-testid="match-spectate"]')).toBeVisible();
+    await row.locator('[data-testid="match-spectate"]').click();
+    await visitorPage.waitForURL(`**/game/${matchID}`, { timeout: 15_000 });
+    await expect(visitorPage.locator('[data-testid="observer-mode-banner"]')).toBeVisible({ timeout: 15_000 });
+    await visitor.close();
+  });
+
+  test('Alice leaves keeping her seat and returns via 回到桌子 (#420 + #421)', async () => {
+    // Leave goes through the explicit choice dialog — no immediate navigation.
+    await alicePage.locator('[data-testid="header-leave"]').click();
+    await expect(alicePage.locator('[data-testid="exit-dialog"]')).toBeVisible();
+    await expect(alicePage).toHaveURL(new RegExp(`/game/${matchID}`));
+
+    await alicePage.locator('[data-testid="exit-keep-seat"]').click();
+    await alicePage.waitForURL(/\/lobby/, { timeout: 15_000 });
+
+    // Her room offers 回到桌子, not Join.
+    const row = alicePage.locator(`[data-testid="match-row-${matchID}"]`);
+    await expect(row).toBeVisible({ timeout: 15_000 });
+    await expect(row.locator('[data-testid="match-return"]')).toBeVisible();
+    await row.locator('[data-testid="match-return"]').click();
+    await alicePage.waitForURL(new RegExp(`/game/${matchID}`), { timeout: 15_000 });
+
+    // Same seat resumed — board with her controls, not observer mode.
+    await expect(alicePage.locator('[data-testid^="player-status-"]').first()).toBeVisible({ timeout: 20_000 });
+    await expect(alicePage.locator('[data-testid="observer-mode-banner"]')).toHaveCount(0);
+  });
+
+  test('Bob releases his seat — the match terminates for the table (#420)', async () => {
+    await bobPage.locator('[data-testid="header-leave"]').click();
+    await expect(bobPage.locator('[data-testid="exit-dialog"]')).toBeVisible();
+    await bobPage.locator('[data-testid="exit-leave-seat"]').click();
+    await bobPage.waitForURL(/\/lobby/, { timeout: 15_000 });
+
+    // Remaining players see the terminated notice over a blocked board.
+    await expect(alicePage.locator('[data-testid="match-terminated-overlay"]')).toBeVisible({ timeout: 20_000 });
+
+    // The room disappears from the active lobby list.
+    await bobPage.getByRole('button', { name: /重新整理/ }).click();
+    await expect(bobPage.locator(`[data-testid="match-row-${matchID}"]`)).toHaveCount(0, { timeout: 15_000 });
+  });
 });
 
 test.describe('Game room edge cases', () => {
