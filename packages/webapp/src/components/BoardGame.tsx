@@ -288,7 +288,7 @@ const Board: React.FC<GameContext> = (gameContext) => {
   );
 };
 
-function GameOverDialog({
+export function GameOverDialog({
   gameContext,
   open,
   onClose,
