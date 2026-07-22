@@ -262,6 +262,9 @@ import DeckSlice, { DeckMutator } from './store/slice/deck';
 import { ActionSlotMutator, ActionSlotSelector } from './store/slice/actionSlot';
 import { removeAndRefillJobs } from './core/stage/action/move/removeAndRefillJobs';
 import { createProject } from './core/stage/action/move/createProject';
+import { recruit } from './core/stage/action/move/recruit';
+import { contributeOwnedProjects } from './core/stage/action/move/contributeOwnedProjects';
+import { contributeJoinedProjects } from './core/stage/action/move/contributeJoinedProjects';
 import { ActionValidationError } from './core/stage/action/validate';
 import { refill } from './core/handler/refill';
 
@@ -380,8 +383,8 @@ describe('eventCardHandlers - ignore_first_worker_requirement', () => {
 // ─── scoreUnfinishedProjects ──────────────────────────────────────────────────
 
 import { scoreUnfinishedProjects } from './core/handler/scoreUnfinishedProjects';
-import { ProjectBoardMutator } from './store/slice/projectBoard';
-import { ProjectSlotMutator } from './store/slice/projectSlot/projectSlot';
+import { ProjectBoardMutator, ProjectBoardSelector } from './store/slice/projectBoard';
+import { ProjectSlotMutator, ProjectSlotSelector } from './store/slice/projectSlot/projectSlot';
 import { ProjectCard } from './card';
 
 const makeProjectCard = (id: string, requirements: Record<string, number>): ProjectCard =>
@@ -511,32 +514,90 @@ describe('四大自由 — add_two_worker_slots', () => {
 // ─── 加班 Overtime token (redeemed inside regular moves) ──────────────────────
 
 describe('加班 Overtime token — regular moves with { useOvertime }', () => {
-  // Helper: context with a playerID, the overtime token granted, and a
-  // 1-AP action (removeAndRefillJobs) already used this turn.
   const makeOvertimeContext = () => {
     const ctx = makeContext();
     PlayersMutator.resetOvertimeTokens(ctx.G.players, 'alice', 1);
+    PlayersMutator.resetWorkerTokens(ctx.G.players, 'alice', 12);
     const jobCard = makeJobCard('j1', '工程師');
     JobSlotsMutator.addJobCards(ctx.G.table.jobSlots, [jobCard]);
     DeckMutator.initialize(ctx.G.decks.jobs, [makeJobCard('d1', '美術設計')]);
     return { ...ctx, playerID: 'alice' };
   };
-  const occupyTarget = (ctx: ReturnType<typeof makeOvertimeContext>) => {
-    // Simulate removeAndRefillJobs was already done this turn (slot + 1 AP).
-    ActionSlotMutator.occupy(ctx.G.table.actionSlots.removeAndRefillJobs);
+
+  const occupyOneApAction = (
+    ctx: ReturnType<typeof makeOvertimeContext>,
+    actionName: 'recruit' | 'contributeOwnedProjects' | 'contributeJoinedProjects' | 'removeAndRefillJobs',
+  ) => {
+    ActionSlotMutator.occupy(ctx.G.table.actionSlots[actionName]);
     PlayersMutator.useActionTokens(ctx.G.players, 'alice', 1);
   };
 
-  it('repeats an occupied 1-AP action for only that action\'s AP and consumes the token', () => {
+  const addActiveProject = (ctx: ReturnType<typeof makeOvertimeContext>, owner: string) => {
+    ProjectBoardMutator.initialize(ctx.G.table.projectBoard, 4);
+    const card = makeProjectCard('overtime-project', { '工程師': 10 });
+    ProjectBoardMutator.add(ctx.G.table.projectBoard, card);
+    const slot = ProjectBoardSelector.getSlotByCard(ctx.G.table.projectBoard, card);
+    ProjectSlotMutator.assignOwner(slot, owner, 1);
+    return slot;
+  };
+
+  const expectOvertimeSpent = (ctx: ReturnType<typeof makeOvertimeContext>, apBefore: number) => {
+    expect(PlayersSelector.getNumActionTokens(ctx.G.players, 'alice')).toBe(apBefore - 1);
+    expect(PlayersSelector.getNumOvertimeTokens(ctx.G.players, 'alice')).toBe(0);
+  };
+
+  it('recruits on an occupied action and consumes overtime', () => {
     const ctx = makeOvertimeContext();
-    occupyTarget(ctx);
+    const project = addActiveProject(ctx, 'alice');
+    occupyOneApAction(ctx, 'recruit');
+    const apBefore = PlayersSelector.getNumActionTokens(ctx.G.players, 'alice');
+
+    recruit(ctx, 'j1', project.id, undefined, { useOvertime: true });
+
+    expectOvertimeSpent(ctx, apBefore);
+    expect(ProjectSlotSelector.getWorkerContribution(project, '工程師', 'alice')).toBe(2);
+    expect(PlayersSelector.getNumWorkerTokens(ctx.G.players, 'alice')).toBe(11);
+    expect(JobSlotsSelector.getJobCardById(ctx.G.table.jobSlots, 'j1')).toBeUndefined();
+  });
+
+  it('contributes to an owned project on an occupied action and consumes overtime', () => {
+    const ctx = makeOvertimeContext();
+    const project = addActiveProject(ctx, 'alice');
+    ProjectSlotMutator.assignWorker(project, '工程師', 'alice', 1);
+    occupyOneApAction(ctx, 'contributeOwnedProjects');
+    const apBefore = PlayersSelector.getNumActionTokens(ctx.G.players, 'alice');
+
+    contributeOwnedProjects(ctx, [
+      { projectSlotId: project.id, jobName: '工程師', value: 1 },
+    ], { useOvertime: true });
+
+    expectOvertimeSpent(ctx, apBefore);
+    expect(ProjectSlotSelector.getWorkerContribution(project, '工程師', 'alice')).toBe(2);
+  });
+
+  it('contributes to a joined project on an occupied action and consumes overtime', () => {
+    const ctx = makeOvertimeContext();
+    const project = addActiveProject(ctx, 'bob');
+    ProjectSlotMutator.assignWorker(project, '工程師', 'alice', 1);
+    occupyOneApAction(ctx, 'contributeJoinedProjects');
+    const apBefore = PlayersSelector.getNumActionTokens(ctx.G.players, 'alice');
+
+    contributeJoinedProjects(ctx, [
+      { projectSlotId: project.id, jobName: '工程師', value: 1 },
+    ], { useOvertime: true });
+
+    expectOvertimeSpent(ctx, apBefore);
+    expect(ProjectSlotSelector.getWorkerContribution(project, '工程師', 'alice')).toBe(2);
+  });
+
+  it('removes and refills jobs on an occupied action and consumes overtime', () => {
+    const ctx = makeOvertimeContext();
+    occupyOneApAction(ctx, 'removeAndRefillJobs');
 
     const apBefore = PlayersSelector.getNumActionTokens(ctx.G.players, 'alice');
     removeAndRefillJobs(ctx, ['j1'], { useOvertime: true });
 
-    // Total cost is the action's own 1 AP — no surcharge.
-    expect(PlayersSelector.getNumActionTokens(ctx.G.players, 'alice')).toBe(apBefore - 1);
-    expect(PlayersSelector.getNumOvertimeTokens(ctx.G.players, 'alice')).toBe(0);
+    expectOvertimeSpent(ctx, apBefore);
     // The target slot stays occupied; j1 was removed by the repeated action.
     expect(ActionSlotSelector.isOccupied(ctx.G.table.actionSlots.removeAndRefillJobs)).toBe(true);
     expect(JobSlotsSelector.getJobCardById(ctx.G.table.jobSlots, 'j1')).toBeUndefined();
@@ -551,7 +612,7 @@ describe('加班 Overtime token — regular moves with { useOvertime }', () => {
 
   it('normal repeat of an occupied action still fails (ACTION_OCCUPIED)', () => {
     const ctx = makeOvertimeContext();
-    occupyTarget(ctx);
+    occupyOneApAction(ctx, 'removeAndRefillJobs');
     expect(() => removeAndRefillJobs(ctx, ['j1'])).toThrow(ActionValidationError);
     expect(PlayersSelector.getNumOvertimeTokens(ctx.G.players, 'alice')).toBe(1);
   });
@@ -559,13 +620,17 @@ describe('加班 Overtime token — regular moves with { useOvertime }', () => {
   it('rejects a 2-AP action (createProject) even with the token', () => {
     const ctx = makeOvertimeContext();
     ActionSlotMutator.occupy(ctx.G.table.actionSlots.createProject);
+    const apBefore = PlayersSelector.getNumActionTokens(ctx.G.players, 'alice');
+
     expect(() => createProject(ctx, 'cardId', 'jobId', undefined, { useOvertime: true }))
       .toThrow(ActionValidationError);
+    expect(PlayersSelector.getNumActionTokens(ctx.G.players, 'alice')).toBe(apBefore);
+    expect(PlayersSelector.getNumOvertimeTokens(ctx.G.players, 'alice')).toBe(1);
   });
 
   it('rejects redemption once the token is spent, leaving state untouched', () => {
     const ctx = makeOvertimeContext();
-    occupyTarget(ctx);
+    occupyOneApAction(ctx, 'removeAndRefillJobs');
     PlayersMutator.resetOvertimeTokens(ctx.G.players, 'alice', 0);
     const apBefore = PlayersSelector.getNumActionTokens(ctx.G.players, 'alice');
     expect(() => removeAndRefillJobs(ctx, ['j1'], { useOvertime: true })).toThrow(ActionValidationError);
@@ -575,7 +640,7 @@ describe('加班 Overtime token — regular moves with { useOvertime }', () => {
 
   it('failed validation never consumes the token (atomicity)', () => {
     const ctx = makeOvertimeContext();
-    occupyTarget(ctx);
+    occupyOneApAction(ctx, 'removeAndRefillJobs');
     // Empty selection: NO_JOB_CARDS_SELECTED — thrown before any mutation.
     expect(() => removeAndRefillJobs(ctx, [], { useOvertime: true })).toThrow(ActionValidationError);
     expect(PlayersSelector.getNumOvertimeTokens(ctx.G.players, 'alice')).toBe(1);
@@ -583,7 +648,7 @@ describe('加班 Overtime token — regular moves with { useOvertime }', () => {
 
   it('only one redemption per turn: a second overtime attempt fails', () => {
     const ctx = makeOvertimeContext();
-    occupyTarget(ctx);
+    occupyOneApAction(ctx, 'removeAndRefillJobs');
     removeAndRefillJobs(ctx, ['j1'], { useOvertime: true });
     expect(PlayersSelector.getNumOvertimeTokens(ctx.G.players, 'alice')).toBe(0);
     // The slot is occupied and the token is gone — the next overtime
@@ -593,7 +658,7 @@ describe('加班 Overtime token — regular moves with { useOvertime }', () => {
 
   it('refill at turn end restores the overtime token with the action tokens', () => {
     const ctx = makeOvertimeContext();
-    occupyTarget(ctx);
+    occupyOneApAction(ctx, 'removeAndRefillJobs');
     removeAndRefillJobs(ctx, ['j1'], { useOvertime: true });
     expect(PlayersSelector.getNumOvertimeTokens(ctx.G.players, 'alice')).toBe(0);
 
