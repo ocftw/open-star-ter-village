@@ -381,3 +381,14 @@ button {
     font-size: 34px;
   }
 }
+
+/* 加班 Overtime token chip (ContextAction): pulses while the token is engaged. */
+@keyframes ot-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.18);
+  }
+}

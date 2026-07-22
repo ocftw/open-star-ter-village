@@ -58,7 +58,7 @@ const MESSAGES: Record<ActionErrorCode, (d: Details) => string> = {
   DISCARD_COUNT_INVALID: (d) =>
     `必須選擇剛好 ${d.required} 張人力卡棄掉。 · Select exactly ${d.required} job cards to discard.`,
   OVERTIME_UNAVAILABLE: () =>
-    '加班本輪已被使用，無法再重複行動。 · Overtime is already used this round.',
+    '你的加班 token 本輪已用畢，無法再重複行動。 · Your overtime token is already spent this turn.',
   OVERTIME_INELIGIBLE_ACTION: (d) =>
     `這個行動需要 ${d.cost} AP，加班只能重複 1 AP 的行動。 · Overtime can only repeat 1-AP actions.`,
   OVERTIME_TARGET_NOT_USED: () =>

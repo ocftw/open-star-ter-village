@@ -3,6 +3,7 @@ import { Alert, Snackbar } from '@mui/material';
 import { GameContext } from '@/components/GameContextHelpers';
 import { useSnackbar } from '@/lib/useSnackbar';
 import {
+  ActionExecutionOptions,
   GENERIC_ACTION_ERROR_MESSAGE,
   ValidationFailure,
   ValidationResult,
@@ -10,7 +11,7 @@ import {
   validateContributeJoinedProjects,
   validateContributeOwnedProjects,
   validateCreateProject,
-  validateMirror,
+  validateOvertime,
   validateRecruit,
   validateRemoveAndRefillJobs,
 } from '@/game/core/stage/action/validate';
@@ -32,19 +33,13 @@ import { getSelectedJobSlots, resetJobSlotSelection } from '@/lib/reducers/jobSl
 import { getSelectedProjectSlots, resetProjectSlotSelection } from '@/lib/reducers/projectSlotSlice';
 import { getContributions, resetContribution } from '@/lib/reducers/contributionSlice';
 import { getTotalContributionValue } from '@/game/core/ContributionAction';
-import { ActionMoves } from '@/game/core/stage/action/move/type';
+import { ActionMoveName, ActionMoves } from '@/game/core/stage/action/move/type';
 import { RuleSelector } from '@/game/store/slice/rule';
 import { ActionSlotSelector } from '@/game/store/slice/actionSlot';
 import { PlayersSelector } from '@/game/store/slice/players';
-import {
-  ACTION_CONFIGS,
-  ActionBoardActivators,
-  ActionExecutors,
-  ActionSelectionState,
-  MirrorableActionName,
-} from './actionConfig';
 
 type ExtendedMoves = ActionMoves & { endActionTurn: () => void };
+type RegularActionName = ActionMoveName;
 
 type ModeCopy = {
   icon: string;
@@ -71,14 +66,14 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
   const contributions = useAppSelector(getContributions);
   const assignedJobName = useAppSelector(getAssignedJobName);
 
-  const selectionState: ActionSelectionState = {
+  const selectionState = {
     selectedHandProjectCards: Object.keys(handSelection).filter((id) => handSelection[id]),
     selectedJobSlots: Object.keys(jobSelection).filter((id) => jobSelection[id]),
     selectedProjectSlots: Object.keys(projectSelection).filter((id) => projectSelection[id]),
     assignedJobName,
     contributions,
     totalContributionValue: getTotalContributionValue(contributions),
-    getMaxContributionValue: (name) => RuleSelector.getMaxContributionValue(G.rules, name),
+    getMaxContributionValue: (name: RegularActionName) => RuleSelector.getMaxContributionValue(G.rules, name),
   };
 
   const resetSelections = React.useCallback(() => {
@@ -89,7 +84,7 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
   }, [dispatch]);
 
   // Repeating an occupied action via 加班 Overtime (F-005). Confirming keeps the
-  // same currentAction and selections; only the executed move changes to mirror().
+  // same currentAction and selections; the same move runs with { useOvertime }.
   const [overtime, setOvertime] = React.useState(false);
   useEffect(() => {
     setOvertime(false);
@@ -115,21 +110,32 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
   }, [ctx.numMoves, ctx.turn, showSnackbar]);
 
   // Entering an action enables the matching board elements; leaving it clears
-  // all selections. Ported unchanged from the old ActionStepper.
+  // all selections.
   useEffect(() => {
-    const activators: ActionBoardActivators = {
-      setHandProjectCardsInteractive: () => dispatch(setHandProjectCardsInteractive()),
-      setJobSlotsInteractive: () => dispatch(setJobSlotsInteractive()),
-      setProjectSlotsInteractive: () => dispatch(setProjectSlotsInteractive()),
-      setOwnedContributionInteractive: () => dispatch(setOwnedContributionInteractive()),
-      setJoinedContributionInteractive: () => dispatch(setJoinedContributionInteractive()),
-    };
     if (!currentAction) {
       resetSelections();
       return;
     }
-    if (currentAction !== UserActionMoves.EndActionTurn) {
-      ACTION_CONFIGS[currentAction as MirrorableActionName].activateBoard(activators);
+    switch (currentAction) {
+      case UserActionMoves.CreateProject:
+        dispatch(setHandProjectCardsInteractive());
+        dispatch(setJobSlotsInteractive());
+        break;
+      case UserActionMoves.Recruit:
+        dispatch(setJobSlotsInteractive());
+        dispatch(setProjectSlotsInteractive());
+        break;
+      case UserActionMoves.ContributeOwnedProjects:
+        dispatch(setOwnedContributionInteractive());
+        break;
+      case UserActionMoves.ContributeJoinedProjects:
+        dispatch(setJoinedContributionInteractive());
+        break;
+      case UserActionMoves.RemoveAndRefillJobs:
+        dispatch(setJobSlotsInteractive());
+        break;
+      case UserActionMoves.EndActionTurn:
+        break;
     }
     return () => {
       resetSelections();
@@ -139,15 +145,16 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
   if (playerID === null) return null;
 
   const actionTokens = PlayersSelector.getNumActionTokens(G.players, playerID);
+  const overtimeTokens = PlayersSelector.getNumOvertimeTokens(G.players, playerID);
   const isMyTurn = playerID === ctx.currentPlayer;
   if (!isMyTurn) return null;
 
-  const isSlotOccupied = (name: MirrorableActionName) =>
+  const isSlotOccupied = (name: RegularActionName) =>
     ActionSlotSelector.isOccupied(G.table.actionSlots[name]);
 
   const actionName =
     currentAction && currentAction !== UserActionMoves.EndActionTurn
-      ? (currentAction as MirrorableActionName)
+      ? (currentAction as RegularActionName)
       : null;
 
   // The tapped action is disabled by the current rule set (rare).
@@ -156,10 +163,9 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
   // the contextual entry point for 加班 Overtime (F-005).
   const occupied = actionName !== null && !ruleUnavailable && isSlotOccupied(actionName);
 
-  // Overtime eligibility uses the same shared validator as the mirror() move
-  //, so the UI reason can never drift from the server rule.
-  const mirrorCost = RuleSelector.getActionTokenCost(G.rules, 'mirror');
-  const overtimeValidation = occupied ? validateMirror(G, playerID, actionName!) : null;
+  // Overtime eligibility uses the same shared validator as the server move,
+  // so the UI reason can never drift from the server rule.
+  const overtimeValidation = occupied ? validateOvertime(G, playerID, actionName!) : null;
   const overtimeBlockReason: string | null =
     overtimeValidation && !overtimeValidation.valid ? getActionErrorMessage(overtimeValidation) : null;
   const canOfferOvertime = occupied && overtimeBlockReason === null;
@@ -167,7 +173,7 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
   // Preflight validation: once the selection is complete, run the same
   // pure validators the server move will run. Failures are shown inline and
   // block the confirm button before a doomed dispatch.
-  const runPreflight = (name: MirrorableActionName, opts?: { ignoreOccupied?: boolean }): ValidationResult => {
+  const runPreflight = (name: RegularActionName, opts?: ActionExecutionOptions): ValidationResult => {
     const s = selectionState;
     switch (name) {
       case 'createProject':
@@ -187,17 +193,27 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
     }
   };
 
+  const isSelectionComplete = (name: RegularActionName): boolean => {
+    switch (name) {
+      case 'createProject':
+        return selectionState.selectedHandProjectCards.length === 1 && selectionState.selectedJobSlots.length === 1;
+      case 'recruit':
+        return selectionState.selectedJobSlots.length === 1 && selectionState.selectedProjectSlots.length === 1;
+      case 'contributeOwnedProjects':
+      case 'contributeJoinedProjects': {
+        const max = selectionState.getMaxContributionValue(name);
+        return selectionState.totalContributionValue > 0 && selectionState.totalContributionValue <= max;
+      }
+      case 'removeAndRefillJobs':
+        return selectionState.selectedJobSlots.length > 0;
+    }
+  };
+
   const getPreflightFailure = (): ValidationFailure | null => {
     if (!actionName || ruleUnavailable) return null;
     if (occupied && !overtime) return null; // the overtime prompt handles this state
-    if (!ACTION_CONFIGS[actionName].isStepValid(selectionState)) return null;
-    if (overtime) {
-      const mirrorResult = validateMirror(G, playerID, actionName);
-      if (!mirrorResult.valid) return mirrorResult;
-      const targetResult = runPreflight(actionName, { ignoreOccupied: true });
-      return targetResult.valid ? null : targetResult;
-    }
-    const result = runPreflight(actionName);
+    if (!isSelectionComplete(actionName)) return null;
+    const result = runPreflight(actionName, overtime ? { useOvertime: true } : undefined);
     return result.valid ? null : result;
   };
   const preflightFailure = getPreflightFailure();
@@ -213,7 +229,7 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
     if (createBlockedByCapacity) return false;
     if (occupied && !overtime) return false;
     if (preflightFailure) return false;
-    return ACTION_CONFIGS[actionName!].isStepValid(selectionState);
+    return isSelectionComplete(actionName!);
   };
 
   const handleConfirm = () => {
@@ -232,17 +248,33 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
       return;
     }
 
-    if (overtime) {
-      typedMoves.mirror(actionName, ...ACTION_CONFIGS[actionName].getParams(selectionState));
-    } else {
-      const executors: ActionExecutors = {
-        createProject: typedMoves.createProject,
-        recruit: typedMoves.recruit,
-        contributeOwnedProjects: typedMoves.contributeOwnedProjects,
-        contributeJoinedProjects: typedMoves.contributeJoinedProjects,
-        removeAndRefillJobs: typedMoves.removeAndRefillJobs,
-      };
-      ACTION_CONFIGS[actionName].execute(executors, selectionState);
+    const options = overtime ? { useOvertime: true } : undefined;
+    switch (actionName) {
+      case 'createProject':
+        typedMoves.createProject(
+          selectionState.selectedHandProjectCards[0],
+          selectionState.selectedJobSlots[0],
+          selectionState.assignedJobName ?? undefined,
+          options,
+        );
+        break;
+      case 'recruit':
+        typedMoves.recruit(
+          selectionState.selectedJobSlots[0],
+          selectionState.selectedProjectSlots[0],
+          selectionState.assignedJobName ?? undefined,
+          options,
+        );
+        break;
+      case 'contributeOwnedProjects':
+        typedMoves.contributeOwnedProjects(selectionState.contributions, options);
+        break;
+      case 'contributeJoinedProjects':
+        typedMoves.contributeJoinedProjects(selectionState.contributions, options);
+        break;
+      case 'removeAndRefillJobs':
+        typedMoves.removeAndRefillJobs(selectionState.selectedJobSlots, options);
+        break;
     }
     watchForSilentRejection();
     dispatch(resetAction());
@@ -250,7 +282,7 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
 
   const handleCancel = () => dispatch(resetAction());
 
-  const selectionProgress = (name: MirrorableActionName): string => {
+  const selectionProgress = (name: RegularActionName): string => {
     const s = selectionState;
     switch (name) {
       case 'createProject':
@@ -345,10 +377,10 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
       ? {
           ...copy,
           icon: '⏰',
-          title: '此行動已被使用 — 要加班重複嗎？',
-          en: 'Use overtime?',
+          title: '此行動已被使用 — 要用加班 token 重做嗎？',
+          en: 'Use overtime token?',
           tone: 'var(--job-legal)',
-          hint: `這個行動的格子本輪已被佔用。確認後花 ${mirrorCost} AP 加班，就能照原本的流程再做一次。`,
+          hint: '這個行動的格子本輪已被佔用。用 1 枚加班 token，只花這個行動原本的 1 AP，照原本的流程再做一次。',
           cta: null,
         }
       : {
@@ -450,33 +482,74 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
         </div>
       </div>
 
-      {/* AP dots */}
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: 2,
-          padding: '0 14px',
-          borderLeft: '1.5px dashed var(--paper-3)',
-        }}
-        data-testid="ap-dots"
-        data-ap={actionTokens}
-      >
-        <div className="en-cap">AP</div>
-        <div style={{ display: 'flex', gap: 3 }}>
-          {Array.from({ length: 4 }).map((_, i) => (
-            <span
-              key={i}
-              style={{
-                width: 14,
-                height: 14,
-                borderRadius: 999,
-                background: i < actionTokens ? 'var(--orange)' : 'var(--paper-2)',
-                border: '1.5px solid var(--ink)',
-              }}
-            />
-          ))}
+      {/* AP dots + 加班 Overtime token (design: GpApDots) */}
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 2,
+            padding: '0 14px',
+            borderLeft: '1.5px dashed var(--paper-3)',
+          }}
+          data-testid="ap-dots"
+          data-ap={actionTokens}
+        >
+          <div className="en-cap">AP</div>
+          <div style={{ display: 'flex', gap: 3 }}>
+            {Array.from({ length: 4 }).map((_, i) => (
+              <span
+                key={i}
+                style={{
+                  width: 14,
+                  height: 14,
+                  borderRadius: 999,
+                  background: i < actionTokens ? 'var(--orange)' : 'var(--paper-2)',
+                  border: '1.5px solid var(--ink)',
+                }}
+              />
+            ))}
+          </div>
+        </div>
+        <div
+          data-testid="overtime-token"
+          data-available={overtimeTokens > 0 || undefined}
+          data-active={overtime || undefined}
+          title={
+            overtimeTokens < 1
+              ? '加班 token 本輪已用畢 · Overtime token spent this turn'
+              : overtime
+                ? '加班 token 使用中 · Spending your overtime token'
+                : '加班 token：點一個本輪已使用過的 1 AP 行動即可重做 · Tap a used 1-AP action to redo it'
+          }
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 2,
+            padding: '0 14px',
+            borderLeft: '1.5px dashed var(--paper-3)',
+          }}
+        >
+          <div className="en-cap">加班 OT</div>
+          <span
+            style={{
+              width: 22,
+              height: 22,
+              borderRadius: 999,
+              border: '1.5px solid var(--ink)',
+              display: 'grid',
+              placeItems: 'center',
+              fontSize: 12,
+              background: overtimeTokens > 0 ? 'var(--job-legal)' : 'var(--paper-2)',
+              color: overtimeTokens > 0 ? 'white' : 'var(--ink-mute)',
+              opacity: overtimeTokens > 0 ? 1 : 0.6,
+              animation: overtime ? 'ot-pulse 1s ease-in-out infinite' : 'none',
+            }}
+          >
+            ⏰
+          </span>
         </div>
       </div>
 

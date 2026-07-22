@@ -18,7 +18,7 @@ import {
   validateContributeOwnedProjects,
   validateCreateProject,
   validateDiscardExcessJobCards,
-  validateMirror,
+  validateOvertime,
   validateRecruit,
   validateRemoveAndRefillJobs,
 } from './index';
@@ -41,6 +41,7 @@ const makeG = (): GameState => {
   PlayersMutator.initialize(G.players, ['0', '1']);
   PlayersMutator.resetActionTokens(G.players, '0', 4);
   PlayersMutator.resetWorkerTokens(G.players, '0', 12);
+  PlayersMutator.resetOvertimeTokens(G.players, '0', 1);
   PlayersMutator.addProjects(G.players, '0', [PROJECT_CARD]);
   ProjectBoardMutator.initialize(G.table.projectBoard, 8);
   JobSlotsMutator.addJobCards(G.table.jobSlots, [JOB_ENGINEER, JOB_LAWYER]);
@@ -72,10 +73,13 @@ describe('validateCreateProject', () => {
     expectReason(validateCreateProject(G, '0', 'p1', 'j1'), 'ACTION_OCCUPIED');
   });
 
-  it('ignoreOccupied skips only the occupancy check (overtime preflight)', () => {
+  it('useOvertime cannot repeat a 2-AP action (OVERTIME_INELIGIBLE_ACTION)', () => {
     const G = makeG();
     ActionSlotMutator.occupy(G.table.actionSlots.createProject);
-    expect(validateCreateProject(G, '0', 'p1', 'j1', undefined, { ignoreOccupied: true }).valid).toBe(true);
+    expectReason(
+      validateCreateProject(G, '0', 'p1', 'j1', undefined, { useOvertime: true }),
+      'OVERTIME_INELIGIBLE_ACTION',
+    );
   });
 
   it('INSUFFICIENT_ACTION_TOKENS with required/available details', () => {
@@ -296,35 +300,59 @@ describe('validateDiscardExcessJobCards', () => {
   });
 });
 
-describe('validateMirror (加班 Overtime)', () => {
-  it('OVERTIME_UNAVAILABLE once the mirror slot is used', () => {
+describe('validateOvertime (加班 Overtime token)', () => {
+  it('OVERTIME_UNAVAILABLE once the player token is spent', () => {
     const G = makeG();
-    ActionSlotMutator.occupy(G.table.actionSlots.mirror);
+    PlayersMutator.resetOvertimeTokens(G.players, '0', 0);
     ActionSlotMutator.occupy(G.table.actionSlots.recruit);
-    expectReason(validateMirror(G, '0', 'recruit'), 'OVERTIME_UNAVAILABLE');
+    expectReason(validateOvertime(G, '0', 'recruit'), 'OVERTIME_UNAVAILABLE');
   });
 
   it('OVERTIME_INELIGIBLE_ACTION for a 2-AP action', () => {
     const G = makeG();
     ActionSlotMutator.occupy(G.table.actionSlots.createProject);
-    expectReason(validateMirror(G, '0', 'createProject'), 'OVERTIME_INELIGIBLE_ACTION');
+    expectReason(validateOvertime(G, '0', 'createProject'), 'OVERTIME_INELIGIBLE_ACTION');
   });
 
-  it('INSUFFICIENT_ACTION_TOKENS without AP for the mirror cost', () => {
+  it("INSUFFICIENT_ACTION_TOKENS without AP for the action's own cost", () => {
     const G = makeG();
     ActionSlotMutator.occupy(G.table.actionSlots.recruit);
     PlayersMutator.resetActionTokens(G.players, '0', 0);
-    expectReason(validateMirror(G, '0', 'recruit'), 'INSUFFICIENT_ACTION_TOKENS');
+    const result = validateOvertime(G, '0', 'recruit');
+    expectReason(result, 'INSUFFICIENT_ACTION_TOKENS');
+    // Redeeming costs only the repeated action's normal AP — no surcharge.
+    if (!result.valid) expect(result.details).toEqual({ required: 1, available: 0 });
   });
 
   it('OVERTIME_TARGET_NOT_USED when the target slot is still free', () => {
-    expectReason(validateMirror(makeG(), '0', 'recruit'), 'OVERTIME_TARGET_NOT_USED');
+    expectReason(validateOvertime(makeG(), '0', 'recruit'), 'OVERTIME_TARGET_NOT_USED');
   });
 
-  it('passes for an occupied 1-AP action with AP available', () => {
+  it('passes for an occupied 1-AP action with the token and AP available', () => {
     const G = makeG();
     ActionSlotMutator.occupy(G.table.actionSlots.recruit);
-    expect(validateMirror(G, '0', 'recruit').valid).toBe(true);
+    expect(validateOvertime(G, '0', 'recruit').valid).toBe(true);
+  });
+
+  it('move validators accept useOvertime against an occupied 1-AP slot', () => {
+    const G = makeG();
+    ActionSlotMutator.occupy(G.table.actionSlots.removeAndRefillJobs);
+    expect(validateRemoveAndRefillJobs(G, '0', ['j1'], { useOvertime: true }).valid).toBe(true);
+  });
+
+  it('move validators reject useOvertime on a free slot', () => {
+    const G = makeG();
+    expectReason(
+      validateRemoveAndRefillJobs(G, '0', ['j1'], { useOvertime: true }),
+      'OVERTIME_TARGET_NOT_USED',
+    );
+  });
+
+  it('move validators reject useOvertime when the token is spent', () => {
+    const G = makeG();
+    PlayersMutator.resetOvertimeTokens(G.players, '0', 0);
+    ActionSlotMutator.occupy(G.table.actionSlots.removeAndRefillJobs);
+    expectReason(validateRemoveAndRefillJobs(G, '0', ['j1'], { useOvertime: true }), 'OVERTIME_UNAVAILABLE');
   });
 });
 

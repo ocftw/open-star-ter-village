@@ -31,7 +31,6 @@ interface ActionRules {
   contributeOwnedProjects: ActionRule & WorkerContribution;
   contributeJoinedProjects: ActionRule & WorkerContribution;
   removeAndRefillJobs: ActionRule & ScoreWhenAction;
-  mirror: ActionRule;
 }
 
 export interface Rule {
@@ -47,6 +46,10 @@ export interface Rule {
     maxActionTokens: number;
     maxWorkerTokens: number;
     maxProjectCards: number;
+    /** 加班 Overtime entitlements granted per action-turn refill. */
+    overtimeTokens: number;
+    /** Overtime may only repeat actions whose base cost is at most this many AP. */
+    overtimeMaxActionCost: number;
   },
   settlement: {
     leftoverActionTokensVictoryPoints: number;
@@ -86,9 +89,6 @@ const initialState = (): Rule => {
       actionCost: 1,
       victoryPoints: 1,
     },
-    mirror: {
-      actionCost: 1,
-    },
   };
 
   const actionSlots: Record<ActionMoveName, ActionSlotRule> = {
@@ -97,7 +97,6 @@ const initialState = (): Rule => {
     contributeOwnedProjects: { available: true },
     contributeJoinedProjects: { available: true },
     removeAndRefillJobs: { available: true },
-    mirror: { available: true },
   };
 
   return {
@@ -113,6 +112,8 @@ const initialState = (): Rule => {
       maxActionTokens: 4,
       maxWorkerTokens: 12,
       maxProjectCards: 2,
+      overtimeTokens: 1,
+      overtimeMaxActionCost: 1,
     },
     settlement: {
       leftoverActionTokensVictoryPoints: 0,
@@ -282,6 +283,19 @@ const getPlayerMaxProjectCards = (rule: Rule): number => {
   return rule.player.maxProjectCards;
 }
 
+const getPlayerOvertimeTokens = (rule: Rule): number => {
+  return rule.player.overtimeTokens;
+}
+
+const getOvertimeMaxActionCost = (rule: Rule): number => {
+  return rule.player.overtimeMaxActionCost;
+}
+
+/** Total rounds in a game: one per non-end-game event card plus the end-game round. */
+const getTotalRounds = (rule: Rule): number => {
+  return rule.numNonEndGameEventCards + 1;
+}
+
 const getSettlementLeftoverActionTokensVictoryPoints = (rule: Rule): number => {
   return rule.settlement.leftoverActionTokensVictoryPoints;
 }
@@ -323,6 +337,9 @@ const RuleSlice = {
     getPlayerMaxActionTokens,
     getPlayerMaxWorkerTokens,
     getPlayerMaxProjectCards,
+    getPlayerOvertimeTokens,
+    getOvertimeMaxActionCost,
+    getTotalRounds,
     getSettlementLeftoverActionTokensVictoryPoints,
     getSettlementProjectOwnerVictoryPoints,
     getSettlementLastContributorVictoryPoints,

@@ -11,12 +11,12 @@ import {
   resetJobSlotSelection,
   toggleJobSlotSelection,
 } from '@/lib/reducers/jobSlotSlice';
-import { ActionSlotSelector } from '@/game/store/slice/actionSlot';
 import JobTile from './JobTile';
 
 /**
- * Job market grid + the two board affordances of the redesign:
- * tapping the deck refills (removeAndRefillJobs), the 加班 slot mirrors.
+ * Job market grid + the refill affordance of the redesign. 加班 Overtime is
+ * entered contextually by re-tapping an occupied action; its per-player token
+ * indicator lives in ContextAction next to the AP dots.
  */
 export default function JobMarket({
   gameContext,
@@ -34,7 +34,6 @@ export default function JobMarket({
   const currentAction = useAppSelector(getCurrentAction);
 
   const multiSelect = currentAction === UserActionMoves.RemoveAndRefillJobs || discardActive;
-  const mirrorOccupied = ActionSlotSelector.isOccupied(G.table.actionSlots.mirror);
 
   const handleTap = (id: string) => {
     if (jobsInteractive) {
@@ -75,21 +74,6 @@ export default function JobMarket({
             >
               🔄 換人力 <span className="tag-en">Refill</span>
             </button>
-            {/* Overtime is entered contextually by re-tapping an occupied action
-                (F-005); this is just a status legend. */}
-            <span
-              className="sticker"
-              data-testid="overtime-status"
-              data-used={mirrorOccupied || undefined}
-              style={mirrorOccupied ? { opacity: 0.55 } : undefined}
-              title={
-                mirrorOccupied
-                  ? '加班本輪已被使用'
-                  : '再點一個已被使用的行動即可加班重複'
-              }
-            >
-              ⏰ 加班 {mirrorOccupied ? '已用' : '可用'}
-            </span>
           </div>
         )}
       </div>

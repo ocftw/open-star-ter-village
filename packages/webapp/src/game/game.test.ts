@@ -260,8 +260,13 @@ import { eventCardHandlers } from './core/handler/eventCardHandlers';
 import GameStore from './store/store';
 import DeckSlice, { DeckMutator } from './store/slice/deck';
 import { ActionSlotMutator, ActionSlotSelector } from './store/slice/actionSlot';
-import { INVALID_MOVE } from 'boardgame.io/core';
-import { mirror } from './core/stage/action/move/mirror';
+import { removeAndRefillJobs } from './core/stage/action/move/removeAndRefillJobs';
+import { createProject } from './core/stage/action/move/createProject';
+import { recruit } from './core/stage/action/move/recruit';
+import { contributeOwnedProjects } from './core/stage/action/move/contributeOwnedProjects';
+import { contributeJoinedProjects } from './core/stage/action/move/contributeJoinedProjects';
+import { ActionValidationError } from './core/stage/action/validate';
+import { refill } from './core/handler/refill';
 
 /** Minimal context factory for testing handlers */
 const makeContext = () => {
@@ -378,8 +383,8 @@ describe('eventCardHandlers - ignore_first_worker_requirement', () => {
 // ─── scoreUnfinishedProjects ──────────────────────────────────────────────────
 
 import { scoreUnfinishedProjects } from './core/handler/scoreUnfinishedProjects';
-import { ProjectBoardMutator } from './store/slice/projectBoard';
-import { ProjectSlotMutator } from './store/slice/projectSlot/projectSlot';
+import { ProjectBoardMutator, ProjectBoardSelector } from './store/slice/projectBoard';
+import { ProjectSlotMutator, ProjectSlotSelector } from './store/slice/projectSlot/projectSlot';
 import { ProjectCard } from './card';
 
 const makeProjectCard = (id: string, requirements: Record<string, number>): ProjectCard =>
@@ -506,67 +511,166 @@ describe('四大自由 — add_two_worker_slots', () => {
   });
 });
 
-// ─── mirror (Doin' Overtime) move ─────────────────────────────────────────────
+// ─── 加班 Overtime token (redeemed inside regular moves) ──────────────────────
 
-describe('mirror — Doin\' Overtime', () => {
-  // Helper: context with a playerID so moves can deduct tokens
-  const makeMirrorContext = () => {
+describe('加班 Overtime token — regular moves with { useOvertime }', () => {
+  const makeOvertimeContext = () => {
     const ctx = makeContext();
-    return { ...ctx, playerID: 'alice' };
-  };
-
-  it('repeats a 1-AP action that was already done this turn', () => {
-    const ctx = makeMirrorContext();
-    // Put a job card on the table and seed the deck for the sub-move refill
+    PlayersMutator.resetOvertimeTokens(ctx.G.players, 'alice', 1);
+    PlayersMutator.resetWorkerTokens(ctx.G.players, 'alice', 12);
     const jobCard = makeJobCard('j1', '工程師');
     JobSlotsMutator.addJobCards(ctx.G.table.jobSlots, [jobCard]);
     DeckMutator.initialize(ctx.G.decks.jobs, [makeJobCard('d1', '美術設計')]);
+    return { ...ctx, playerID: 'alice' };
+  };
 
-    // Simulate removeAndRefillJobs was already done this turn
-    ActionSlotMutator.occupy(ctx.G.table.actionSlots.removeAndRefillJobs);
-    // Deduct the 1 AP that was spent on removeAndRefillJobs
+  const occupyOneApAction = (
+    ctx: ReturnType<typeof makeOvertimeContext>,
+    actionName: 'recruit' | 'contributeOwnedProjects' | 'contributeJoinedProjects' | 'removeAndRefillJobs',
+  ) => {
+    ActionSlotMutator.occupy(ctx.G.table.actionSlots[actionName]);
     PlayersMutator.useActionTokens(ctx.G.players, 'alice', 1);
+  };
 
+  const addActiveProject = (ctx: ReturnType<typeof makeOvertimeContext>, owner: string) => {
+    ProjectBoardMutator.initialize(ctx.G.table.projectBoard, 4);
+    const card = makeProjectCard('overtime-project', { '工程師': 10 });
+    ProjectBoardMutator.add(ctx.G.table.projectBoard, card);
+    const slot = ProjectBoardSelector.getSlotByCard(ctx.G.table.projectBoard, card);
+    ProjectSlotMutator.assignOwner(slot, owner, 1);
+    return slot;
+  };
+
+  const expectOvertimeSpent = (ctx: ReturnType<typeof makeOvertimeContext>, apBefore: number) => {
+    expect(PlayersSelector.getNumActionTokens(ctx.G.players, 'alice')).toBe(apBefore - 1);
+    expect(PlayersSelector.getNumOvertimeTokens(ctx.G.players, 'alice')).toBe(0);
+  };
+
+  it('recruits on an occupied action and consumes overtime', () => {
+    const ctx = makeOvertimeContext();
+    const project = addActiveProject(ctx, 'alice');
+    occupyOneApAction(ctx, 'recruit');
     const apBefore = PlayersSelector.getNumActionTokens(ctx.G.players, 'alice');
-    mirror(ctx, 'removeAndRefillJobs', ['j1']);
 
-    // mirror itself costs 1 AP; the sub-move costs another 1 AP
-    expect(PlayersSelector.getNumActionTokens(ctx.G.players, 'alice')).toBe(apBefore - 2);
-    // j1 should be gone from the table (removed by sub-move)
+    recruit(ctx, 'j1', project.id, undefined, { useOvertime: true });
+
+    expectOvertimeSpent(ctx, apBefore);
+    expect(ProjectSlotSelector.getWorkerContribution(project, '工程師', 'alice')).toBe(2);
+    expect(PlayersSelector.getNumWorkerTokens(ctx.G.players, 'alice')).toBe(11);
     expect(JobSlotsSelector.getJobCardById(ctx.G.table.jobSlots, 'j1')).toBeUndefined();
   });
 
-  it('returns INVALID_MOVE when the target action has not been done this turn', () => {
-    const ctx = makeMirrorContext();
-    // removeAndRefillJobs slot is NOT occupied — action hasn't been used yet
-    expect(ActionSlotSelector.isOccupied(ctx.G.table.actionSlots.removeAndRefillJobs)).toBe(false);
-    const result = mirror(ctx, 'removeAndRefillJobs', ['j1']);
-    expect(result).toBe(INVALID_MOVE);
-  });
-
-  it('returns INVALID_MOVE when the target action costs more than 1 AP', () => {
-    const ctx = makeMirrorContext();
-    // createProject costs 2 AP; mirror only allows 1-AP actions
-    ActionSlotMutator.occupy(ctx.G.table.actionSlots.createProject);
-    const result = mirror(ctx, 'createProject', 'cardId', 'jobId');
-    expect(result).toBe(INVALID_MOVE);
-  });
-
-  it('returns INVALID_MOVE when mirror itself has already been used this turn', () => {
-    const ctx = makeMirrorContext();
-    ActionSlotMutator.occupy(ctx.G.table.actionSlots.mirror);
-    ActionSlotMutator.occupy(ctx.G.table.actionSlots.removeAndRefillJobs);
-    const result = mirror(ctx, 'removeAndRefillJobs', ['j1']);
-    expect(result).toBe(INVALID_MOVE);
-  });
-
-  it('does not mutate state when returning INVALID_MOVE (target not occupied)', () => {
-    const ctx = makeMirrorContext();
+  it('contributes to an owned project on an occupied action and consumes overtime', () => {
+    const ctx = makeOvertimeContext();
+    const project = addActiveProject(ctx, 'alice');
+    ProjectSlotMutator.assignWorker(project, '工程師', 'alice', 1);
+    occupyOneApAction(ctx, 'contributeOwnedProjects');
     const apBefore = PlayersSelector.getNumActionTokens(ctx.G.players, 'alice');
-    const slotBefore = ActionSlotSelector.isAvailable(ctx.G.table.actionSlots.mirror);
-    const result = mirror(ctx, 'removeAndRefillJobs', ['j1']);
-    expect(result).toBe(INVALID_MOVE);
+
+    contributeOwnedProjects(ctx, [
+      { projectSlotId: project.id, jobName: '工程師', value: 1 },
+    ], { useOvertime: true });
+
+    expectOvertimeSpent(ctx, apBefore);
+    expect(ProjectSlotSelector.getWorkerContribution(project, '工程師', 'alice')).toBe(2);
+  });
+
+  it('contributes to a joined project on an occupied action and consumes overtime', () => {
+    const ctx = makeOvertimeContext();
+    const project = addActiveProject(ctx, 'bob');
+    ProjectSlotMutator.assignWorker(project, '工程師', 'alice', 1);
+    occupyOneApAction(ctx, 'contributeJoinedProjects');
+    const apBefore = PlayersSelector.getNumActionTokens(ctx.G.players, 'alice');
+
+    contributeJoinedProjects(ctx, [
+      { projectSlotId: project.id, jobName: '工程師', value: 1 },
+    ], { useOvertime: true });
+
+    expectOvertimeSpent(ctx, apBefore);
+    expect(ProjectSlotSelector.getWorkerContribution(project, '工程師', 'alice')).toBe(2);
+  });
+
+  it('removes and refills jobs on an occupied action and consumes overtime', () => {
+    const ctx = makeOvertimeContext();
+    occupyOneApAction(ctx, 'removeAndRefillJobs');
+
+    const apBefore = PlayersSelector.getNumActionTokens(ctx.G.players, 'alice');
+    removeAndRefillJobs(ctx, ['j1'], { useOvertime: true });
+
+    expectOvertimeSpent(ctx, apBefore);
+    // The target slot stays occupied; j1 was removed by the repeated action.
+    expect(ActionSlotSelector.isOccupied(ctx.G.table.actionSlots.removeAndRefillJobs)).toBe(true);
+    expect(JobSlotsSelector.getJobCardById(ctx.G.table.jobSlots, 'j1')).toBeUndefined();
+  });
+
+  it('rejects overtime on a free slot without mutating state', () => {
+    const ctx = makeOvertimeContext();
+    const apBefore = PlayersSelector.getNumActionTokens(ctx.G.players, 'alice');
+
+    expect(() => removeAndRefillJobs(ctx, ['j1'], { useOvertime: true }))
+      .toThrow(ActionValidationError);
+
     expect(PlayersSelector.getNumActionTokens(ctx.G.players, 'alice')).toBe(apBefore);
-    expect(ActionSlotSelector.isAvailable(ctx.G.table.actionSlots.mirror)).toBe(slotBefore);
+    expect(PlayersSelector.getNumOvertimeTokens(ctx.G.players, 'alice')).toBe(1);
+    expect(ActionSlotSelector.isOccupied(ctx.G.table.actionSlots.removeAndRefillJobs)).toBe(false);
+    expect(JobSlotsSelector.getJobCardById(ctx.G.table.jobSlots, 'j1')).toBeDefined();
+  });
+
+  it('normal repeat of an occupied action still fails (ACTION_OCCUPIED)', () => {
+    const ctx = makeOvertimeContext();
+    occupyOneApAction(ctx, 'removeAndRefillJobs');
+    expect(() => removeAndRefillJobs(ctx, ['j1'])).toThrow(ActionValidationError);
+    expect(PlayersSelector.getNumOvertimeTokens(ctx.G.players, 'alice')).toBe(1);
+  });
+
+  it('rejects a 2-AP action (createProject) even with the token', () => {
+    const ctx = makeOvertimeContext();
+    ActionSlotMutator.occupy(ctx.G.table.actionSlots.createProject);
+    const apBefore = PlayersSelector.getNumActionTokens(ctx.G.players, 'alice');
+
+    expect(() => createProject(ctx, 'cardId', 'jobId', undefined, { useOvertime: true }))
+      .toThrow(ActionValidationError);
+    expect(PlayersSelector.getNumActionTokens(ctx.G.players, 'alice')).toBe(apBefore);
+    expect(PlayersSelector.getNumOvertimeTokens(ctx.G.players, 'alice')).toBe(1);
+  });
+
+  it('rejects redemption once the token is spent, leaving state untouched', () => {
+    const ctx = makeOvertimeContext();
+    occupyOneApAction(ctx, 'removeAndRefillJobs');
+    PlayersMutator.resetOvertimeTokens(ctx.G.players, 'alice', 0);
+    const apBefore = PlayersSelector.getNumActionTokens(ctx.G.players, 'alice');
+    expect(() => removeAndRefillJobs(ctx, ['j1'], { useOvertime: true })).toThrow(ActionValidationError);
+    expect(PlayersSelector.getNumActionTokens(ctx.G.players, 'alice')).toBe(apBefore);
+    expect(JobSlotsSelector.getJobCardById(ctx.G.table.jobSlots, 'j1')).toBeDefined();
+  });
+
+  it('failed validation never consumes the token (atomicity)', () => {
+    const ctx = makeOvertimeContext();
+    occupyOneApAction(ctx, 'removeAndRefillJobs');
+    // Empty selection: NO_JOB_CARDS_SELECTED — thrown before any mutation.
+    expect(() => removeAndRefillJobs(ctx, [], { useOvertime: true })).toThrow(ActionValidationError);
+    expect(PlayersSelector.getNumOvertimeTokens(ctx.G.players, 'alice')).toBe(1);
+  });
+
+  it('only one redemption per turn: a second overtime attempt fails', () => {
+    const ctx = makeOvertimeContext();
+    occupyOneApAction(ctx, 'removeAndRefillJobs');
+    removeAndRefillJobs(ctx, ['j1'], { useOvertime: true });
+    expect(PlayersSelector.getNumOvertimeTokens(ctx.G.players, 'alice')).toBe(0);
+    // The slot is occupied and the token is gone — the next overtime
+    // attempt must be rejected before its own selection is even examined.
+    expect(() => removeAndRefillJobs(ctx, ['d1'], { useOvertime: true })).toThrow(ActionValidationError);
+  });
+
+  it('refill at turn end restores the overtime token with the action tokens', () => {
+    const ctx = makeOvertimeContext();
+    occupyOneApAction(ctx, 'removeAndRefillJobs');
+    removeAndRefillJobs(ctx, ['j1'], { useOvertime: true });
+    expect(PlayersSelector.getNumOvertimeTokens(ctx.G.players, 'alice')).toBe(0);
+
+    refill({ ...ctx, ctx: { currentPlayer: 'alice' } } as never);
+    expect(PlayersSelector.getNumOvertimeTokens(ctx.G.players, 'alice')).toBe(1);
+    expect(PlayersSelector.getNumActionTokens(ctx.G.players, 'alice')).toBe(4);
+    expect(ActionSlotSelector.isOccupied(ctx.G.table.actionSlots.removeAndRefillJobs)).toBe(false);
   });
 });

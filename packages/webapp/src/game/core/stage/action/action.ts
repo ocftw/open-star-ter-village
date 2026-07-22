@@ -3,7 +3,6 @@ import { recruit } from "./move/recruit";
 import { contributeOwnedProjects } from "./move/contributeOwnedProjects";
 import { contributeJoinedProjects } from "./move/contributeJoinedProjects";
 import { removeAndRefillJobs } from "./move/removeAndRefillJobs";
-import { mirror } from "./move/mirror";
 import { endActionTurn } from "./move/endActionTurn";
 import { discardExcessJobCards } from "./move/discardExcessJobCards";
 import { GameStageConfig } from "@/game/core/type";
@@ -40,10 +39,6 @@ export const action: GameStageConfig = {
     removeAndRefillJobs: {
       client: false,
       move: withErrorBoundary(removeAndRefillJobs, INVALID_MOVE),
-    },
-    mirror: {
-      client: false,
-      move: withErrorBoundary(mirror, INVALID_MOVE),
     },
     endActionTurn: {
       client: false,

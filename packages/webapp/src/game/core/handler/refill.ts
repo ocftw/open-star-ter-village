@@ -13,9 +13,11 @@ export const refill: GameHookHandler = ({ G, ctx }) => {
   DeckMutator.draw(G.decks.projects, refillCardNumber);
   PlayersMutator.addProjects(G.players, ctx.currentPlayer, projectCards);
 
-  // refill action points
+  // refill action points and the overtime entitlement
   const numActionTokens = RuleSelector.getPlayerMaxActionTokens(G.rules);
   PlayersMutator.resetActionTokens(G.players, ctx.currentPlayer, numActionTokens);
+  const numOvertimeTokens = RuleSelector.getPlayerOvertimeTokens(G.rules);
+  PlayersMutator.resetOvertimeTokens(G.players, ctx.currentPlayer, numOvertimeTokens);
 
   // reset active moves
   ActionSlotsMutator.reset(G.table.actionSlots);

@@ -149,9 +149,11 @@ export const setup: SetupFn<GameState> = ({ ctx, random }, setupData?: GameSetup
   // setup player tokens
   const numWorkerTokens = RuleSelector.getPlayerMaxWorkerTokens(G.rules);
   const numActionTokens = RuleSelector.getPlayerMaxActionTokens(G.rules);
+  const numOvertimeTokens = RuleSelector.getPlayerOvertimeTokens(G.rules);
   ctx.playOrder.forEach(playerId => {
     PlayersMutator.resetWorkerTokens(G.players, playerId, numWorkerTokens);
     PlayersMutator.resetActionTokens(G.players, playerId, numActionTokens);
+    PlayersMutator.resetOvertimeTokens(G.players, playerId, numOvertimeTokens);
   });
 
   // Initialize G.playOrder from ctx.playOrder so it can be rotated each round

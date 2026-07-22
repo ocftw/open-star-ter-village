@@ -14,12 +14,14 @@ export interface Player {
   token: {
     workers: number;
     actions: number;
+    /** 加班 Overtime entitlements left this turn; refilled with action tokens. */
+    overtime: number;
   };
 }
 
 const playerInitialState = (): Player => ({
   hand: { projects: [] },
-  token: { workers: 0, actions: 0 },
+  token: { workers: 0, actions: 0, overtime: 0 },
 });
 
 export type Players = Record<PlayerID, Player>;
@@ -88,6 +90,19 @@ const addActionTokens = (state: Players, playerId: PlayerID, numActions: number)
   state[playerId].token.actions += numActions;
 };
 
+const getNumOvertimeTokens = (state: ClientPlayers, playerId: PlayerID): number => {
+  // Fallback for state persisted before the overtime-token field existed.
+  return state[playerId].token.overtime ?? 0;
+};
+
+const useOvertimeToken = (state: Players, playerId: PlayerID): void => {
+  state[playerId].token.overtime -= 1;
+};
+
+const resetOvertimeTokens = (state: Players, playerId: PlayerID, numTokens: number): void => {
+  state[playerId].token.overtime = numTokens;
+};
+
 const PlayersSlice = {
   initialState,
   mutators: {
@@ -100,10 +115,13 @@ const PlayersSlice = {
     useActionTokens,
     resetActionTokens,
     addActionTokens,
+    useOvertimeToken,
+    resetOvertimeTokens,
   },
   selectors: {
     getNumWorkerTokens,
     getNumActionTokens,
+    getNumOvertimeTokens,
     getNumProjects,
     getProjectCards,
     getProjectCardById,

@@ -219,6 +219,12 @@ Also fixed: `scoreUnfinishedProjects` was passed `{ G, events }` instead of the 
 ### Task 12 — Refactor ActionStepper: ActionConfig interface ✅ Done
 **Files:** `ActionStepper/actionConfig.ts` (new), `ActionStepper.selectors.ts`, `ActionStepper.tsx`, `actionStepSlice.ts`
 
+> **Superseded by #423:** `ActionConfig` existed to let the generic `mirror`
+> move drive five different selection and execution flows. The per-player
+> Overtime redesign removed `mirror`, so the single-consumer configuration
+> layer was deleted and `ContextAction` now handles the closed action set
+> directly.
+
 **Problem:** Mirror implementation used 6 separate switch-case helpers that each repeated the same 5-case pattern.
 
 **Solution:** Introduced `ActionConfig` interface in `actionConfig.ts`:

@@ -19,6 +19,12 @@ packageExtensions:
       '@types/react-dom': ^18
       react: ^18
       react-dom: ^18
+  # Types-only peer: @sentry/react's d.ts imports 'react', and without a
+  # declared peer it can resolve the hoisted @types/react@19 (homepage's),
+  # leaking v19 React globals into the webapp type program.
+  '@sentry/react':
+    peerDependencies:
+      '@types/react': ^18
   next@14.2.3:
     peerDependencies:
       '@types/react': ^18
