@@ -223,7 +223,8 @@ The web app uses a two-process architecture for online multiplayer:
 - **Next.js client:** runs on port `3000` locally.
 - **Game server:** runs on port `3001` locally using boardgame.io and Socket.IO.
 
-Important RFC 005 implementation decisions:
+Important implementation decisions archived in
+[RFC 005 issue #430](https://github.com/ocftw/open-star-ter-village/issues/430):
 
 - Use `3001` for the game server port.
 - Set `NEXT_PUBLIC_GAME_SERVER_URL=http://localhost:3001` for local development.
