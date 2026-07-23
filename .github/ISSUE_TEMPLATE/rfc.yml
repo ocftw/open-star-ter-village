@@ -1,0 +1,131 @@
+name: RFC proposal
+description: Propose a cross-cutting technical or product decision
+title: "[RFC]: "
+labels:
+  - enhancement
+type: Feature
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form for decisions that affect multiple components, establish a
+        durable convention, or need agreement before implementation.
+
+        Keep ongoing status, design changes, implementation links, and review
+        findings in this issue. Break accepted work into sub-issues when useful.
+
+  - type: dropdown
+    id: status
+    attributes:
+      label: Lifecycle status
+      description: New proposals normally begin as Draft.
+      options:
+        - Draft
+        - In review
+        - Accepted
+        - In progress
+        - Complete
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem and motivation
+      description: Explain the current situation, who it affects, and why a decision is needed.
+      placeholder: What problem are we solving, and why now?
+    validations:
+      required: true
+
+  - type: textarea
+    id: goals
+    attributes:
+      label: Goals
+      description: List specific, observable outcomes this proposal should achieve.
+      placeholder: |
+        - Outcome one
+        - Outcome two
+    validations:
+      required: true
+
+  - type: textarea
+    id: non_goals
+    attributes:
+      label: Non-goals
+      description: State what is intentionally outside this proposal to prevent scope creep.
+      placeholder: |
+        - This proposal does not...
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the design, data flow, interfaces, rollout, and ownership in enough detail to review.
+      placeholder: Use headings, tables, diagrams, or code examples where they improve clarity.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Describe credible alternatives and why this proposal is preferred.
+      placeholder: |
+        ### Alternative
+        What it offers and why it was not selected.
+    validations:
+      required: true
+
+  - type: textarea
+    id: compatibility
+    attributes:
+      label: Compatibility, rollout, and migration
+      description: Cover backwards compatibility, rollout stages, migration work, and rollback.
+      placeholder: Write "Not applicable" when the proposal has no compatibility or migration impact.
+    validations:
+      required: true
+
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validation plan
+      description: Define automated checks, realistic scenarios, edge cases, and acceptance criteria.
+      placeholder: |
+        1. Automated check
+        2. Manual or integration scenario
+        3. Edge case
+    validations:
+      required: true
+
+  - type: textarea
+    id: success
+    attributes:
+      label: Success metrics or SLAs
+      description: Add measurable targets where meaningful.
+      placeholder: Write "Not applicable" and explain why when no useful metric exists.
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies and related work
+      description: Link related issues, pull requests, discussions, external sources, and blockers.
+      placeholder: |
+        - Parent issue:
+        - Related:
+        - Blocked by:
+
+  - type: checkboxes
+    id: readiness
+    attributes:
+      label: Submission checklist
+      options:
+        - label: I searched for existing issues and RFCs covering this proposal.
+          required: true
+        - label: I separated goals from non-goals and documented alternatives.
+          required: true
+        - label: I included a validation plan and measurable acceptance criteria.
+          required: true
