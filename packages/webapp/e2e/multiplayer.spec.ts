@@ -136,8 +136,11 @@ test.describe('Full multiplayer flow', () => {
 });
 
 test.describe('Game room edge cases', () => {
-  test('Navigating to non-existent matchID shows error', async ({ page }) => {
+  test('Navigating to non-existent matchID shows the expired-room note', async ({ page }) => {
     await page.goto('/game/nonexistent-match-id-12345');
-    await expect(page.getByText(/unable to load|not found|error/i)).toBeVisible({ timeout: 10_000 });
+    // #419: an unknown or purged match must show the bilingual expired note,
+    // never mount a fresh board under the old URL.
+    await expect(page.locator('[data-testid="match-expired-note"]')).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator('[data-testid="match-expired-note"]')).toContainText('房間不存在或已過期');
   });
 });

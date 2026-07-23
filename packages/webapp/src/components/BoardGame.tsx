@@ -2,11 +2,14 @@ import { Client, BoardProps } from 'boardgame.io/react';
 import { SocketIO, Local } from 'boardgame.io/multiplayer'
 import game from '@/game';
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { Game } from 'boardgame.io';
 import { GameState, ProjectSlotState } from '@/game';
 import { Dialog, DialogContent } from '@mui/material';
 import { GameContext } from './GameContextHelpers';
-import { GAME_SERVER_URL } from '@/lib/lobbyClient';
+import { GAME_NAME, GAME_SERVER_URL, lobbyClient } from '@/lib/lobbyClient';
+import { getLobbyErrorMessage, joinRoom } from '@/app/lobby/actions';
+import { loadCredentials, saveCredentials, type MatchCredentials } from '@/lib/matchCredentials';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import {
   UserActionMoves,
@@ -285,7 +288,7 @@ const Board: React.FC<GameContext> = (gameContext) => {
   );
 };
 
-function GameOverDialog({
+export function GameOverDialog({
   gameContext,
   open,
   onClose,
@@ -294,8 +297,41 @@ function GameOverDialog({
   open: boolean;
   onClose: () => void;
 }) {
-  const { G, ctx, matchData } = gameContext;
+  const { G, ctx, matchData, matchID, isMultiplayer } = gameContext;
   const gameover = ctx.gameover as { winners: string[] } | undefined;
+  const router = useRouter();
+
+  // 再玩一次 (#419): playAgain keeps everyone who clicks in the same next
+  // match. Credentials come from the per-match localStorage entry (the board
+  // props do not expose them), read client-side only.
+  const [savedCredentials, setSavedCredentials] = React.useState<MatchCredentials | null>(null);
+  const [isRematching, setIsRematching] = React.useState(false);
+  const [rematchError, setRematchError] = React.useState<string | null>(null);
+  React.useEffect(() => {
+    if (isMultiplayer && open) {
+      setSavedCredentials(loadCredentials(matchID));
+    }
+  }, [isMultiplayer, matchID, open]);
+
+  const handlePlayAgain = async () => {
+    if (!savedCredentials) return;
+    setIsRematching(true);
+    setRematchError(null);
+    try {
+      const { nextMatchID } = await lobbyClient.playAgain(GAME_NAME, matchID, {
+        playerID: savedCredentials.playerID,
+        credentials: savedCredentials.credential,
+      });
+      const playerName = savedCredentials.playerName ?? getPlayerName(matchData, savedCredentials.playerID);
+      const joined = await joinRoom(nextMatchID, playerName);
+      saveCredentials(joined);
+      router.push(`/game/${nextMatchID}`);
+    } catch (error) {
+      setRematchError(getLobbyErrorMessage(error, '無法開新的一局，請稍後再試。 · Could not start the next game.'));
+      setIsRematching(false);
+    }
+  };
+
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
       <DialogContent sx={{ p: 0 }}>
@@ -355,8 +391,36 @@ function GameOverDialog({
                   );
                 })}
             </div>
-            <StickerButton onClick={onClose} style={{ width: '100%', marginTop: 18 }}>
-              關閉 · Close
+            {rematchError && (
+              <div
+                role="alert"
+                style={{ marginTop: 14, fontSize: 12, fontWeight: 700, color: 'var(--orange-deep)' }}
+              >
+                ⚠ {rematchError}
+              </div>
+            )}
+            <div style={{ display: 'flex', gap: 10, marginTop: 18 }}>
+              {savedCredentials && (
+                <StickerButton
+                  onClick={() => void handlePlayAgain()}
+                  disabled={isRematching}
+                  style={{ flex: 1 }}
+                  data-testid="play-again"
+                >
+                  {isRematching ? '開新一局中…' : '再玩一次'} <span className="tag-en" style={{ color: 'rgba(255,255,255,0.85)' }}>Play again</span>
+                </StickerButton>
+              )}
+              <StickerButton
+                variant="ghost"
+                onClick={() => router.push('/lobby')}
+                disabled={isRematching}
+                style={{ flex: 1 }}
+              >
+                回大廳 <span className="tag-en">Lobby</span>
+              </StickerButton>
+            </div>
+            <StickerButton variant="ghost" size="sm" onClick={onClose} style={{ width: '100%', marginTop: 10 }}>
+              關閉，查看最終盤面 · Close and inspect the board
             </StickerButton>
           </div>
         )}

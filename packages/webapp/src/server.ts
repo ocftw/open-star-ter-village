@@ -39,6 +39,23 @@ async function serve() {
     ],
   });
 
+  // boardgame.io's playAgain read-check-create-write is not atomic. Serialize
+  // these rare requests so concurrent players receive the same next match.
+  const PLAY_AGAIN_PATH = /^\/games\/[^/]+\/[^/]+\/playAgain\/?$/;
+  let rematchTail = Promise.resolve();
+  server.app.use(async (ctx, next) => {
+    if (ctx.method !== 'POST' || !PLAY_AGAIN_PATH.test(ctx.path)) {
+      return next();
+    }
+
+    const run = rematchTail.then(() => next());
+    rematchTail = run.then(
+      () => undefined,
+      () => undefined,
+    );
+    await run;
+  });
+
   server.router.get('/health', (ctx) => {
     ctx.status = 200;
     ctx.body = {
