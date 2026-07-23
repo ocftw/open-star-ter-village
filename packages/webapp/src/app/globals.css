@@ -231,21 +231,6 @@ button {
   overflow-y: auto;
   padding: 22px;
 }
-
-/* TRANSITIONAL: same sticker shell for the remaining MUI Dialog
-   (GameOverDialog in BoardGame.tsx). Delete together with the last MUI
-   Dialog — MUI is slated for removal. The descendant selectors outrank
-   MUI's runtime-injected emotion classes without !important. */
-.MuiDialog-root .MuiDialog-paper {
-  background: var(--paper);
-  border: 2px solid var(--ink);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sticker);
-}
-.MuiDialog-root .MuiBackdrop-root {
-  background: rgba(42, 36, 34, 0.4);
-}
-
 /* Headline */
 .h-display {
   font-family: var(--font-zh);

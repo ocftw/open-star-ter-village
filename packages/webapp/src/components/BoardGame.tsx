@@ -5,7 +5,6 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { Game } from 'boardgame.io';
 import { GameState, ProjectSlotState } from '@/game';
-import { Dialog, DialogContent } from '@mui/material';
 import { GameContext } from './GameContextHelpers';
 import { GAME_NAME, GAME_SERVER_URL, lobbyClient } from '@/lib/lobbyClient';
 import { getLobbyErrorMessage, joinRoom } from '@/app/lobby/actions';
@@ -23,7 +22,7 @@ import { getSelectedProjectSlots } from '@/lib/reducers/projectSlotSlice';
 import { JobSlotsSelector } from '@/game/store/slice/jobSlots';
 import { RuleSelector } from '@/game/store/slice/rule';
 import { ProfessionPicker, getEligibleTargetJobNames } from './board/professionPicker';
-import { PLAYER_COLORS, StickerButton } from '@/components/design';
+import { Modal, PLAYER_COLORS, StickerButton } from '@/components/design';
 import { ScoreBoardSelector } from '@/game/store/slice/scoreBoard';
 import { getPlayerName } from './playerNameMap';
 import GameHeader from './board/GameHeader';
@@ -333,11 +332,10 @@ export function GameOverDialog({
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogContent sx={{ p: 0 }}>
-        {gameover && (
-          <div style={{ padding: 24, background: 'var(--paper)', fontFamily: 'var(--font-zh)' }}>
-            <div style={{ textAlign: 'center' }}>
+    <Modal open={open} onClose={onClose} ariaLabel="遊戲結束" width="min(440px, 100%)">
+      {gameover && (
+        <div>
+          <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 40 }}>🏆</div>
               <h2 style={{ fontWeight: 900, fontSize: 22, color: 'var(--ink)' }}>遊戲結束</h2>
               <div className="en-cap" style={{ marginTop: 2 }}>
@@ -424,8 +422,7 @@ export function GameOverDialog({
             </StickerButton>
           </div>
         )}
-      </DialogContent>
-    </Dialog>
+    </Modal>
   );
 }
 
