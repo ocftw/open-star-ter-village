@@ -208,6 +208,20 @@ button {
   box-shadow: var(--shadow-sticker);
 }
 
+/* MUI Dialog shell (ExitDialog, GameOverDialog) — match the prototype's
+   .modal sticker panel: paper ground, 2px ink border, 22px corner, offset
+   sticker shadow over a warm ink-tinted backdrop. The descendant selectors
+   outrank MUI's runtime-injected emotion classes without !important. */
+.MuiDialog-root .MuiDialog-paper {
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sticker);
+}
+.MuiDialog-root .MuiBackdrop-root {
+  background: rgba(42, 36, 34, 0.4);
+}
+
 /* Headline */
 .h-display {
   font-family: var(--font-zh);
