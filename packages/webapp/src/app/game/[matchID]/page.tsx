@@ -198,28 +198,18 @@ export default function GameRoomPage() {
     );
   }
 
-  if (isExpired) {
+  if (isExpired || errorMessage) {
     return (
       <main>
         <LobbyNav />
         <div className="page-pad" style={{ display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 640 }}>
           <Note tone="error">
-            <span data-testid="match-expired-note">{MATCH_EXPIRED_MESSAGE}</span>
+            {isExpired ? (
+              <span data-testid="match-expired-note">{MATCH_EXPIRED_MESSAGE}</span>
+            ) : (
+              errorMessage
+            )}
           </Note>
-          <Link href="/lobby" className="btn-sticker" style={{ alignSelf: 'flex-start' }}>
-            回大廳 <span style={{ opacity: 0.8, fontFamily: 'var(--font-en)', fontWeight: 500 }}>· Back to lobby</span>
-          </Link>
-        </div>
-      </main>
-    );
-  }
-
-  if (errorMessage) {
-    return (
-      <main>
-        <LobbyNav />
-        <div className="page-pad" style={{ display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 640 }}>
-          <Note tone="error">{errorMessage}</Note>
           <Link href="/lobby" className="btn-sticker" style={{ alignSelf: 'flex-start' }}>
             回大廳 <span style={{ opacity: 0.8, fontFamily: 'var(--font-en)', fontWeight: 500 }}>· Back to lobby</span>
           </Link>

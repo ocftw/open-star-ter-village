@@ -3,7 +3,6 @@ import * as Sentry from "@sentry/node";
 import packageJson from "../package.json";
 import game from "./game";
 import { loadWebappEnv } from "./env";
-import { createKeyedTaskQueue } from "./keyedTaskQueue";
 
 const packageVersion = packageJson.version;
 const gameName = 'OpenStarTerVillage';
@@ -40,22 +39,21 @@ async function serve() {
     ],
   });
 
-  // boardgame.io's playAgain endpoint reads metadata.nextMatchID, then
-  // asynchronously creates the next match before writing the id back — two
-  // concurrent 再玩一次 clicks can both pass that check and split the table
-  // across separate rematch rooms. Serializing the route per ORIGINAL match
-  // ID closes the window so the upstream dedupe reliably returns one room.
-  // Registered before server.run(), which is when boardgame.io attaches its
-  // API router, so this middleware always runs first. In-process only —
-  // matches the single-machine game server.
-  const PLAY_AGAIN_PATH = /^\/games\/[^/]+\/([^/]+)\/playAgain\/?$/;
-  const rematchQueue = createKeyedTaskQueue();
+  // boardgame.io's playAgain read-check-create-write is not atomic. Serialize
+  // these rare requests so concurrent players receive the same next match.
+  const PLAY_AGAIN_PATH = /^\/games\/[^/]+\/[^/]+\/playAgain\/?$/;
+  let rematchTail = Promise.resolve();
   server.app.use(async (ctx, next) => {
-    const match = ctx.method === 'POST' ? PLAY_AGAIN_PATH.exec(ctx.path) : null;
-    if (!match) {
+    if (ctx.method !== 'POST' || !PLAY_AGAIN_PATH.test(ctx.path)) {
       return next();
     }
-    await rematchQueue.runExclusive(decodeURIComponent(match[1]), next);
+
+    const run = rematchTail.then(() => next());
+    rematchTail = run.then(
+      () => undefined,
+      () => undefined,
+    );
+    await run;
   });
 
   server.router.get('/health', (ctx) => {
