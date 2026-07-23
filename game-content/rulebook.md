@@ -217,6 +217,10 @@ Same overall structure as Simplified Mode (Event → Action → Finish Project �
 - Gain **4 contribution points** (vs. 5 in Simplified).
 
 **d. Grow the Open Source Tree** — Cost: 1 action point *(Standard Mode only)*
+
+See the [Open Source Tree board transcription](./open-source-tree.md) for every
+branch, prerequisite, connection, reward, and collective ability.
+
 - Place an Open Source Tree token in the corresponding heart-shaped section.
 - Gain the number of influence points and activate collective ability immediately.
 - The first two levels of the tree do not require any specific number of project cards; the remaining three levels require a certain amount and types of projects before they can be reached.
