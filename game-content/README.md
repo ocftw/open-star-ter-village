@@ -6,6 +6,7 @@ Open StarTer Village.
 ## Contents
 
 - [Rulebook](./rulebook.md)
+- [Game actions](./game-actions.md)
 - [Open Source Tree](./open-source-tree.md)
 - [Project cards](./project-cards.md)
 - [Event cards](./event-cards.md)
@@ -16,7 +17,7 @@ Open StarTer Village.
 | Material | Google Drive source | Parsed content |
 | --- | --- | --- |
 | Rulebook | [English rulebook PDF](https://drive.google.com/file/d/1gBGKhavLdDQ-J1elxQNN6E7Sdz0ZBTeO/view?usp=drive_link) | Rules, setup, actions, scoring, and FAQ |
-| Game board | [English board PDF](https://drive.google.com/file/d/1zAntW39NYx1JeCKokqgeAKTjnIHB4ihr/view?usp=sharing) | Open Source Tree prerequisites, connections, rewards, and collective abilities |
+| Game board | [English board PDF](https://drive.google.com/file/d/1zAntW39NYx1JeCKokqgeAKTjnIHB4ihr/view?usp=sharing) | Standard and Simplified Mode action costs and effects; Open Source Tree prerequisites, connections, rewards, and collective abilities |
 | User-provided “game board” file | [PDF](https://drive.google.com/file/d/1CiJJ4iEC9tZQ8tU7W5oKcQB6KUI-ogCU/view?usp=sharing) | 39 project-card faces and two divider/card-back pages |
 | Event cards | [PDF](https://drive.google.com/file/d/1kiycKTIw1vrM375p9jAYX2ZyVBSuZyx0/view?usp=sharing) | 14 event-card faces and one divider/card-back page |
 | Job and tip cards | [PDF](https://drive.google.com/file/d/1bv0aU9jbP0B1I40kDVK4v35u9UMsuG1n/view?usp=sharing) | Seven labor roles, two player-aid faces, a starting-player card, and a 50-point card |

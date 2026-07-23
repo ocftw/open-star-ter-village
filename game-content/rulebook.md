@@ -110,6 +110,9 @@ The player with the "starting player card" turns over 1 new event card and place
 
 Each player starts their turn with **4 action point tokens** and may spend them on actions. **Players cannot repeat the same type of action in one turn.**
 
+See the [game-board action transcription](./game-actions.md) for the printed
+Side B symbols and a comparison with Standard Mode.
+
 Available actions (a–f):
 
 **a. Initiate a Project** — Cost: 2 action points
@@ -201,6 +204,9 @@ Calculate the total influence points of each player from all projects. The playe
 Same overall structure as Simplified Mode (Event → Action → Finish Project → Restore), with these differences:
 
 #### Action Phase Differences
+
+See the [game-board action transcription](./game-actions.md) for the printed
+Side A symbols, decoded effects, and a comparison with Simplified Mode.
 
 **a. Initiate a Project** — Cost: 2 action points
 - Same as Simplified, but initiator places contribution token at the **1st square** (not 2nd).
