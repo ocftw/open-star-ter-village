@@ -208,10 +208,34 @@ button {
   box-shadow: var(--shadow-sticker);
 }
 
-/* MUI Dialog shell (ExitDialog, GameOverDialog) — match the prototype's
-   .modal sticker panel: paper ground, 2px ink border, 22px corner, offset
-   sticker shadow over a warm ink-tinted backdrop. The descendant selectors
-   outrank MUI's runtime-injected emotion classes without !important. */
+/* Bespoke modal overlay — the prototype's .modal sticker panel: paper
+   ground, 2px ink border, 22px corner, offset sticker shadow over a warm
+   ink-tinted backdrop. New dialogs use these classes; MUI is not used in
+   new components. */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(42, 36, 34, 0.4);
+  z-index: 300;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+.modal {
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sticker);
+  width: min(560px, 100%);
+  max-height: 88vh;
+  overflow-y: auto;
+  padding: 22px;
+}
+
+/* TRANSITIONAL: same sticker shell for the remaining MUI Dialog
+   (GameOverDialog in BoardGame.tsx). Delete together with the last MUI
+   Dialog — MUI is slated for removal. The descendant selectors outrank
+   MUI's runtime-injected emotion classes without !important. */
 .MuiDialog-root .MuiDialog-paper {
   background: var(--paper);
   border: 2px solid var(--ink);
