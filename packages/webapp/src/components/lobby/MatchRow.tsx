@@ -24,8 +24,7 @@ export default function MatchRow({
   joining,
   busy,
   onJoin,
-  onReturn,
-  onSpectate,
+  onOpen,
 }: {
   match: VisibleMatch['match'];
   seatsFilled: number;
@@ -37,8 +36,8 @@ export default function MatchRow({
   /** A join/create is in flight somewhere in the lobby. */
   busy: boolean;
   onJoin: () => void;
-  onReturn: () => void;
-  onSpectate: () => void;
+  /** Open the room page — resumes your seat or spectates, decided there. */
+  onOpen: () => void;
 }) {
   const action = getMatchRowAction(status, hasSeat);
   return (
@@ -99,12 +98,12 @@ export default function MatchRow({
         </span>
       </div>
       {action === 'return' && (
-        <StickerButton size="sm" onClick={onReturn} disabled={busy} data-testid="match-return">
+        <StickerButton size="sm" onClick={onOpen} disabled={busy} data-testid="match-return">
           回到桌子 · Return
         </StickerButton>
       )}
       {action === 'spectate' && (
-        <StickerButton variant="ghost" size="sm" onClick={onSpectate} disabled={busy} data-testid="match-spectate">
+        <StickerButton variant="ghost" size="sm" onClick={onOpen} disabled={busy} data-testid="match-spectate">
           觀戰 · Spectate
         </StickerButton>
       )}

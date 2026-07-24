@@ -10,8 +10,7 @@ const match = { matchID: 'room-1', createdAt: 1700000000000, updatedAt: 17000000
 
 const renderRow = (status: LobbyStatus, hasSeat: boolean) => {
   const onJoin = jest.fn();
-  const onReturn = jest.fn();
-  const onSpectate = jest.fn();
+  const onOpen = jest.fn();
   const utils = render(
     <MatchRow
       match={match}
@@ -22,11 +21,10 @@ const renderRow = (status: LobbyStatus, hasSeat: boolean) => {
       joining={false}
       busy={false}
       onJoin={onJoin}
-      onReturn={onReturn}
-      onSpectate={onSpectate}
+      onOpen={onOpen}
     />,
   );
-  return { ...utils, onJoin, onReturn, onSpectate };
+  return { ...utils, onJoin, onOpen };
 };
 
 describe('getMatchRowAction (#421)', () => {
@@ -44,17 +42,17 @@ describe('getMatchRowAction (#421)', () => {
 
 describe('MatchRow actions', () => {
   it('回到桌子 for the room this browser holds a seat in', () => {
-    const { getByTestId, queryByTestId, onReturn } = renderRow('In Progress', true);
+    const { getByTestId, queryByTestId, onOpen } = renderRow('In Progress', true);
     fireEvent.click(getByTestId('match-return'));
-    expect(onReturn).toHaveBeenCalled();
+    expect(onOpen).toHaveBeenCalled();
     expect(queryByTestId('match-join')).toBeNull();
     expect(queryByTestId('match-spectate')).toBeNull();
   });
 
   it('觀戰 for other in-progress rooms', () => {
-    const { getByTestId, queryByTestId, onSpectate } = renderRow('In Progress', false);
+    const { getByTestId, queryByTestId, onOpen } = renderRow('In Progress', false);
     fireEvent.click(getByTestId('match-spectate'));
-    expect(onSpectate).toHaveBeenCalled();
+    expect(onOpen).toHaveBeenCalled();
     expect(queryByTestId('match-return')).toBeNull();
   });
 

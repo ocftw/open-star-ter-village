@@ -282,8 +282,7 @@ export default function LobbyPage() {
                     joining={joiningMatchID === match.matchID}
                     busy={joiningMatchID !== null || isCreating}
                     onJoin={() => void handleJoinMatch(match.matchID)}
-                    onReturn={() => router.push(`/game/${match.matchID}`)}
-                    onSpectate={() => router.push(`/game/${match.matchID}`)}
+                    onOpen={() => router.push(`/game/${match.matchID}`)}
                   />
                 ))}
               </div>
