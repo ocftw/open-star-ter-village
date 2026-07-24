@@ -11,6 +11,8 @@ export default function Modal({
   open,
   onClose,
   ariaLabel,
+  ariaLabelledBy,
+  ariaDescribedBy,
   role,
   width = 'min(560px, 100%)',
   dataTestid,
@@ -19,7 +21,9 @@ export default function Modal({
   open: boolean;
   /** Omit to make the modal non-dismissible (no Escape/backdrop close). */
   onClose?: () => void;
-  ariaLabel: string;
+  ariaLabel?: string;
+  ariaLabelledBy?: string;
+  ariaDescribedBy?: string;
   /** Defaults to the dialog element's implicit role. */
   role?: 'alertdialog';
   width?: string;
@@ -27,12 +31,6 @@ export default function Modal({
   children: React.ReactNode;
 }) {
   const dialogRef = React.useRef<HTMLDialogElement>(null);
-  // Latest onClose without re-running the open effect (React 18 does not
-  // delegate the dialog element's cancel event, so it is bound manually).
-  const onCloseRef = React.useRef(onClose);
-  React.useEffect(() => {
-    onCloseRef.current = onClose;
-  });
 
   React.useEffect(() => {
     const dialog = dialogRef.current;
@@ -49,14 +47,8 @@ export default function Modal({
     // event: close() is queued as a task, so under StrictMode's
     // mount→cleanup→remount the cleanup's close() would deliver a stray close
     // to the remounted dialog and tear it right back down.
-    const handleCancel = (event: Event) => {
-      event.preventDefault();
-      onCloseRef.current?.();
-    };
-    dialog.addEventListener('cancel', handleCancel);
     dialog.showModal();
     return () => {
-      dialog.removeEventListener('cancel', handleCancel);
       dialog.close();
       if (invoker && document.contains(invoker)) {
         invoker.focus();
@@ -73,9 +65,15 @@ export default function Modal({
       ref={dialogRef}
       className="modal"
       aria-label={ariaLabel}
+      aria-labelledby={ariaLabelledBy}
+      aria-describedby={ariaDescribedBy}
       role={role}
       data-testid={dataTestid}
       style={{ width, fontFamily: 'var(--font-zh)' }}
+      onCancel={(event) => {
+        event.preventDefault();
+        onClose?.();
+      }}
       onClick={(event) => {
         // ::backdrop clicks target the dialog element itself; a click inside
         // the panel's bounding box (e.g. its padding) must not dismiss.

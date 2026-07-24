@@ -32,7 +32,9 @@ describe('ExitDialog (#420)', () => {
   });
 
   it('offers the three explicit choices and does not navigate on open', () => {
-    const { getByTestId } = render(<ExitDialog open onClose={jest.fn()} matchID="room-1" />);
+    const { getByRole, getByTestId } = render(<ExitDialog open onClose={jest.fn()} matchID="room-1" />);
+    const dialog = getByRole('dialog', { name: '要離開嗎？' });
+    expect(dialog.getAttribute('aria-describedby')).toBe('exit-dialog-description');
     expect(getByTestId('exit-keep-seat')).toBeTruthy();
     expect(getByTestId('exit-leave-seat')).toBeTruthy();
     expect(getByTestId('exit-cancel')).toBeTruthy();
@@ -78,6 +80,13 @@ describe('ExitDialog (#420)', () => {
     expect(pushMock).not.toHaveBeenCalled();
     expect(leaveRoomMock).not.toHaveBeenCalled();
     expect(localStorage.getItem(CREDS_KEY)).not.toBeNull();
+  });
+
+  it('Escape requests dismissal through the native cancel event', () => {
+    const onClose = jest.fn();
+    const { getByRole } = render(<ExitDialog open onClose={onClose} matchID="room-1" />);
+    fireEvent(getByRole('dialog'), new Event('cancel', { cancelable: true }));
+    expect(onClose).toHaveBeenCalledTimes(1);
   });
 
   it('without saved credentials 離開座位 just returns to the lobby', async () => {

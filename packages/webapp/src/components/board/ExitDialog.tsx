@@ -52,18 +52,24 @@ export default function ExitDialog({
     <Modal
       open={open}
       onClose={canClose ? onClose : undefined}
-      ariaLabel="離開遊戲"
+      ariaLabelledBy="exit-dialog-title"
+      ariaDescribedBy="exit-dialog-description"
       width="min(420px, 100%)"
       dataTestid="exit-dialog"
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
         <span aria-hidden style={{ fontSize: 22 }}>🚪</span>
         <div>
-          <strong style={{ fontSize: 16, color: 'var(--ink)' }}>要離開嗎？</strong>
+          <strong id="exit-dialog-title" style={{ fontSize: 16, color: 'var(--ink)' }}>
+            要離開嗎？
+          </strong>
           <div className="tag-en">Leave the game?</div>
         </div>
       </div>
-      <p style={{ fontSize: 13, color: 'var(--ink-soft)', lineHeight: 1.5, margin: '6px 0 16px' }}>
+      <p
+        id="exit-dialog-description"
+        style={{ fontSize: 13, color: 'var(--ink-soft)', lineHeight: 1.5, margin: '6px 0 16px' }}
+      >
         你可以回到大廳並保留座位，隨時回來繼續；或直接離席（這局遊戲會終止）。
       </p>
       {error && (
