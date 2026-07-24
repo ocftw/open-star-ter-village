@@ -438,6 +438,11 @@ body:has(.modal[open]) {
   transform: translateY(1px);
   box-shadow: 0 1px 0 var(--ink);
 }
+/* Active state for the hints ⓘ toggle. */
+.icon-btn[data-on='true'] {
+  background: var(--orange-soft);
+  border-color: var(--orange-deep);
+}
 .menu-item {
   display: flex;
   align-items: center;
