@@ -17,8 +17,10 @@ You are an **executor agent**. You receive a **task** from the Supervisor (Claud
 ## Before You Start
 
 1. Read the relevant public docs for project context and architecture
-2. Read the relevant RFC in `rfc/` to understand the feature context
-3. Read any progress files in `rfc/NNN-progress/` for prior review findings
+2. Read the relevant GitHub issue and its linked sub-issues to understand the
+   feature context
+3. Read issue comments and linked pull requests for prior review findings and
+   implementation progress
 4. Confirm your task scope — which project (`packages/webapp/` or `homepage/`), which domain, which files
 5. Stay within your assigned scope. Do not touch files outside your task unless the spec explicitly requires it.
 

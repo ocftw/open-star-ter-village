@@ -5,7 +5,9 @@ contributors and AI agents alike.
 
 ## Development workflow
 
-1. Discuss large or cross-cutting changes in an issue, discussion, or RFC first.
+1. Discuss large or cross-cutting changes in an issue or discussion first. Use
+   the [RFC issue form](./.github/ISSUE_TEMPLATE/rfc.yml) when the change needs
+   a durable technical or product decision.
 2. Keep the implementation focused and add or update the relevant automated
    tests.
 3. Open a draft pull request while implementation or evidence collection is in

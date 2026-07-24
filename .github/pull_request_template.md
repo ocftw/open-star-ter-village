@@ -11,23 +11,27 @@
 ## Evidence
 
 <!--
-Required when this PR is ready for review. Draft PRs may leave this incomplete.
-Map every material claim or changed surface to a realistic scenario and durable
-proof. Do not repeat routine CI results here.
+Complete this section before marking the PR ready:
 
-Use screenshots/video for UI, request/response examples for APIs, and observed
-smoke-test results for workflows or components. Include before and after when
-an existing state is meaningfully comparable. The final evidence must be in the
-PR body; comments may only supplement it.
-
-After material commits or evidence changes, update this body and re-request
-Copilot review. Resolve every human and Copilot review conversation before merge.
+1. Add one row for every material claim or changed surface. Closely related
+   minor changes may share a row.
+2. In "Scenario exercised", state what you actually did, including the relevant
+   environment, role, device or viewport, state, input, and important edge case.
+3. In "Evidence", link durable proof:
+   - UI/layout: before-and-after screenshots or video when comparable.
+   - API/server behavior: exercised request, status, and relevant response/trace.
+   - User workflow/component: reproducible steps and the observed result in its
+     real parent flow.
+   - Documentation/configuration: rendered preview, validation output, or the
+     relevant resulting repository object.
+4. Do not use source-code screenshots as runtime proof. Do not rely solely on
+   local paths, localhost, temporary previews, expiring artifacts, or PR comments.
+5. Do not repeat routine lint, type-check, test, or build results; CI owns those.
+6. Check "Evidence provided" only when every row is complete. After material
+   commits or evidence changes, update this table and re-request Copilot review.
 -->
 
 - [ ] Evidence provided
-- [ ] Evidence not applicable
-
-**N/A reason:** <!-- Required when "Evidence not applicable" is selected. -->
 
 | Changed surface or material claim | Scenario exercised | Evidence |
 | --- | --- | --- |
@@ -35,4 +39,17 @@ Copilot review. Resolve every human and Copilot review conversation before merge
 
 ## Risks and limitations
 
-<!-- Optional: describe known limitations, follow-ups, rollout concerns, or write "None." -->
+<!--
+Disclose what reviewers and operators need to know:
+
+- Risks: possible regressions or impact to users, data, security, privacy,
+  compatibility, migrations, performance, accessibility, localization, rollout,
+  or rollback.
+- Mitigations: safeguards, monitoring, fallback, or recovery plan for each
+  material risk.
+- Limitations: untested scenarios, unsupported cases, assumptions, external
+  dependencies, deferred work, or known gaps.
+
+For each item, name who or what is affected and the likely impact. If none were
+identified, write "None identified" and briefly explain why.
+-->

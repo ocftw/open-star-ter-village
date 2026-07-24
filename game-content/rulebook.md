@@ -110,6 +110,9 @@ The player with the "starting player card" turns over 1 new event card and place
 
 Each player starts their turn with **4 action point tokens** and may spend them on actions. **Players cannot repeat the same type of action in one turn.**
 
+See the [game-board action transcription](./game-actions.md) for the printed
+Side B symbols and a comparison with Standard Mode.
+
 Available actions (a–f):
 
 **a. Initiate a Project** — Cost: 2 action points
@@ -202,6 +205,9 @@ Same overall structure as Simplified Mode (Event → Action → Finish Project �
 
 #### Action Phase Differences
 
+See the [game-board action transcription](./game-actions.md) for the printed
+Side A symbols, decoded effects, and a comparison with Simplified Mode.
+
 **a. Initiate a Project** — Cost: 2 action points
 - Same as Simplified, but initiator places contribution token at the **1st square** (not 2nd).
 - Upon initiating, you must take 1 labor card from the labor card section and place it in the labor card section.
@@ -217,6 +223,10 @@ Same overall structure as Simplified Mode (Event → Action → Finish Project �
 - Gain **4 contribution points** (vs. 5 in Simplified).
 
 **d. Grow the Open Source Tree** — Cost: 1 action point *(Standard Mode only)*
+
+See the [Open Source Tree board transcription](./open-source-tree.md) for every
+branch, prerequisite, connection, reward, and collective ability.
+
 - Place an Open Source Tree token in the corresponding heart-shaped section.
 - Gain the number of influence points and activate collective ability immediately.
 - The first two levels of the tree do not require any specific number of project cards; the remaining three levels require a certain amount and types of projects before they can be reached.

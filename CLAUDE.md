@@ -49,7 +49,8 @@ RFC (Planner)
 | **Plan** | Planner → Supervisor | One observable feature (e.g. "User can list public rooms") |
 | **Task** | Supervisor → Executor | Single coding unit — implement + test, one agent handles end-to-end |
 
-See `rfc/002-agent-workflow-role-separation.md` for background.
+See [GitHub issue #365](https://github.com/ocftw/open-star-ter-village/issues/365)
+for the archived workflow proposal and current discussion.
 
 ## Pull Requests
 

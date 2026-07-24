@@ -122,6 +122,7 @@ Commit 訊息採用 Conventional Commits：
 其他相關連結：
 
 - [Discord](https://discord.gg/JnTHGnxwYS)
+- [Markdown 遊戲規則與卡牌資料](./game-content/README.md)
 - [線上版規則書 (Rulebook)](https://drive.google.com/file/d/1gBGKhavLdDQ-J1elxQNN6E7Sdz0ZBTeO/view?usp=drive_link)
 - [遊戲規則與借用申請書](https://drive.google.com/drive/folders/16FZ0F8D32D4zWGBKwP13-fnf9gr-CZJz)
 - [教學工具包](https://drive.google.com/drive/folders/1fLz5wBrNFWEx7FTmyTkAJUrPibU9UvWM)

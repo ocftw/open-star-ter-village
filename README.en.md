@@ -93,6 +93,7 @@ You can gain deeper insights into this project on our [Wiki Page](https://github
 Additional Relevant Links:
 
 - [Discord](https://discord.gg/JnTHGnxwYS)
+- [Markdown game rules and card data](./game-content/README.md)
 - [Game Rules and Rental Application Form](https://drive.google.com/drive/folders/16FZ0F8D32D4zWGBKwP13-fnf9gr-CZJz)
 - [Educator's Toolkit](https://drive.google.com/drive/folders/1fLz5wBrNFWEx7FTmyTkAJUrPibU9UvWM)
 - [Visual Materials](https://drive.google.com/drive/folders/1790me8hwJVJZpusIBtICdM2YOErbRIM5)
