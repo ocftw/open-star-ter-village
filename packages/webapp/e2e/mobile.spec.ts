@@ -52,4 +52,18 @@ test.describe('Mobile layout', () => {
     await page.locator('[data-testid="ca-cancel"]').click();
     await expect(page.locator('[data-testid="context-action"]')).toHaveAttribute('data-mode', 'idle');
   });
+
+  test('compact header ⋯ menu opens the exit-choice dialog (#420)', async ({ page }) => {
+    await page.goto('/dev');
+    await page.locator('[data-testid="mobile-sheet"]').waitFor({ state: 'visible', timeout: 20000 });
+
+    await page.locator('[data-testid="header-menu"]').first().click();
+    await page.locator('[data-testid="menu-leave"]').first().click();
+    await expect(page.locator('[data-testid="exit-dialog"]')).toBeVisible();
+
+    // Cancel closes safely with no navigation or state change.
+    await page.locator('[data-testid="exit-cancel"]').click();
+    await expect(page.locator('[data-testid="exit-dialog"]')).toHaveCount(0);
+    await expect(page).toHaveURL(/\/dev/);
+  });
 });

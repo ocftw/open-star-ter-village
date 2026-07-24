@@ -1,13 +1,16 @@
-import Link from 'next/link';
+import React from 'react';
 import { PlayerID } from 'boardgame.io';
 import { AppHeader, PLAYER_COLORS } from '@/components/design';
 import { GameContext } from '@/components/GameContextHelpers';
 import { PlayersSelector } from '@/game/store/slice/players';
 import { ScoreBoardSelector } from '@/game/store/slice/scoreBoard';
 import { getPlayerName } from '@/components/playerNameMap';
+import ExitDialog from './ExitDialog';
 
 /** Sticky table header: shared app shell + per-player status chips (design: GameHeader).
- *  `compact` (mobile): chips scroll horizontally instead of wrapping. */
+ *  `compact` (mobile): only the seated player's chip + a ⋯ menu holding the
+ *  secondary actions; desktop shows every chip and a Leave button. Leaving
+ *  always goes through the explicit exit-choice dialog (#420). */
 export default function GameHeader({
   gameContext,
   compact = false,
@@ -15,7 +18,21 @@ export default function GameHeader({
   gameContext: GameContext;
   compact?: boolean;
 }) {
-  const { G, ctx, playerID, matchData } = gameContext;
+  const { G, ctx, playerID, matchData, matchID } = gameContext;
+  const [exitOpen, setExitOpen] = React.useState(false);
+  const [menuOpen, setMenuOpen] = React.useState(false);
+
+  // Mobile shows only your own chip; observers keep the full row.
+  const chipIDs =
+    compact && playerID !== null && G.players[playerID]
+      ? [playerID]
+      : Object.keys(G.players);
+
+  const openExit = () => {
+    setMenuOpen(false);
+    setExitOpen(true);
+  };
+
   return (
     <AppHeader
       sticky
@@ -31,11 +48,12 @@ export default function GameHeader({
               overflowX: compact ? 'auto' : 'visible',
               minWidth: 0,
               flex: compact ? 1 : undefined,
+              justifyContent: compact ? 'flex-end' : undefined,
               // Headroom for the TURN badge that overflows the active chip.
               paddingTop: 8,
             }}
           >
-            {Object.keys(G.players).map((id) => (
+            {chipIDs.map((id) => (
               <PlayerHeaderChip
                 key={id}
                 id={id}
@@ -48,9 +66,65 @@ export default function GameHeader({
               />
             ))}
           </div>
-          <Link href="/lobby" className="btn-sticker sm ghost" style={{ flexShrink: 0 }}>
-            離開 {!compact && <span className="tag-en">Leave</span>}
-          </Link>
+          {compact ? (
+            <div style={{ position: 'relative', flexShrink: 0 }}>
+              <button
+                type="button"
+                className="icon-btn"
+                aria-label="選單 · Menu"
+                aria-haspopup="menu"
+                aria-expanded={menuOpen}
+                data-testid="header-menu"
+                onClick={() => setMenuOpen((open) => !open)}
+              >
+                ⋯
+              </button>
+              {menuOpen && (
+                <>
+                  <div
+                    aria-hidden
+                    onClick={() => setMenuOpen(false)}
+                    style={{ position: 'fixed', inset: 0, zIndex: 40 }}
+                  />
+                  <div
+                    role="menu"
+                    style={{
+                      position: 'absolute',
+                      right: 0,
+                      top: 'calc(100% + 6px)',
+                      zIndex: 41,
+                      background: 'white',
+                      border: '2px solid var(--ink)',
+                      borderRadius: 14,
+                      boxShadow: 'var(--shadow-sticker)',
+                      padding: 6,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 2,
+                      minWidth: 190,
+                    }}
+                  >
+                    <button type="button" role="menuitem" className="menu-item" data-testid="menu-leave" onClick={openExit}>
+                      🚪 離開遊戲 <span className="tag-en">Leave</span>
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          ) : (
+            <button
+              type="button"
+              className="btn-sticker sm ghost"
+              style={{ flexShrink: 0 }}
+              data-testid="header-leave"
+              onClick={openExit}
+            >
+              離開 <span className="tag-en">Leave</span>
+            </button>
+          )}
+          {/* Mounted lazily: ExitDialog uses the app router, which only exists
+              once the user can actually open it. */}
+          {exitOpen && <ExitDialog open onClose={() => setExitOpen(false)} matchID={matchID} />}
         </>
       }
     />

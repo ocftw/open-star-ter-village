@@ -6,6 +6,7 @@ import { Alert, Snackbar } from '@mui/material';
 import { PaperCard, StickerButton } from '@/components/design';
 import Field from '@/components/lobby/Field';
 import LobbyNav from '@/components/lobby/LobbyNav';
+import MatchRow from '@/components/lobby/MatchRow';
 import Note from '@/components/lobby/Note';
 import Segmented from '@/components/lobby/Segmented';
 import { loadCredentials, saveCredentials, type MatchCredentials } from '@/lib/matchCredentials';
@@ -26,13 +27,6 @@ const PLAYER_COUNT_OPTIONS = [3, 4, 5, 6] as const;
 function isValidPlayerName(value: string): boolean {
   const trimmedValue = value.trim();
   return trimmedValue.length >= 1 && trimmedValue.length <= 20;
-}
-
-function formatDate(timestamp: number): string {
-  return new Intl.DateTimeFormat(undefined, {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  }).format(timestamp);
 }
 
 function CardHeading({
@@ -74,91 +68,12 @@ function CardHeading({
   );
 }
 
-function MatchRow({
-  match,
-  seatsFilled,
-  totalSeats,
-  status,
-  joining,
-  disabled,
-  onJoin,
-}: {
-  match: VisibleMatch['match'];
-  seatsFilled: number;
-  totalSeats: number;
-  status: string;
-  joining: boolean;
-  disabled: boolean;
-  onJoin: () => void;
-}) {
-  return (
-    <div
-      data-testid={`match-row-${match.matchID}`}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 12,
-        padding: '10px 14px',
-        background: 'white',
-        border: '1.5px solid var(--ink)',
-        borderRadius: 12,
-        boxShadow: '0 2px 0 var(--ink)',
-      }}
-    >
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 12,
-            fontWeight: 700,
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          {match.matchID}
-        </div>
-        <div style={{ fontSize: 11, color: 'var(--ink-mute)', marginTop: 2 }}>
-          {formatDate(match.createdAt)} · {status}
-        </div>
-      </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
-        {Array.from({ length: totalSeats }).map((_, i) => (
-          <span
-            key={i}
-            style={{
-              width: 16,
-              height: 16,
-              borderRadius: 999,
-              background: i < seatsFilled ? 'var(--orange)' : 'white',
-              border: '1.5px solid var(--ink)',
-            }}
-          />
-        ))}
-        <span
-          style={{
-            marginLeft: 4,
-            fontSize: 11,
-            fontWeight: 700,
-            color: 'var(--ink-soft)',
-            fontFamily: 'var(--font-en)',
-          }}
-        >
-          {seatsFilled}/{totalSeats}
-        </span>
-      </div>
-      <StickerButton variant="teal" size="sm" onClick={onJoin} disabled={disabled}>
-        {joining ? '加入中… · Joining' : '加入 · Join'}
-      </StickerButton>
-    </div>
-  );
-}
-
 export default function LobbyPage() {
   const router = useRouter();
   const [playerName, setPlayerName] = React.useState('');
   const [numPlayers, setNumPlayers] = React.useState<number>(3);
   const [matches, setMatches] = React.useState<VisibleMatch[]>([]);
+  const [mySeatMatchIDs, setMySeatMatchIDs] = React.useState<Record<string, boolean>>({});
   const [loadError, setLoadError] = React.useState(false);
   const [isLoading, setIsLoading] = React.useState(true);
   const [isCreating, setIsCreating] = React.useState(false);
@@ -173,6 +88,16 @@ export default function LobbyPage() {
     try {
       const nextMatches = await listPublicMatches();
       setMatches(nextMatches);
+      // Rooms this browser still holds a seat credential for get 回到桌子
+      // instead of Join (#421). Validity is re-checked by the room page —
+      // never inferred from display names.
+      setMySeatMatchIDs(
+        Object.fromEntries(
+          nextMatches
+            .filter(({ match }) => loadCredentials(match.matchID) !== null)
+            .map(({ match }) => [match.matchID, true]),
+        ),
+      );
       setLoadError(false);
     } catch (error) {
       if (!silent) {
@@ -353,9 +278,11 @@ export default function LobbyPage() {
                     seatsFilled={seatsFilled}
                     totalSeats={totalSeats}
                     status={status}
+                    hasSeat={Boolean(mySeatMatchIDs[match.matchID])}
                     joining={joiningMatchID === match.matchID}
-                    disabled={status !== 'Waiting' || joiningMatchID !== null || isCreating}
+                    busy={joiningMatchID !== null || isCreating}
                     onJoin={() => void handleJoinMatch(match.matchID)}
+                    onOpen={() => router.push(`/game/${match.matchID}`)}
                   />
                 ))}
               </div>

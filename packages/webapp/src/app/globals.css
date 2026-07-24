@@ -208,6 +208,32 @@ button {
   box-shadow: var(--shadow-sticker);
 }
 
+/* Bespoke modal — the prototype's .modal sticker panel on a native <dialog>
+   (design/Modal.tsx): paper ground, 2px ink border, 22px corner, offset
+   sticker shadow over a warm ink-tinted ::backdrop. MUI is not used in new
+   components. */
+.modal {
+  /* margin:auto restores centering that the global `* { margin: 0 }` reset
+     strips from the UA :modal default (inset:0 + margin:auto). */
+  margin: auto;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sticker);
+  width: min(560px, 100%);
+  max-width: calc(100vw - 40px);
+  max-height: 88vh;
+  overflow-y: auto;
+  padding: 22px;
+  color: var(--ink);
+}
+.modal::backdrop {
+  background: rgba(42, 36, 34, 0.4);
+}
+/* Native showModal() does not lock page scroll. */
+body:has(.modal[open]) {
+  overflow: hidden;
+}
 /* Headline */
 .h-display {
   font-family: var(--font-zh);
@@ -391,4 +417,43 @@ button {
   50% {
     transform: scale(1.18);
   }
+}
+
+/* Icon button + menu items (design: icon-btn / menu-item) — the compact game
+   header's ⋯ menu and other square tap targets. 44px minimum touch size. */
+.icon-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 2px solid var(--ink);
+  background: white;
+  box-shadow: 0 2px 0 var(--ink);
+  display: grid;
+  place-items: center;
+  font-size: 17px;
+  cursor: pointer;
+  transition: transform 0.08s;
+}
+.icon-btn:hover {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 var(--ink);
+}
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: none;
+  background: none;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: left;
+  color: var(--ink);
+  cursor: pointer;
+}
+.menu-item:hover {
+  background: var(--paper-2);
 }
