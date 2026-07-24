@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { Alert, Snackbar } from '@mui/material';
 import Boardgame from '@/components/BoardGame';
-import { StickerButton } from '@/components/design';
+import { Modal, StickerButton } from '@/components/design';
 import LobbyNav from '@/components/lobby/LobbyNav';
 import Note from '@/components/lobby/Note';
 import SeatCard from '@/components/lobby/SeatCard';
@@ -29,25 +29,14 @@ const MATCH_EXPIRED_MESSAGE = '房間不存在或已過期 · Match not found or
 /** Full-screen non-dismissible notice: a player released their seat, ending the match (#420). */
 function MatchTerminatedOverlay() {
   return (
-    <div
-      data-testid="match-terminated-overlay"
+    <Modal
+      open
+      ariaLabel="遊戲已終止"
       role="alertdialog"
-      aria-modal="true"
-      aria-label="遊戲已終止"
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 1400,
-        background: 'rgba(42, 36, 34, 0.55)',
-        display: 'grid',
-        placeItems: 'center',
-        padding: 20,
-      }}
+      width="min(420px, 100%)"
+      dataTestid="match-terminated-overlay"
     >
-      <div
-        className="paper-card"
-        style={{ padding: 26, maxWidth: 420, width: '100%', textAlign: 'center', background: 'var(--paper)' }}
-      >
+      <div style={{ textAlign: 'center' }}>
         <div aria-hidden style={{ fontSize: 36 }}>🚪</div>
         <strong style={{ display: 'block', fontSize: 18, marginTop: 8, color: 'var(--ink)' }}>
           有玩家離席，遊戲已終止
@@ -62,7 +51,7 @@ function MatchTerminatedOverlay() {
           回大廳 <span className="tag-en" style={{ color: 'rgba(255,255,255,0.85)' }}>Back to lobby</span>
         </Link>
       </div>
-    </div>
+    </Modal>
   );
 }
 
