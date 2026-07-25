@@ -5,6 +5,12 @@ export type DevPerspective = (typeof DEV_PERSPECTIVES)[number];
 export type DevTransport = (typeof DEV_TRANSPORTS)[number];
 export type SearchParamValue = string | string[] | undefined;
 
+const DEV_PLAYER_IDS = {
+  player1: '0',
+  player2: '1',
+  player3: '2',
+} satisfies Record<Exclude<DevPerspective, 'observer'>, string>;
+
 export interface DevConfig {
   perspective: DevPerspective;
   transport: DevTransport;
@@ -69,5 +75,5 @@ export function getPlayerID(perspective: DevPerspective): string | undefined {
     return undefined;
   }
 
-  return String(DEV_PERSPECTIVES.indexOf(perspective));
+  return DEV_PLAYER_IDS[perspective];
 }
