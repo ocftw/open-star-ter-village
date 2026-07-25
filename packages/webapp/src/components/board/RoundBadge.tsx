@@ -12,7 +12,7 @@ export default function RoundBadge({
   compact?: boolean;
 }) {
   const { G } = gameContext;
-  if (!G.table || !G.rules) return null;
+  if (!G.table) return null;
   const round = TableSelector.getRound(G.table);
   if (!round || round < 1) return null;
   const totalRounds = RuleSelector.getTotalRounds(G.rules);
