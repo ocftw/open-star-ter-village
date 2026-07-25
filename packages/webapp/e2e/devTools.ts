@@ -11,20 +11,12 @@ export type DevPerspective = keyof typeof PERSPECTIVE_LABELS;
 
 export async function openDevTools(page: Page): Promise<void> {
   const drawer = page.getByTestId('dev-tools-drawer');
-  if (await drawer.isVisible()) {
-    return;
-  }
-
   await page.getByTestId('dev-tools-open').click();
   await expect(drawer).toBeVisible();
 }
 
 export async function closeDevTools(page: Page): Promise<void> {
   const drawer = page.getByTestId('dev-tools-drawer');
-  if (!(await drawer.isVisible())) {
-    return;
-  }
-
   await page.getByTestId('dev-tools-close').click();
   await expect(drawer).not.toBeVisible();
 }

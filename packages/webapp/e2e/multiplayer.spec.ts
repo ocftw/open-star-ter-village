@@ -53,6 +53,57 @@ test.describe('Developer widget', () => {
     await expect(page).toHaveURL(/mode=offline/);
   });
 
+  test('contains keyboard focus and restores it to the launcher', async ({ page }) => {
+    const launcher = page.getByTestId('dev-tools-open');
+    const drawer = page.getByTestId('dev-tools-drawer');
+    const closeButton = page.getByTestId('dev-tools-close');
+    const lastControl = page.getByTestId('dev-transport-offline').getByRole('radio');
+
+    await launcher.focus();
+    await page.keyboard.press('Enter');
+    await expect(drawer).toBeVisible();
+    await expect(closeButton).toBeFocused();
+
+    await page.keyboard.press('Shift+Tab');
+    await expect(lastControl).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(closeButton).toBeFocused();
+
+    await page.keyboard.press('Escape');
+    await expect(drawer).not.toBeVisible();
+    await expect(launcher).toBeFocused();
+  });
+
+  test('stacks a game modal above developer controls and restores focus in order', async ({
+    page,
+  }) => {
+    const launcher = page.getByTestId('dev-tools-open');
+    const drawer = page.getByTestId('dev-tools-drawer');
+    const closeDeveloperControls = page.getByTestId('dev-tools-close');
+    const exitDialog = page.getByTestId('exit-dialog');
+
+    await launcher.focus();
+    await page.keyboard.press('Enter');
+    await expect(drawer).toBeVisible();
+    await expect(closeDeveloperControls).toBeFocused();
+
+    // Simulate an automatic game dialog while the modal developer drawer has
+    // made the board inert. User clicks on the inert board are intentionally blocked.
+    await page.getByTestId('header-leave').evaluate((button: HTMLButtonElement) => button.click());
+    await expect(page.getByRole('dialog')).toHaveCount(2);
+    await expect(exitDialog).toBeVisible();
+    await expect(page.getByTestId('exit-keep-seat')).toBeFocused();
+
+    await page.keyboard.press('Escape');
+    await expect(exitDialog).not.toBeVisible();
+    await expect(drawer).toBeVisible();
+    await expect(closeDeveloperControls).toBeFocused();
+
+    await page.keyboard.press('Escape');
+    await expect(drawer).not.toBeVisible();
+    await expect(launcher).toBeFocused();
+  });
+
   test('switches player and observer perspectives without resetting the match', async ({ page }) => {
     await selectDevPerspective(page, 'player2');
     await expect(page).toHaveURL(/user=player2/);

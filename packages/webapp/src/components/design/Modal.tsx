@@ -1,5 +1,9 @@
 import React from 'react';
 
+const FOCUSABLE_SELECTOR =
+  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), '
+  + 'textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
 /**
  * Bespoke sticker modal (prototype .modal) — the no-MUI dialog shell, built
  * on the native <dialog> element. showModal() supplies top-layer rendering,
@@ -15,6 +19,7 @@ export default function Modal({
   ariaDescribedBy,
   role,
   width = 'min(560px, 100%)',
+  style,
   dataTestid,
   children,
 }: {
@@ -27,6 +32,7 @@ export default function Modal({
   /** Defaults to the dialog element's implicit role. */
   role?: 'alertdialog';
   width?: string;
+  style?: React.CSSProperties;
   dataTestid?: string;
   children: React.ReactNode;
 }) {
@@ -69,7 +75,8 @@ export default function Modal({
       aria-describedby={ariaDescribedBy}
       role={role}
       data-testid={dataTestid}
-      style={{ width, fontFamily: 'var(--font-zh)' }}
+      tabIndex={-1}
+      style={{ width, fontFamily: 'var(--font-zh)', ...style }}
       onCancel={(event) => {
         event.preventDefault();
         onClose?.();
@@ -89,6 +96,39 @@ export default function Modal({
           event.clientY <= rect.bottom;
         if (!inPanel) {
           onClose();
+        }
+      }}
+      onKeyDownCapture={(event) => {
+        if (event.key !== 'Tab') {
+          return;
+        }
+        const candidates = Array.from(
+          event.currentTarget.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
+        ).filter((element) => element.offsetParent !== null);
+        const focusable = candidates.filter((element) => {
+          if (!(element instanceof HTMLInputElement) || element.type !== 'radio') {
+            return true;
+          }
+          const checkedInGroup = candidates.some(
+            (candidate) =>
+              candidate instanceof HTMLInputElement
+              && candidate.type === 'radio'
+              && candidate.name === element.name
+              && candidate.checked,
+          );
+          return element.checked || !checkedInGroup;
+        });
+        const first = focusable[0];
+        const last = focusable.at(-1);
+        if (!first || !last) {
+          event.preventDefault();
+          event.currentTarget.focus();
+        } else if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
         }
       }}
     >

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { Modal } from '@/components/design';
 import { useIsMobile } from '@/lib/useIsMobile';
 import type { DevPerspective, DevTransport } from '@/components/dev/devConfig';
 
@@ -33,89 +34,65 @@ export default function DevToolsWidget({
   const isMobile = useIsMobile();
   const anchor = isMobile ? 'bottom' : 'right';
 
-  React.useEffect(() => {
-    if (!open) {
-      return;
-    }
-
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setOpen(false);
-      }
-    };
-    window.addEventListener('keydown', closeOnEscape);
-    return () => window.removeEventListener('keydown', closeOnEscape);
-  }, [open]);
-
   return (
     <>
-      {!open && (
-        <button
-          type="button"
-          aria-label="Open developer controls"
-          data-testid="dev-tools-open"
-          onClick={() => setOpen(true)}
-          style={{
-            position: 'fixed',
-            right: isMobile ? 12 : 20,
-            top: isMobile ? 72 : 'auto',
-            bottom: isMobile ? 'auto' : 20,
-            zIndex: 1301,
-            width: 40,
-            height: 40,
-            border: '2px solid var(--ink)',
-            borderRadius: '50%',
-            background: 'var(--orange)',
-            color: 'var(--ink)',
-            boxShadow: '0 3px 0 var(--ink)',
-            cursor: 'pointer',
-            fontSize: 20,
-            lineHeight: 1,
-          }}
-        >
-          <span aria-hidden="true">⚙</span>
-        </button>
-      )}
+      <button
+        type="button"
+        aria-label="Open developer controls"
+        data-testid="dev-tools-open"
+        onClick={() => setOpen(true)}
+        style={{
+          position: 'fixed',
+          right: isMobile ? 12 : 20,
+          top: isMobile ? 72 : 'auto',
+          bottom: isMobile ? 'auto' : 20,
+          zIndex: 1301,
+          width: 40,
+          height: 40,
+          border: '2px solid var(--ink)',
+          borderRadius: '50%',
+          background: 'var(--orange)',
+          color: 'var(--ink)',
+          boxShadow: '0 3px 0 var(--ink)',
+          cursor: 'pointer',
+          fontSize: 20,
+          lineHeight: 1,
+          opacity: open ? 0 : 1,
+          pointerEvents: open ? 'none' : 'auto',
+        }}
+      >
+        <span aria-hidden="true">⚙</span>
+      </button>
 
-      {open && (
-        <>
-          <div
-            aria-hidden="true"
-            onClick={() => setOpen(false)}
-            style={{
-              position: 'fixed',
-              inset: 0,
-              zIndex: 1299,
-              background: 'rgb(0 0 0 / 32%)',
-            }}
-          />
-          <aside
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="dev-tools-title"
-            data-testid="dev-tools-drawer"
-            data-anchor={anchor}
-            style={{
-              position: 'fixed',
-              zIndex: 1300,
-              right: 0,
-              bottom: 0,
-              top: isMobile ? 'auto' : 0,
-              left: isMobile ? 0 : 'auto',
-              width: isMobile ? 'auto' : 320,
-              maxHeight: isMobile ? '80vh' : '100vh',
-              overflowY: 'auto',
-              boxSizing: 'border-box',
-              padding: 20,
-              border: '2px solid var(--ink)',
-              borderRight: isMobile ? '2px solid var(--ink)' : 0,
-              borderBottom: 0,
-              borderRadius: isMobile ? '22px 22px 0 0' : 0,
-              background: '#fffaf2',
-              color: 'var(--ink)',
-              boxShadow: '0 0 24px rgb(0 0 0 / 22%)',
-            }}
-          >
+      <Modal
+        open={open}
+        onClose={() => setOpen(false)}
+        ariaLabelledBy="dev-tools-title"
+        style={
+          isMobile
+            ? {
+                boxSizing: 'border-box',
+                margin: 'auto 0 0',
+                width: '100%',
+                maxWidth: '100%',
+                maxHeight: '80vh',
+                borderRadius: '22px 22px 0 0',
+                borderBottom: 0,
+              }
+            : {
+                boxSizing: 'border-box',
+                margin: '0 0 0 auto',
+                width: 320,
+                maxWidth: 320,
+                height: '100vh',
+                maxHeight: '100vh',
+                borderRadius: 0,
+                borderRight: 0,
+                borderBottom: 0,
+              }
+        }
+      >
+        <div data-testid="dev-tools-drawer" data-anchor={anchor}>
             <header style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <span aria-hidden="true" style={{ fontSize: 20 }}>
                 ⚙
@@ -221,9 +198,8 @@ export default function DevToolsWidget({
                 Seed and demo overrides apply only in Offline mode.
               </p>
             )}
-          </aside>
-        </>
-      )}
+        </div>
+      </Modal>
     </>
   );
 }
