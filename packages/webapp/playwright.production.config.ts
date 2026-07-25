@@ -11,8 +11,11 @@ export default defineConfig({
     baseURL: webURL,
   },
   webServer: {
-    command: `pnpm exec next start --port ${webPort}`,
+    command: 'node .next/standalone/packages/webapp/server.js',
     url: webURL,
+    env: {
+      PORT: webPort,
+    },
     reuseExistingServer: false,
     timeout: 120 * 1000,
   },
