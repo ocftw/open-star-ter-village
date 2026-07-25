@@ -1,5 +1,13 @@
 const nextConfig = require('../../next.config');
 
+const SITE_URL = 'https://openstartervillage.ocf.tw';
+
+// The OAuth popup must be served by the same origin that served /admin, so that
+// the callback can postMessage back to its opener. Falls back to the canonical
+// site URL during build, when there is no window.
+const oauthBaseUrl =
+  typeof window === 'undefined' ? SITE_URL : window.location.origin;
+
 /**
  * @type {import('decap-cms-core').CmsConfig}
  */
@@ -7,10 +15,16 @@ module.exports = {
   cms_manual_init: true,
   local_backend: true,
   backend: {
-    name: 'git-gateway',
+    name: 'github',
+    repo: 'ocftw/open-star-ter-village',
     branch: 'main',
+    base_url: oauthBaseUrl,
+    auth_endpoint: 'oauth/auth',
   },
-  site_url: 'https://openstartervillage.ocf.tw',
+  // Anyone with a GitHub account may propose edits; Decap forks the repo for
+  // users without write access and opens a PR. Requires editorial_workflow.
+  open_authoring: true,
+  site_url: SITE_URL,
   publish_mode: 'editorial_workflow',
   media_folder: 'homepage/public/images/uploads',
   public_folder: '/images/uploads',

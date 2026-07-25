@@ -1,5 +1,4 @@
 import Head from 'next/head';
-import Script from 'next/script';
 
 import { fetchAllCards } from '../lib/repository/fetchAllCards';
 import DecapCms from '../CMS/DecapCms';
@@ -36,10 +35,6 @@ const Admin = ({ assetsByLocale }) => {
       <Head>
         <title>Content Manager</title>
       </Head>
-      <Script
-        id="netlify-identity-widget"
-        src="https://identity.netlify.com/v1/netlify-identity-widget.js"
-      />
       <DecapCms assetsByLocale={assetsByLocale} />
     </>
   );
