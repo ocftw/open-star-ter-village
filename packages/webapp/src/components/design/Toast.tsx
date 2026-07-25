@@ -10,7 +10,7 @@ import React from 'react';
 
 export type ToastKind = 'error' | 'success' | 'info';
 
-export interface ToastItem {
+interface ToastItem {
   id: number;
   message: string;
   kind: ToastKind;
@@ -70,7 +70,8 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           <div
             key={item.id}
             className={`toast ${item.kind}`}
-            role="alert"
+            // Only failures interrupt the screen reader; progress updates queue politely.
+            role={item.kind === 'error' ? 'alert' : 'status'}
             data-testid="toast"
             data-kind={item.kind}
             onClick={() => dismiss(item.id)}

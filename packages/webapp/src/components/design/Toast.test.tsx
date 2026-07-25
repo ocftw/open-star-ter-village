@@ -46,6 +46,22 @@ describe('sticker toast system', () => {
     expect(queryByTestId('toast')).toBeNull();
   });
 
+  it('only failures interrupt the screen reader', () => {
+    const { getByText, getAllByTestId } = render(
+      <ToastProvider>
+        <Fire label="err" message="failed" kind="error" />
+        <Fire label="ok" message="done" kind="success" />
+        <Fire label="fyi" message="note" kind="info" />
+      </ToastProvider>,
+    );
+    fireEvent.click(getByText('err'));
+    fireEvent.click(getByText('ok'));
+    fireEvent.click(getByText('fyi'));
+    const roles = getAllByTestId('toast').map((t) => t.getAttribute('role'));
+    // Assertive only for errors; progress updates queue politely.
+    expect(roles).toEqual(['alert', 'status', 'status']);
+  });
+
   it('caps the visible stack at 4, dropping the oldest', () => {
     const { getByText, getAllByTestId } = render(
       <ToastProvider>
