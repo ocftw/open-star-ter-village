@@ -6,17 +6,9 @@
 [build.environment]
   NODE_VERSION = "24"
 
+# Decap CMS GitHub OAuth handshake lives at /.netlify/functions/{auth,callback}.
+# Addressed directly rather than behind a prettier /oauth/* rewrite, so reaching
+# the functions never depends on redirect ordering against the Next.js runtime's
+# catch-all.
 [functions]
   directory = "netlify/functions"
-
-# Decap CMS GitHub OAuth handshake. Redirects are evaluated before the Next.js
-# runtime's catch-all, so these paths reach the functions rather than the app.
-[[redirects]]
-  from   = "/oauth/auth"
-  to     = "/.netlify/functions/auth"
-  status = 200
-
-[[redirects]]
-  from   = "/oauth/callback"
-  to     = "/.netlify/functions/callback"
-  status = 200

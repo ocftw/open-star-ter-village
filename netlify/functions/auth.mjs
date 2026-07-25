@@ -1,4 +1,4 @@
-import { createState } from './_oauth-state.mjs';
+import { CALLBACK_PATH, createState } from './_oauth-state.mjs';
 
 const AUTHORIZE_URL = 'https://github.com/login/oauth/authorize';
 
@@ -27,7 +27,7 @@ export default async (request) => {
 
   const params = new URLSearchParams({
     client_id: clientId,
-    redirect_uri: `${origin}/oauth/callback`,
+    redirect_uri: `${origin}${CALLBACK_PATH}`,
     scope: 'public_repo',
     state,
   });

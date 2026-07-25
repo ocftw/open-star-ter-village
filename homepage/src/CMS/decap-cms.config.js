@@ -19,7 +19,7 @@ module.exports = {
     repo: 'ocftw/open-star-ter-village',
     branch: 'main',
     base_url: oauthBaseUrl,
-    auth_endpoint: 'oauth/auth',
+    auth_endpoint: '.netlify/functions/auth',
   },
   // Anyone with a GitHub account may propose edits; Decap forks the repo for
   // users without write access and opens a PR. Requires editorial_workflow.

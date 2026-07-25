@@ -1,4 +1,8 @@
-import { clearStateCookie, verifyState } from './_oauth-state.mjs';
+import {
+  CALLBACK_PATH,
+  clearStateCookie,
+  verifyState,
+} from './_oauth-state.mjs';
 
 const TOKEN_URL = 'https://github.com/login/oauth/access_token';
 
@@ -83,7 +87,7 @@ export default async (request) => {
       client_id: clientId,
       client_secret: clientSecret,
       code,
-      redirect_uri: `${origin}/oauth/callback`,
+      redirect_uri: `${origin}${CALLBACK_PATH}`,
     }),
   });
 

@@ -3,6 +3,13 @@ import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 export const STATE_COOKIE = 'osv_oauth_state';
 const MAX_AGE_SECONDS = 600;
 
+/**
+ * GitHub requires an identical `redirect_uri` on both the authorize request and
+ * the token exchange, so both functions derive it from this single constant.
+ * Must match the callback URL registered on the OAuth App.
+ */
+export const CALLBACK_PATH = '/.netlify/functions/callback';
+
 const stateSecret = () => {
   const secret = process.env.OAUTH_STATE_SECRET;
   if (!secret) {
