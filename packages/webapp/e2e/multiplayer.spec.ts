@@ -64,6 +64,16 @@ test.describe('Developer widget', () => {
     await expect(drawer).toBeVisible();
     await expect(closeButton).toBeFocused();
 
+    // Fixed-position controls are visible even though offsetParent is null.
+    // Keep them in the modal's focus loop.
+    await closeButton.evaluate((element) => {
+      element.style.position = 'fixed';
+    });
+    expect(
+      await closeButton.evaluate((element) => (element as HTMLElement).offsetParent),
+    ).toBeNull();
+    expect(await closeButton.evaluate((element) => element.getClientRects().length)).toBeGreaterThan(0);
+
     await page.keyboard.press('Shift+Tab');
     await expect(lastControl).toBeFocused();
     await page.keyboard.press('Tab');

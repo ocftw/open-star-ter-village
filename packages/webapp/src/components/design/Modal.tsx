@@ -104,7 +104,7 @@ export default function Modal({
         }
         const candidates = Array.from(
           event.currentTarget.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
-        ).filter((element) => element.offsetParent !== null);
+        ).filter((element) => element.getClientRects().length > 0);
         const focusable = candidates.filter((element) => {
           if (!(element instanceof HTMLInputElement) || element.type !== 'radio') {
             return true;
