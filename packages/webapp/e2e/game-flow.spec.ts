@@ -14,11 +14,12 @@
  * - The contextual bar [data-testid="context-action"] carries mode
  *   (data-mode) and the confirm/cancel buttons (ca-confirm / ca-cancel).
  *
- * The game boots in DevView at localhost:3000/dev.
- * Alice (player 0) always goes first and is the active tab on load.
- * TabPanel only mounts children for the active tab, so there are no duplicate selectors.
+ * The game boots in the unified game view at localhost:3000/dev.
+ * Alice (player 0) always goes first. The developer widget switches the
+ * mounted board client between player and observer perspectives.
  */
 import { test, expect, Page } from '@playwright/test';
+import { selectDevPerspective } from './devTools';
 
 // ── Constants from the rulebook (Simplified Mode) ────────────────────────────
 const INITIAL_ACTION_TOKENS    = 4;
@@ -269,15 +270,15 @@ test.describe('Simplified Mode — Action Flow', () => {
 
   // ── Scenario 6: Turn indicator ────────────────────────────────────────────
   test('Scenario 6: Turn indicator — non-active players see a waiting alert', async ({ page }) => {
-    // While it's Alice's turn, Bob's and Charlie's tabs must show the waiting alert.
-    await page.getByRole('tab', { name: 'Bob view' }).click();
+    // While it's Alice's turn, Bob's and Charlie's perspectives show the waiting alert.
+    await selectDevPerspective(page, 'player2');
     await expect(page.locator('[data-testid="waiting-for-player-alert"]')).toBeVisible();
 
-    await page.getByRole('tab', { name: 'Charlie view' }).click();
+    await selectDevPerspective(page, 'player3');
     await expect(page.locator('[data-testid="waiting-for-player-alert"]')).toBeVisible();
 
-    // Switching back to Alice's tab: her contextual bar must still be present.
-    await page.getByRole('tab', { name: 'Alice view' }).click();
+    // Switching back to Alice preserves the same match and contextual bar.
+    await selectDevPerspective(page, 'player1');
     await expect(page.locator('[data-testid="context-action"][data-mode="idle"]')).toBeVisible();
   });
 
@@ -286,8 +287,8 @@ test.describe('Simplified Mode — Action Flow', () => {
     // Alice ends her turn without spending any AP.
     await performEndTurn(page);
 
-    // It is now Bob's turn — his idle contextual bar must be visible in his tab.
-    await page.getByRole('tab', { name: 'Bob view' }).click();
+    // It is now Bob's turn — his idle contextual bar must be visible.
+    await selectDevPerspective(page, 'player2');
     await expect(page.locator('[data-testid="context-action"][data-mode="idle"]')).toBeVisible({ timeout: 5000 });
   });
 
@@ -367,7 +368,7 @@ test.describe('Simplified Mode — Action Flow', () => {
     await performEndTurn(page);
 
     // Bob: create a project with 2+ job types so Alice can recruit on it later.
-    await page.getByRole('tab', { name: 'Bob view' }).click();
+    await selectDevPerspective(page, 'player2');
     await waitForGameReady(page);
     await selectCompatibleHandAndJobCard(page, true); // requireMultipleJobTypes
     await expect(confirmButton(page)).toBeEnabled();
@@ -376,12 +377,12 @@ test.describe('Simplified Mode — Action Flow', () => {
     await performEndTurn(page);
 
     // Charlie: end turn (completes round 1).
-    await page.getByRole('tab', { name: 'Charlie view' }).click();
+    await selectDevPerspective(page, 'player3');
     await waitForGameReady(page);
     await performEndTurn(page);
 
     // === Round 2: Alice still goes first. ===
-    await page.getByRole('tab', { name: 'Alice view' }).click();
+    await selectDevPerspective(page, 'player1');
     await waitForGameReady(page);
 
     // Alice recruits onto Bob's project (she is NOT the owner).

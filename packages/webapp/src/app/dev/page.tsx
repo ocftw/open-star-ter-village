@@ -1,45 +1,60 @@
-import DevView from '@/components/DevView';
-import { Container, Typography } from '@mui/material';
+import { randomUUID } from 'node:crypto';
+import { notFound } from 'next/navigation';
+import DevGameHost from '@/components/dev/DevGameHost';
+import {
+  parseDevConfig,
+  type SearchParamValue,
+} from '@/components/dev/devConfig';
 
-type SearchParamValue = string | string[] | undefined;
-
-function getSearchParamValue(value: SearchParamValue): string | undefined {
+function getFirstValue(value: SearchParamValue): string | undefined {
   return Array.isArray(value) ? value[0] : value;
 }
 
-/**
- * Developer harness (offline multi-view board), moved off the redesigned
- * homepage. Same gating as before: always on outside production, or with
- * ?dev=true in production.
- */
 export default function DevPage({
   searchParams,
 }: {
-  searchParams?: { demo?: SearchParamValue; dev?: SearchParamValue; seed?: SearchParamValue };
+  searchParams?: {
+    demo?: SearchParamValue;
+    mode?: SearchParamValue;
+    seed?: SearchParamValue;
+    user?: SearchParamValue;
+  };
 }) {
-  const demo = getSearchParamValue(searchParams?.demo);
-  const dev = getSearchParamValue(searchParams?.dev);
-  const seed = getSearchParamValue(searchParams?.seed);
-  const showDevView = process.env.NODE_ENV !== 'production' || dev === 'true';
+  if (process.env.NODE_ENV === 'production') {
+    notFound();
+  }
 
-  if (!showDevView) {
+  const result = parseDevConfig({
+    user: searchParams?.user,
+    mode: searchParams?.mode,
+  });
+
+  if (!result.ok) {
     return (
-      <Container maxWidth="md" sx={{ py: 6 }}>
-        <Typography color="text.secondary">
-          Developer View is disabled in production. Append ?dev=true to enable it.
-        </Typography>
-      </Container>
+      <main
+        role="alert"
+        style={{
+          maxWidth: 720,
+          margin: '48px auto',
+          padding: 24,
+          border: '2px solid var(--ink)',
+          borderRadius: 16,
+          background: 'white',
+        }}
+      >
+        <h1 style={{ fontSize: 24, fontWeight: 800 }}>Invalid developer configuration</h1>
+        <p style={{ marginTop: 12, color: 'var(--ink-soft)' }}>{result.error}</p>
+      </main>
     );
   }
 
   return (
-    <main>
-      <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Developer View
-        </Typography>
-        <DevView demo={demo} seed={seed} initialMode="offline" isDev={showDevView} />
-      </Container>
-    </main>
+    <DevGameHost
+      initialMatchID={`dev-${randomUUID()}`}
+      initialPerspective={result.config.perspective}
+      initialTransport={result.config.transport}
+      demo={getFirstValue(searchParams?.demo)}
+      seed={getFirstValue(searchParams?.seed)}
+    />
   );
 }

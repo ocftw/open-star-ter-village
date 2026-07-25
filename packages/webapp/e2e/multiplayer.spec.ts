@@ -1,4 +1,10 @@
 import { test, expect, Browser, BrowserContext, Page } from '@playwright/test';
+import {
+  closeDevTools,
+  openDevTools,
+  selectDevPerspective,
+  selectDevTransport,
+} from './devTools';
 
 test.describe('Landing page', () => {
   test('shows Play button linking to /lobby', async ({ page }) => {
@@ -8,14 +14,87 @@ test.describe('Landing page', () => {
     await expect(btn).toHaveAttribute('href', '/lobby');
   });
 
-  test('does not render DevView on the landing page', async ({ page }) => {
+  test('does not render developer controls on the landing page', async ({ page }) => {
     await page.goto('/');
-    await expect(page.getByText(/developer view/i)).not.toBeVisible();
+    await expect(page.getByTestId('dev-tools-open')).toHaveCount(0);
   });
 
-  test('shows DevView on /dev', async ({ page }) => {
-    await page.goto('/dev');
-    await expect(page.getByText(/developer view/i).first()).toBeVisible({ timeout: 10_000 });
+  test('shows the unified board and collapsed developer widget on /dev', async ({ page }) => {
+    await page.goto('/dev?user=player1&mode=offline');
+    await expect(page.getByText(/^Developer View$/i)).toHaveCount(0);
+    await expect(page.getByRole('tablist')).toHaveCount(0);
+    await expect(page.locator('[data-testid^="player-status-"]').first()).toBeVisible({ timeout: 10_000 });
+    await expect(page.getByTestId('dev-tools-open')).toBeVisible();
+
+    await openDevTools(page);
+    await expect(page.getByRole('heading', { name: /developer controls/i })).toBeVisible();
+    await closeDevTools(page);
+  });
+});
+
+test.describe('Developer widget', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/dev?seed=e2e-2');
+    await page.locator('[data-testid="context-action"][data-mode="idle"]').waitFor({
+      state: 'visible',
+      timeout: 20_000,
+    });
+  });
+
+  test('loads player 1 and offline defaults from a minimal dev URL', async ({ page }) => {
+    await openDevTools(page);
+    await expect(page.getByRole('radio', { name: /Alice · Player 1/i })).toBeChecked();
+    await expect(page.getByRole('radio', { name: /Offline · Local/i })).toBeChecked();
+  });
+
+  test('writes default developer controls back to the URL', async ({ page }) => {
+    await expect(page).toHaveURL(/seed=e2e-2/);
+    await expect(page).toHaveURL(/user=player1/);
+    await expect(page).toHaveURL(/mode=offline/);
+  });
+
+  test('switches player and observer perspectives without resetting the match', async ({ page }) => {
+    await selectDevPerspective(page, 'player2');
+    await expect(page).toHaveURL(/user=player2/);
+    await expect(page.getByTestId('player-status-Bob')).toContainText('YOU');
+    await expect(page.getByTestId('waiting-for-player-alert')).toContainText(/Waiting for Alice/i);
+
+    await selectDevPerspective(page, 'observer');
+    await expect(page).toHaveURL(/user=observer/);
+    await expect(page.getByTestId('observer-mode-banner')).toBeVisible();
+    await expect(page.locator('[data-testid="context-action"]')).toHaveCount(0);
+    await expect(page.locator('[data-testid^="hand-card-"]')).toHaveCount(0);
+
+    await selectDevPerspective(page, 'player1');
+    await expect(page.locator('[data-testid="context-action"][data-mode="idle"]')).toBeVisible();
+  });
+
+  test('switches to a fresh three-player online match', async ({ page }) => {
+    await page.getByTestId('refill-jobs').click();
+    await page.locator('[data-testid^="job-card-"]').first().click();
+    await page.getByTestId('ca-confirm').click();
+    await expect(page.getByTestId('player-status-Alice')).toHaveAttribute('data-actions', '3');
+
+    await selectDevTransport(page, 'online');
+    await expect(page).toHaveURL(/mode=online/);
+    await expect(page.locator('[data-testid^="player-status-"]')).toHaveCount(3, { timeout: 20_000 });
+    await expect(page.getByTestId('player-status-Alice')).toHaveAttribute('data-actions', '4');
+  });
+
+  test('initializes from valid query state and rejects invalid configuration', async ({ page }) => {
+    await page.goto('/dev?user=player2&mode=online');
+    await expect(page.locator('[data-testid^="player-status-"]')).toHaveCount(3, { timeout: 20_000 });
+    await expect(page.getByTestId('player-status-Bob')).toContainText('YOU');
+
+    await openDevTools(page);
+    await expect(page.getByRole('radio', { name: /Bob · Player 2/i })).toBeChecked();
+    await expect(page.getByRole('radio', { name: /Online · SocketIO/i })).toBeChecked();
+
+    await page.goto('/dev?user=alice&mode=remote');
+    const configError = page.locator('main[role="alert"]');
+    await expect(configError).toContainText('Invalid developer configuration');
+    await expect(configError).toContainText('Invalid user "alice"');
+    await expect(configError).toContainText('Invalid mode "remote"');
   });
 });
 
