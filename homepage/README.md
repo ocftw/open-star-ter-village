@@ -63,9 +63,84 @@ Netlify 必須從 repository 根目錄讀取 `pnpm-lock.yaml` 與 `netlify.toml`
 
 請參考[CONTRIBUTING.md](./CONTRIBUTING.md)。
 
+#### 驗證 CMS 後台改動：使用 `cms-preview` 分支
+
+**Deploy Preview（`deploy-preview-<PR 編號>--…`）無法登入 `/admin`。** 這是預期行為，不是壞掉了。
+
+GitHub OAuth App 只能註冊**一組** callback URL，而 Deploy Preview 的網域每個 PR 都不同。GitHub 也沒有提供修改 OAuth App 設定的 REST API，因此無法為每個 PR 自動註冊。callback 固定指向下方這組固定網域，所以在 Deploy Preview 登入會在授權後出現 `redirect_uri_mismatch`。
+
+Deploy Preview 的**公開頁面完全正常**，僅 `/admin` 登入不可用。
+
+驗證後台改動請使用專屬的 `cms-preview` 分支部署：
+
+<https://cms-preview--openstartervillage.netlify.app/admin/>
+
+部署方式（擇一）：
+
+- GitHub Actions → **Deploy CMS Preview** → Run workflow，輸入要部署的 ref
+- 直接推送到 `cms-preview` 分支
+
+此分支僅供開發驗證。**一般內容編輯者請一律使用正式站的後台**，見下方「網站內容編輯」。
+
+`cms-preview` 的 `backend.branch` 仍指向 `main`，因此在此分支後台所做的修改，Pull Request 一樣會開向 `main`。測試完請記得關閉這些 PR。
+
 ### 網站內容編輯
 
 - [網站編輯說明](https://github.com/ocftw/open-star-ter-village/wiki/%E7%B6%B2%E7%AB%99%E7%B7%A8%E8%BC%AF%E8%AA%AA%E6%98%8E-%E2%80%90-How-to-Edit-Homepage)
+
+#### 登入內容管理後台
+
+內容管理後台位於 <https://openstartervillage.ocf.tw/admin/>。
+
+登入方式為 **GitHub 帳號**。過去使用的 Netlify Identity 共用帳號已停用，改用 GitHub 帳號後，每一次內容修改都會記錄在你自己的名下。
+
+1. 開啟 <https://openstartervillage.ocf.tw/admin/>
+2. 點擊「**使用你的 GitHub 帳號來進行登入**」
+
+   <!-- 螢幕截圖：Decap CMS 登入畫面（./docs/images/cms-login.png） -->
+
+3. GitHub 會詢問是否授權此應用程式，確認後點擊 **Authorize**
+
+   <!-- 螢幕截圖：GitHub 授權畫面（./docs/images/github-authorize.png） -->
+
+4. 授權完成後會自動回到後台，即可開始編輯
+
+授權範圍為 `public_repo`，僅能存取公開的儲存庫，不會取得你其他私人專案的權限。
+
+#### 你需要什麼權限？
+
+**任何擁有 GitHub 帳號的人都可以直接編輯內容，不需要事先申請權限。**
+
+系統採用 Decap CMS 的 open authoring 模式，依你在 `ocftw/open-star-ter-village` 的角色自動分流：
+
+| 你的角色 | 登入後的行為 | 能否直接發布 |
+| --- | --- | --- |
+| 沒有儲存庫權限（一般貢獻者） | CMS 自動幫你 fork 一份儲存庫，修改存在你自己的 fork | 否，送出後由維護者審核合併 |
+| 具備 Write 以上權限（維護者） | 直接在主儲存庫建立分支 | 是 |
+
+一般貢獻者的作業流程只會看到兩欄（草稿、準備完成）；維護者會看到完整三欄。
+
+##### 想要取得直接發布權限
+
+直接發布需要 `ocftw/open-star-ter-village` 的 **Write** 角色。這是 GitHub 的儲存庫權限，不是 CMS 內的設定，無法自行開通，需要由組織管理者授予：
+
+1. 於 [Discord](https://discord.gg/JnTHGnxwYS) #基礎建設部 提出申請，附上你的 GitHub 帳號名稱
+2. 組織管理者於 **GitHub → ocftw/open-star-ter-village → Settings → Collaborators and teams** 邀請你，角色選擇 **Write**
+
+   <!-- 螢幕截圖：GitHub 儲存庫權限設定（./docs/images/github-write-access.png） -->
+
+3. 你會收到邀請信，接受後重新登入後台即可看到完整三欄作業流程
+
+請注意 GitHub 的儲存庫權限是整個儲存庫共用的，無法只針對 `homepage/` 目錄授權。若你只需要修改內容，使用上表的一般貢獻者流程即可，不需要 Write 權限。
+
+#### 編輯與送審流程
+
+1. 於「內容」選擇要修改的集合（Pages／Cards／Settings／Footer）
+2. 修改欄位，右側會即時顯示預覽
+3. 存檔後於「作業流程」把項目移到「**準備完成**」，系統會建立 Pull Request
+4. 維護者審核並合併後，Netlify 自動部署上線
+
+目前已知限制：一般貢獻者上傳新圖片的行為尚未驗證，如需新增圖片素材，請在 Discord 聯繫維護者處理。
 
 Decap CMS 支援 Markdown 語法，如對此不熟悉可參考以下兩個網站學習 Markdown 語法，並透過 [markdown playground](https://hackmd.io/2OBWFw_FSiazt4JxoINNlQ?both) 進行練習。
 
