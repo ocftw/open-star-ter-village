@@ -2,6 +2,9 @@
   base      = "/"
   command   = "pnpm homepage build"
   publish   = "homepage/.next"
+  # Skip the build when nothing Netlify serves has changed. Exit 0 cancels.
+  # Webapp-only commits no longer rebuild and redeploy the homepage.
+  ignore    = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- homepage/ netlify/ netlify.toml pnpm-lock.yaml pnpm-workspace.yaml package.json"
 
 [build.environment]
   NODE_VERSION = "24"
