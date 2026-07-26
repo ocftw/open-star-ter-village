@@ -50,6 +50,43 @@ If you don't have a GitHub account, you can also discuss with us through [Discor
 
 If you have a GitHub account, you can suggest new features in our [Discussions](https://github.com/ocftw/open-star-ter-village/discussions) or provide your solutions directly through [Pull Requests](https://github.com/ocftw/open-star-ter-village/pulls).
 
+### Edit Website Content
+
+The official website content is managed through Decap CMS at
+<https://openstartervillage.ocf.tw/admin/>. **You do not need to request
+permission first — any GitHub account can propose content edits.**
+
+Sign in with your GitHub account. The CMS then behaves differently depending on
+your role in this repository:
+
+| Your role                            | What happens on login                                            | Can publish directly                                   |
+| ------------------------------------ | ---------------------------------------------------------------- | ------------------------------------------------------ |
+| No repo access (general contributor) | The CMS forks the repo for you; edits are saved to your own fork | No — a maintainer reviews and merges your Pull Request |
+| Write role or above (maintainer)     | Edits go to a branch on the main repo                            | Yes                                                    |
+
+General contributors see two workflow columns (Draft, Ready to Review);
+maintainers see all three.
+
+The OAuth scope requested is `public_repo`, so the CMS can only reach public
+repositories and never gains access to your private projects.
+
+#### Requesting publish rights
+
+Publishing directly requires the **Write** role on
+`ocftw/open-star-ter-village`. This is a GitHub repo permission rather than a
+CMS setting, so it has to be granted by an organization admin: ask in
+[Discord](https://discord.gg/JnTHGnxwYS) #基礎建設部 with your GitHub username.
+
+Note that GitHub repo permissions apply to the whole repository and cannot be
+scoped to `homepage/` alone. If you only need to edit content, the general
+contributor flow above is enough — you do not need Write access.
+
+Known limitation: image upload by general contributors is not yet verified. Ask
+a maintainer on Discord if you need to add new image assets.
+
+Step-by-step instructions with screenshots are in the
+[homepage README](./homepage/README.md#網站內容編輯) (Chinese).
+
 ### Join the Discussion
 
 You can join our discussions on [Discord](https://discord.gg/JnTHGnxwYS).

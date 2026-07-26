@@ -6,12 +6,14 @@
 ![Decap CMS 登入畫面](./docs/images/cms-login.png)
 ```
 
-| 檔名                   | 內容                                                                              | 取得方式                                 |
-| ---------------------- | --------------------------------------------------------------------------------- | ---------------------------------------- |
-| `cms-login.png`        | Decap CMS 登入畫面，含「使用你的 GitHub 帳號來進行登入」按鈕                      | 以未登入狀態開啟 `/admin/`               |
-| `github-signin.png`    | GitHub 登入畫面，標題為 Sign in to GitHub to continue to Open StarTer Village CMS | 於無痕視窗點擊登入按鈕                   |
-| `github-authorize.png` | GitHub OAuth 授權畫面，含 Authorize 按鈕                                          | 首次授權時出現；已授權過的帳號不會再顯示 |
-| `cms-collections.png`  | 登入後的集合列表（Pages／Cards／Settings／Footer）                                | 登入後的後台首頁                         |
+| 檔名                   | 狀態      | 內容                                                                              | 取得方式                                 |
+| ---------------------- | --------- | --------------------------------------------------------------------------------- | ---------------------------------------- |
+| `cms-login.png`        | ✅ 已補上 | Decap CMS 登入畫面，含「使用你的 GitHub 帳號來進行登入」按鈕                      | 以未登入狀態開啟 `/admin/`               |
+| `github-signin.png`    | ✅ 已補上 | GitHub 登入畫面，標題為 Sign in to GitHub to continue to Open StarTer Village CMS | 於無痕視窗點擊登入按鈕                   |
+| `cms-collections.png`  | ✅ 已補上 | 登入後的集合列表（Pages／Cards／Settings／Footer）                                | 登入後的後台首頁                         |
+| `github-authorize.png` | ⬜ 待補   | GitHub OAuth 授權畫面，含 Authorize 按鈕                                          | 首次授權時出現；已授權過的帳號不會再顯示 |
+
+截圖統一縮至寬 1600px（`sips -Z 1600`），避免 retina 原始檔佔用 repo 空間。
 
 ## 注意事項
 

@@ -97,11 +97,11 @@ Deploy Preview 的**公開頁面完全正常**，僅 `/admin` 登入不可用。
 1. 開啟 <https://openstartervillage.ocf.tw/admin/>
 2. 點擊「**使用你的 GitHub 帳號來進行登入**」
 
-   <!-- 螢幕截圖：Decap CMS 登入畫面（./docs/images/cms-login.png） -->
+   ![Decap CMS 登入畫面](./docs/images/cms-login.png)
 
 3. 若尚未登入 GitHub，會先出現 GitHub 登入畫面，標題為 **Sign in to GitHub to continue to Open StarTer Village CMS**。輸入帳號密碼後點擊 **Sign in**
 
-   <!-- 螢幕截圖：GitHub 登入畫面（./docs/images/github-signin.png） -->
+   ![GitHub 登入畫面](./docs/images/github-signin.png)
 
 4. 首次登入時 GitHub 會詢問是否授權此應用程式，點擊 **Authorize**。之後再次登入不會重複詢問
 
@@ -109,9 +109,9 @@ Deploy Preview 的**公開頁面完全正常**，僅 `/admin` 登入不可用。
 
 5. 授權完成後會自動回到後台，左側會列出可編輯的集合
 
-   <!-- 螢幕截圖：登入後的集合列表（./docs/images/cms-collections.png） -->
+   ![登入後的集合列表](./docs/images/cms-collections.png)
 
-授權範圍為 `public_repo`，僅能存取公開的儲存庫，不會取得你其他私人專案的權限。
+授權範圍為 `public_repo`，僅能存取公開的 repository，不會取得你其他私人專案的權限。
 
 #### 你需要什麼權限？
 
@@ -119,22 +119,22 @@ Deploy Preview 的**公開頁面完全正常**，僅 `/admin` 登入不可用。
 
 系統採用 Decap CMS 的 open authoring 模式，依你在 `ocftw/open-star-ter-village` 的角色自動分流：
 
-| 你的角色                      | 登入後的行為                                        | 能否直接發布               |
-| ----------------------------- | --------------------------------------------------- | -------------------------- |
-| 沒有儲存庫權限（一般貢獻者）  | CMS 自動幫你 fork 一份儲存庫，修改存在你自己的 fork | 否，送出後由維護者審核合併 |
-| 具備 Write 以上權限（維護者） | 直接在主儲存庫建立分支                              | 是                         |
+| 你的角色                      | 登入後的行為                                       | 能否直接發布               |
+| ----------------------------- | -------------------------------------------------- | -------------------------- |
+| 沒有 repo 權限（一般貢獻者）  | CMS 自動幫你 fork 一份 repo，修改存在你自己的 fork | 否，送出後由維護者審核合併 |
+| 具備 Write 以上權限（維護者） | 直接在主 repo 建立分支                             | 是                         |
 
 一般貢獻者的作業流程只會看到兩欄（草稿、準備完成）；維護者會看到完整三欄。
 
 ##### 想要取得直接發布權限
 
-直接發布需要 `ocftw/open-star-ter-village` 的 **Write** 角色。這是 GitHub 的儲存庫權限，不是 CMS 內的設定，無法自行開通，需要由組織管理者授予：
+直接發布需要 `ocftw/open-star-ter-village` 的 **Write** 角色。這是 GitHub 的 repo 權限，不是 CMS 內的設定，無法自行開通，需要由組織管理者授予：
 
 1. 於 [Discord](https://discord.gg/JnTHGnxwYS) #基礎建設部 提出申請，附上你的 GitHub 帳號名稱
 2. 組織管理者於 **GitHub → ocftw/open-star-ter-village → Settings → Collaborators and teams** 邀請你，角色選擇 **Write**
 3. 你會收到邀請信，接受後重新登入後台即可看到完整三欄作業流程
 
-請注意 GitHub 的儲存庫權限是整個儲存庫共用的，無法只針對 `homepage/` 目錄授權。若你只需要修改內容，使用上表的一般貢獻者流程即可，不需要 Write 權限。
+請注意 GitHub 的 repo 權限是整個 repository 共用的，無法只針對 `homepage/` 目錄授權。若你只需要修改內容，使用上表的一般貢獻者流程即可，不需要 Write 權限。
 
 #### 編輯與送審流程
 
