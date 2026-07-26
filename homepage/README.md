@@ -99,11 +99,17 @@ Deploy Preview 的**公開頁面完全正常**，僅 `/admin` 登入不可用。
 
    <!-- 螢幕截圖：Decap CMS 登入畫面（./docs/images/cms-login.png） -->
 
-3. GitHub 會詢問是否授權此應用程式，確認後點擊 **Authorize**
+3. 若尚未登入 GitHub，會先出現 GitHub 登入畫面，標題為 **Sign in to GitHub to continue to Open StarTer Village CMS**。輸入帳號密碼後點擊 **Sign in**
+
+   <!-- 螢幕截圖：GitHub 登入畫面（./docs/images/github-signin.png） -->
+
+4. 首次登入時 GitHub 會詢問是否授權此應用程式，點擊 **Authorize**。之後再次登入不會重複詢問
 
    <!-- 螢幕截圖：GitHub 授權畫面（./docs/images/github-authorize.png） -->
 
-4. 授權完成後會自動回到後台，即可開始編輯
+5. 授權完成後會自動回到後台，左側會列出可編輯的集合
+
+   <!-- 螢幕截圖：登入後的集合列表（./docs/images/cms-collections.png） -->
 
 授權範圍為 `public_repo`，僅能存取公開的儲存庫，不會取得你其他私人專案的權限。
 
