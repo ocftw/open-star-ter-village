@@ -3,6 +3,7 @@
  * (design: MobileVariantA, RFC #399 PR 4) plus responsive lobby screens.
  */
 import { test, expect } from '@playwright/test';
+import { closeDevTools, openDevTools } from './devTools';
 
 test.use({ viewport: { width: 390, height: 844 } });
 
@@ -26,9 +27,21 @@ test.describe('Mobile layout', () => {
   });
 
   test('board uses the bottom sheet; tap-driven create works', async ({ page }) => {
-    await page.goto('/dev');
+    await page.goto('/dev?user=player1&mode=offline');
     const sheet = page.locator('[data-testid="mobile-sheet"]');
     await sheet.waitFor({ state: 'visible', timeout: 20000 });
+
+    const launcher = page.getByTestId('dev-tools-open');
+    await expect(launcher).toBeVisible();
+    const launcherBox = await launcher.boundingBox();
+    const sheetBox = await sheet.boundingBox();
+    expect(launcherBox).not.toBeNull();
+    expect(sheetBox).not.toBeNull();
+    expect(launcherBox!.y + launcherBox!.height).toBeLessThanOrEqual(sheetBox!.y);
+
+    await openDevTools(page);
+    await expect(page.getByTestId('dev-tools-drawer')).toHaveAttribute('data-anchor', 'bottom');
+    await closeDevTools(page);
 
     // Contextual bar lives in the sheet; hand is collapsed by default.
     await expect(sheet.locator('[data-testid="context-action"][data-mode="idle"]')).toBeVisible();
@@ -51,6 +64,11 @@ test.describe('Mobile layout', () => {
     // Cancel returns to idle.
     await page.locator('[data-testid="ca-cancel"]').click();
     await expect(page.locator('[data-testid="context-action"]')).toHaveAttribute('data-mode', 'idle');
+
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    );
+    expect(overflow).toBeLessThanOrEqual(0);
   });
 
   test('compact header ⋯ menu opens the exit-choice dialog (#420)', async ({ page }) => {

@@ -7,6 +7,7 @@ const gameServerURL = `http://localhost:${gameServerPort}`;
 
 export default defineConfig({
   testDir: './e2e',
+  testIgnore: /production-dev-route\.spec\.ts/,
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: 0,

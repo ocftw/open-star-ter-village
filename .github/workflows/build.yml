@@ -101,11 +101,11 @@ jobs:
       - run: pnpm webapp lint
       - run: pnpm webapp exec tsc --noEmit
       - run: pnpm webapp test --runInBand
-      - run: pnpm webapp build
       - name: Install Chromium
         env:
           PLAYWRIGHT_BROWSERS_PATH: /tmp/pw-browsers
         run: pnpm webapp exec playwright install --with-deps chromium
+      - run: pnpm webapp e2e:production
       - run: pnpm webapp e2e
 
   homepage:

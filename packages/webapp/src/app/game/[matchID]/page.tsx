@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { Alert, Snackbar } from '@mui/material';
-import Boardgame from '@/components/BoardGame';
+import GameView from '@/components/GameView';
 import { Modal, StickerButton } from '@/components/design';
 import LobbyNav from '@/components/lobby/LobbyNav';
 import Note from '@/components/lobby/Note';
@@ -255,35 +255,13 @@ export default function GameRoomPage() {
 
   if (match && shouldShowBoard) {
     return (
-      <main>
-        {!credentials && (
-          <div
-            data-testid="observer-mode-banner"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              padding: '8px 20px',
-              background: 'var(--ink)',
-              color: 'white',
-              fontSize: 13,
-            }}
-          >
-            <span aria-hidden>👀</span>
-            觀戰模式：這個瀏覽器沒有座位。
-            <span className="en-cap" style={{ color: 'rgba(255,255,255,0.7)' }}>
-              Observer mode — no seat claimed in this browser
-            </span>
-          </div>
-        )}
-        <Boardgame
-          isLocal={false}
-          matchID={matchID}
-          playerID={credentials?.playerID}
-          credentials={credentials?.credential}
-          numPlayers={match.players.length}
-        />
-      </main>
+      <GameView
+        isLocal={false}
+        matchID={matchID}
+        playerID={credentials?.playerID}
+        credentials={credentials?.credential}
+        numPlayers={match.players.length}
+      />
     );
   }
 

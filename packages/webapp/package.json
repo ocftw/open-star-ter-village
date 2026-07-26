@@ -17,6 +17,7 @@
     "lint": "next lint",
     "test": "jest",
     "e2e": "PLAYWRIGHT_BROWSERS_PATH=/tmp/pw-browsers playwright test",
+    "e2e:production": "pnpm run build && cp -R .next/static .next/standalone/packages/webapp/.next/ && cp -R public .next/standalone/packages/webapp/ && PLAYWRIGHT_BROWSERS_PATH=/tmp/pw-browsers playwright test --config playwright.production.config.ts",
     "e2e:report": "PLAYWRIGHT_BROWSERS_PATH=/tmp/pw-browsers playwright show-report"
   },
   "dependencies": {

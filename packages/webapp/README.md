@@ -238,6 +238,28 @@ Important implementation decisions archived in
 - Lobby and game room pages are client components, so direct `localStorage`
   access is acceptable there.
 
+## Development Game Harness
+
+The non-production `/dev` route renders the same game view used by active
+multiplayer rooms, with a collapsed developer-controls widget layered over it.
+The route is unavailable in production builds.
+
+Supported query parameters:
+
+- `user=player1|player2|player3|observer` selects the initial perspective and
+  defaults to `player1`.
+- `mode=offline|online` selects Local or SocketIO transport and defaults to
+  `offline`.
+- `seed=<value>` fixes boardgame.io randomness in Offline mode.
+- `demo=four-freedoms` forces the existing four-freedoms demo setup in Offline
+  mode.
+
+The widget updates `user` and `mode` in the URL without reloading. Changing
+perspective preserves the active match; changing transport or reloading starts
+a fresh three-player match. Online mode creates an unlisted development match
+and does not join the public lobby. Reloading or toggling transport leaves the
+previous auto-created Online match in the in-memory game server until restart.
+
 ## Architecture
 
 The web app has two runtime processes:
