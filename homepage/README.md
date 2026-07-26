@@ -132,9 +132,6 @@ Deploy Preview 的**公開頁面完全正常**，僅 `/admin` 登入不可用。
 
 1. 於 [Discord](https://discord.gg/JnTHGnxwYS) #基礎建設部 提出申請，附上你的 GitHub 帳號名稱
 2. 組織管理者於 **GitHub → ocftw/open-star-ter-village → Settings → Collaborators and teams** 邀請你，角色選擇 **Write**
-
-   <!-- 螢幕截圖：GitHub 儲存庫權限設定（./docs/images/github-write-access.png） -->
-
 3. 你會收到邀請信，接受後重新登入後台即可看到完整三欄作業流程
 
 請注意 GitHub 的儲存庫權限是整個儲存庫共用的，無法只針對 `homepage/` 目錄授權。若你只需要修改內容，使用上表的一般貢獻者流程即可，不需要 Write 權限。
