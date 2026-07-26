@@ -257,7 +257,8 @@ Supported query parameters:
 The widget updates `user` and `mode` in the URL without reloading. Changing
 perspective preserves the active match; changing transport or reloading starts
 a fresh three-player match. Online mode creates an unlisted development match
-and does not join the public lobby.
+and does not join the public lobby. Reloading or toggling transport leaves the
+previous auto-created Online match in the in-memory game server until restart.
 
 ## Architecture
 
