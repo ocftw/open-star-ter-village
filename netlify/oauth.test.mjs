@@ -8,9 +8,9 @@ before(() => {
 });
 
 const { createState, clearStateCookie, verifyState } =
-  await import('./_oauth-state.mjs');
-const { default: callback } = await import('./callback.mjs');
-const { default: auth } = await import('./auth.mjs');
+  await import('./functions/_oauth-state.mjs');
+const { default: callback } = await import('./functions/callback.mjs');
+const { default: auth } = await import('./functions/auth.mjs');
 
 const CALLBACK_URL = 'https://site.test/.netlify/functions/callback';
 

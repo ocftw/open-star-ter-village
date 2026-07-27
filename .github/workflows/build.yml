@@ -128,7 +128,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm homepage lint
       - name: Test Netlify OAuth functions
-        run: node --test netlify/functions/oauth.test.mjs
+        run: node --test netlify/oauth.test.mjs
       - run: pnpm homepage build
       - name: Install Chromium
         env:
