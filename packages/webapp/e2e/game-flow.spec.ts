@@ -222,9 +222,11 @@ test.describe('Simplified Mode — Action Flow', () => {
 
     // Verify outcome: 2 AP spent, 2 VP gained, and an action-result toast
     // confirming the create (design: GpToasts).
+    // Toast first: it self-dismisses after 5s, so assert it before the slower
+    // AP/VP polls spend that budget.
+    await expect(page.locator('[data-testid="toast"]').filter({ hasText: '發起' })).toBeVisible();
     await expectActions(page, 'Alice', INITIAL_ACTION_TOKENS - CREATE_PROJECT_COST);
     await expectScore(page, 'Alice', CREATE_PROJECT_VP);
-    await expect(page.locator('[data-testid="toast"]').filter({ hasText: '發起' })).toBeVisible();
   });
 
   // ── Scenario 3: Recruit Talents ───────────────────────────────────────────
