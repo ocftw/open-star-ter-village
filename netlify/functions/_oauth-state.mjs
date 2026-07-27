@@ -1,6 +1,6 @@
 import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 
-export const STATE_COOKIE = 'osv_oauth_state';
+const STATE_COOKIE = 'osv_oauth_state';
 const MAX_AGE_SECONDS = 600;
 
 /**

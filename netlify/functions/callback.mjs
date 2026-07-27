@@ -6,9 +6,12 @@ import {
 
 const TOKEN_URL = 'https://github.com/login/oauth/access_token';
 
+// Netlify's function timeout is 10s; stay inside it so a slow GitHub still
+// leaves room to render the error page rather than dying as a platform 500.
+const EXCHANGE_TIMEOUT_MS = 8000;
+
 /** Inline JSON into a <script> without letting it terminate the element. */
-const embed = (value) =>
-  JSON.stringify(value).replace(/</g, '\\u003c').replace(/>/g, '\\u003e');
+const embed = (value) => JSON.stringify(value).replace(/</g, '\\u003c');
 
 /**
  * Decap listens for a `postMessage` from this popup. The handshake is:
@@ -80,35 +83,54 @@ export default async (request) => {
     return fail('GitHub did not return an authorization code.');
   }
 
-  const exchange = await fetch(TOKEN_URL, {
-    method: 'POST',
-    headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      client_id: clientId,
-      client_secret: clientSecret,
-      code,
-      redirect_uri: `${origin}${CALLBACK_PATH}`,
-    }),
-  });
+  // Everything past here must still resolve to the postMessage handshake page.
+  // An escaping rejection becomes a platform 500, which leaves the popup blank
+  // and hanging with no way to report the failure to its opener.
+  try {
+    const exchange = await fetch(TOKEN_URL, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        client_id: clientId,
+        client_secret: clientSecret,
+        code,
+        redirect_uri: `${origin}${CALLBACK_PATH}`,
+      }),
+      signal: AbortSignal.timeout(EXCHANGE_TIMEOUT_MS),
+    });
 
-  if (!exchange.ok) {
+    if (!exchange.ok) {
+      return fail(
+        `GitHub rejected the token exchange (HTTP ${exchange.status}).`,
+      );
+    }
+
+    const payload = await exchange.json();
+    if (payload.error || !payload.access_token) {
+      return fail(
+        payload.error_description ||
+          payload.error ||
+          'No access token returned.',
+      );
+    }
+
+    return respond(
+      `authorization:github:success:${JSON.stringify({
+        token: payload.access_token,
+        provider: 'github',
+      })}`,
+      origin,
+    );
+  } catch (error) {
+    // Deliberately generic: the reason is rendered into a page, so internal
+    // error text stays out of it.
     return fail(
-      `GitHub rejected the token exchange (HTTP ${exchange.status}).`,
+      error?.name === 'TimeoutError'
+        ? 'GitHub did not respond in time. Please try signing in again.'
+        : 'Could not reach GitHub to complete sign-in. Please try again.',
     );
   }
-
-  const payload = await exchange.json();
-  if (payload.error || !payload.access_token) {
-    return fail(
-      payload.error_description || payload.error || 'No access token returned.',
-    );
-  }
-
-  return respond(
-    `authorization:github:success:${JSON.stringify({
-      token: payload.access_token,
-      provider: 'github',
-    })}`,
-    origin,
-  );
 };
