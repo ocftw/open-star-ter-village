@@ -13,6 +13,7 @@ on:
       - '.dockerignore'
       - 'fly.toml'
       - 'netlify.toml'
+      - 'netlify/**'
       - '.github/workflows/build.yml'
       - '.github/workflows/deploy.yml'
       - '.github/workflows/update-homepage-visual-baselines.yml'
@@ -60,7 +61,7 @@ jobs:
               homepage/*|.github/workflows/update-homepage-visual-baselines.yml)
                 homepage=true
                 ;;
-              netlify.toml)
+              netlify.toml|netlify/*)
                 homepage=true
                 ;;
               package.json|pnpm-lock.yaml|pnpm-workspace.yaml)
@@ -126,6 +127,8 @@ jobs:
           cache-dependency-path: pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile
       - run: pnpm homepage lint
+      - name: Test Netlify OAuth functions
+        run: node --test netlify/functions/oauth.test.mjs
       - run: pnpm homepage build
       - name: Install Chromium
         env:
