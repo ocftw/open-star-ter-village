@@ -53,6 +53,11 @@ describe('GameOverDialog (#419 end-game modal)', () => {
       <GameOverDialog gameContext={makeContext()} open onClose={jest.fn()} />,
     );
     expect(getByText(/平手：Alice、Carol/)).toBeTruthy();
+    // Competition ranking: the two 12 VP players share rank 1, Bob is 3rd.
+    const ranks = Array.from(document.querySelectorAll('[data-testid="result-rank"]')).map(
+      (el) => el.textContent,
+    );
+    expect(ranks).toEqual(['1', '1', '3']);
     expect(getAllByText('12 VP')).toHaveLength(2);
     expect(getByText('9 VP')).toBeTruthy();
   });

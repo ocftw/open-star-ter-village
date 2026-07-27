@@ -66,9 +66,6 @@ const BoardInner: React.FC<GameContext> = (gameContext) => {
     prevRoundRef.current = round;
   }, [round, gameover, toast]);
 
-  const settledNamesKey = G.table.projectBoard
-    .map((slot) => (slot.card ? `${slot.id}:${slot.card.name}` : `${slot.id}:`))
-    .join('|');
   const prevSlotCardsRef = React.useRef<Map<string, string>>(new Map());
   React.useEffect(() => {
     const previous = prevSlotCardsRef.current;
@@ -84,9 +81,8 @@ const BoardInner: React.FC<GameContext> = (gameContext) => {
       });
     }
     prevSlotCardsRef.current = next;
-    // settledNamesKey encodes exactly the state this effect reads.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [settledNamesKey, gameover, toast]);
+    // Safe to re-run on unrelated board updates: the map diff yields nothing.
+  }, [G.table.projectBoard, gameover, toast]);
   const isLastPlayer = ctx.playOrderPos === ctx.numPlayers - 1;
   const hasPendingDiscard = G.table.fourFreedomsPendingDiscards.length > 0;
   const outOfAP = playerID != null && (G.players[playerID]?.token?.actions ?? 1) === 0;
@@ -184,18 +180,7 @@ const BoardInner: React.FC<GameContext> = (gameContext) => {
           <span className="en-cap">Projects</span>
         </div>
         {hintsOn && (
-          <span
-            style={{
-              fontSize: 11,
-              color: 'var(--ink-mute)',
-              background: 'white',
-              border: '1.5px solid var(--paper-3)',
-              borderRadius: 999,
-              padding: '3px 10px',
-            }}
-          >
-            ⓘ 點桌上的專案來貢獻
-          </span>
+          <span className="hint">ⓘ 點桌上的專案來貢獻</span>
         )}
         <span
           className="sticker"
@@ -374,6 +359,10 @@ export function GameOverDialog({
     }
   }, [isMultiplayer, matchID, open]);
 
+  const rankedScores = Object.entries(ScoreBoardSelector.getAllPlayerPoints(G.table.scoreBoard)).sort(
+    ([, a], [, b]) => b - a,
+  );
+
   const handlePlayAgain = async () => {
     if (!savedCredentials) return;
     setIsRematching(true);
@@ -410,10 +399,10 @@ export function GameOverDialog({
               </div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 18 }}>
-              {Object.entries(ScoreBoardSelector.getAllPlayerPoints(G.table.scoreBoard))
-                .sort(([, a], [, b]) => b - a)
-                .map(([id, points], rank) => {
+              {rankedScores.map(([id, points]) => {
                   const winner = gameover.winners.includes(id);
+                  // Competition ranking: equal scores share a rank, the next skips.
+                  const rank = rankedScores.findIndex(([, other]) => other === points) + 1;
                   return (
                     <div
                       key={id}
@@ -429,6 +418,7 @@ export function GameOverDialog({
                       }}
                     >
                       <span
+                        data-testid="result-rank"
                         aria-hidden
                         style={{
                           fontFamily: 'var(--font-en)',
@@ -438,7 +428,7 @@ export function GameOverDialog({
                           color: 'var(--ink-mute)',
                         }}
                       >
-                        {rank + 1}
+                        {rank}
                       </span>
                       <span
                         style={{
@@ -460,10 +450,10 @@ export function GameOverDialog({
                       <span style={{ fontWeight: 700, flex: 1 }}>
                         {getPlayerName(matchData, id)}
                         {id === playerID && (
-                          <span style={{ color: 'var(--orange)', marginLeft: 4, fontSize: 11 }}>YOU</span>
+                          <span style={{ color: 'var(--orange)', marginLeft: 4, fontSize: 11 }}> · YOU</span>
                         )}
                       </span>
-                      {winner && <span aria-label="優勝">👑</span>}
+                      {winner && <span role="img" aria-label="優勝">👑</span>}
                       <strong style={{ fontFamily: 'var(--font-en)' }}>{points} VP</strong>
                     </div>
                   );
