@@ -17,13 +17,13 @@ export function useHints(): [boolean, () => void] {
     }
   }, []);
 
+  // The write stays outside the state updater: React requires updaters to be
+  // pure and re-invokes them under StrictMode and render restarts.
   const toggleHints = React.useCallback(() => {
-    setHintsOn((current) => {
-      const next = !current;
-      localStorage.setItem(HINTS_STORAGE_KEY, next ? 'on' : 'off');
-      return next;
-    });
-  }, []);
+    const next = !hintsOn;
+    localStorage.setItem(HINTS_STORAGE_KEY, next ? 'on' : 'off');
+    setHintsOn(next);
+  }, [hintsOn]);
 
   return [hintsOn, toggleHints];
 }
