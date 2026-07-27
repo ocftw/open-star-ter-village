@@ -5,6 +5,7 @@ import { GameContext } from '@/components/GameContextHelpers';
 import { PlayersSelector } from '@/game/store/slice/players';
 import { ScoreBoardSelector } from '@/game/store/slice/scoreBoard';
 import { getPlayerName } from '@/components/playerNameMap';
+import BugReportDialog, { BugReportState } from './BugReportDialog';
 import ExitDialog from './ExitDialog';
 import RoundBadge from './RoundBadge';
 
@@ -27,6 +28,12 @@ export default function GameHeader({
   const { G, ctx, playerID, matchData, matchID } = gameContext;
   const [exitOpen, setExitOpen] = React.useState(false);
   const [menuOpen, setMenuOpen] = React.useState(false);
+  const [bugReportState, setBugReportState] = React.useState<BugReportState>('closed');
+
+  const openBugReport = () => {
+    setMenuOpen(false);
+    setBugReportState('open');
+  };
 
   // Mobile shows only your own chip; observers keep the full row.
   const chipIDs =
@@ -125,6 +132,9 @@ export default function GameHeader({
                         ⓘ {hintsOn ? '隱藏操作提示' : '顯示操作提示'}
                       </button>
                     )}
+                    <button type="button" role="menuitem" className="menu-item" data-testid="menu-bug-report" onClick={openBugReport}>
+                      🐞 回報問題 <span className="tag-en">Report</span>
+                    </button>
                     <button type="button" role="menuitem" className="menu-item" data-testid="menu-leave" onClick={openExit}>
                       🚪 離開遊戲 <span className="tag-en">Leave</span>
                     </button>
@@ -149,6 +159,16 @@ export default function GameHeader({
               )}
               <button
                 type="button"
+                className="icon-btn"
+                data-testid="bug-report-open"
+                onClick={openBugReport}
+                title="回報問題 · Report a bug"
+                aria-label="回報問題 · Report a bug"
+              >
+                🐞
+              </button>
+              <button
+                type="button"
                 className="btn-sticker sm ghost"
                 data-testid="header-leave"
                 onClick={openExit}
@@ -160,6 +180,16 @@ export default function GameHeader({
           {/* Mounted lazily: ExitDialog uses the app router, which only exists
               once the user can actually open it. */}
           {exitOpen && <ExitDialog open onClose={() => setExitOpen(false)} matchID={matchID} />}
+          {/* Stays mounted while minimized so the report draft survives. */}
+          {bugReportState !== 'closed' && (
+            <BugReportDialog
+              gameContext={gameContext}
+              state={bugReportState}
+              onMinimize={() => setBugReportState('minimized')}
+              onRestore={() => setBugReportState('open')}
+              onClose={() => setBugReportState('closed')}
+            />
+          )}
         </>
       }
     />

@@ -367,6 +367,31 @@ test.describe('Simplified Mode — Action Flow', () => {
     await expect(page.locator('[data-testid="overtime-token"]')).not.toHaveAttribute('data-available', 'true');
   });
 
+  // ── Scenario 9b: in-game bug report ───────────────────────────────────────
+  test('Scenario 9b: bug report dialog — snapshot, minimize, prefilled issue link', async ({ page }) => {
+    await page.locator('[data-testid="bug-report-open"]').click();
+    const dialog = page.locator('[data-testid="bug-report-dialog"]');
+    await expect(dialog).toBeVisible();
+    await expect(page.locator('[data-testid="bug-report-snapshot"]')).toContainText('回合 Round: 1/6');
+
+    // Draft + prefilled GitHub link carrying the title and bug label.
+    await page.locator('[data-testid="bug-report-description"]').fill('測試回報');
+    const href = await page.locator('[data-testid="bug-report-open-issue"]').getAttribute('href');
+    expect(href).toContain('issues/new');
+    const issueUrl = new URL(href!);
+    expect(issueUrl.searchParams.get('labels')).toBe('bug');
+    expect(issueUrl.searchParams.get('title')).toBe('[bug] 測試回報');
+
+    // Minimize → board stays interactive; restore keeps the draft.
+    await page.locator('[data-testid="bug-report-minimize"]').click();
+    await expect(dialog).toHaveCount(0);
+    await expect(contextAction(page)).toHaveAttribute('data-mode', 'idle');
+    await page.locator('[data-testid="bug-report-chip"]').click();
+    await expect(page.locator('[data-testid="bug-report-description"]')).toHaveValue('測試回報');
+    await page.locator('[data-testid="bug-report-close"]').click();
+    await expect(page.locator('[data-testid="bug-report-dialog"]')).toHaveCount(0);
+  });
+
   // ── Scenario 10: contributeJoinedProjects ─────────────────────────────────
   test('Scenario 10: contributeJoinedProjects — recruit on another player\'s project and contribute', async ({ page }) => {
     // === Round 1 ===
