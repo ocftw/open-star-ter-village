@@ -474,7 +474,9 @@ body:has(.modal[open]) {
 /* Sticker toasts (design: GpToasts) — top-center stack above everything. */
 .toast-host {
   position: fixed;
-  top: 14px;
+  /* Clear the sticky table header (72px desktop, 52px compact mobile) so a
+     toast never covers the AP/VP chips it is reporting on. */
+  top: 84px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 2000;
