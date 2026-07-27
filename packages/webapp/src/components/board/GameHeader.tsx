@@ -138,9 +138,9 @@ export default function GameHeader({
                 <button
                   type="button"
                   className="icon-btn"
-                  data-on={hintsOn ? 'true' : undefined}
                   data-testid="hints-toggle"
                   onClick={onToggleHints}
+                  aria-label={hintsOn ? '隱藏操作提示 · Hide hints' : '顯示操作提示 · Show hints'}
                   title={hintsOn ? '隱藏操作提示 · Hide hints' : '顯示操作提示 · Show hints'}
                   aria-pressed={hintsOn}
                 >

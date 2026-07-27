@@ -439,9 +439,17 @@ body:has(.modal[open]) {
   box-shadow: 0 1px 0 var(--ink);
 }
 /* Active state for the hints ⓘ toggle. */
-.icon-btn[data-on='true'] {
+.icon-btn[aria-pressed='true'] {
   background: var(--orange-soft);
   border-color: var(--orange-deep);
+}
+.hint {
+  font-size: 11px;
+  color: var(--ink-mute);
+  background: white;
+  border: 1.5px solid var(--paper-3);
+  border-radius: 999px;
+  padding: 3px 10px;
 }
 .menu-item {
   display: flex;
