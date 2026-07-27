@@ -55,18 +55,7 @@ export default function JobMarket({
           <span className="en-cap">Job market · {G.table.jobSlots.length} cards</span>
         </div>
         {showHints && (
-          <span
-            style={{
-              fontSize: 11,
-              color: 'var(--ink-mute)',
-              background: 'white',
-              border: '1.5px solid var(--paper-3)',
-              borderRadius: 999,
-              padding: '3px 10px',
-            }}
-          >
-            ⓘ 點人力卡招募到你的專案
-          </span>
+          <span className="hint">ⓘ 點人力卡招募到你的專案</span>
         )}
         {idle && (
           <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>

@@ -34,30 +34,17 @@ export function useToast(): ToastFn {
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = React.useState<ToastItem[]>([]);
   const nextIdRef = React.useRef(0);
-  const timersRef = React.useRef<Map<number, ReturnType<typeof setTimeout>>>(new Map());
 
-  React.useEffect(() => {
-    const timers = timersRef.current;
-    return () => timers.forEach((timer) => clearTimeout(timer));
-  }, []);
-
+  // A timer that outlives its toast is a no-op: dismiss filters by id.
   const dismiss = React.useCallback((id: number) => {
     setToasts((current) => current.filter((item) => item.id !== id));
-    const timer = timersRef.current.get(id);
-    if (timer) {
-      clearTimeout(timer);
-      timersRef.current.delete(id);
-    }
   }, []);
 
   const toast = React.useCallback<ToastFn>(
     (message, kind = 'info', durationMs = DEFAULT_DURATION_MS) => {
       const id = ++nextIdRef.current;
       setToasts((current) => [...current.slice(-(MAX_VISIBLE - 1)), { id, message, kind }]);
-      timersRef.current.set(
-        id,
-        setTimeout(() => dismiss(id), durationMs),
-      );
+      setTimeout(() => dismiss(id), durationMs);
     },
     [dismiss],
   );
@@ -65,7 +52,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <ToastContext.Provider value={toast}>
       {children}
-      <div className="toast-host" data-testid="toast-host">
+      <div className="toast-host">
         {toasts.map((item) => (
           <div
             key={item.id}

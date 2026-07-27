@@ -22,17 +22,8 @@ export default function RoundBadge({
       title="目前回合 · Current round"
       data-testid="round-badge"
       data-round={round}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 6,
-        background: 'white',
-        border: '1.5px solid var(--ink)',
-        borderRadius: 999,
-        boxShadow: '0 2px 0 var(--ink)',
-        padding: compact ? '3px 10px' : '4px 12px',
-        flexShrink: 0,
-      }}
+      className="sticker"
+      style={{ padding: compact ? '3px 10px' : '4px 12px', flexShrink: 0 }}
     >
       <span style={{ fontSize: compact ? 11 : 12, fontWeight: 800 }}>
         第 {round}
