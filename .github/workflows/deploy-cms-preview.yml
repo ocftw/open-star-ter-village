@@ -1,0 +1,56 @@
+name: Deploy CMS Preview
+
+# Manually sync the long-lived `cms-preview` branch to any ref, which triggers
+# the Netlify branch deploy at
+# https://cms-preview--openstartervillage.netlify.app
+#
+# That host is stable, so its GitHub OAuth App callback URL is registered once
+# and never changes — unlike per-PR deploy previews. Use it to verify the Decap
+# CMS admin flow, especially the open-authoring path, which needs a GitHub
+# account with no access to this repository.
+#
+# Deliberately manual: admin verification is a human gate. Running it on merge
+# would produce a deployed URL nobody actually looked at.
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Branch, tag, or SHA to deploy to cms-preview'
+        required: true
+        default: main
+
+concurrency:
+  group: deploy-cms-preview
+  cancel-in-progress: false
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v6.0.2
+        with:
+          ref: ${{ inputs.ref }}
+          fetch-depth: 0
+
+      - name: Force cms-preview to the requested ref
+        run: |
+          set -euo pipefail
+          sha="$(git rev-parse HEAD)"
+          echo "Deploying $INPUT_REF ($sha) to cms-preview"
+          # Target branch is hardcoded: this workflow must never be able to
+          # force-push anything other than the throwaway preview branch.
+          git push --force origin "$sha:refs/heads/cms-preview"
+          echo "### Deployed to cms-preview" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Source: \`$INPUT_REF\` (\`$sha\`)" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Netlify builds from the push; watch the dashboard for status." >> "$GITHUB_STEP_SUMMARY"
+          echo "- Admin: https://cms-preview--openstartervillage.netlify.app/admin/" >> "$GITHUB_STEP_SUMMARY"
+        env:
+          INPUT_REF: ${{ inputs.ref }}
