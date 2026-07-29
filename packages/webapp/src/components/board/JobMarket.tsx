@@ -22,10 +22,12 @@ export default function JobMarket({
   gameContext,
   idle,
   discardActive,
+  showHints = true,
 }: {
   gameContext: GameContext;
   idle: boolean;
   discardActive: boolean;
+  showHints?: boolean;
 }) {
   const { G } = gameContext;
   const dispatch = useAppDispatch();
@@ -52,18 +54,9 @@ export default function JobMarket({
           <span style={{ fontWeight: 800, fontSize: 14 }}>人力市場</span>
           <span className="en-cap">Job market · {G.table.jobSlots.length} cards</span>
         </div>
-        <span
-          style={{
-            fontSize: 11,
-            color: 'var(--ink-mute)',
-            background: 'white',
-            border: '1.5px solid var(--paper-3)',
-            borderRadius: 999,
-            padding: '3px 10px',
-          }}
-        >
-          ⓘ 點人力卡招募到你的專案
-        </span>
+        {showHints && (
+          <span className="hint">ⓘ 點人力卡招募到你的專案</span>
+        )}
         {idle && (
           <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
             <button

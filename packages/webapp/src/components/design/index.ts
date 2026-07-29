@@ -4,6 +4,7 @@ export { default as StickerButton } from './StickerButton';
 export { default as Modal } from './Modal';
 export { default as PaperCard } from './PaperCard';
 export { default as CharacterAvatar } from './CharacterAvatar';
+export { ToastProvider, useToast } from './Toast';
 export {
   JOB_META,
   PROJECT_TYPES,

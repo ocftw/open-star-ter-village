@@ -438,6 +438,19 @@ body:has(.modal[open]) {
   transform: translateY(1px);
   box-shadow: 0 1px 0 var(--ink);
 }
+/* Active state for the hints ⓘ toggle. */
+.icon-btn[aria-pressed='true'] {
+  background: var(--orange-soft);
+  border-color: var(--orange-deep);
+}
+.hint {
+  font-size: 11px;
+  color: var(--ink-mute);
+  background: white;
+  border: 1.5px solid var(--paper-3);
+  border-radius: 999px;
+  padding: 3px 10px;
+}
 .menu-item {
   display: flex;
   align-items: center;
@@ -456,4 +469,57 @@ body:has(.modal[open]) {
 }
 .menu-item:hover {
   background: var(--paper-2);
+}
+
+/* Sticker toasts (design: GpToasts) — top-center stack above everything. */
+.toast-host {
+  position: fixed;
+  /* Clear the sticky table header (72px desktop, 52px compact mobile) so a
+     toast never covers the AP/VP chips it is reporting on. */
+  top: 84px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  pointer-events: none;
+}
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: white;
+  border: 2px solid var(--ink);
+  border-radius: 14px;
+  box-shadow: var(--shadow-sticker);
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  pointer-events: auto;
+  cursor: pointer;
+  animation: toast-in 0.22s ease;
+  max-width: min(520px, 90vw);
+}
+.toast.error {
+  border-left: 8px solid var(--orange-deep);
+  background: #fff5ef;
+}
+.toast.success {
+  border-left: 8px solid #1f7a3a;
+  background: #f0f8f1;
+}
+.toast.info {
+  border-left: 8px solid var(--teal);
+}
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }

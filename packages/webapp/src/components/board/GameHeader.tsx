@@ -6,17 +6,23 @@ import { PlayersSelector } from '@/game/store/slice/players';
 import { ScoreBoardSelector } from '@/game/store/slice/scoreBoard';
 import { getPlayerName } from '@/components/playerNameMap';
 import ExitDialog from './ExitDialog';
+import RoundBadge from './RoundBadge';
 
-/** Sticky table header: shared app shell + per-player status chips (design: GameHeader).
- *  `compact` (mobile): only the seated player's chip + a ⋯ menu holding the
- *  secondary actions; desktop shows every chip and a Leave button. Leaving
- *  always goes through the explicit exit-choice dialog (#420). */
+/** Sticky table header: shared app shell + round badge + per-player status
+ *  chips (design: GameHeader). `compact` (mobile): only the seated player's
+ *  chip + a ⋯ menu holding the secondary actions; desktop shows every chip,
+ *  the hints ⓘ toggle, and a Leave button. Leaving always goes through the
+ *  explicit exit-choice dialog (#420). */
 export default function GameHeader({
   gameContext,
   compact = false,
+  hintsOn,
+  onToggleHints,
 }: {
   gameContext: GameContext;
   compact?: boolean;
+  hintsOn?: boolean;
+  onToggleHints?: () => void;
 }) {
   const { G, ctx, playerID, matchData, matchID } = gameContext;
   const [exitOpen, setExitOpen] = React.useState(false);
@@ -39,6 +45,7 @@ export default function GameHeader({
       compact={compact}
       right={
         <>
+          <RoundBadge gameContext={gameContext} compact={compact} />
           <div
             style={{
               display: 'flex',
@@ -104,6 +111,20 @@ export default function GameHeader({
                       minWidth: 190,
                     }}
                   >
+                    {onToggleHints && (
+                      <button
+                        type="button"
+                        role="menuitem"
+                        className="menu-item"
+                        data-testid="menu-hints"
+                        onClick={() => {
+                          onToggleHints();
+                          setMenuOpen(false);
+                        }}
+                      >
+                        ⓘ {hintsOn ? '隱藏操作提示' : '顯示操作提示'}
+                      </button>
+                    )}
                     <button type="button" role="menuitem" className="menu-item" data-testid="menu-leave" onClick={openExit}>
                       🚪 離開遊戲 <span className="tag-en">Leave</span>
                     </button>
@@ -112,15 +133,29 @@ export default function GameHeader({
               )}
             </div>
           ) : (
-            <button
-              type="button"
-              className="btn-sticker sm ghost"
-              style={{ flexShrink: 0 }}
-              data-testid="header-leave"
-              onClick={openExit}
-            >
-              離開 <span className="tag-en">Leave</span>
-            </button>
+            <div style={{ display: 'flex', gap: 6, flexShrink: 0, alignItems: 'center' }}>
+              {onToggleHints && (
+                <button
+                  type="button"
+                  className="icon-btn"
+                  data-testid="hints-toggle"
+                  onClick={onToggleHints}
+                  aria-label={hintsOn ? '隱藏操作提示 · Hide hints' : '顯示操作提示 · Show hints'}
+                  title={hintsOn ? '隱藏操作提示 · Hide hints' : '顯示操作提示 · Show hints'}
+                  aria-pressed={hintsOn}
+                >
+                  ⓘ
+                </button>
+              )}
+              <button
+                type="button"
+                className="btn-sticker sm ghost"
+                data-testid="header-leave"
+                onClick={openExit}
+              >
+                離開 <span className="tag-en">Leave</span>
+              </button>
+            </div>
           )}
           {/* Mounted lazily: ExitDialog uses the app router, which only exists
               once the user can actually open it. */}
