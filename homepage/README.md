@@ -1,5 +1,7 @@
 # 開源星手村 首頁
 
+English version: [README.en.md](./README.en.md)
+
 版本紀錄請參閱 [`CHANGELOG.md`](./CHANGELOG.md)。
 
 目前，模板設計基於 [首頁 wireframe](https://drive.google.com/file/d/1mHfiHLZPNvAGKtlY788Ojkmap9SXupH-/view?usp=sharing)，並使用 [Bootstrap v4.6.x](https://getbootstrap.com/docs/4.6/getting-started/introduction/) 和 [Font Awesome v5.15.4](https://fontawesome.com/v5/docs) 進行 CSS 設計。

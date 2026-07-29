@@ -85,7 +85,7 @@ Known limitation: image upload by general contributors is not yet verified. Ask
 a maintainer on Discord if you need to add new image assets.
 
 Step-by-step instructions with screenshots are in the
-[homepage README](./homepage/README.md#網站內容編輯) (Chinese).
+[homepage README](./homepage/README.en.md#editing-website-content).
 
 ### Join the Discussion
 
