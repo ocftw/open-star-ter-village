@@ -63,7 +63,7 @@ If you're interested in website development, the following resources may help.
 
 #### Before You Start Developing
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md).
+See [CONTRIBUTING.md](./CONTRIBUTING.md) (Chinese).
 
 #### Verifying CMS Admin Changes: Use the `cms-preview` Branch
 
