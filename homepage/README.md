@@ -88,28 +88,37 @@ Deploy Preview 的**公開頁面完全正常**，僅 `/admin` 登入不可用。
 
 - [網站編輯說明](https://github.com/ocftw/open-star-ter-village/wiki/%E7%B6%B2%E7%AB%99%E7%B7%A8%E8%BC%AF%E8%AA%AA%E6%98%8E-%E2%80%90-How-to-Edit-Homepage)
 
-#### 登入內容管理後台
+#### 找到後台入口
 
-內容管理後台位於 <https://openstartervillage.ocf.tw/admin/>。
+網站頁尾有「**後台管理**」連結，點擊即可前往內容管理後台。
+
+![頁尾的後台管理連結（中文版）](./docs/images/footer-admin-link-zh.png)
+
+英文版頁尾則是「**Admin**」連結。
+
+![頁尾的 Admin 連結（英文版）](./docs/images/footer-admin-link-en.png)
+
+也可以直接開啟 <https://openstartervillage.ocf.tw/admin/>。
+
+#### 登入內容管理後台
 
 登入方式為 **GitHub 帳號**。過去使用的 Netlify Identity 共用帳號已停用，改用 GitHub 帳號後，每一次內容修改都會記錄在你自己的名下。
 
-1. 開啟 <https://openstartervillage.ocf.tw/admin/>
-2. 點擊「**使用你的 GitHub 帳號來進行登入**」
+1. 開啟後台後，點擊「**使用你的 GitHub 帳號來進行登入**」
 
-   ![Decap CMS 登入畫面](./docs/images/cms-login.png)
+   ![Decap CMS 登入畫面](./docs/images/cms-login-production.png)
 
-3. 若尚未登入 GitHub，會先出現 GitHub 登入畫面，標題為 **Sign in to GitHub to continue to Open StarTer Village CMS**。輸入帳號密碼後點擊 **Sign in**
+2. 若尚未登入 GitHub，會先出現 GitHub 登入畫面，標題為 **Sign in to GitHub to continue to Open StarTer Village CMS**。輸入帳號密碼後點擊 **Sign in**
 
    ![GitHub 登入畫面](./docs/images/github-signin.png)
 
-4. 首次登入時 GitHub 會詢問是否授權此應用程式，點擊 **Authorize**。之後再次登入不會重複詢問
+3. 首次登入時 GitHub 會詢問是否授權此應用程式，點擊 **Authorize**。之後再次登入不會重複詢問
 
-   <!-- 螢幕截圖：GitHub 授權畫面（./docs/images/github-authorize.png） -->
+   ![GitHub 授權畫面](./docs/images/github-authorize.png)
 
-5. 授權完成後會自動回到後台，左側會列出可編輯的集合
+4. 授權完成後會自動回到後台，左側會列出可編輯的集合（Pages／Cards／Settings／Footer）
 
-   ![登入後的集合列表](./docs/images/cms-collections.png)
+   ![登入後的集合列表](./docs/images/cms-admin-loading.png)
 
 授權範圍為 `public_repo`，僅能存取公開的 repository，不會取得你其他私人專案的權限。
 
@@ -126,16 +135,6 @@ Deploy Preview 的**公開頁面完全正常**，僅 `/admin` 登入不可用。
 
 一般貢獻者的作業流程只會看到兩欄（草稿、準備完成）；維護者會看到完整三欄。
 
-##### 想要取得直接發布權限
-
-直接發布需要 `ocftw/open-star-ter-village` 的 **Write** 角色。這是 GitHub 的 repo 權限，不是 CMS 內的設定，無法自行開通，需要由組織管理者授予：
-
-1. 於 [Discord](https://discord.gg/JnTHGnxwYS) #基礎建設部 提出申請，附上你的 GitHub 帳號名稱
-2. 組織管理者於 **GitHub → ocftw/open-star-ter-village → Settings → Collaborators and teams** 邀請你，角色選擇 **Write**
-3. 你會收到邀請信，接受後重新登入後台即可看到完整三欄作業流程
-
-請注意 GitHub 的 repo 權限是整個 repository 共用的，無法只針對 `homepage/` 目錄授權。若你只需要修改內容，使用上表的一般貢獻者流程即可，不需要 Write 權限。
-
 #### 編輯與送審流程
 
 1. 於「內容」選擇要修改的集合（Pages／Cards／Settings／Footer）
@@ -149,6 +148,18 @@ Decap CMS 支援 Markdown 語法，如對此不熟悉可參考以下兩個網站
 
 - <https://markdown.tw/> （注意：此網頁在手機和小螢幕裝置上的排版支援有限）
 - <https://www.casper.tw/development/2019/11/23/ten-mins-learn-markdown/>
+
+#### 想要取得直接發布權限（進階）
+
+多數人不需要這一步，一般貢獻者透過上方的 fork + PR 流程即可完成編輯。
+
+若你需要跳過審核直接發布，需取得 `ocftw/open-star-ter-village` 的 **Write** 角色。這是 GitHub 的 repo 權限，不是 CMS 內的設定，無法自行開通，需要由組織管理者授予：
+
+1. 於 [Discord](https://discord.gg/JnTHGnxwYS) #基礎建設部 提出申請，附上你的 GitHub 帳號名稱
+2. 組織管理者於 **GitHub → ocftw/open-star-ter-village → Settings → Collaborators and teams** 邀請你，角色選擇 **Write**
+3. 你會收到邀請信，接受後重新登入後台即可看到完整三欄作業流程
+
+請注意 GitHub 的 repo 權限是整個 repository 共用的，無法只針對 `homepage/` 目錄授權。若你只需要修改內容，使用上表的一般貢獻者流程即可，不需要 Write 權限。
 
 ### 增加新語言/修改語言代碼/刪除語言
 
