@@ -1,0 +1,4 @@
+interface:
+  display_name: "Webapp Incident Response"
+  short_description: "Stabilize and investigate webapp incidents"
+  default_prompt: "Use $webapp-incident-response to stabilize this production incident, collect evidence, and coordinate recovery."
