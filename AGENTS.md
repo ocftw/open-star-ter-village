@@ -29,11 +29,19 @@ You are an **executor agent**. You receive a **task** from the Supervisor (Claud
 Project-owned skills live with the project they operate on. From the repository
 root, use:
 
+- Open Star delivery:
+  `skills/open-star-delivery/SKILL.md`
+- Open Star feedback triage:
+  `skills/open-star-feedback-triage/SKILL.md`
+- Webapp incident response:
+  `packages/webapp/skills/webapp-incident-response/SKILL.md`
 - Webapp deploy smoke test:
   `packages/webapp/skills/webapp-deploy-smoke-test/SKILL.md`
 
 From `packages/webapp/`, use:
 
+- Webapp incident response:
+  `skills/webapp-incident-response/SKILL.md`
 - Webapp deploy smoke test:
   `skills/webapp-deploy-smoke-test/SKILL.md`
 
