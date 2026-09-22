@@ -126,7 +126,9 @@ The webapp emits business events through `dataLayer`:
 - `link_click` for every anchor activation. It records a stable link ID,
   privacy-safe destination without query parameters, placement, locale, and
   viewport bucket. Add `data-analytics-id` and `data-analytics-placement` to
-  important links when the inferred values are not specific enough.
+  important links when the inferred values are not specific enough. This
+  supports link-popularity reports only; it does not collect pointer coordinates
+  or produce a visual heatmap.
 
 The first two events are GA4 key events. GTM must publish GA4 event tags for them, while
 the homepage promotion flow uses the recommended `view_promotion` and
