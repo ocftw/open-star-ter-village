@@ -56,6 +56,8 @@ const TrackedPromotionLink = ({
       ref={linkRef}
       href={href}
       onClick={() => sendPromotionEvent('select_promotion')}
+      data-analytics-id={analyticsId}
+      data-analytics-placement={creativeSlot}
       {...linkProps}
     >
       {children}

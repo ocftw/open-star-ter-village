@@ -62,13 +62,19 @@ export default function Home() {
             ship contributions, and discover what open really means.
           </p>
           <div style={{ display: 'flex', gap: 12, marginTop: 28, flexWrap: 'wrap' }}>
-            <Link href="/lobby" className="btn-sticker">
+            <Link href="/lobby" className="btn-sticker" data-analytics-id="start_game">
               開始遊戲{' '}
               <span style={{ opacity: 0.8, fontFamily: 'var(--font-en)', fontWeight: 500 }}>
                 · Play online
               </span>
             </Link>
-            <a href={HOMEPAGE_URL} target="_blank" rel="noreferrer" className="btn-sticker ghost">
+            <a
+              href={HOMEPAGE_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="btn-sticker ghost"
+              data-analytics-id="how_to_play"
+            >
               如何遊玩{' '}
               <span style={{ opacity: 0.6, fontFamily: 'var(--font-en)', fontWeight: 500 }}>
                 · How to play

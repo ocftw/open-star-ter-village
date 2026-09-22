@@ -118,13 +118,17 @@ The homepage and webapp share one GTM container and GA4 web stream. GA4 Admin
 must configure `openstartervillage.ocf.tw` and
 `open-star-ter-village.fly.dev` for cross-domain measurement.
 
-The webapp emits two business events through `dataLayer`:
+The webapp emits business events through `dataLayer`:
 
 - `game_intent` when `/lobby` is reached.
 - `project_catalog_interest` when the header or game-over catalog link is
   selected. Its `link_placement` is `header` or `game_over`.
+- `link_click` for every anchor activation. It records a stable link ID,
+  privacy-safe destination without query parameters, placement, locale, and
+  viewport bucket. Add `data-analytics-id` and `data-analytics-placement` to
+  important links when the inferred values are not specific enough.
 
-Both events are GA4 key events. GTM must publish GA4 event tags for them, while
+The first two events are GA4 key events. GTM must publish GA4 event tags for them, while
 the homepage promotion flow uses the recommended `view_promotion` and
 `select_promotion` events.
 

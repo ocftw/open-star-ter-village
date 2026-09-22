@@ -4,6 +4,7 @@ import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
 import "./globals.css";
 import StoreProvider from './StoreProvider';
 import GoogleTagManager from '@/components/GoogleTagManager';
+import LinkClickTracker from '@/components/LinkClickTracker';
 
 const notoSansTC = Noto_Sans_TC({
   subsets: ["latin"],
@@ -43,6 +44,7 @@ export default function RootLayout({
     >
       <body className="app-root">
         <GoogleTagManager />
+        <LinkClickTracker />
         <AppRouterCacheProvider>
           <StoreProvider>{children}</StoreProvider>
         </AppRouterCacheProvider>

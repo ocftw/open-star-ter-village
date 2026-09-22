@@ -1,6 +1,7 @@
 import Head from 'next/head';
 import Script from 'next/script';
 import SiteLayout from '../layouts/siteLayout/siteLayout';
+import LinkClickTracker from '../components/linkClickTracker';
 import { GTM_ID } from '../lib/service/gtm';
 import '../../public/css/style.css';
 
@@ -50,6 +51,7 @@ export default function App({ Component, pageProps, router }) {
           }}
         />
       )}
+      <LinkClickTracker locale={router.locale} />
       {getLayout(<Component {...pageProps} />, pageProps, siteData)}
     </>
   );

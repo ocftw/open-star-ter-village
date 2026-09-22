@@ -12,6 +12,16 @@ const analyticsEvents = (page, event, promotionId) =>
     { requestedEvent: event, requestedPromotionId: promotionId },
   );
 
+const linkClickEvents = (page, linkId) =>
+  page.evaluate(
+    (requestedLinkId) =>
+      (window.dataLayer ?? []).filter(
+        (entry) =>
+          entry.event === 'link_click' && entry.link_id === requestedLinkId,
+      ),
+    linkId,
+  );
+
 test.beforeEach(async ({ page }) => {
   await installDeterministicRendering(page);
 });
@@ -35,6 +45,17 @@ test('tracks the footer promotion and keeps its internal navigation in one tab',
   await footerLink.click();
   await expect(page).toHaveURL(/\/resource\/#/);
   expect(decodeURIComponent(new URL(page.url()).hash)).toBe('#線上桌遊一起玩');
+  await expect
+    .poll(
+      async () => (await linkClickEvents(page, 'footer_play_online')).length,
+    )
+    .toBe(1);
+  expect((await linkClickEvents(page, 'footer_play_online'))[0]).toMatchObject({
+    link_placement: 'site_footer',
+    link_target: '_self',
+    locale: 'zh-Hant',
+    viewport_bucket: 'desktop',
+  });
 });
 
 test('tracks the resource promotion and opens the game safely in a new tab', async ({
@@ -74,4 +95,16 @@ test('tracks the resource promotion and opens the game safely in a new tab', asy
         ).length,
     )
     .toBe(1);
+  await expect
+    .poll(
+      async () => (await linkClickEvents(page, 'resource_play_online')).length,
+    )
+    .toBe(1);
+  expect(
+    (await linkClickEvents(page, 'resource_play_online'))[0],
+  ).toMatchObject({
+    link_placement: 'resource_online_game_banner',
+    link_target: '_blank',
+    is_external: true,
+  });
 });

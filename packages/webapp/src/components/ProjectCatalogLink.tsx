@@ -24,6 +24,8 @@ export default function ProjectCatalogLink({
       className={className}
       style={style}
       onClick={() => trackProjectCatalogInterest(placement)}
+      data-analytics-id="project_catalog"
+      data-analytics-placement={placement}
       data-testid={`project-catalog-${placement}`}
     >
       {children}

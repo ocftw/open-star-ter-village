@@ -20,6 +20,8 @@ export default function LobbyNav() {
           </ProjectCatalogLink>
           <a
             href={HOMEPAGE_URL}
+            data-analytics-id="homepage_rules"
+            data-analytics-placement="header"
             target="_blank"
             rel="noreferrer"
             style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)' }}
@@ -28,6 +30,8 @@ export default function LobbyNav() {
           </a>
           <a
             href={GITHUB_URL}
+            data-analytics-id="source_repository"
+            data-analytics-placement="header"
             target="_blank"
             rel="noreferrer"
             style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)' }}
