@@ -1,18 +1,19 @@
-import { expect, test } from '@playwright/test';
-import { installDeterministicRendering } from './helpers.mjs';
+import { expect, test, type Page } from '@playwright/test';
+import { installDeterministicRendering } from './helpers';
 
-const analyticsEvents = (page, event, promotionId) =>
+const analyticsEvents = (page: Page, event: string, promotionId: string) =>
   page.evaluate(
     ({ requestedEvent, requestedPromotionId }) =>
       (window.dataLayer ?? []).filter(
         (entry) =>
           entry.event === requestedEvent &&
-          entry.ecommerce?.promotion_id === requestedPromotionId,
+          (entry.ecommerce as { promotion_id?: string } | undefined)
+            ?.promotion_id === requestedPromotionId,
       ),
     { requestedEvent: event, requestedPromotionId: promotionId },
   );
 
-const linkClickEvents = (page, linkId) =>
+const linkClickEvents = (page: Page, linkId: string) =>
   page.evaluate(
     (requestedLinkId) =>
       (window.dataLayer ?? []).filter(

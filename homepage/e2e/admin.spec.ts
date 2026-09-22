@@ -1,13 +1,13 @@
 import { test, expect } from '@playwright/test';
 
 test('renders the Decap CMS shell', async ({ page }) => {
-  const pageErrors = [];
+  const pageErrors: Error[] = [];
   page.on('pageerror', (error) => {
     pageErrors.push(error);
     console.error(error);
   });
 
-  const identityRequests = [];
+  const identityRequests: string[] = [];
   page.on('request', (request) => {
     if (request.url().includes('identity.netlify.com')) {
       identityRequests.push(request.url());

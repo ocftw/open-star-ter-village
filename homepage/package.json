@@ -15,11 +15,11 @@
     "lint": "prettier --check . && eslint . && tsc --noEmit",
     "lint:fix": "prettier --write . && eslint . --fix",
     "typecheck": "tsc --noEmit",
-    "test:visual": "playwright test e2e/visual.spec.mjs",
-    "test:analytics": "playwright test e2e/analytics.spec.mjs --project=desktop",
-    "test:visual:update": "playwright test e2e/visual.spec.mjs --update-snapshots",
-    "test:admin": "playwright test e2e/admin.spec.mjs --project=desktop",
-    "test:preview": "playwright test --config=playwright.preview.config.mjs"
+    "test:visual": "playwright test e2e/visual.spec.ts",
+    "test:analytics": "playwright test e2e/analytics.spec.ts --project=desktop",
+    "test:visual:update": "playwright test e2e/visual.spec.ts --update-snapshots",
+    "test:admin": "playwright test e2e/admin.spec.ts --project=desktop",
+    "test:preview": "playwright test --config=playwright.preview.config.ts"
   },
   "repository": {
     "type": "git",

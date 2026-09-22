@@ -3,7 +3,7 @@ import {
   installDeterministicRendering,
   publicRoutes,
   waitForStablePage,
-} from './helpers.mjs';
+} from './helpers';
 
 test.setTimeout(90_000);
 

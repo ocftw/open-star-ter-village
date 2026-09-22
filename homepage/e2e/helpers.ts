@@ -1,4 +1,4 @@
-import { expect } from '@playwright/test';
+import { expect, type Page } from '@playwright/test';
 
 export const publicRoutes = [
   {
@@ -59,13 +59,13 @@ export const publicRoutes = [
   },
 ];
 
-export const installDeterministicRendering = async (page) => {
+export const installDeterministicRendering = async (page: Page) => {
   await page.route('https://www.googletagmanager.com/**', (route) =>
     route.abort(),
   );
 };
 
-export const waitForStablePage = async (page) => {
+export const waitForStablePage = async (page: Page) => {
   await page.addStyleTag({
     content: `
       *, *::before, *::after {

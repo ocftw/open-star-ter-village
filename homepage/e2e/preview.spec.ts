@@ -1,10 +1,10 @@
-import { test, expect } from '@playwright/test';
-import { publicRoutes } from './helpers.mjs';
+import { test, expect, type Page } from '@playwright/test';
+import { publicRoutes } from './helpers';
 
-const monitorFirstPartyFailures = (page, baseURL) => {
+const monitorFirstPartyFailures = (page: Page, baseURL: string) => {
   const origin = new URL(baseURL).origin;
-  const pageErrors = [];
-  const requestFailures = [];
+  const pageErrors: string[] = [];
+  const requestFailures: string[] = [];
 
   page.on('pageerror', (error) => pageErrors.push(error.message));
   page.on('requestfailed', (request) => {
@@ -26,12 +26,12 @@ const monitorFirstPartyFailures = (page, baseURL) => {
 
 for (const route of publicRoutes) {
   test(`${route.name} is healthy on Netlify`, async ({ page, baseURL }) => {
-    const failures = monitorFirstPartyFailures(page, baseURL);
+    const failures = monitorFirstPartyFailures(page, baseURL!);
     await page.context().addCookies([
       {
         name: 'NEXT_LOCALE',
         value: route.locale,
-        url: new URL('/', baseURL).href,
+        url: new URL('/', baseURL!).href,
       },
     ]);
     const response = await page.goto(route.path, {
@@ -48,7 +48,7 @@ for (const route of publicRoutes) {
 }
 
 test('Decap CMS shell is healthy on Netlify', async ({ page, baseURL }) => {
-  const failures = monitorFirstPartyFailures(page, baseURL);
+  const failures = monitorFirstPartyFailures(page, baseURL!);
   const response = await page.goto('/admin/', {
     waitUntil: 'domcontentloaded',
   });
@@ -64,7 +64,7 @@ test('project card modal is interactive on Netlify', async ({
   page,
   baseURL,
 }) => {
-  const failures = monitorFirstPartyFailures(page, baseURL);
+  const failures = monitorFirstPartyFailures(page, baseURL!);
   const response = await page.goto('/cards/', {
     waitUntil: 'domcontentloaded',
   });
