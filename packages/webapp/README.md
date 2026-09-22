@@ -99,6 +99,9 @@ Required configuration:
   by Next.js at build time, so set it as a Docker build argument before
   `next build`; changing a runtime env var later will not update the browser
   bundle.
+- `NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID`: optional public GTM container ID. It is
+  also inlined at build time. Production uses `GTM-N324PT4J`; omit it from local
+  and preview builds so they do not send analytics data.
 - `GAME_SERVER_ORIGINS`: comma-separated allowed browser origins for the game
   server CORS policy. Set this as a Fly secret.
 
@@ -108,6 +111,22 @@ Example:
 fly secrets set GAME_SERVER_ORIGINS=https://open-star-ter-village.fly.dev
 fly deploy --build-arg NEXT_PUBLIC_GAME_SERVER_URL=https://open-star-ter-village.fly.dev:3001
 ```
+
+### Google Analytics
+
+The homepage and webapp share one GTM container and GA4 web stream. GA4 Admin
+must configure `openstartervillage.ocf.tw` and
+`open-star-ter-village.fly.dev` for cross-domain measurement.
+
+The webapp emits two business events through `dataLayer`:
+
+- `game_intent` when `/lobby` is reached.
+- `project_catalog_interest` when the header or game-over catalog link is
+  selected. Its `link_placement` is `header` or `game_over`.
+
+Both events are GA4 key events. GTM must publish GA4 event tags for them, while
+the homepage promotion flow uses the recommended `view_promotion` and
+`select_promotion` events.
 
 For a custom domain, add the certificate in Fly and include that origin in
 `GAME_SERVER_ORIGINS`:

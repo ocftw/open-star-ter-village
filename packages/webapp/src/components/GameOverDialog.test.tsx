@@ -121,4 +121,17 @@ describe('GameOverDialog (#419 end-game modal)', () => {
     fireEvent.click(getByText(/關閉，查看最終盤面/));
     expect(onClose).toHaveBeenCalled();
   });
+
+  it('offers the project catalog after the game in a new tab', () => {
+    const { getByTestId } = render(
+      <GameOverDialog gameContext={makeContext()} open onClose={jest.fn()} />,
+    );
+    const link = getByTestId('project-catalog-game_over');
+
+    expect(link.getAttribute('href')).toBe(
+      'https://openstartervillage.ocf.tw/cards',
+    );
+    expect(link.getAttribute('target')).toBe('_blank');
+    expect(link.getAttribute('rel')).toBe('noopener noreferrer');
+  });
 });

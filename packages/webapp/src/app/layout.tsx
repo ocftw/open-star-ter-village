@@ -3,6 +3,7 @@ import { Noto_Sans_TC, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
 import "./globals.css";
 import StoreProvider from './StoreProvider';
+import GoogleTagManager from '@/components/GoogleTagManager';
 
 const notoSansTC = Noto_Sans_TC({
   subsets: ["latin"],
@@ -41,6 +42,7 @@ export default function RootLayout({
       className={`${notoSansTC.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}
     >
       <body className="app-root">
+        <GoogleTagManager />
         <AppRouterCacheProvider>
           <StoreProvider>{children}</StoreProvider>
         </AppRouterCacheProvider>

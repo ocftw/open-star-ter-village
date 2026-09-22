@@ -35,6 +35,7 @@ import EventBanner from './board/EventBanner';
 import MobileSheet from './board/MobileSheet';
 import { ScorePanel, TurnOrderPanel } from './board/SidePanels';
 import { useIsMobile } from '@/lib/useIsMobile';
+import ProjectCatalogLink from './ProjectCatalogLink';
 
 const Board: React.FC<GameContext> = (gameContext) => {
   const { G, playerID, ctx, matchData } = gameContext;
@@ -420,6 +421,13 @@ export function GameOverDialog({
             <StickerButton variant="ghost" size="sm" onClick={onClose} style={{ width: '100%', marginTop: 10 }}>
               關閉，查看最終盤面 · Close and inspect the board
             </StickerButton>
+            <ProjectCatalogLink
+              placement="game_over"
+              className="btn-sticker ghost sm"
+              style={{ display: 'block', width: '100%', marginTop: 10, textAlign: 'center' }}
+            >
+              探索專案卡 · Explore project cards
+            </ProjectCatalogLink>
           </div>
         )}
     </Modal>
