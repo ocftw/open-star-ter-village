@@ -1,21 +1,22 @@
 import CardModal from './cardModal';
+import type { Card } from '../../types/content';
 
-const ProjectCard = ({ card }) => (
+const ProjectCard = ({ card }: { card: Card }) => (
   <div className="col-md-6 col-xl-4 mb-3" id={card.data.id}>
     <div
       className="section-main"
-      style={{ border: `1rem solid ${card.data.color.background}` }}
+      style={{ border: `1rem solid ${card.data.color?.background}` }}
     >
       <h3>{card.data.title}</h3>
       <div className="d-flex flex-column">
         <div className="d-flex flex-wrap mb-3 justify-content-evenly">
-          {card.data.avatarList.map((avatar) => (
+          {card.data.avatarList?.map((avatar) => (
             <div
               key={avatar.data.title}
               className="col-3 avatar avatar-list"
               style={{
-                backgroundColor: `${avatar.data.color.background}`,
-                border: `3px solid ${avatar.data.color.border}`,
+                backgroundColor: `${avatar.data.color?.background}`,
+                border: `3px solid ${avatar.data.color?.border}`,
               }}
             >
               <div

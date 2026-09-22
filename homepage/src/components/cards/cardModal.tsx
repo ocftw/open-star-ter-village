@@ -1,13 +1,14 @@
-import { useRef } from 'react';
+import { useRef, type MouseEvent } from 'react';
 import { ParseMarkdownAndHtml } from '../parseMarkdownAndHtml';
+import type { Card } from '../../types/content';
 
-function CardModal({ card }) {
-  const dialogRef = useRef(null);
+function CardModal({ card }: { card: Card }) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const titleId = `${card.data.id}-modal-title`;
 
   const handleClose = () => dialogRef.current?.close();
   const handleShow = () => dialogRef.current?.showModal();
-  const handleBackdropClick = (event) => {
+  const handleBackdropClick = (event: MouseEvent<HTMLDialogElement>) => {
     if (event.target === event.currentTarget) {
       handleClose();
     }
@@ -31,7 +32,7 @@ function CardModal({ card }) {
       >
         <div
           className="project-card-modal-frame"
-          style={{ borderColor: card.data.color.background }}
+          style={{ borderColor: card.data.color?.background }}
         >
           <header className="project-card-modal-header">
             <h2 id={titleId}>{card.data.title}</h2>
@@ -47,13 +48,13 @@ function CardModal({ card }) {
           <div className="project-card-modal-body">
             <div className="d-flex flex-column">
               <div className="d-flex flex-wrap mb-3 justify-content-evenly">
-                {card.data.avatarList.map((avatar) => (
+                {card.data.avatarList?.map((avatar) => (
                   <div
                     key={avatar.data.title}
                     className="col-3 avatar avatar-list"
                     style={{
-                      backgroundColor: avatar.data.color.background,
-                      border: `3px solid ${avatar.data.color.border}`,
+                      backgroundColor: avatar.data.color?.background,
+                      border: `3px solid ${avatar.data.color?.border}`,
                     }}
                   >
                     <div

@@ -1,8 +1,13 @@
 import SocialMedia from '../../components/socialMedia';
 import Logo from '../../components/logo';
 import FooterLinks from './footerLinks';
+import type { Footer as FooterModel, SiteData } from '../../types/content';
 
-const Footer = ({ siteData, links = [], logos = [] }) => {
+type FooterProps = Partial<FooterModel> & {
+  siteData: SiteData;
+};
+
+const Footer = ({ siteData, links = [], logos = [] }: FooterProps) => {
   return (
     <div className="site-footer" id="footer">
       <div className="container footer-main">

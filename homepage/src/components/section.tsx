@@ -1,7 +1,8 @@
 import Image from 'next/image';
 import { ParseMarkdownAndHtml } from './parseMarkdownAndHtml';
+import type { SectionProps } from '../types/components';
 
-const Section = ({ id, title, subtitle, image, content }) => (
+const Section = ({ id, title, subtitle, image, content }: SectionProps) => (
   <div className="section" id={id}>
     <div className="container">
       <div className="section-head">
@@ -19,12 +20,5 @@ const Section = ({ id, title, subtitle, image, content }) => (
     </div>
   </div>
 );
-
-Section.defaultProps = {
-  id: '',
-  title: '',
-  subtitle: '',
-  content: '',
-};
 
 export default Section;

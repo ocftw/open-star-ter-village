@@ -1,8 +1,17 @@
 import Link from 'next/link';
 import socialMedia from '../../_data/social_media.json';
 
-const SocialMedia = ({ links = null }) => {
-  const socialMediaList = links || socialMedia.links || [];
+type SocialMediaLink = {
+  type: string;
+  url: string;
+};
+
+const SocialMedia = ({
+  links = null,
+}: {
+  links?: SocialMediaLink[] | null;
+}) => {
+  const socialMediaList: SocialMediaLink[] = links || socialMedia.links || [];
 
   const socialMediaLinks = socialMediaList.map((link) => {
     const { type, url } = link;

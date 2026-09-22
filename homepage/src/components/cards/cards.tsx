@@ -1,6 +1,7 @@
 import Card from './card';
+import type { CardsProps } from '../../types/components';
 
-const Cards = ({ id, title, cards }) => {
+const Cards = ({ id, title, cards }: CardsProps) => {
   return (
     <div className="section" id={id}>
       <div className="container">

@@ -1,14 +1,14 @@
 import { useEffect } from 'react';
 import { trackLinkClick } from '../lib/service/gtm';
 
-const LinkClickTracker = ({ locale }) => {
+const LinkClickTracker = ({ locale }: { locale?: string }) => {
   useEffect(() => {
-    const handleLinkActivation = (event) => {
+    const handleLinkActivation = (event: MouseEvent) => {
       if (event.button !== 0 && event.button !== 1) return;
 
       const link =
         event.target instanceof Element
-          ? event.target.closest('a[href]')
+          ? event.target.closest<HTMLAnchorElement>('a[href]')
           : undefined;
       if (link) trackLinkClick(link, locale);
     };

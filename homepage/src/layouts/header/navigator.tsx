@@ -1,8 +1,14 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import LanguageDropdownMenu from './languageDropdownMenu';
+import type { NavigationItem } from '../../types/content';
 
-const Navigator = ({ logo, navigationItems }) => (
+type NavigatorProps = {
+  logo: string;
+  navigationItems: NavigationItem[];
+};
+
+const Navigator = ({ logo, navigationItems }: NavigatorProps) => (
   <nav className="navbar navbar-expand-md">
     <div className="logo navbar-brand">
       <Link href="/">

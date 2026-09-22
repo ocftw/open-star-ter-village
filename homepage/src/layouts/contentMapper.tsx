@@ -6,9 +6,12 @@ import CtaBanner from '../components/ctaBanner';
 import Section from '../components/section';
 import Headline from '../components/headline';
 import Cards from '../components/cards/cards';
-import { componentTypes } from '../lib/service/PageContentService/componentMapper';
+import {
+  componentTypes,
+  type PageComponent,
+} from '../lib/service/PageContentService/componentMapper';
 
-const contentMapper = (component) => {
+const contentMapper = (component: PageComponent) => {
   switch (component.type) {
     case componentTypes.Banner:
       return <Banner key={component.props.id} {...component.props} />;

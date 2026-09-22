@@ -1,7 +1,8 @@
 import Image from 'next/image';
 import { ParseMarkdownAndHtml } from './parseMarkdownAndHtml';
+import type { SectionColumn } from '../types/content';
 
-const Column = ({ title, image, text }) => (
+const Column = ({ title, image, text }: SectionColumn) => (
   <div className="section-main">
     <h3>{title}</h3>
     <div className="d-flex flex-column">

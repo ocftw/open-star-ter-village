@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import TrackedPromotionLink from '../../components/trackedPromotionLink';
+import type { FooterLink } from '../../types/content';
 
-const getLinkProps = (url) => {
+const getLinkProps = (url: string) => {
   const opensNewTab = /^https?:\/\//.test(url);
   return {
     target: opensNewTab ? '_blank' : undefined,
@@ -9,7 +10,7 @@ const getLinkProps = (url) => {
   };
 };
 
-const FooterLinks = ({ links }) => (
+const FooterLinks = ({ links }: { links: FooterLink[] }) => (
   <div className="d-flex gap">
     {links.map((link) => {
       const linkProps = getLinkProps(link.url);

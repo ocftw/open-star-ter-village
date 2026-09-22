@@ -1,6 +1,12 @@
 import Navigator from './navigator';
+import type { NavigationItem, SiteData } from '../../types/content';
 
-const Header = ({ siteData, navigation = [] }) => (
+type HeaderProps = {
+  siteData: SiteData;
+  navigation?: NavigationItem[];
+};
+
+const Header = ({ siteData, navigation = [] }: HeaderProps) => (
   <header className="site-header sticky-top">
     <div className="container">
       <Navigator logo={siteData.logo} navigationItems={navigation} />

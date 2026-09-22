@@ -1,7 +1,21 @@
-import { useCallback, useEffect, useRef } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  type ComponentProps,
+  type ReactNode,
+} from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { trackPromotion } from '../lib/service/gtm';
+
+type TrackedPromotionLinkProps = Omit<ComponentProps<typeof Link>, 'href'> & {
+  analyticsId: string;
+  creativeName: string;
+  creativeSlot: string;
+  href: string;
+  children?: ReactNode;
+};
 
 const TrackedPromotionLink = ({
   analyticsId,
@@ -10,13 +24,13 @@ const TrackedPromotionLink = ({
   href,
   children,
   ...linkProps
-}) => {
-  const linkRef = useRef(null);
+}: TrackedPromotionLinkProps) => {
+  const linkRef = useRef<HTMLAnchorElement>(null);
   const impressionSent = useRef(false);
   const { locale } = useRouter();
 
   const sendPromotionEvent = useCallback(
-    (event) => {
+    (event: 'view_promotion' | 'select_promotion') => {
       trackPromotion({
         event,
         promotionId: analyticsId,

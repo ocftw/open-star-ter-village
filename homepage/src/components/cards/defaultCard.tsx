@@ -1,22 +1,23 @@
 import Image from 'next/image';
 import { ParseMarkdownAndHtml } from '../parseMarkdownAndHtml';
+import type { Card } from '../../types/content';
 
-const DefaultCard = ({ card }) => (
+const DefaultCard = ({ card }: { card: Card }) => (
   <div className="col-xl-4 col-md-6 mb-3" id={card.data.id}>
     <div
       className="section-main"
       style={{
         minHeight: '20rem',
-        backgroundColor: `${card.data.color.background}`,
+        backgroundColor: `${card.data.color?.background}`,
         color: 'white',
-        border: `1rem solid ${card.data.color.border}`,
+        border: `1rem solid ${card.data.color?.border}`,
       }}
     >
       <h3>{card.data.title}</h3>
       <div className="d-flex flex-column">
         <div
           className="avatar"
-          style={{ backgroundColor: card.data.color.avatar }}
+          style={{ backgroundColor: card.data.color?.avatar }}
         >
           <div className="image-container">
             <Image

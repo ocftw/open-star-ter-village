@@ -1,7 +1,15 @@
 import Image from 'next/image';
 import Link from 'next/link';
 
-const Logo = ({ title, altText, src, dimension, link }) => (
+type LogoProps = {
+  title: string;
+  altText: string;
+  src: string;
+  dimension: { width: number; height: number };
+  link: string;
+};
+
+const Logo = ({ title, altText, src, dimension, link }: LogoProps) => (
   <div className="d-flex align-items-center logo-margin">
     <span className="logo-title">{title}</span>
     <Link href={link} target="_blank">

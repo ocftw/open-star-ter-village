@@ -1,14 +1,16 @@
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import type { Locale } from '../../lib/i18n';
 
-const languageLabelDictionary = {
+const languageLabelDictionary: Record<Locale, string> = {
   en: 'English',
   'zh-Hant': '中文',
 };
 
 const LanguageDropdownMenu = () => {
   const router = useRouter();
-  const { asPath, locales } = router;
+  const { asPath } = router;
+  const locales = (router.locales ?? []) as Locale[];
   return (
     <div className="dropdown-menu dropdown-menu-right">
       {locales.map((locale) => (

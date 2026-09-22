@@ -1,7 +1,15 @@
 import Image from 'next/image';
 import { ParseMarkdownAndHtml } from './parseMarkdownAndHtml';
+import type { ImageAndTextProps } from '../types/components';
 
-const ImageAndText = ({ id, image, title, subtitle, content, highlights }) => (
+const ImageAndText = ({
+  id,
+  image,
+  title,
+  subtitle,
+  content,
+  highlights,
+}: ImageAndTextProps) => (
   <div className="section" id={id}>
     <div className="container">
       <div className="image-and-text-main row">
