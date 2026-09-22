@@ -1,4 +1,4 @@
-const cleanTitle = (title) => {
+const cleanTitle = (title: string) => {
   // This regex keeps alphanumeric characters of many languages, but removes special characters.
   // The ranges include Latin, Greek, Cyrillic, Armenian, Hebrew, Arabic, Devanagari, Bengali, and more.
   return title

@@ -7,16 +7,17 @@ const ONLINE_GAME_ITEM = {
 
 export const isAnalyticsEnabled = () => Boolean(GTM_ID);
 
-export const pushToDataLayer = (payload) => {
+export const pushToDataLayer = (payload: Record<string, unknown>) => {
   if (!isAnalyticsEnabled() || typeof window === 'undefined') return;
 
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push(payload);
 };
 
-const getLinkPlacement = (link) => {
-  const explicitPlacement = link.closest('[data-analytics-placement]')?.dataset
-    .analyticsPlacement;
+const getLinkPlacement = (link: HTMLAnchorElement) => {
+  const explicitPlacement = link.closest<HTMLElement>(
+    '[data-analytics-placement]',
+  )?.dataset.analyticsPlacement;
   if (explicitPlacement) return explicitPlacement;
 
   if (link.closest('[role="dialog"]')) return 'dialog';
@@ -33,7 +34,7 @@ const getViewportBucket = () => {
   return 'desktop';
 };
 
-export const trackLinkClick = (link, locale) => {
+export const trackLinkClick = (link: HTMLAnchorElement, locale?: string) => {
   if (!isAnalyticsEnabled() || typeof window === 'undefined') return;
 
   const url = new URL(link.href, window.location.href);
@@ -73,6 +74,14 @@ export const trackPromotion = ({
   creativeSlot,
   destinationUrl,
   locale,
+}: {
+  event: 'view_promotion' | 'select_promotion';
+  promotionId: string;
+  promotionName: string;
+  creativeName: string;
+  creativeSlot: string;
+  destinationUrl: string;
+  locale?: string;
 }) => {
   if (!isAnalyticsEnabled()) return;
 

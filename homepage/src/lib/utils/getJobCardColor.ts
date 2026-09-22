@@ -1,5 +1,7 @@
-export const getJobCardColor = (tag) => {
-  const color = {};
+import type { CardColor } from '../../types/content';
+
+export const getJobCardColor = (tag: string) => {
+  const color: CardColor = {};
 
   switch (tag) {
     case 'civil servants':

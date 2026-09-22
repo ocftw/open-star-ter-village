@@ -2,7 +2,7 @@ import { componentMapper } from './PageContentService/componentMapper';
 import { fetchAllCards } from '../repository/fetchAllCards';
 import { fetchPage } from '../repository/fetchPage';
 
-export const getPage = async (pageName, locale) => {
+export const getPage = async (pageName: string, locale: string) => {
   const cards = fetchAllCards(locale);
 
   const page = fetchPage(locale, pageName);

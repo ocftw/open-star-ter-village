@@ -1,10 +1,17 @@
 import { titleToAnchorId } from '../../utils/titleToAnchorId';
+import type { Card, PageLayout } from '../../../types/content';
 
-export const anchorMapper = (layout, cards = []) => {
+type SubAnchor = {
+  id: string;
+  title: string;
+  level: number;
+};
+
+export const anchorMapper = (layout: PageLayout, cards: Card[] = []) => {
   let id = '';
   let title = '';
   let level = 0;
-  let subAnchors = [];
+  let subAnchors: SubAnchor[] = [];
 
   switch (layout.type) {
     case 'layout_banner': {
@@ -48,7 +55,7 @@ export const anchorMapper = (layout, cards = []) => {
       // filter cards by card_tags
       if (layout.card_tags && layout.card_tags.length > 0) {
         filteredCards = filteredCards.filter((card) =>
-          layout.card_tags.every((tag) => card.data.tags?.includes(tag)),
+          layout.card_tags!.every((tag) => card.data.tags?.includes(tag)),
         );
       }
 

@@ -1,22 +1,19 @@
 import { getJobCardColor } from './getJobCardColor';
 import { titleToAnchorId } from './titleToAnchorId';
+import type { Card, CardColor, CardData, RawCard } from '../../types/content';
 
-export const processCard = (card, cards) => {
-  let { data, content } = card;
+export const processCard = (card: RawCard, cards: RawCard[]): Card => {
+  const { content } = card;
 
-  let image = data.image;
+  let image = card.data.image;
   const defaultImage = '/images/uploads/初階專案卡封面-01.png';
   image = image ?? defaultImage;
 
-  data = {
-    ...data,
-    image,
-  };
-
   //
-  const id = data.id || titleToAnchorId(data.title);
-  data = {
-    ...data,
+  const id = card.data.id || titleToAnchorId(card.data.title);
+  let data: CardData = {
+    ...card.data,
+    image,
     id,
   };
 
@@ -31,7 +28,7 @@ export const processCard = (card, cards) => {
   }
 
   if (data.type === 'event') {
-    const color = {};
+    const color: CardColor = {};
 
     color.avatar = '#f1c287';
     color.background = '#eaa652';
@@ -44,7 +41,7 @@ export const processCard = (card, cards) => {
   }
   // project card
   if (data.type === 'project') {
-    const color = {};
+    const color: CardColor = {};
     const mainTag = data.tags.find((tag) =>
       ['open gov', 'open data', 'open source'].includes(tag),
     );
@@ -71,19 +68,17 @@ export const processCard = (card, cards) => {
         );
         return jobCard;
       })
-      .filter((x) => x)
+      .filter((x) => x !== undefined)
       .map(({ data, content }) => {
         const color = getJobCardColor(data.tags[0]);
 
-        data = {
-          ...data,
-          color,
-        };
-
         return {
-          data,
+          data: {
+            ...data,
+            color,
+          },
           content,
-        };
+        } as Card;
       });
 
     data = {
