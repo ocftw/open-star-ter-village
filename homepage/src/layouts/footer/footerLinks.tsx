@@ -4,10 +4,13 @@ import TrackedPromotionLink from '../../components/trackedPromotionLink';
 import type { FooterLink } from '../../types/content';
 
 const getLinkProps = (url: string) => {
-  const opensNewTab = /^https?:\/\//.test(url);
+  const isExternal = /^https?:\/\//.test(url);
   return {
-    target: opensNewTab ? '_blank' : undefined,
-    rel: opensNewTab ? 'noopener noreferrer' : undefined,
+    target: isExternal ? '_blank' : undefined,
+    rel: isExternal ? 'noopener noreferrer' : undefined,
+    // Internal links keep the active locale so an English reader stays on the
+    // English page, where the anchor they were sent to actually exists.
+    locale: isExternal ? (false as const) : undefined,
   };
 };
 
@@ -27,7 +30,6 @@ const FooterLinks: React.FC<FooterLinksProps> = ({ links }) => (
             creativeSlot="site_footer"
             href={link.url}
             key={link.displayText}
-            locale={false}
             {...linkProps}
           >
             {link.displayText}
@@ -36,12 +38,7 @@ const FooterLinks: React.FC<FooterLinksProps> = ({ links }) => (
       }
 
       return (
-        <Link
-          href={link.url}
-          key={link.displayText}
-          locale={false}
-          {...linkProps}
-        >
+        <Link href={link.url} key={link.displayText} {...linkProps}>
           {link.displayText}
         </Link>
       );
