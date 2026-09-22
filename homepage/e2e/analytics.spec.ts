@@ -109,3 +109,40 @@ test('tracks the resource promotion and opens the game safely in a new tab', asy
     is_external: true,
   });
 });
+
+test('keeps the English footer promotion on the English resource page', async ({
+  page,
+}) => {
+  await page.goto('/en/');
+  const footerLink = page.getByRole('link', { name: 'Play Online!' });
+
+  await footerLink.click();
+  await expect(page).toHaveURL(/\/en\/resource\/#play-online-together$/);
+  await expect(
+    page.locator('#play-online-together').getByRole('link', {
+      name: 'Play Online',
+    }),
+  ).toBeVisible();
+});
+
+test('buckets untagged links so the link_id dimension stays low cardinality', async ({
+  page,
+}) => {
+  await page.goto('/');
+  const adminLink = page.getByRole('link', { name: '後台管理' });
+
+  await adminLink.evaluate((link) =>
+    link.addEventListener('click', (event) => event.preventDefault(), {
+      once: true,
+    }),
+  );
+  await adminLink.click();
+
+  await expect
+    .poll(async () => (await linkClickEvents(page, 'internal:untagged')).length)
+    .toBe(1);
+  expect((await linkClickEvents(page, 'internal:untagged'))[0]).toMatchObject({
+    link_url: expect.stringContaining('/admin'),
+    is_external: false,
+  });
+});
