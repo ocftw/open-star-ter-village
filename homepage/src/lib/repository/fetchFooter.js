@@ -13,6 +13,7 @@ export function fetchFooter(lang) {
     links: rawFooter.links.map((link) => ({
       displayText: link.display_text,
       url: link.url,
+      ...(link.analytics_id ? { analyticsId: link.analytics_id } : {}),
     })),
     logos: rawFooter.logos.map((logo) => ({
       title: logo.title,

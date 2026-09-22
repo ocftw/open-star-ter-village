@@ -106,14 +106,14 @@ layout_list:
 
       Please read the rental rules (currently, only the Chinese version of the board game is available for rent within Taiwan).
     image: /images/uploads/boardgame.jpg
-  - type: layout_section
-    title: Play Online
-    columns:
-      - text: We are currently looking for allies and inviting like-minded friends to
-          develop and turn the Open StarTer Village board game online! Whether
-          you are a board game enthusiast or someone who wants to get involved
-          with an open-source project, Join our discord for game development!
-        title: ""
+  - type: layout_cta_banner
+    title: Play Online Together!
+    text: No download needed. Join or create a 3–6 player game and experience
+      open-source collaboration with friends.
+    cta_label: Play Online
+    cta_url: https://open-star-ter-village.fly.dev/
+    analytics_id: resource_play_online
+    open_in_new_tab: true
   - type: layout_section
     title: Upcoming Events/Workshops
     columns:

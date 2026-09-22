@@ -17,6 +17,7 @@ export const componentTypes = {
   TwoColumns: 'TwoColumns',
   ThreeColumns: 'ThreeColumns',
   ImageAndText: 'ImageAndText',
+  CtaBanner: 'CtaBanner',
   Cards: 'Cards',
 };
 
@@ -54,6 +55,19 @@ export const componentMapper = (layout, cards = []) => {
         content: layout.text,
         highlights: layout.highlights,
         markdown: true,
+      };
+      break;
+    }
+    case 'layout_cta_banner': {
+      type = componentTypes.CtaBanner;
+      props = {
+        id: titleToAnchorId(layout.title),
+        title: layout.title,
+        content: layout.text,
+        ctaLabel: layout.cta_label,
+        ctaUrl: layout.cta_url,
+        analyticsId: layout.analytics_id,
+        openInNewTab: layout.open_in_new_tab,
       };
       break;
     }

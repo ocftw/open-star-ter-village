@@ -1108,3 +1108,49 @@ code {
 .justify-content-evenly {
   justify-content: space-evenly;
 }
+
+.cta-banner-content {
+  align-items: center;
+  background: #fef3e8;
+  border: 3px solid #1d1d1b;
+  border-radius: 18px;
+  box-shadow: 6px 6px 0 #1d1d1b;
+  display: flex;
+  gap: 2rem;
+  justify-content: space-between;
+  padding: 2rem;
+}
+
+.cta-banner-content h2 {
+  margin-bottom: 0.75rem;
+}
+
+.cta-banner-content p {
+  margin-bottom: 0;
+}
+
+.cta-banner-link {
+  background: #e95f2b;
+  border: 2px solid #1d1d1b;
+  border-radius: 999px;
+  box-shadow: 3px 3px 0 #1d1d1b;
+  color: #fff;
+  flex-shrink: 0;
+  font-weight: 700;
+  padding: 0.75rem 1.25rem;
+}
+
+.cta-banner-link:hover,
+.cta-banner-link:focus {
+  color: #fff;
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0 #1d1d1b;
+  text-decoration: none;
+}
+
+@media only screen and (max-width: 768px) {
+  .cta-banner-content {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
