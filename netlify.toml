@@ -13,6 +13,9 @@
 [build.environment]
   NODE_VERSION = "24"
 
+[context.production.environment]
+  NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID = "GTM-N324PT4J"
+
 # Decap CMS GitHub OAuth handshake lives at /.netlify/functions/{auth,callback}.
 # Addressed directly rather than behind a prettier /oauth/* rewrite, so reaching
 # the functions never depends on redirect ordering against the Next.js runtime's
