@@ -25,6 +25,12 @@ export const anchorMapper = (layout, cards = []) => {
         (level = 2));
       break;
     }
+    case 'layout_cta_banner': {
+      id = titleToAnchorId(layout.title);
+      title = layout.title;
+      level = 2;
+      break;
+    }
     case 'layout_section': {
       ((id = titleToAnchorId(layout.title)),
         (title = layout.title),

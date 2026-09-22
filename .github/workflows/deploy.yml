@@ -12,6 +12,7 @@ concurrency:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID: GTM-N324PT4J
 
 jobs:
   deploy:
@@ -32,6 +33,7 @@ jobs:
           deploy_args=(
             --remote-only
             --build-arg SENTRY_ENVIRONMENT=production
+            --build-arg "NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID=${NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID}"
             --build-arg "SENTRY_RELEASE=${GITHUB_EVENT_WORKFLOW_RUN_HEAD_SHA}"
             --env SENTRY_ENVIRONMENT=production
             --env "SENTRY_RELEASE=${GITHUB_EVENT_WORKFLOW_RUN_HEAD_SHA}"

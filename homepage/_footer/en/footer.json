@@ -11,7 +11,8 @@
       },
       {
         "display_text": "Play Online!",
-        "url": "/resource/#play-online"
+        "url": "/resource/#play-online-together",
+        "analytics_id": "footer_play_online"
       }
     ],
     "logos": [

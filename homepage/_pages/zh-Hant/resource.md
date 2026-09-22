@@ -94,11 +94,13 @@ layout_list:
     text: 迫不急待想要開箱桌遊了？[來信 OCF](mailto:hi@ocf.tw)
       將有專人協助登記免費借用。請詳閱租用規則(目前僅提供中文版桌遊，限於台灣本島內租借)。
     image: /images/uploads/boardgame.jpg
-  - type: layout_section
+  - type: layout_cta_banner
     title: 線上桌遊一起玩！
-    columns:
-      - text: 我們正在招兵買馬中，只要你也是桌遊愛好者、想嘗試開源專案的好朋友，歡迎一起與我們一起開發線上桌遊。
-        title: ""
+    text: 免下載，直接加入或建立 3–6 人遊戲，和朋友一起體驗開源協作。
+    cta_label: 來玩線上桌遊！
+    cta_url: https://open-star-ter-village.fly.dev/
+    analytics_id: resource_play_online
+    open_in_new_tab: true
   - type: layout_section
     title: 多元參與，全面體驗|活動預告
     columns:

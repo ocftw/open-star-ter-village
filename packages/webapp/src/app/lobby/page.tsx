@@ -12,6 +12,7 @@ import Segmented from '@/components/lobby/Segmented';
 import { loadCredentials, saveCredentials, type MatchCredentials } from '@/lib/matchCredentials';
 import { usePolling } from '@/lib/usePolling';
 import { useSnackbar } from '@/lib/useSnackbar';
+import GameIntentTracker from '@/components/GameIntentTracker';
 import {
   createRoom,
   getLobbyErrorMessage,
@@ -197,6 +198,7 @@ export default function LobbyPage() {
 
   return (
     <main style={{ minHeight: '100vh' }}>
+      <GameIntentTracker />
       <LobbyNav />
       <div className="page-pad">
         <h1 style={{ display: 'flex', flexDirection: 'column', gap: 2, fontSize: 22, fontWeight: 800, marginBottom: 28 }}>

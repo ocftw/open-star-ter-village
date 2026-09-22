@@ -1,18 +1,45 @@
 import Link from 'next/link';
+import TrackedPromotionLink from '../../components/trackedPromotionLink';
+
+const getLinkProps = (url) => {
+  const opensNewTab = /^https?:\/\//.test(url);
+  return {
+    target: opensNewTab ? '_blank' : undefined,
+    rel: opensNewTab ? 'noopener noreferrer' : undefined,
+  };
+};
 
 const FooterLinks = ({ links }) => (
   <div className="d-flex gap">
-    {links.map((link) => (
-      <Link
-        href={link.url}
-        key={link.displayText}
-        target="_blank"
-        rel="noopener noreferrer"
-        locale={false}
-      >
-        {link.displayText}
-      </Link>
-    ))}
+    {links.map((link) => {
+      const linkProps = getLinkProps(link.url);
+      if (link.analyticsId) {
+        return (
+          <TrackedPromotionLink
+            analyticsId={link.analyticsId}
+            creativeName="Footer play online link"
+            creativeSlot="site_footer"
+            href={link.url}
+            key={link.displayText}
+            locale={false}
+            {...linkProps}
+          >
+            {link.displayText}
+          </TrackedPromotionLink>
+        );
+      }
+
+      return (
+        <Link
+          href={link.url}
+          key={link.displayText}
+          locale={false}
+          {...linkProps}
+        >
+          {link.displayText}
+        </Link>
+      );
+    })}
   </div>
 );
 

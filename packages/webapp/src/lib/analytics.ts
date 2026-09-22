@@ -1,22 +1,34 @@
 export const GTM_ID = process.env.NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID;
 
-const ONLINE_GAME_ITEM = {
-  item_id: 'online_game',
-  item_name: 'Open StarTer Village Online Game',
-};
+export type AnalyticsEventParameters = Record<
+  string,
+  string | number | boolean | undefined
+>;
 
-export const isAnalyticsEnabled = () => Boolean(GTM_ID);
+declare global {
+  interface Window {
+    dataLayer?: Array<Record<string, unknown>>;
+  }
+}
 
-export const pushToDataLayer = (payload) => {
+export function isAnalyticsEnabled(): boolean {
+  return Boolean(GTM_ID);
+}
+
+export function trackAnalyticsEvent(
+  event: string,
+  parameters: AnalyticsEventParameters = {},
+): void {
   if (!isAnalyticsEnabled() || typeof window === 'undefined') return;
 
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push(payload);
-};
+  window.dataLayer = window.dataLayer ?? [];
+  window.dataLayer.push({ event, ...parameters });
+}
 
-const getLinkPlacement = (link) => {
-  const explicitPlacement = link.closest('[data-analytics-placement]')?.dataset
-    .analyticsPlacement;
+function getLinkPlacement(link: HTMLAnchorElement): string {
+  const explicitPlacement = link.closest<HTMLElement>(
+    '[data-analytics-placement]',
+  )?.dataset.analyticsPlacement;
   if (explicitPlacement) return explicitPlacement;
 
   if (link.closest('[role="dialog"]')) return 'dialog';
@@ -25,15 +37,15 @@ const getLinkPlacement = (link) => {
   if (link.closest('footer')) return 'footer';
   if (link.closest('main')) return 'main';
   return 'other';
-};
+}
 
-const getViewportBucket = () => {
+function getViewportBucket(): 'mobile' | 'tablet' | 'desktop' {
   if (window.innerWidth < 768) return 'mobile';
   if (window.innerWidth < 1200) return 'tablet';
   return 'desktop';
-};
+}
 
-export const trackLinkClick = (link, locale) => {
+export function trackLinkClick(link: HTMLAnchorElement): void {
   if (!isAnalyticsEnabled() || typeof window === 'undefined') return;
 
   const url = new URL(link.href, window.location.href);
@@ -50,8 +62,7 @@ export const trackLinkClick = (link, locale) => {
         }${url.pathname}${url.hash}`
       : `protocol:${url.protocol.replace(':', '')}`);
 
-  pushToDataLayer({
-    event: 'link_click',
+  trackAnalyticsEvent('link_click', {
     link_id: linkId,
     link_url: safeUrl,
     link_domain: isWebUrl ? url.hostname : undefined,
@@ -59,42 +70,18 @@ export const trackLinkClick = (link, locale) => {
     link_placement: getLinkPlacement(link),
     link_target: link.target || '_self',
     is_external: isWebUrl && url.origin !== window.location.origin,
-    locale,
+    locale: document.documentElement.lang,
     source_path: window.location.pathname,
     viewport_bucket: getViewportBucket(),
   });
-};
+}
 
-export const trackPromotion = ({
-  event,
-  promotionId,
-  promotionName,
-  creativeName,
-  creativeSlot,
-  destinationUrl,
-  locale,
-}) => {
-  if (!isAnalyticsEnabled()) return;
-
-  pushToDataLayer({ ecommerce: null });
-  pushToDataLayer({
-    event,
-    destination_url: destinationUrl,
-    locale,
-    ecommerce: {
-      creative_name: creativeName,
-      creative_slot: creativeSlot,
-      promotion_id: promotionId,
-      promotion_name: promotionName,
-      items: [
-        {
-          ...ONLINE_GAME_ITEM,
-          creative_name: creativeName,
-          creative_slot: creativeSlot,
-          promotion_id: promotionId,
-          promotion_name: promotionName,
-        },
-      ],
-    },
+export function trackProjectCatalogInterest(
+  linkPlacement: 'header' | 'game_over',
+): void {
+  trackAnalyticsEvent('project_catalog_interest', {
+    link_placement: linkPlacement,
+    destination_url: 'https://openstartervillage.ocf.tw/cards',
+    source_path: window.location.pathname,
   });
-};
+}

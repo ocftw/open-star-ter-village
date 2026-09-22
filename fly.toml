@@ -6,6 +6,7 @@ primary_region = "sin"
 
   [build.args]
     NEXT_PUBLIC_GAME_SERVER_URL = "https://open-star-ter-village.fly.dev:3001"
+    NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID = "GTM-N324PT4J"
 
 [env]
   NEXT_PUBLIC_GAME_SERVER_URL = "https://open-star-ter-village.fly.dev:3001"

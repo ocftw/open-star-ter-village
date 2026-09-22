@@ -121,6 +121,35 @@ button {
   color: var(--ink-mute);
 }
 
+.lobby-nav-links {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+
+.catalog-label-compact {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .lobby-nav-links {
+    gap: 10px;
+  }
+
+  .lobby-nav-links > a {
+    font-size: 12px !important;
+    white-space: nowrap;
+  }
+
+  .catalog-label-full {
+    display: none;
+  }
+
+  .catalog-label-compact {
+    display: inline;
+  }
+}
+
 .zh {
   font-family: var(--font-zh);
 }
