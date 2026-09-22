@@ -1,4 +1,5 @@
-const nextConfig = require('../../next.config');
+import { defaultLocale, locales } from '../lib/i18n';
+import type { CmsConfig } from './types';
 
 const SITE_URL = 'https://openstartervillage.ocf.tw';
 
@@ -8,10 +9,7 @@ const SITE_URL = 'https://openstartervillage.ocf.tw';
 const oauthBaseUrl =
   typeof window === 'undefined' ? SITE_URL : window.location.origin;
 
-/**
- * @type {import('decap-cms-core').CmsConfig}
- */
-module.exports = {
+const config: CmsConfig = {
   cms_manual_init: true,
   local_backend: true,
   backend: {
@@ -31,8 +29,8 @@ module.exports = {
   locale: 'zh_Hant',
   i18n: {
     structure: 'multiple_folders',
-    locales: nextConfig.i18n.locales,
-    default_locale: nextConfig.i18n.defaultLocale,
+    locales: [...locales],
+    default_locale: defaultLocale,
   },
   collections: [
     {
@@ -61,6 +59,8 @@ module.exports = {
           value_type: 'int',
           i18n: 'duplicate',
         },
+        // @ts-expect-error -- layout_section is a list-typed variant; Decap
+        // supports it at runtime but its types only allow object variants.
         {
           label: 'Layout & Content',
           name: 'layout_list',
@@ -301,14 +301,12 @@ module.exports = {
           name: 'image',
           widget: 'image',
           required: false,
-          tagname: '',
           i18n: true,
         },
         {
           label: 'Title',
           name: 'title',
           widget: 'string',
-          tagname: '',
           i18n: true,
         },
         {
@@ -398,7 +396,6 @@ module.exports = {
                   label: 'Default Thumbnail',
                   name: 'thumb',
                   widget: 'image',
-                  class: 'thumb',
                   required: false,
                 },
               ],
@@ -525,3 +522,5 @@ module.exports = {
     },
   ],
 };
+
+export default config;

@@ -1,19 +1,27 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ComponentType } from 'react';
 import PagePreview from './preview/PagePreview';
 import FooterPreview from './preview/FooterPreview';
 import CardPreview from './preview/CardPreview';
 
 import config from './decap-cms.config';
+import type { DecapPreviewProps, PreviewTemplateProps } from './types';
+import type { AssetsByLocale } from '../types/content';
 
-const withAssetsByLocale = (Component, assetsByLocale) => {
-  const WrappedComponent = (props) => (
-    <Component {...props} assetsByLocale={assetsByLocale} />
+const withAssetsByLocale = (
+  Component: ComponentType<PreviewTemplateProps>,
+  assetsByLocale: AssetsByLocale,
+) => {
+  const WrappedComponent = (props: DecapPreviewProps) => (
+    <Component
+      {...(props as Omit<PreviewTemplateProps, 'assetsByLocale'>)}
+      assetsByLocale={assetsByLocale}
+    />
   );
   WrappedComponent.displayName = `withAssetsByLocale(${Component.displayName})`;
   return WrappedComponent;
 };
 
-const DecapCms = ({ assetsByLocale }) => {
+const DecapCms = ({ assetsByLocale }: { assetsByLocale: AssetsByLocale }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
