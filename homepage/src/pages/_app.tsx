@@ -1,11 +1,30 @@
+import type { ReactElement } from 'react';
+import type { AppProps } from 'next/app';
+import type { NextPage } from 'next';
 import Head from 'next/head';
 import Script from 'next/script';
 import SiteLayout from '../layouts/siteLayout/siteLayout';
 import LinkClickTracker from '../components/linkClickTracker';
 import { GTM_ID } from '../lib/service/gtm';
+import type { Locale } from '../lib/i18n';
+import type { Layout, SiteData } from '../types/content';
 import '../../public/css/style.css';
 
-const siteDataDictionary = {
+type PageProps = {
+  layout?: Layout;
+};
+
+type GetLayout = (
+  page: ReactElement,
+  pageProps: PageProps,
+  siteData: SiteData,
+) => ReactElement;
+
+type PageWithLayout = NextPage<PageProps> & {
+  getLayout?: GetLayout;
+};
+
+const siteDataDictionary: Record<Locale, SiteData> = {
   en: {
     title: `OpenStarTerVillage`,
     description: `How can technology change the world? Play this board game and discover the answer for yourself!`,
@@ -18,16 +37,20 @@ const siteDataDictionary = {
   },
 };
 
-const getDefaultLayout = (page, pageProps, siteData) => {
+const getDefaultLayout: GetLayout = (page, pageProps, siteData) => {
   return (
-    <SiteLayout siteData={siteData} pageProps={pageProps} {...pageProps.layout}>
+    <SiteLayout siteData={siteData} {...pageProps.layout}>
       {page}
     </SiteLayout>
   );
 };
 
-export default function App({ Component, pageProps, router }) {
-  const siteData = siteDataDictionary[router.locale];
+export default function App({
+  Component,
+  pageProps,
+  router,
+}: AppProps<PageProps> & { Component: PageWithLayout }) {
+  const siteData = siteDataDictionary[router.locale as Locale];
 
   const getLayout = Component.getLayout || getDefaultLayout;
 

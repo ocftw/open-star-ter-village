@@ -1,13 +1,19 @@
+import type { GetStaticProps } from 'next';
 import Head from 'next/head';
 import contentMapper from '../layouts/contentMapper';
 import { getLayout } from '../lib/service/getLayout';
 import { getPage } from '../lib/service/getPage';
+import type { Locale } from '../lib/i18n';
+import type { HeadInfo, Layout } from '../types/content';
 
-/**
- *
- * @type {import('next').GetStaticProps}
- */
-export const getStaticProps = async ({ locale }) => {
+type Props = {
+  headInfo: HeadInfo;
+  page: Awaited<ReturnType<typeof getPage>>;
+  layout: Layout;
+};
+
+export const getStaticProps: GetStaticProps<Props> = async (context) => {
+  const locale = context.locale as Locale;
   const headInfo = {
     title: {
       en: `OpenStarTerVillage - Resource`,
@@ -31,7 +37,7 @@ export const getStaticProps = async ({ locale }) => {
   };
 };
 
-export default function Resource({ page, headInfo }) {
+export default function Resource({ page, headInfo }: Props) {
   return (
     <>
       <Head>

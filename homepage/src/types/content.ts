@@ -150,3 +150,11 @@ export type HeadInfo = {
   title: string;
   description: string;
 };
+
+export type AssetsByLocale = Record<
+  string,
+  {
+    locale: string;
+    cards: Card[];
+  }
+>;

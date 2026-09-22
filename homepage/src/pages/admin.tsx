@@ -1,13 +1,18 @@
+import type { GetStaticProps } from 'next';
+import type { ReactElement } from 'react';
 import Head from 'next/head';
 
 import { fetchAllCards } from '../lib/repository/fetchAllCards';
 import DecapCms from '../CMS/DecapCms';
+import type { AssetsByLocale } from '../types/content';
 
-/**
- *
- * @type {import('next').GetStaticProps}
- */
-export const getStaticProps = async ({ locales }) => {
+type Props = {
+  assetsByLocale: AssetsByLocale;
+};
+
+export const getStaticProps: GetStaticProps<Props> = async ({
+  locales = [],
+}) => {
   const assets = locales.map((locale) => {
     const cards = fetchAllCards(locale);
 
@@ -17,7 +22,7 @@ export const getStaticProps = async ({ locales }) => {
     };
   });
 
-  const assetsByLocale = assets.reduce((assets, asset) => {
+  const assetsByLocale = assets.reduce<AssetsByLocale>((assets, asset) => {
     assets[asset.locale] = asset;
     return assets;
   }, {});
@@ -29,7 +34,7 @@ export const getStaticProps = async ({ locales }) => {
   };
 };
 
-const Admin = ({ assetsByLocale }) => {
+const Admin = ({ assetsByLocale }: Props) => {
   return (
     <>
       <Head>
@@ -42,4 +47,4 @@ const Admin = ({ assetsByLocale }) => {
 
 export default Admin;
 
-Admin.getLayout = (page) => page;
+Admin.getLayout = (page: ReactElement) => page;

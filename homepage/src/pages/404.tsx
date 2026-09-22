@@ -1,11 +1,17 @@
+import type { GetStaticProps } from 'next';
 import Head from 'next/head';
 import { getLayout } from '../lib/service/getLayout';
+import type { Locale } from '../lib/i18n';
+import type { HeadInfo, Layout } from '../types/content';
 
-/**
- *
- * @type {import('next').GetStaticProps}
- */
-export const getStaticProps = async ({ locale }) => {
+type Props = {
+  headInfo: HeadInfo;
+  desc: string;
+  layout: Layout;
+};
+
+export const getStaticProps: GetStaticProps<Props> = async (context) => {
+  const locale = context.locale as Locale;
   const headInfo = {
     title: {
       en: `OpenStarTerVillage - Page Not Found`,
@@ -36,7 +42,7 @@ export const getStaticProps = async ({ locale }) => {
   };
 };
 
-const NotFoundPage = ({ headInfo, desc }) => (
+const NotFoundPage = ({ headInfo, desc }: Props) => (
   <>
     <Head>
       <title>{headInfo.title}</title>
