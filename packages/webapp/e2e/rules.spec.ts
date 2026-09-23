@@ -35,3 +35,16 @@ test('players can consult the rules without leaving an active game', async ({ pa
   await expect(rulesTab.getByRole('heading', { name: '一起玩開源星手村' })).toBeVisible();
   await expect(page).toHaveURL(/\/dev\?user=player1&mode=offline/);
 });
+
+test('mobile players can open the rules from the game menu', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/dev?user=player1&mode=offline');
+  await page.getByTestId('header-menu').click();
+
+  const [rulesTab] = await Promise.all([
+    page.context().waitForEvent('page'),
+    page.getByRole('menuitem', { name: /遊戲規則/ }).click(),
+  ]);
+  await expect(rulesTab).toHaveURL(/\/rules$/);
+  await expect(page).toHaveURL(/\/dev\?user=player1&mode=offline/);
+});
