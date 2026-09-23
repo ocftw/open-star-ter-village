@@ -1,5 +1,9 @@
 import { test, expect } from '@playwright/test';
 
+// Locale detection on deep links is a Netlify Edge Function
+// (netlify/edge-functions/locale-redirect.mjs), so this spec only runs in the
+// Netlify preview smoke.
+
 const englishHeaders = { 'Accept-Language': 'en-US,en;q=0.9' };
 
 test('redirects unprefixed deep links to the visitor locale', async ({
@@ -25,15 +29,24 @@ test('keeps unprefixed deep links for Chinese visitors', async ({
   expect(response.status()).toBe(200);
 });
 
-test('matches locales the way Next.js does on the root', async ({
-  request,
-}) => {
+test('matches locales the way the root redirect does', async ({ request }) => {
   const headers = { 'Accept-Language': 'en-US' };
   const root = await request.get('/', { headers, maxRedirects: 0 });
   const cards = await request.get('/cards/', { headers, maxRedirects: 0 });
 
-  expect(root.status()).toBe(200);
-  expect(cards.status()).toBe(200);
+  expect(new URL(root.headers()['location'], root.url()).pathname).toBe('/en/');
+  expect(new URL(cards.headers()['location'], cards.url()).pathname).toBe(
+    '/en/cards/',
+  );
+});
+
+test('leaves explicitly prefixed paths alone', async ({ request }) => {
+  const response = await request.get('/zh-Hant/cards/', {
+    headers: englishHeaders,
+    maxRedirects: 0,
+  });
+
+  expect(response.status()).toBe(200);
 });
 
 test('honours the NEXT_LOCALE cookie over Accept-Language', async ({
