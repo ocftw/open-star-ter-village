@@ -24,6 +24,10 @@ type PageWithLayout = NextPage<PageProps> & {
   getLayout?: GetLayout;
 };
 
+type AppWithLayoutProps = AppProps<PageProps> & {
+  Component: PageWithLayout;
+};
+
 const siteDataDictionary: Record<Locale, SiteData> = {
   en: {
     title: `OpenStarTerVillage`,
@@ -45,7 +49,7 @@ const getDefaultLayout: GetLayout = (page, pageProps, siteData) => {
   );
 };
 
-const App: React.FC<AppProps<PageProps> & { Component: PageWithLayout }> = ({
+const App: React.FC<AppWithLayoutProps> = ({
   Component,
   pageProps,
   router,

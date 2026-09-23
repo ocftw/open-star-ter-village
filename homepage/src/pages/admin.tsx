@@ -6,11 +6,11 @@ import { fetchAllCards } from '../lib/repository/fetchAllCards';
 import DecapCms from '../CMS/DecapCms';
 import type { AssetsByLocale } from '../types/content';
 
-type Props = {
+type AdminProps = {
   assetsByLocale: AssetsByLocale;
 };
 
-export const getStaticProps: GetStaticProps<Props> = async ({
+export const getStaticProps: GetStaticProps<AdminProps> = async ({
   locales = [],
 }) => {
   const assets = locales.map((locale) => {
@@ -34,7 +34,7 @@ export const getStaticProps: GetStaticProps<Props> = async ({
   };
 };
 
-const Admin: React.FC<Props> & {
+const Admin: React.FC<AdminProps> & {
   getLayout?: (page: ReactElement) => ReactElement;
 } = ({ assetsByLocale }) => {
   return (

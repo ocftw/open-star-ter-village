@@ -7,13 +7,15 @@ import { getPage } from '../lib/service/getPage';
 import type { Locale } from '../lib/i18n';
 import type { HeadInfo, Layout } from '../types/content';
 
-type Props = {
+type ResourceProps = {
   headInfo: HeadInfo;
   page: Awaited<ReturnType<typeof getPage>>;
   layout: Layout;
 };
 
-export const getStaticProps: GetStaticProps<Props> = async (context) => {
+export const getStaticProps: GetStaticProps<ResourceProps> = async (
+  context,
+) => {
   const locale = context.locale as Locale;
   const headInfo = {
     title: {
@@ -38,7 +40,7 @@ export const getStaticProps: GetStaticProps<Props> = async (context) => {
   };
 };
 
-const Resource: React.FC<Props> = ({ page, headInfo }) => {
+const Resource: React.FC<ResourceProps> = ({ page, headInfo }) => {
   return (
     <>
       <Head>

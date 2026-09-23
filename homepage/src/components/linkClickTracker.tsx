@@ -1,7 +1,11 @@
 import React, { useEffect } from 'react';
 import { trackLinkClick } from '../lib/service/gtm';
 
-const LinkClickTracker: React.FC<{ locale?: string }> = ({ locale }) => {
+type LinkClickTrackerProps = {
+  locale?: string;
+};
+
+const LinkClickTracker: React.FC<LinkClickTrackerProps> = ({ locale }) => {
   useEffect(() => {
     const handleLinkActivation = (event: MouseEvent) => {
       if (event.button !== 0 && event.button !== 1) return;

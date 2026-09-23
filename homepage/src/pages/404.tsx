@@ -5,13 +5,15 @@ import { getLayout } from '../lib/service/getLayout';
 import type { Locale } from '../lib/i18n';
 import type { HeadInfo, Layout } from '../types/content';
 
-type Props = {
+type NotFoundPageProps = {
   headInfo: HeadInfo;
   desc: string;
   layout: Layout;
 };
 
-export const getStaticProps: GetStaticProps<Props> = async (context) => {
+export const getStaticProps: GetStaticProps<NotFoundPageProps> = async (
+  context,
+) => {
   const locale = context.locale as Locale;
   const headInfo = {
     title: {
@@ -43,7 +45,7 @@ export const getStaticProps: GetStaticProps<Props> = async (context) => {
   };
 };
 
-const NotFoundPage: React.FC<Props> = ({ headInfo, desc }) => (
+const NotFoundPage: React.FC<NotFoundPageProps> = ({ headInfo, desc }) => (
   <>
     <Head>
       <title>{headInfo.title}</title>

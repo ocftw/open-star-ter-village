@@ -21,9 +21,11 @@ const withAssetsByLocale = (
   return WrappedComponent;
 };
 
-const DecapCms: React.FC<{ assetsByLocale: AssetsByLocale }> = ({
-  assetsByLocale,
-}) => {
+type DecapCmsProps = {
+  assetsByLocale: AssetsByLocale;
+};
+
+const DecapCms: React.FC<DecapCmsProps> = ({ assetsByLocale }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

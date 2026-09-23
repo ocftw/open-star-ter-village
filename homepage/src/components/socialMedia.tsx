@@ -7,9 +7,11 @@ type SocialMediaLink = {
   url: string;
 };
 
-const SocialMedia: React.FC<{
+type SocialMediaProps = {
   links?: SocialMediaLink[] | null;
-}> = ({ links = null }) => {
+};
+
+const SocialMedia: React.FC<SocialMediaProps> = ({ links = null }) => {
   const socialMediaList: SocialMediaLink[] = links || socialMedia.links || [];
 
   const socialMediaLinks = socialMediaList.map((link) => {

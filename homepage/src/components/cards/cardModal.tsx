@@ -2,7 +2,11 @@ import React, { useRef, type MouseEvent } from 'react';
 import { ParseMarkdownAndHtml } from '../parseMarkdownAndHtml';
 import type { Card } from '../../types/content';
 
-const CardModal: React.FC<{ card: Card }> = ({ card }) => {
+type CardModalProps = {
+  card: Card;
+};
+
+const CardModal: React.FC<CardModalProps> = ({ card }) => {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const titleId = `${card.data.id}-modal-title`;
 

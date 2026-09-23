@@ -1,4 +1,5 @@
 import type { GetStaticProps } from 'next';
+import React from 'react';
 import Head from 'next/head';
 import contentMapper from '../layouts/contentMapper';
 import { getLayout } from '../lib/service/getLayout';
@@ -6,13 +7,15 @@ import { getPage } from '../lib/service/getPage';
 import type { Locale } from '../lib/i18n';
 import type { HeadInfo, Layout } from '../types/content';
 
-type Props = {
+type CardsPageProps = {
   headInfo: HeadInfo;
   page: Awaited<ReturnType<typeof getPage>>;
   layout: Layout;
 };
 
-export const getStaticProps: GetStaticProps<Props> = async (context) => {
+export const getStaticProps: GetStaticProps<CardsPageProps> = async (
+  context,
+) => {
   const locale = context.locale as Locale;
   const page = await getPage('cards', locale);
 
@@ -37,7 +40,7 @@ export const getStaticProps: GetStaticProps<Props> = async (context) => {
   };
 };
 
-const cards = ({ headInfo, page }: Props) => {
+const CardsPage: React.FC<CardsPageProps> = ({ headInfo, page }) => {
   return (
     <>
       <Head>
@@ -49,4 +52,4 @@ const cards = ({ headInfo, page }: Props) => {
   );
 };
 
-export default cards;
+export default CardsPage;

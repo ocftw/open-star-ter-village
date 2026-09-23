@@ -11,7 +11,11 @@ const getLinkProps = (url: string) => {
   };
 };
 
-const FooterLinks: React.FC<{ links: FooterLink[] }> = ({ links }) => (
+type FooterLinksProps = {
+  links: FooterLink[];
+};
+
+const FooterLinks: React.FC<FooterLinksProps> = ({ links }) => (
   <div className="d-flex gap">
     {links.map((link) => {
       const linkProps = getLinkProps(link.url);

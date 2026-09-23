@@ -2,7 +2,11 @@ import React from 'react';
 import CardModal from './cardModal';
 import type { Card } from '../../types/content';
 
-const ProjectCard: React.FC<{ card: Card }> = ({ card }) => (
+type ProjectCardProps = {
+  card: Card;
+};
+
+const ProjectCard: React.FC<ProjectCardProps> = ({ card }) => (
   <div className="col-md-6 col-xl-4 mb-3" id={card.data.id}>
     <div
       className="section-main"
