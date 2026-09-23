@@ -123,12 +123,17 @@ The webapp emits business events through `dataLayer`:
 - `game_intent` when `/lobby` is reached.
 - `project_catalog_interest` when the header or game-over catalog link is
   selected. Its `link_placement` is `header` or `game_over`.
-- `link_click` for every anchor activation. It records a stable link ID,
+- `link_click` for every anchor activation. It records a `link_id`, a
   privacy-safe destination without query parameters, placement, locale, and
-  viewport bucket. Add `data-analytics-id` and `data-analytics-placement` to
-  important links when the inferred values are not specific enough. This
-  supports link-popularity reports only; it does not collect pointer coordinates
-  or produce a visual heatmap.
+  viewport bucket. Only links carrying `data-analytics-id` (or an `id`) get
+  their own stable `link_id`; untagged ones fall back to `internal:untagged` or
+  `external:<hostname>` so GA4 does not collapse the whole high-cardinality
+  dimension into `(other)` and take the tagged ids with it. Add
+  `data-analytics-id` and `data-analytics-placement` to any link worth reporting
+  on its own; the full path of an untagged link is still in `link_url`. This
+  supports link-popularity reports only (by `link_id` for tagged links, by
+  `link_url` otherwise); it does not collect pointer coordinates or produce a
+  visual heatmap.
 
 The first two events are GA4 key events. GTM must publish GA4 event tags for them, while
 the homepage promotion flow uses the recommended `view_promotion` and
