@@ -1,3 +1,4 @@
+import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import LanguageDropdownMenu from './languageDropdownMenu';
@@ -8,7 +9,7 @@ type NavigatorProps = {
   navigationItems: NavigationItem[];
 };
 
-const Navigator = ({ logo, navigationItems }: NavigatorProps) => (
+const Navigator: React.FC<NavigatorProps> = ({ logo, navigationItems }) => (
   <nav className="navbar navbar-expand-md">
     <div className="logo navbar-brand">
       <Link href="/">

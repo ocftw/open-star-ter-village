@@ -1,3 +1,4 @@
+import React from 'react';
 import Link from 'next/link';
 import TrackedPromotionLink from '../../components/trackedPromotionLink';
 import type { FooterLink } from '../../types/content';
@@ -10,7 +11,7 @@ const getLinkProps = (url: string) => {
   };
 };
 
-const FooterLinks = ({ links }: { links: FooterLink[] }) => (
+const FooterLinks: React.FC<{ links: FooterLink[] }> = ({ links }) => (
   <div className="d-flex gap">
     {links.map((link) => {
       const linkProps = getLinkProps(link.url);

@@ -1,8 +1,8 @@
-import { useRef, type MouseEvent } from 'react';
+import React, { useRef, type MouseEvent } from 'react';
 import { ParseMarkdownAndHtml } from '../parseMarkdownAndHtml';
 import type { Card } from '../../types/content';
 
-function CardModal({ card }: { card: Card }) {
+const CardModal: React.FC<{ card: Card }> = ({ card }) => {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const titleId = `${card.data.id}-modal-title`;
 
@@ -79,6 +79,6 @@ function CardModal({ card }: { card: Card }) {
       </dialog>
     </>
   );
-}
+};
 
 export default CardModal;

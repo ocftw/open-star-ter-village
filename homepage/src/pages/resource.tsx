@@ -1,4 +1,5 @@
 import type { GetStaticProps } from 'next';
+import React from 'react';
 import Head from 'next/head';
 import contentMapper from '../layouts/contentMapper';
 import { getLayout } from '../lib/service/getLayout';
@@ -37,7 +38,7 @@ export const getStaticProps: GetStaticProps<Props> = async (context) => {
   };
 };
 
-export default function Resource({ page, headInfo }: Props) {
+const Resource: React.FC<Props> = ({ page, headInfo }) => {
   return (
     <>
       <Head>
@@ -47,4 +48,6 @@ export default function Resource({ page, headInfo }: Props) {
       {page.contentList?.map(contentMapper)}
     </>
   );
-}
+};
+
+export default Resource;

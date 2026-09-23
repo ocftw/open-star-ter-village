@@ -1,3 +1,4 @@
+import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -9,7 +10,13 @@ type LogoProps = {
   link: string;
 };
 
-const Logo = ({ title, altText, src, dimension, link }: LogoProps) => (
+const Logo: React.FC<LogoProps> = ({
+  title,
+  altText,
+  src,
+  dimension,
+  link,
+}) => (
   <div className="d-flex align-items-center logo-margin">
     <span className="logo-title">{title}</span>
     <Link href={link} target="_blank">

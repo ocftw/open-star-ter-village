@@ -1,8 +1,9 @@
+import React from 'react';
 import Image from 'next/image';
 import { ParseMarkdownAndHtml } from '../parseMarkdownAndHtml';
 import type { Card } from '../../types/content';
 
-const DefaultCard = ({ card }: { card: Card }) => (
+const DefaultCard: React.FC<{ card: Card }> = ({ card }) => (
   <div className="col-xl-4 col-md-6 mb-3" id={card.data.id}>
     <div
       className="section-main"

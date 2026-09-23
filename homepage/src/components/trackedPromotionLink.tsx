@@ -1,4 +1,4 @@
-import {
+import React, {
   useCallback,
   useEffect,
   useRef,
@@ -17,14 +17,14 @@ type TrackedPromotionLinkProps = Omit<ComponentProps<typeof Link>, 'href'> & {
   children?: ReactNode;
 };
 
-const TrackedPromotionLink = ({
+const TrackedPromotionLink: React.FC<TrackedPromotionLinkProps> = ({
   analyticsId,
   creativeName,
   creativeSlot,
   href,
   children,
   ...linkProps
-}: TrackedPromotionLinkProps) => {
+}) => {
   const linkRef = useRef<HTMLAnchorElement>(null);
   const impressionSent = useRef(false);
   const { locale } = useRouter();

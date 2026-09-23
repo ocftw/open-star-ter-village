@@ -1,8 +1,15 @@
+import React from 'react';
 import Image from 'next/image';
 import { ParseMarkdownAndHtml } from './parseMarkdownAndHtml';
 import type { SectionProps } from '../types/components';
 
-const Section = ({ id, title, subtitle, image, content }: SectionProps) => (
+const Section: React.FC<SectionProps> = ({
+  id,
+  title,
+  subtitle,
+  image,
+  content,
+}) => (
   <div className="section" id={id}>
     <div className="container">
       <div className="section-head">

@@ -1,3 +1,4 @@
+import React from 'react';
 import Navigator from './navigator';
 import type { NavigationItem, SiteData } from '../../types/content';
 
@@ -6,7 +7,7 @@ type HeaderProps = {
   navigation?: NavigationItem[];
 };
 
-const Header = ({ siteData, navigation = [] }: HeaderProps) => (
+const Header: React.FC<HeaderProps> = ({ siteData, navigation = [] }) => (
   <header className="site-header sticky-top">
     <div className="container">
       <Navigator logo={siteData.logo} navigationItems={navigation} />

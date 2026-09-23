@@ -1,3 +1,4 @@
+import React from 'react';
 import type { GetStaticProps } from 'next';
 import Head from 'next/head';
 import { getLayout } from '../lib/service/getLayout';
@@ -42,7 +43,7 @@ export const getStaticProps: GetStaticProps<Props> = async (context) => {
   };
 };
 
-const NotFoundPage = ({ headInfo, desc }: Props) => (
+const NotFoundPage: React.FC<Props> = ({ headInfo, desc }) => (
   <>
     <Head>
       <title>{headInfo.title}</title>

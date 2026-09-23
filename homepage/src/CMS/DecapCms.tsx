@@ -1,4 +1,4 @@
-import { useEffect, useState, type ComponentType } from 'react';
+import React, { useEffect, useState, type ComponentType } from 'react';
 import PagePreview from './preview/PagePreview';
 import FooterPreview from './preview/FooterPreview';
 import CardPreview from './preview/CardPreview';
@@ -11,7 +11,7 @@ const withAssetsByLocale = (
   Component: ComponentType<PreviewTemplateProps>,
   assetsByLocale: AssetsByLocale,
 ) => {
-  const WrappedComponent = (props: DecapPreviewProps) => (
+  const WrappedComponent: React.FC<DecapPreviewProps> = (props) => (
     <Component
       {...(props as Omit<PreviewTemplateProps, 'assetsByLocale'>)}
       assetsByLocale={assetsByLocale}
@@ -21,7 +21,9 @@ const withAssetsByLocale = (
   return WrappedComponent;
 };
 
-const DecapCms = ({ assetsByLocale }: { assetsByLocale: AssetsByLocale }) => {
+const DecapCms: React.FC<{ assetsByLocale: AssetsByLocale }> = ({
+  assetsByLocale,
+}) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

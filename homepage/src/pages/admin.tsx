@@ -1,5 +1,5 @@
 import type { GetStaticProps } from 'next';
-import type { ReactElement } from 'react';
+import React, { type ReactElement } from 'react';
 import Head from 'next/head';
 
 import { fetchAllCards } from '../lib/repository/fetchAllCards';
@@ -34,7 +34,9 @@ export const getStaticProps: GetStaticProps<Props> = async ({
   };
 };
 
-const Admin = ({ assetsByLocale }: Props) => {
+const Admin: React.FC<Props> & {
+  getLayout?: (page: ReactElement) => ReactElement;
+} = ({ assetsByLocale }) => {
   return (
     <>
       <Head>

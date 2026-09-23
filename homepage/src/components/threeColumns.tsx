@@ -1,7 +1,8 @@
+import React from 'react';
 import Column from './column';
 import type { ColumnsProps } from '../types/components';
 
-const ThreeColumns = ({ id, title, columns }: ColumnsProps) => (
+const ThreeColumns: React.FC<ColumnsProps> = ({ id, title, columns }) => (
   <div className="section" id={id}>
     <div className="container">
       <div className="section-head">

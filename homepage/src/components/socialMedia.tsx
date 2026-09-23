@@ -1,3 +1,4 @@
+import React from 'react';
 import Link from 'next/link';
 import socialMedia from '../../_data/social_media.json';
 
@@ -6,11 +7,9 @@ type SocialMediaLink = {
   url: string;
 };
 
-const SocialMedia = ({
-  links = null,
-}: {
+const SocialMedia: React.FC<{
   links?: SocialMediaLink[] | null;
-}) => {
+}> = ({ links = null }) => {
   const socialMediaList: SocialMediaLink[] = links || socialMedia.links || [];
 
   const socialMediaLinks = socialMediaList.map((link) => {

@@ -1,13 +1,14 @@
+import React from 'react';
 import { componentMapper } from '../../lib/service/PageContentService/componentMapper';
 import contentMapper from '../../layouts/contentMapper';
 import type { PageLayout } from '../../types/content';
 import type { DecapEntry, PreviewTemplateProps } from '../types';
 
-const PagePreview = ({
+const PagePreview: React.FC<PreviewTemplateProps> = ({
   entry,
   assetsByLocale,
   locale,
-}: PreviewTemplateProps) => {
+}) => {
   const assets = assetsByLocale[locale];
 
   const layoutList = entry.getIn(['data', 'layout_list']);

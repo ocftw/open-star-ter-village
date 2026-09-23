@@ -1,7 +1,8 @@
+import React from 'react';
 import FooterLinks from '../../layouts/footer/footerLinks';
 import type { DecapEntry, PreviewTemplateProps } from '../types';
 
-const FooterPreview = ({ entry }: PreviewTemplateProps) => {
+const FooterPreview: React.FC<PreviewTemplateProps> = ({ entry }) => {
   const footer = entry.getIn(['data', 'footer']);
   const links = footer
     ?.get('links')

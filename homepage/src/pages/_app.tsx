@@ -1,4 +1,4 @@
-import type { ReactElement } from 'react';
+import React, { type ReactElement } from 'react';
 import type { AppProps } from 'next/app';
 import type { NextPage } from 'next';
 import Head from 'next/head';
@@ -45,11 +45,11 @@ const getDefaultLayout: GetLayout = (page, pageProps, siteData) => {
   );
 };
 
-export default function App({
+const App: React.FC<AppProps<PageProps> & { Component: PageWithLayout }> = ({
   Component,
   pageProps,
   router,
-}: AppProps<PageProps> & { Component: PageWithLayout }) {
+}) => {
   const siteData = siteDataDictionary[router.locale as Locale];
 
   const getLayout = Component.getLayout || getDefaultLayout;
@@ -78,4 +78,6 @@ export default function App({
       {getLayout(<Component {...pageProps} />, pageProps, siteData)}
     </>
   );
-}
+};
+
+export default App;

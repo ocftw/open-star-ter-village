@@ -1,3 +1,4 @@
+import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 
@@ -6,11 +7,11 @@ type ParseMarkdownAndHtmlProps = {
   markdown?: boolean;
 };
 
-export function ParseMarkdownAndHtml({
+export const ParseMarkdownAndHtml: React.FC<ParseMarkdownAndHtmlProps> = ({
   children,
   markdown,
-}: ParseMarkdownAndHtmlProps) {
+}) => {
   if (!markdown)
     return <div dangerouslySetInnerHTML={{ __html: children ?? '' }} />;
   return <ReactMarkdown rehypePlugins={[rehypeRaw]}>{children}</ReactMarkdown>;
-}
+};

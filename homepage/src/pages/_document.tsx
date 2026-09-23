@@ -1,7 +1,8 @@
+import React from 'react';
 import { Html, Head, Main, NextScript } from 'next/document';
 import { GTM_ID } from '../lib/service/gtm';
 
-export default function Document() {
+const Document: React.FC = () => {
   return (
     <Html>
       <Head>
@@ -50,4 +51,6 @@ export default function Document() {
       </body>
     </Html>
   );
-}
+};
+
+export default Document;

@@ -1,8 +1,9 @@
+import React from 'react';
 import Image from 'next/image';
 import { ParseMarkdownAndHtml } from './parseMarkdownAndHtml';
 import type { SectionColumn } from '../types/content';
 
-const Column = ({ title, image, text }: SectionColumn) => (
+const Column: React.FC<SectionColumn> = ({ title, image, text }) => (
   <div className="section-main">
     <h3>{title}</h3>
     <div className="d-flex flex-column">

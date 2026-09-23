@@ -1,3 +1,4 @@
+import React from 'react';
 import SocialMedia from '../../components/socialMedia';
 import Logo from '../../components/logo';
 import FooterLinks from './footerLinks';
@@ -7,7 +8,11 @@ type FooterProps = Partial<FooterModel> & {
   siteData: SiteData;
 };
 
-const Footer = ({ siteData, links = [], logos = [] }: FooterProps) => {
+const Footer: React.FC<FooterProps> = ({
+  siteData,
+  links = [],
+  logos = [],
+}) => {
   return (
     <div className="site-footer" id="footer">
       <div className="container footer-main">

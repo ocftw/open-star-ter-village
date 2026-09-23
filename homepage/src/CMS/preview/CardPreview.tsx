@@ -1,14 +1,15 @@
+import React from 'react';
 import Card from '../../components/cards/card';
 import { processCard } from '../../lib/utils/processCard';
 import type { CardFrontMatter } from '../../types/content';
 import type { PreviewTemplateProps } from '../types';
 
-const CardPreview = ({
+const CardPreview: React.FC<PreviewTemplateProps> = ({
   entry,
   getAsset,
   assetsByLocale,
   locale,
-}: PreviewTemplateProps) => {
+}) => {
   const assets = assetsByLocale[locale];
 
   const data = entry.getIn(['data']).toJS() as CardFrontMatter & {

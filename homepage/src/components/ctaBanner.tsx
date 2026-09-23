@@ -1,8 +1,9 @@
+import React from 'react';
 import { ParseMarkdownAndHtml } from './parseMarkdownAndHtml';
 import TrackedPromotionLink from './trackedPromotionLink';
 import type { CtaBannerProps } from '../types/components';
 
-const CtaBanner = ({
+const CtaBanner: React.FC<CtaBannerProps> = ({
   id,
   title,
   content,
@@ -10,7 +11,7 @@ const CtaBanner = ({
   ctaUrl,
   analyticsId,
   openInNewTab = false,
-}: CtaBannerProps) => (
+}) => (
   <section className="cta-banner section" id={id}>
     <div className="container">
       <div className="cta-banner-content">

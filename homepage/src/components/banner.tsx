@@ -1,14 +1,15 @@
+import React from 'react';
 import Image from 'next/image';
 import SocialMedia from './socialMedia';
 import type { BannerProps } from '../types/components';
 
-const Banner = ({
+const Banner: React.FC<BannerProps> = ({
   id,
   heroImage,
   title,
   subtitle = '',
   highlights = [],
-}: BannerProps) => (
+}) => (
   <div className="banner" id={id}>
     <Image
       src={heroImage}

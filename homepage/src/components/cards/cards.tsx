@@ -1,7 +1,8 @@
+import React from 'react';
 import Card from './card';
 import type { CardsProps } from '../../types/components';
 
-const Cards = ({ id, title, cards }: CardsProps) => {
+const Cards: React.FC<CardsProps> = ({ id, title, cards }) => {
   return (
     <div className="section" id={id}>
       <div className="container">

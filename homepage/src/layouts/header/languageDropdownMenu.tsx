@@ -1,3 +1,4 @@
+import React from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import type { Locale } from '../../lib/i18n';
@@ -7,7 +8,7 @@ const languageLabelDictionary: Record<Locale, string> = {
   'zh-Hant': '中文',
 };
 
-const LanguageDropdownMenu = () => {
+const LanguageDropdownMenu: React.FC = () => {
   const router = useRouter();
   const { asPath } = router;
   const locales = (router.locales ?? []) as Locale[];
