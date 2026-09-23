@@ -135,7 +135,7 @@ Decap CMS 是一個用於網站內容管理的工具。若您希望深入了解�
 
 ### 網站分析
 
-網站分析使用 Google Tag Manager 進行設定，主要用於分析網站流量。主要的設定檔案為 [`src/lib/service/gtm.js`](./src/lib/service/gtm.js)，使用於 [`src/pages/_app.jsx`](./src/pages/_app.jsx) 與 [`src/pages/_document.jsx`](./src/pages/_document.jsx)。
+網站分析使用 Google Tag Manager 進行設定，主要用於分析網站流量。主要的設定檔案為 [`src/lib/service/gtm.ts`](./src/lib/service/gtm.ts)，使用於 [`src/pages/_app.tsx`](./src/pages/_app.tsx) 與 [`src/pages/_document.tsx`](./src/pages/_document.tsx)。
 
 正式站使用 `NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID=GTM-N324PT4J`。此環境變數未設定時不會載入 GTM，也不會寫入 `dataLayer`，因此本機與 Deploy Preview 不會污染正式資料。
 
@@ -145,7 +145,7 @@ Decap CMS 是一個用於網站內容管理的工具。若您希望深入了解�
 
 ### 網站 SEO
 
-網站 SEO 僅有在 [`public/sitemap.xml`](./public/sitemap.xml) 與 [`public/robots.txt`](./public/robots.txt) 中設定，由於頁面還沒擴增到完全由 CMS 產生，尚未以[`src/pages/sitemap.xml.js`](./src/pages/sitemap.xml.js)的方式即時生成 sitemap。若您希望更深入了解如何設定網站 SEO，您可以參考以下文件：
+網站 SEO 僅有在 [`public/sitemap.xml`](./public/sitemap.xml) 與 [`public/robots.txt`](./public/robots.txt) 中設定，由於頁面還沒擴增到完全由 CMS 產生，尚未以[`src/pages/sitemap.xml.ts`](./src/pages/sitemap.xml.ts)的方式即時生成 sitemap。若您希望更深入了解如何設定網站 SEO，您可以參考以下文件：
 
 - <https://nextjs.org/learn-pages-router/seo/crawling-and-indexing/xml-sitemaps>
 - <https://nextjs.org/learn-pages-router/seo/crawling-and-indexing/robots-txt>

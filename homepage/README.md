@@ -13,6 +13,7 @@
 - Runtime：Node.js >= 24
 - Package manager：pnpm 11.15.1（repository root workspace）
 - Framework：Next.js 16
+- Language：TypeScript（strict）
 - CMS：Decap CMS
 
 常用指令：
@@ -21,7 +22,8 @@
 pnpm homepage dev         # 啟動開發伺服器
 pnpm homepage build       # 建置網站
 pnpm homepage start       # 啟動 production server
-pnpm homepage lint        # Prettier check + ESLint
+pnpm homepage lint        # Prettier check + ESLint + TypeScript
+pnpm homepage typecheck   # TypeScript 型別檢查
 pnpm homepage lint:fix    # 自動修正格式與 lint 問題
 pnpm homepage test:admin  # 驗證 production build 的 Decap CMS shell
 pnpm homepage test:visual # 比對 public pages 的 Playwright 視覺快照
@@ -152,37 +154,40 @@ Decap CMS 支援 Markdown 語法，如對此不熟悉可參考以下兩個網站
 
 ### 增加新語言/修改語言代碼/刪除語言
 
-1. 增加語言於 [`next.config.js`](./next.config.js) 中的 `i18n.locales` 陣列中。語言代碼請參考 [BCP 47](https://www.w3.org/International/questions/qa-choosing-language-tags#question), [ISO 639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes), [ISO 639-2](https://en.wikipedia.org/wiki/List_of_ISO_639-2_codes), [ISO 639-3](https://en.wikipedia.org/wiki/List_of_ISO_639-3_codes)
+1. 增加語言於 [`src/lib/i18n.ts`](./src/lib/i18n.ts) 中的 `locales` 陣列中。語言代碼請參考 [BCP 47](https://www.w3.org/International/questions/qa-choosing-language-tags#question), [ISO 639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes), [ISO 639-2](https://en.wikipedia.org/wiki/List_of_ISO_639-2_codes), [ISO 639-3](https://en.wikipedia.org/wiki/List_of_ISO_639-3_codes)
 
 目前支援的語言有 `zh-Hant`, `en`。
 
-```js
-// next.config.js
+```ts
+// src/lib/i18n.ts
+export const locales = ['zh-Hant', 'en'] as const;
+export const defaultLocale = 'zh-Hant';
+
+// next.config.ts
 i18n: {
-  locales: ['zh-Hant', 'en'],
-  defaultLocale: 'zh-Hant',
+  locales: [...locales],
+  defaultLocale,
 },
 
-// decap-cms.config.js
-// decap cms i18n inherits from next.config.js
+// src/CMS/decap-cms.config.ts
 i18n: {
   structure: 'multiple_folders',
-  locales: nextConfig.i18n.locales,
-  default_locale: nextConfig.i18n.defaultLocale,
+  locales: [...locales],
+  default_locale: defaultLocale,
 },
 ```
 
-> Decap cms中的語言陣列與預設語言是沿用next.config.js中的設定，因此在next.config.js中新增語言後，decap cms會自動套用新增的語言。
+> Next.js 與 Decap cms 的語言陣列與預設語言都來自 `src/lib/i18n.ts`，因此在 `src/lib/i18n.ts` 中新增語言後，兩者會自動套用新增的語言。
 >
 > 語言陣列中的語言順序為decap cms中的編輯文件的語言順序。
 
-2. 修改語言代碼需同時修改 `next.config.js` 中的 `i18n.locales` 並將 [`_cards`](./_cards/), [`_footer`](./_footer/), [`_pages`](./_pages/) 資料夾中底下的語言資料夾名稱一併修改。
+2. 修改語言代碼需同時修改 `src/lib/i18n.ts` 中的 `locales` 並將 [`_cards`](./_cards/), [`_footer`](./_footer/), [`_pages`](./_pages/) 資料夾中底下的語言資料夾名稱一併修改。
 
 例如：將 `zh-tw` 修改為 `zh-hant`，則 `_cards`, `_footer`, `_pages` 底下的 `zh-tw` 資料夾名稱也需一併修改為 `zh-hant`。
 
-> Decap cms中的語言陣列與預設語言是沿用next.config.js中的設定，因此在next.config.js中修改語言後，decap cms會自動套用修改。
+> Next.js 與 Decap cms 的語言設定都來自 `src/lib/i18n.ts`，因此在 `src/lib/i18n.ts` 中修改語言後，兩者會自動套用修改。
 >
-> 語言資料夾名稱需與 `next.config.js` 中的 `i18n.locales` 陣列中的語言代碼一致。
+> 語言資料夾名稱需與 `src/lib/i18n.ts` 中的 `locales` 陣列中的語言代碼一致。
 >
 > 如果`defaultLocale`是`zh-tw`，則在`zh-tw`修改為`zh-hant`時，需要同時修改`defaultLocale`為`zh-hant`。
 >

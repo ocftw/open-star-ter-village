@@ -1,0 +1,526 @@
+import { defaultLocale, locales } from '../lib/i18n';
+import type { CmsConfig } from './types';
+
+const SITE_URL = 'https://openstartervillage.ocf.tw';
+
+// The OAuth popup must be served by the same origin that served /admin, so that
+// the callback can postMessage back to its opener. Falls back to the canonical
+// site URL during build, when there is no window.
+const oauthBaseUrl =
+  typeof window === 'undefined' ? SITE_URL : window.location.origin;
+
+const config: CmsConfig = {
+  cms_manual_init: true,
+  local_backend: true,
+  backend: {
+    name: 'github',
+    repo: 'ocftw/open-star-ter-village',
+    branch: 'main',
+    base_url: oauthBaseUrl,
+    auth_endpoint: '.netlify/functions/auth',
+  },
+  // Anyone with a GitHub account may propose edits; Decap forks the repo for
+  // users without write access and opens a PR. Requires editorial_workflow.
+  open_authoring: true,
+  site_url: SITE_URL,
+  publish_mode: 'editorial_workflow',
+  media_folder: 'homepage/public/images/uploads',
+  public_folder: '/images/uploads',
+  locale: 'zh_Hant',
+  i18n: {
+    structure: 'multiple_folders',
+    locales: [...locales],
+    default_locale: defaultLocale,
+  },
+  collections: [
+    {
+      name: 'pages',
+      label: 'Pages',
+      label_singular: 'Page',
+      description: 'Pages in the website',
+      folder: 'homepage/_pages',
+      slug: '{{unique_slug}}',
+      identifier_field: 'unique_slug',
+      preview_path: '{{unique_slug}}',
+      create: true,
+      i18n: true,
+      fields: [
+        {
+          label: 'Unique Slug',
+          name: 'unique_slug',
+          widget: 'string',
+          i18n: 'duplicate',
+        },
+        { label: 'Name', name: 'name', widget: 'string', i18n: true },
+        {
+          label: 'Page order',
+          name: 'page_order',
+          widget: 'number',
+          value_type: 'int',
+          i18n: 'duplicate',
+        },
+        // @ts-expect-error -- layout_section is a list-typed variant; Decap
+        // supports it at runtime but its types only allow object variants.
+        {
+          label: 'Layout & Content',
+          name: 'layout_list',
+          widget: 'list',
+          i18n: true,
+          types: [
+            {
+              label: 'Layout - Banner',
+              name: 'layout_banner',
+              widget: 'object',
+              summary: '{{fields.title}}',
+              fields: [
+                {
+                  label: 'Background Hero Image',
+                  name: 'hero_image',
+                  widget: 'image',
+                },
+                { label: 'Title', name: 'title', widget: 'string' },
+                {
+                  label: 'Subtitle',
+                  name: 'subtitle',
+                  widget: 'string',
+                  required: false,
+                },
+                {
+                  label: 'Highlights',
+                  name: 'highlights',
+                  widget: 'list',
+                  required: false,
+                },
+              ],
+            },
+            {
+              label: 'Layout - Headline',
+              name: 'layout_headline',
+              widget: 'object',
+              summary: '{{fields.title}}',
+              fields: [
+                { label: 'Title', name: 'title', widget: 'string' },
+                {
+                  label: 'Subtitle',
+                  name: 'subtitle',
+                  widget: 'string',
+                  required: false,
+                },
+              ],
+            },
+            {
+              label: 'Layout - Image & Text',
+              name: 'layout_image_text',
+              widget: 'object',
+              summary: '{{fields.title}}',
+              fields: [
+                { label: 'Image', name: 'image', widget: 'image' },
+                { label: 'Title', name: 'title', widget: 'string' },
+                {
+                  label: 'Subtitle',
+                  name: 'subtitle',
+                  widget: 'string',
+                  required: false,
+                },
+                {
+                  label: 'Text',
+                  name: 'text',
+                  widget: 'markdown',
+                  required: false,
+                },
+                {
+                  label: 'Highlights',
+                  label_singular: 'Highlight',
+                  name: 'highlights',
+                  widget: 'list',
+                  required: false,
+                  fields: [
+                    {
+                      label: 'Item',
+                      name: 'item',
+                      widget: 'string',
+                    },
+                    {
+                      label: 'Description',
+                      name: 'description',
+                      widget: 'string',
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              label: 'Layout - CTA Banner',
+              name: 'layout_cta_banner',
+              widget: 'object',
+              summary: '{{fields.title}}',
+              fields: [
+                { label: 'Title', name: 'title', widget: 'string' },
+                {
+                  label: 'Text',
+                  name: 'text',
+                  widget: 'markdown',
+                },
+                {
+                  label: 'CTA Label',
+                  name: 'cta_label',
+                  widget: 'string',
+                },
+                {
+                  label: 'CTA URL',
+                  name: 'cta_url',
+                  widget: 'string',
+                },
+                {
+                  label: 'Analytics ID',
+                  name: 'analytics_id',
+                  widget: 'string',
+                  i18n: 'duplicate',
+                  hint: 'Stable identifier shared by every locale.',
+                },
+                {
+                  label: 'Open in new tab',
+                  name: 'open_in_new_tab',
+                  widget: 'boolean',
+                  default: false,
+                  i18n: 'duplicate',
+                },
+              ],
+            },
+            {
+              label: 'Layout - Section',
+              name: 'layout_section',
+              widget: 'list',
+              summary: '{{fields.title}}',
+              fields: [
+                { label: 'Title', name: 'title', widget: 'string' },
+                {
+                  name: 'columns',
+                  label: 'Columns',
+                  label_singular: 'Column',
+                  widget: 'list',
+                  fields: [
+                    {
+                      label: 'Title',
+                      name: 'title',
+                      widget: 'string',
+                      required: false,
+                    },
+                    {
+                      label: 'Image',
+                      name: 'image',
+                      widget: 'image',
+                      required: false,
+                    },
+                    {
+                      label: 'Text',
+                      name: 'text',
+                      widget: 'markdown',
+                      required: false,
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              label: 'Layout - Cards',
+              name: 'layout_cards',
+              widget: 'object',
+              summary: '{{fields.title}}',
+              fields: [
+                { label: 'Title', name: 'title', widget: 'string' },
+                {
+                  label: 'Card type',
+                  name: 'card_type',
+                  widget: 'select',
+                  options: [
+                    { label: '專案', value: 'project' },
+                    { label: '人力', value: 'job' },
+                    { label: '事件', value: 'event' },
+                  ],
+                  required: false,
+                },
+                {
+                  label: 'Card tags',
+                  name: 'card_tags',
+                  widget: 'select',
+                  multiple: true,
+                  options: [
+                    { label: '開放政府', value: 'open gov' },
+                    { label: '開放資料', value: 'open data' },
+                    { label: '開放原始碼', value: 'open source' },
+                    { label: '基礎', value: 'basic' },
+                    { label: '進階', value: 'advance' },
+                    { label: '工程師', value: 'engineer' },
+                    { label: '美術設計', value: 'designer' },
+                    { label: '文字工作者', value: 'writer' },
+                    { label: '行銷公關', value: 'marketing' },
+                    { label: '議題工作者', value: 'advocator' },
+                    { label: '公務員', value: 'civil servants' },
+                    { label: '法務人員', value: 'legal' },
+                  ],
+                  required: false,
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: 'cards',
+      label: 'Cards',
+      label_singular: 'Card',
+      description: 'Cards in the boardgame',
+      folder: 'homepage/_cards',
+      create: true,
+      i18n: true,
+      view_groups: [{ label: 'Type', field: 'type' }],
+      view_filters: [
+        { label: '專案', field: 'type', pattern: 'project' },
+        { label: '人力', field: 'type', pattern: 'job' },
+        { label: '事件', field: 'type', pattern: 'event' },
+
+        { label: '開放政府', field: 'tags', pattern: 'open gov' },
+        { label: '開放資料', field: 'tags', pattern: 'open data' },
+        { label: '開放原始碼', field: 'tags', pattern: 'open source' },
+        { label: '基礎', field: 'tags', pattern: 'basic' },
+        { label: '進階', field: 'tags', pattern: 'advance' },
+        { label: '工程師', field: 'tags', pattern: 'engineer' },
+        { label: '美術設計', field: 'tags', pattern: 'designer' },
+        { label: '文字工作者', field: 'tags', pattern: 'writer' },
+        { label: '行銷公關', field: 'tags', pattern: 'marketing' },
+        { label: '議題工作者', field: 'tags', pattern: 'advocator' },
+        { label: '公務員', field: 'tags', pattern: 'civil servants' },
+        { label: '法務人員', field: 'tags', pattern: 'legal' },
+      ],
+      summary: '{{fields.type}} / {{fields.title}}',
+      fields: [
+        {
+          label: 'Image',
+          name: 'image',
+          widget: 'image',
+          required: false,
+          i18n: true,
+        },
+        {
+          label: 'Title',
+          name: 'title',
+          widget: 'string',
+          i18n: true,
+        },
+        {
+          label: 'Description',
+          name: 'description',
+          widget: 'string',
+          required: false,
+          i18n: true,
+        },
+        {
+          label: 'Type',
+          name: 'type',
+          widget: 'select',
+          options: [
+            { label: '專案', value: 'project' },
+            { label: '人力', value: 'job' },
+            { label: '事件', value: 'event' },
+          ],
+          i18n: 'duplicate',
+        },
+        {
+          label: 'Tags',
+          name: 'tags',
+          widget: 'select',
+          required: false,
+          multiple: true,
+          options: [
+            { label: '開放政府', value: 'open gov' },
+            { label: '開放資料', value: 'open data' },
+            { label: '開放原始碼', value: 'open source' },
+            { label: '基礎', value: 'basic' },
+            { label: '進階', value: 'advance' },
+            { label: '工程師', value: 'engineer' },
+            { label: '美術設計', value: 'designer' },
+            { label: '文字工作者', value: 'writer' },
+            { label: '行銷公關', value: 'marketing' },
+            { label: '議題工作者', value: 'advocator' },
+            { label: '公務員', value: 'civil servants' },
+            { label: '法務人員', value: 'legal' },
+          ],
+          i18n: 'duplicate',
+        },
+        {
+          label: 'Content',
+          name: 'body',
+          widget: 'markdown',
+          required: false,
+          i18n: true,
+        },
+      ],
+    },
+    {
+      name: 'settings',
+      label: 'Settings',
+      delete: false,
+      editor: { preview: false },
+      files: [
+        {
+          name: 'general',
+          label: 'Site Settings',
+          file: 'homepage/_data/settings.json',
+          description: 'General Site Settings',
+          fields: [
+            {
+              label: 'Global title',
+              name: 'site_title',
+              widget: 'string',
+            },
+            {
+              label: 'Post Settings',
+              name: 'posts',
+              widget: 'object',
+              fields: [
+                {
+                  label: 'Number of posts on frontpage',
+                  name: 'front_limit',
+                  widget: 'number',
+                  min: 1,
+                  max: 10,
+                },
+                {
+                  label: 'Default Author',
+                  name: 'author',
+                  widget: 'string',
+                },
+                {
+                  label: 'Default Thumbnail',
+                  name: 'thumb',
+                  widget: 'image',
+                  required: false,
+                },
+              ],
+            },
+          ],
+        },
+        {
+          name: 'social_media',
+          label: 'Social Media',
+          file: 'homepage/_data/social_media.json',
+          description: 'Social media link switches',
+          fields: [
+            {
+              name: 'links',
+              label: 'Links',
+              label_singular: 'Link',
+              widget: 'list',
+              summary: '{{fields.type}} - {{fields.url}}',
+              fields: [
+                {
+                  label: 'Type',
+                  name: 'type',
+                  widget: 'select',
+                  options: [
+                    'facebook',
+                    'twitter',
+                    'instagram',
+                    'linkedin',
+                    'discord',
+                    'github',
+                  ],
+                },
+                {
+                  label: 'Url',
+                  name: 'url',
+                  widget: 'string',
+                  hint: 'https://<social_media>/<account|username>',
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: 'footer',
+      label: 'Footer',
+      label_singular: 'Footer',
+      folder: 'homepage/_footer',
+      i18n: true,
+      create: true,
+      delete: false,
+      slug: 'footer',
+      extension: 'json',
+      fields: [
+        {
+          label: 'Footer',
+          name: 'footer',
+          widget: 'object',
+          i18n: true,
+          fields: [
+            {
+              label: 'Links',
+              name: 'links',
+              label_singular: 'Link',
+              widget: 'list',
+              i18n: true,
+              summary: '{{fields.display_text}} - {{fields.url}}',
+              fields: [
+                {
+                  label: 'Display Text',
+                  name: 'display_text',
+                  widget: 'string',
+                },
+                {
+                  label: 'Url',
+                  name: 'url',
+                  widget: 'string',
+                  hint: 'External link: `https://example.com/path/to/link`, Internal link: `/resouce`, Email: `mailto:username@example.com`',
+                },
+                {
+                  label: 'Analytics ID',
+                  name: 'analytics_id',
+                  widget: 'string',
+                  required: false,
+                  i18n: 'duplicate',
+                  hint: 'Set only for links measured as promotions.',
+                },
+              ],
+            },
+            {
+              label: 'Logos',
+              name: 'logos',
+              label_singular: 'Logo',
+              widget: 'list',
+              i18n: true,
+              summary: '{{fields.title}} | {{fields.alt_text}}',
+              fields: [
+                {
+                  label: 'Title',
+                  name: 'title',
+                  widget: 'string',
+                },
+                {
+                  label: 'Alt Text',
+                  name: 'alt_text',
+                  widget: 'string',
+                },
+                {
+                  label: 'Image',
+                  name: 'image_url',
+                  widget: 'image',
+                },
+                {
+                  label: 'Link Url',
+                  name: 'link_url',
+                  widget: 'string',
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+export default config;
