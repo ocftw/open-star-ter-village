@@ -19,6 +19,7 @@
     "test:analytics": "playwright test e2e/analytics.spec.ts --project=desktop",
     "test:visual:update": "playwright test e2e/visual.spec.ts --update-snapshots",
     "test:admin": "playwright test e2e/admin.spec.ts --project=desktop",
+    "test:locale": "playwright test e2e/locale.spec.ts --project=desktop",
     "test:preview": "playwright test --config=playwright.preview.config.ts"
   },
   "repository": {

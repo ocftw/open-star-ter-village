@@ -142,7 +142,7 @@ jobs:
       - name: Run production browser checks
         env:
           PLAYWRIGHT_BROWSERS_PATH: /tmp/pw-browsers
-        run: pnpm homepage test:admin && pnpm homepage test:visual && pnpm homepage test:analytics
+        run: pnpm homepage test:admin && pnpm homepage test:locale && pnpm homepage test:visual && pnpm homepage test:analytics
       - name: Upload browser failure artifacts
         if: failure()
         uses: actions/upload-artifact@v4

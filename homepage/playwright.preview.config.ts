@@ -6,7 +6,7 @@ if (!process.env.PREVIEW_URL) {
 
 export default defineConfig({
   testDir: './e2e',
-  testMatch: 'preview.spec.ts',
+  testMatch: ['preview.spec.ts', 'locale.spec.ts'],
   fullyParallel: false,
   forbidOnly: true,
   retries: 2,
