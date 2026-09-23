@@ -3,8 +3,6 @@ import { CharacterAvatar } from '@/components/design';
 import type { JobRole } from '@/components/design';
 import LobbyNav from '@/components/lobby/LobbyNav';
 
-const HOMEPAGE_URL = 'https://openstartervillage.ocf.tw';
-
 const STATS = [
   { value: '3–6', zh: '玩家', en: 'PLAYERS' },
   { value: '~60', zh: '分鐘', en: 'MINUTES' },
@@ -68,10 +66,8 @@ export default function Home() {
                 · Play online
               </span>
             </Link>
-            <a
-              href={HOMEPAGE_URL}
-              target="_blank"
-              rel="noreferrer"
+            <Link
+              href="/rules"
               className="btn-sticker ghost"
               data-analytics-id="how_to_play"
             >
@@ -79,7 +75,7 @@ export default function Home() {
               <span style={{ opacity: 0.6, fontFamily: 'var(--font-en)', fontWeight: 500 }}>
                 · How to play
               </span>
-            </a>
+            </Link>
           </div>
 
           <div style={{ display: 'flex', gap: 24, marginTop: 36 }}>
