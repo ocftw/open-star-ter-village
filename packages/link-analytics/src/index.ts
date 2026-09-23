@@ -6,7 +6,7 @@
  * their own dispatch and locale source.
  */
 
-export type LinkClickPayload = {
+type LinkClickPayload = {
   link_id: string;
   link_url: string;
   link_domain: string | undefined;
@@ -19,9 +19,9 @@ export type LinkClickPayload = {
   viewport_bucket: ViewportBucket;
 };
 
-export type ViewportBucket = 'mobile' | 'tablet' | 'desktop';
+type ViewportBucket = 'mobile' | 'tablet' | 'desktop';
 
-export function getLinkPlacement(link: HTMLAnchorElement): string {
+function getLinkPlacement(link: HTMLAnchorElement): string {
   const explicitPlacement = link.closest<HTMLElement>(
     '[data-analytics-placement]',
   )?.dataset.analyticsPlacement;
@@ -35,7 +35,7 @@ export function getLinkPlacement(link: HTMLAnchorElement): string {
   return 'other';
 }
 
-export function getViewportBucket(): ViewportBucket {
+function getViewportBucket(): ViewportBucket {
   if (window.innerWidth < 768) return 'mobile';
   if (window.innerWidth < 1200) return 'tablet';
   return 'desktop';
