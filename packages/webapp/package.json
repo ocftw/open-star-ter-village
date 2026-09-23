@@ -28,6 +28,7 @@
     "@mui/lab": "^5.0.0-alpha.170",
     "@mui/material": "^5.15.19",
     "@mui/material-nextjs": "^5.15.11",
+    "@open-star-ter-village/link-analytics": "workspace:*",
     "@reduxjs/toolkit": "^2.2.5",
     "@sentry/nextjs": "^10.53.1",
     "@sentry/node": "^10.53.1",

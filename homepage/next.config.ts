@@ -3,6 +3,7 @@ import type { NextConfig } from 'next';
 import { defaultLocale, locales } from './src/lib/i18n';
 
 const nextConfig: NextConfig = {
+  transpilePackages: ['@open-star-ter-village/link-analytics'],
   turbopack: {
     root: path.resolve(__dirname, '..'),
   },
