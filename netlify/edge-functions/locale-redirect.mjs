@@ -13,10 +13,11 @@ export const preferredLocale = (header) => {
   const ranked = header
     .split(',')
     .map((part, index) => {
-      const [tag, ...params] = part.trim().toLowerCase().split(';');
-      const q = params
-        .map((param) => param.trim())
-        .find((param) => param.startsWith('q='));
+      const [tag, ...params] = part
+        .toLowerCase()
+        .split(';')
+        .map((piece) => piece.trim());
+      const q = params.find((param) => param.startsWith('q='));
       return { tag, q: q ? Number(q.slice(2)) : 1, index };
     })
     .filter(({ tag, q }) => tag && q > 0)
@@ -50,6 +51,12 @@ export default async (request) => {
 
   // Files (favicon.ico, sitemap.xml, ...) are never localized.
   if (pathname.split('/').pop().includes('.')) return undefined;
+  // `excludedPath` is case-sensitive, but Next.js also serves `/zh-hant/...`
+  // and `/EN/...`; redirecting those would produce `/en/zh-hant/...` (404).
+  const firstSegment = pathname.split('/')[1].toLowerCase();
+  if (locales.some((locale) => locale.toLowerCase() === firstSegment)) {
+    return undefined;
+  }
   if (hasLocaleCookie(request.headers.get('cookie'))) return undefined;
 
   const locale = preferredLocale(request.headers.get('accept-language'));
@@ -60,7 +67,6 @@ export default async (request) => {
     headers: {
       location: `/${locale}${pathname}${search}`,
       'cache-control': 'private, no-store',
-      vary: 'Accept-Language, Cookie',
     },
   });
 };

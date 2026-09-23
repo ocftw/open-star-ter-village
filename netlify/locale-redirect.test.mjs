@@ -13,6 +13,7 @@ test('preferredLocale ranks tags by q and matches primary subtags', () => {
   assert.equal(preferredLocale('zh-TW,zh;q=0.9,en;q=0.8'), 'zh-Hant');
   assert.equal(preferredLocale('fr;q=1,en;q=0.5,zh;q=0.7'), 'zh-Hant');
   assert.equal(preferredLocale('en;q=0,zh;q=0.1'), 'zh-Hant');
+  assert.equal(preferredLocale('en ; q=0.9, fr'), 'en');
   assert.equal(preferredLocale('fr-FR'), undefined);
   assert.equal(preferredLocale(null), undefined);
 });
@@ -54,4 +55,11 @@ test('leaves files alone', async () => {
     await localeRedirect(request('/favicon.ico', headers)),
     undefined,
   );
+});
+
+test('leaves locale-prefixed paths alone in any letter case', async () => {
+  const headers = { 'accept-language': 'en' };
+  for (const path of ['/zh-hant/cards/', '/ZH-HANT/cards/', '/EN/cards/']) {
+    assert.equal(await localeRedirect(request(path, headers)), undefined, path);
+  }
 });
