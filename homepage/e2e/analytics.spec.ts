@@ -161,3 +161,21 @@ test('keeps the locale-independent admin link unprefixed in every locale', async
     '/admin/',
   );
 });
+
+test('treats a mailto footer link as neither external nor localized', async ({
+  page,
+}) => {
+  await page.goto('/en/');
+  const enMail = page.getByRole('link', { name: 'Rent a Boardgame' });
+
+  await expect(enMail).toHaveAttribute('href', 'mailto:hi@ocf.tw');
+  // Only http(s) links are treated as external, so a mailto link keeps the
+  // current tab and carries no rel hardening it does not need.
+  await expect(enMail).not.toHaveAttribute('target', '_blank');
+  await expect(enMail).not.toHaveAttribute('rel', 'noopener noreferrer');
+
+  await page.goto('/');
+  await expect(
+    page.getByRole('link', { name: '租借實體桌遊' }),
+  ).toHaveAttribute('href', 'mailto:hi@ocf.tw');
+});

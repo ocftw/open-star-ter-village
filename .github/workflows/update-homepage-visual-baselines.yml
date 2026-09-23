@@ -72,8 +72,14 @@ jobs:
       - name: Install pinned Chromium
         run: pnpm homepage exec playwright install --with-deps chromium
 
+      # Match the build Repository CI compares these baselines against, so they
+      # are never captured in a different environment than the one asserting on
+      # them. e2e/helpers.ts aborts every googletagmanager.com request, so no
+      # container is ever loaded.
       - name: Build homepage
         run: pnpm homepage build
+        env:
+          NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID: GTM-TEST
 
       - name: Record pre-generation worktree state
         run: |
