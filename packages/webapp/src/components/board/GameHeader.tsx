@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import { PlayerID } from 'boardgame.io';
 import { AppHeader, PLAYER_COLORS } from '@/components/design';
 import { GameContext } from '@/components/GameContextHelpers';
@@ -104,6 +105,9 @@ export default function GameHeader({
                       minWidth: 190,
                     }}
                   >
+                    <Link href="/rules" target="_blank" rel="noreferrer" role="menuitem" className="menu-item" data-analytics-id="game_rules">
+                      📖 遊戲規則 <span className="tag-en">Rules</span>
+                    </Link>
                     <button type="button" role="menuitem" className="menu-item" data-testid="menu-leave" onClick={openExit}>
                       🚪 離開遊戲 <span className="tag-en">Leave</span>
                     </button>
@@ -112,15 +116,20 @@ export default function GameHeader({
               )}
             </div>
           ) : (
-            <button
-              type="button"
-              className="btn-sticker sm ghost"
-              style={{ flexShrink: 0 }}
-              data-testid="header-leave"
-              onClick={openExit}
-            >
-              離開 <span className="tag-en">Leave</span>
-            </button>
+            <>
+              <Link href="/rules" target="_blank" rel="noreferrer" className="btn-sticker sm ghost" data-analytics-id="game_rules">
+                規則 <span className="tag-en">Rules</span>
+              </Link>
+              <button
+                type="button"
+                className="btn-sticker sm ghost"
+                style={{ flexShrink: 0 }}
+                data-testid="header-leave"
+                onClick={openExit}
+              >
+                離開 <span className="tag-en">Leave</span>
+              </button>
+            </>
           )}
           {/* Mounted lazily: ExitDialog uses the app router, which only exists
               once the user can actually open it. */}

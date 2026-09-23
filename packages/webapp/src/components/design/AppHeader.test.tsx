@@ -59,10 +59,11 @@ describe('shared application header shell', () => {
   });
 
   it('game surface exposes player chips and Leave inside the shared shell', () => {
-    const { getByTestId, getByText } = render(<GameHeader gameContext={gameContext} />);
+    const { getByTestId, getByText, getByRole } = render(<GameHeader gameContext={gameContext} />);
     expect(getByTestId('player-status-Alice')).toBeTruthy();
     expect(getByTestId('player-status-Bob')).toBeTruthy();
     expect(getByText('離開')).toBeTruthy();
+    expect(getByRole('link', { name: /規則 Rules/ }).getAttribute('href')).toBe('/rules');
   });
 
   it('compact mobile variant keeps only the star tile so chips get the width', () => {

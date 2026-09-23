@@ -1,7 +1,7 @@
 import { AppHeader } from '@/components/design';
 import ProjectCatalogLink from '@/components/ProjectCatalogLink';
+import Link from 'next/link';
 
-const HOMEPAGE_URL = 'https://openstartervillage.ocf.tw';
 const GITHUB_URL = 'https://github.com/ocftw/open-star-ter-village';
 
 export default function LobbyNav() {
@@ -18,16 +18,14 @@ export default function LobbyNav() {
             </span>
             <span className="catalog-label-compact">專案卡</span>
           </ProjectCatalogLink>
-          <a
-            href={HOMEPAGE_URL}
-            data-analytics-id="homepage_rules"
+          <Link
+            href="/rules"
+            data-analytics-id="rules"
             data-analytics-placement="header"
-            target="_blank"
-            rel="noreferrer"
             style={{ fontSize: 14, fontWeight: 600, color: 'var(--ink)' }}
           >
             規則 <span className="en-cap">Rules</span>
-          </a>
+          </Link>
           <a
             href={GITHUB_URL}
             data-analytics-id="source_repository"
