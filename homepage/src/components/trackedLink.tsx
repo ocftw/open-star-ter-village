@@ -9,28 +9,40 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { trackPromotion } from '../lib/service/gtm';
 
-type TrackedLinkProps = Omit<ComponentProps<typeof Link>, 'href'> & {
-  analyticsId: string;
+type Promotion = {
   creativeName: string;
   creativeSlot: string;
+};
+
+type TrackedLinkProps = Omit<ComponentProps<typeof Link>, 'href'> & {
+  analyticsId: string;
   href: string;
+  // Defaults to the promotion's creative slot, else the global link_click
+  // tracker infers it from the surrounding landmark.
+  placement?: string;
+  // Present only for links measured as GA4 promotions: adds view_promotion on
+  // the first 50%-visible impression and select_promotion on click.
+  promotion?: Promotion;
   children?: ReactNode;
 };
 
 const TrackedLink: React.FC<TrackedLinkProps> = ({
   analyticsId,
-  creativeName,
-  creativeSlot,
   href,
+  placement,
+  promotion,
   children,
   ...linkProps
 }) => {
   const linkRef = useRef<HTMLAnchorElement>(null);
   const impressionSent = useRef(false);
   const { locale } = useRouter();
+  const creativeName = promotion?.creativeName;
+  const creativeSlot = promotion?.creativeSlot;
 
   const sendPromotionEvent = useCallback(
     (event: 'view_promotion' | 'select_promotion') => {
+      if (!creativeName || !creativeSlot) return;
       trackPromotion({
         event,
         promotionId: analyticsId,
@@ -46,7 +58,12 @@ const TrackedLink: React.FC<TrackedLinkProps> = ({
 
   useEffect(() => {
     const element = linkRef.current;
-    if (!element || typeof IntersectionObserver === 'undefined') return;
+    if (
+      !creativeName ||
+      !element ||
+      typeof IntersectionObserver === 'undefined'
+    )
+      return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -63,7 +80,7 @@ const TrackedLink: React.FC<TrackedLinkProps> = ({
 
     observer.observe(element);
     return () => observer.disconnect();
-  }, [sendPromotionEvent]);
+  }, [creativeName, sendPromotionEvent]);
 
   return (
     <Link
@@ -71,7 +88,7 @@ const TrackedLink: React.FC<TrackedLinkProps> = ({
       href={href}
       onClick={() => sendPromotionEvent('select_promotion')}
       data-analytics-id={analyticsId}
-      data-analytics-placement={creativeSlot}
+      data-analytics-placement={placement ?? creativeSlot}
       {...linkProps}
     >
       {children}

@@ -21,8 +21,10 @@ const CtaBanner: React.FC<CtaBannerProps> = ({
         </div>
         <TrackedLink
           analyticsId={analyticsId}
-          creativeName="Resource online game banner"
-          creativeSlot="resource_online_game_banner"
+          promotion={{
+            creativeName: 'Resource online game banner',
+            creativeSlot: 'resource_online_game_banner',
+          }}
           href={ctaUrl}
           className="cta-banner-link"
           target={openInNewTab ? '_blank' : undefined}

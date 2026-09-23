@@ -28,8 +28,10 @@ const FooterLinks: React.FC<FooterLinksProps> = ({ links }) => (
         return (
           <TrackedLink
             analyticsId={link.analyticsId}
-            creativeName="Footer play online link"
-            creativeSlot="site_footer"
+            promotion={{
+              creativeName: 'Footer play online link',
+              creativeSlot: 'site_footer',
+            }}
             href={link.url}
             key={link.displayText}
             {...linkProps}
