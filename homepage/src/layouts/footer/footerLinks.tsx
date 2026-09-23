@@ -3,14 +3,16 @@ import Link from 'next/link';
 import TrackedPromotionLink from '../../components/trackedPromotionLink';
 import type { FooterLink } from '../../types/content';
 
-const getLinkProps = (url: string) => {
+const getLinkProps = (url: string, localeIndependent = false) => {
   const isExternal = /^https?:\/\//.test(url);
   return {
     target: isExternal ? '_blank' : undefined,
     rel: isExternal ? 'noopener noreferrer' : undefined,
     // Internal links keep the active locale so an English reader stays on the
-    // English page, where the anchor they were sent to actually exists.
-    locale: isExternal ? (false as const) : undefined,
+    // English page, where the anchor they were sent to actually exists. Links
+    // marked locale-independent in the CMS are one shared page for every
+    // language, such as /admin, so they keep their unprefixed path.
+    locale: isExternal || localeIndependent ? (false as const) : undefined,
   };
 };
 
@@ -21,7 +23,7 @@ type FooterLinksProps = {
 const FooterLinks: React.FC<FooterLinksProps> = ({ links }) => (
   <div className="d-flex gap">
     {links.map((link) => {
-      const linkProps = getLinkProps(link.url);
+      const linkProps = getLinkProps(link.url, link.localeIndependent);
       if (link.analyticsId) {
         return (
           <TrackedPromotionLink

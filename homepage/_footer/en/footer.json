@@ -7,7 +7,8 @@
       },
       {
         "display_text": "Admin",
-        "url": "/admin"
+        "url": "/admin",
+        "locale_independent": true
       },
       {
         "display_text": "Play Online!",

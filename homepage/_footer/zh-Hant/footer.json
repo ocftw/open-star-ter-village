@@ -7,7 +7,8 @@
       },
       {
         "display_text": "後台管理",
-        "url": "/admin"
+        "url": "/admin",
+        "locale_independent": true
       },
       {
         "display_text": "來玩線上桌遊！",

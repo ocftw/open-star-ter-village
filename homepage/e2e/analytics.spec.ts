@@ -146,3 +146,18 @@ test('buckets untagged links so the link_id dimension stays low cardinality', as
     is_external: false,
   });
 });
+
+test('keeps the locale-independent admin link unprefixed in every locale', async ({
+  page,
+}) => {
+  await page.goto('/en/');
+  const adminLink = page.getByRole('link', { name: 'Admin' });
+
+  await expect(adminLink).toHaveAttribute('href', '/admin/');
+
+  await page.goto('/');
+  await expect(page.getByRole('link', { name: '後台管理' })).toHaveAttribute(
+    'href',
+    '/admin/',
+  );
+});

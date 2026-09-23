@@ -7,6 +7,7 @@ type RawFooter = {
     display_text: string;
     url: string;
     analytics_id?: string;
+    locale_independent?: boolean;
   }[];
   logos: {
     title: string;
@@ -29,6 +30,7 @@ export function fetchFooter(lang: string) {
       displayText: link.display_text,
       url: link.url,
       ...(link.analytics_id ? { analyticsId: link.analytics_id } : {}),
+      ...(link.locale_independent ? { localeIndependent: true } : {}),
     })),
     logos: rawFooter.logos.map((logo) => ({
       title: logo.title,
