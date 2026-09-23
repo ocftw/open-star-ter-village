@@ -1,6 +1,9 @@
 import { test, expect } from '@playwright/test';
+import { installDeterministicRendering } from './helpers';
 
 test('renders the Decap CMS shell', async ({ page }) => {
+  await installDeterministicRendering(page);
+
   const pageErrors: Error[] = [];
   page.on('pageerror', (error) => {
     pageErrors.push(error);

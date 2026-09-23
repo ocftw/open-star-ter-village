@@ -64,4 +64,25 @@ describe('analytics', () => {
       expect.stringContaining('secret'),
     );
   });
+
+  it('buckets untagged links so the link_id dimension stays low cardinality', async () => {
+    process.env.NEXT_PUBLIC_GOOGLE_TAG_MANAGER_ID = 'GTM-TEST';
+    const { trackLinkClick } = await import('./analytics');
+    const internal = document.createElement('a');
+    internal.href = '/game/abc123';
+    const external = document.createElement('a');
+    external.href = 'https://openstartervillage.ocf.tw/cards/rare';
+    document.body.append(internal, external);
+
+    trackLinkClick(internal);
+    trackLinkClick(external);
+
+    expect(window.dataLayer?.map((entry) => entry.link_id)).toEqual([
+      'internal:untagged',
+      'external:openstartervillage.ocf.tw',
+    ]);
+    expect(window.dataLayer?.[0]).toMatchObject({
+      link_url: 'http://localhost/game/abc123',
+    });
+  });
 });

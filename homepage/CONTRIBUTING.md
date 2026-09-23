@@ -141,7 +141,7 @@ Decap CMS 是一個用於網站內容管理的工具。若您希望深入了解�
 
 站內推廣使用 GA4 建議事件 `view_promotion` 與 `select_promotion`。線上遊戲頁尾連結的 `promotion_id` 為 `footer_play_online`，資源頁橫幅為 `resource_play_online`。可重複使用的 CTA 橫幅由 CMS 的 `layout_cta_banner` 管理；`analytics_id` 必須在所有語言版本保持相同。
 
-所有連結啟用時會送出 `link_click`。事件包含不含查詢參數的目的網址、穩定的 `link_id`、版位與裝置寬度分類。重要連結應設定 `data-analytics-id`；相同連結若出現在不同版位，應另外設定 `data-analytics-placement`。請勿把電子郵件、權杖或其他個人資料放入這些屬性。此追蹤僅供連結熱門度報表使用，不記錄游標座標，也不產生視覺化熱圖。
+所有連結啟用時會送出 `link_click`。事件包含不含查詢參數的目的網址、`link_id`、版位與裝置寬度分類。只有設定 `data-analytics-id`（或 `id`）的連結才有專屬且穩定的 `link_id`；未標記的連結會歸入 `internal:untagged` 或 `external:<網域>`，避免 GA4 因維度基數過高而把整個維度收合成 `(other)`，連帶影響已標記的連結。因此要單獨追蹤某個連結時必須設定 `data-analytics-id`；未標記連結的完整路徑仍保留在 `link_url`。相同連結若出現在不同版位，應另外設定 `data-analytics-placement`。請勿把電子郵件、權杖或其他個人資料放入這些屬性。此追蹤僅供連結熱門度報表使用（以 `link_id` 看已標記的連結，以 `link_url` 看其餘連結），不記錄游標座標，也不產生視覺化熱圖。
 
 ### 網站 SEO
 

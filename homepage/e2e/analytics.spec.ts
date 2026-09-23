@@ -109,3 +109,73 @@ test('tracks the resource promotion and opens the game safely in a new tab', asy
     is_external: true,
   });
 });
+
+test('keeps the English footer promotion on the English resource page', async ({
+  page,
+}) => {
+  await page.goto('/en/');
+  const footerLink = page.getByRole('link', { name: 'Play Online!' });
+
+  await footerLink.click();
+  await expect(page).toHaveURL(/\/en\/resource\/#play-online-together$/);
+  await expect(
+    page.locator('#play-online-together').getByRole('link', {
+      name: 'Play Online',
+    }),
+  ).toBeVisible();
+});
+
+test('buckets untagged links so the link_id dimension stays low cardinality', async ({
+  page,
+}) => {
+  await page.goto('/');
+  const adminLink = page.getByRole('link', { name: '後台管理' });
+
+  await adminLink.evaluate((link) =>
+    link.addEventListener('click', (event) => event.preventDefault(), {
+      once: true,
+    }),
+  );
+  await adminLink.click();
+
+  await expect
+    .poll(async () => (await linkClickEvents(page, 'internal:untagged')).length)
+    .toBe(1);
+  expect((await linkClickEvents(page, 'internal:untagged'))[0]).toMatchObject({
+    link_url: expect.stringContaining('/admin'),
+    is_external: false,
+  });
+});
+
+test('keeps the locale-independent admin link unprefixed in every locale', async ({
+  page,
+}) => {
+  await page.goto('/en/');
+  const adminLink = page.getByRole('link', { name: 'Admin' });
+
+  await expect(adminLink).toHaveAttribute('href', '/admin/');
+
+  await page.goto('/');
+  await expect(page.getByRole('link', { name: '後台管理' })).toHaveAttribute(
+    'href',
+    '/admin/',
+  );
+});
+
+test('treats a mailto footer link as neither external nor localized', async ({
+  page,
+}) => {
+  await page.goto('/en/');
+  const enMail = page.getByRole('link', { name: 'Rent a Boardgame' });
+
+  await expect(enMail).toHaveAttribute('href', 'mailto:hi@ocf.tw');
+  // Only http(s) links are treated as external, so a mailto link keeps the
+  // current tab and carries no rel hardening it does not need.
+  await expect(enMail).not.toHaveAttribute('target', '_blank');
+  await expect(enMail).not.toHaveAttribute('rel', 'noopener noreferrer');
+
+  await page.goto('/');
+  await expect(
+    page.getByRole('link', { name: '租借實體桌遊' }),
+  ).toHaveAttribute('href', 'mailto:hi@ocf.tw');
+});

@@ -42,13 +42,16 @@ export const trackLinkClick = (link: HTMLAnchorElement, locale?: string) => {
   const safeUrl = isWebUrl
     ? `${url.origin}${url.pathname}${url.hash}`
     : `${url.protocol}`;
+  // GA4 collapses a high-cardinality dimension into "(other)", which would take
+  // the deliberately tagged ids with it, so untagged links fall back to a
+  // bucket rather than their own path. `link_url` still carries the full path.
   const linkId =
     link.dataset.analyticsId ||
     link.id ||
     (isWebUrl
-      ? `${url.origin === window.location.origin ? 'internal' : 'external'}:${
-          url.origin === window.location.origin ? '' : url.hostname
-        }${url.pathname}${url.hash}`
+      ? url.origin === window.location.origin
+        ? 'internal:untagged'
+        : `external:${url.hostname}`
       : `protocol:${url.protocol.replace(':', '')}`);
 
   pushToDataLayer({

@@ -484,6 +484,15 @@ const config: CmsConfig = {
                   i18n: 'duplicate',
                   hint: 'Set only for links measured as promotions.',
                 },
+                {
+                  label: 'Same page for all languages',
+                  name: 'locale_independent',
+                  widget: 'boolean',
+                  required: false,
+                  default: false,
+                  i18n: 'duplicate',
+                  hint: 'One shared page in every language, such as `/admin`. Leave off for normal content links so each language keeps its own page.',
+                },
               ],
             },
             {

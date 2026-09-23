@@ -119,6 +119,7 @@ export type FooterLink = {
   displayText: string;
   url: string;
   analyticsId?: string;
+  localeIndependent?: boolean;
 };
 
 export type FooterLogo = {
