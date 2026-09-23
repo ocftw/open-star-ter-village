@@ -1,0 +1,4 @@
+interface:
+  display_name: "Open Star Delivery"
+  short_description: "Deliver issues through merge and deployment"
+  default_prompt: "Use $open-star-delivery to take this issue or pull request through evidence, review, merge, deployment, and cleanup."

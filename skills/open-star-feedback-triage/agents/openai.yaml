@@ -1,0 +1,4 @@
+interface:
+  display_name: "Open Star Feedback Triage"
+  short_description: "Turn playtest feedback into tracked issues"
+  default_prompt: "Use $open-star-feedback-triage to triage this playtest feedback and maintain its GitHub tracking thread."
