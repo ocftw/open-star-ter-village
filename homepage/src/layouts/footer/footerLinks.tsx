@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import TrackedPromotionLink from '../../components/trackedPromotionLink';
+import TrackedLink from '../../components/trackedLink';
 import type { FooterLink } from '../../types/content';
 
 const getLinkProps = (url: string, localeIndependent = false) => {
@@ -26,7 +26,7 @@ const FooterLinks: React.FC<FooterLinksProps> = ({ links }) => (
       const linkProps = getLinkProps(link.url, link.localeIndependent);
       if (link.analyticsId) {
         return (
-          <TrackedPromotionLink
+          <TrackedLink
             analyticsId={link.analyticsId}
             creativeName="Footer play online link"
             creativeSlot="site_footer"
@@ -35,7 +35,7 @@ const FooterLinks: React.FC<FooterLinksProps> = ({ links }) => (
             {...linkProps}
           >
             {link.displayText}
-          </TrackedPromotionLink>
+          </TrackedLink>
         );
       }
 

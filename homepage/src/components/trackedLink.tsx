@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { trackPromotion } from '../lib/service/gtm';
 
-type TrackedPromotionLinkProps = Omit<ComponentProps<typeof Link>, 'href'> & {
+type TrackedLinkProps = Omit<ComponentProps<typeof Link>, 'href'> & {
   analyticsId: string;
   creativeName: string;
   creativeSlot: string;
@@ -17,7 +17,7 @@ type TrackedPromotionLinkProps = Omit<ComponentProps<typeof Link>, 'href'> & {
   children?: ReactNode;
 };
 
-const TrackedPromotionLink: React.FC<TrackedPromotionLinkProps> = ({
+const TrackedLink: React.FC<TrackedLinkProps> = ({
   analyticsId,
   creativeName,
   creativeSlot,
@@ -79,4 +79,4 @@ const TrackedPromotionLink: React.FC<TrackedPromotionLinkProps> = ({
   );
 };
 
-export default TrackedPromotionLink;
+export default TrackedLink;
