@@ -22,3 +22,16 @@ test('rules remain readable on a narrow screen', async ({ page }) => {
   );
   expect(overflow).toBeLessThanOrEqual(0);
 });
+
+test('players can consult the rules without leaving an active game', async ({ page }) => {
+  await page.goto('/dev?user=player1&mode=offline');
+  await expect(page.getByTestId('header-leave')).toBeVisible();
+
+  const [rulesTab] = await Promise.all([
+    page.context().waitForEvent('page'),
+    page.getByRole('link', { name: /規則 Rules/ }).click(),
+  ]);
+  await expect(rulesTab).toHaveURL(/\/rules$/);
+  await expect(rulesTab.getByRole('heading', { name: '一起玩開源星手村' })).toBeVisible();
+  await expect(page).toHaveURL(/\/dev\?user=player1&mode=offline/);
+});
