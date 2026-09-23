@@ -6,6 +6,7 @@ WORKDIR /app
 RUN corepack enable
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY packages/webapp/package.json ./packages/webapp/package.json
+COPY packages/link-analytics/package.json ./packages/link-analytics/package.json
 COPY homepage/package.json ./homepage/package.json
 
 FROM base AS deps
@@ -32,6 +33,7 @@ ENV SENTRY_PROJECT=$SENTRY_PROJECT
 ENV SENTRY_RELEASE=$SENTRY_RELEASE
 ENV NEXT_TELEMETRY_DISABLED=1
 
+COPY packages/link-analytics ./packages/link-analytics
 COPY packages/webapp ./packages/webapp
 RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN,required=false \
   SENTRY_AUTH_TOKEN="$(cat /run/secrets/SENTRY_AUTH_TOKEN 2>/dev/null || true)" \
