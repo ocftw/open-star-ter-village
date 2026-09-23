@@ -127,8 +127,8 @@ jobs:
           cache-dependency-path: pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile
       - run: pnpm homepage lint
-      - name: Test Netlify OAuth functions
-        run: node --test netlify/oauth.test.mjs
+      - name: Test Netlify functions
+        run: node --test netlify/oauth.test.mjs netlify/locale-redirect.test.mjs
       # A placeholder container id, never the production one: the analytics spec
       # needs dataLayer writes enabled, and e2e/helpers.ts aborts every request
       # to googletagmanager.com so no container is ever loaded.

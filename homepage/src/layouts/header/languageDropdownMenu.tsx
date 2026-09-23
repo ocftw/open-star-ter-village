@@ -20,6 +20,11 @@ const LanguageDropdownMenu: React.FC = () => {
           className="dropdown-item"
           href={`/${locale}${asPath}`}
           locale={false}
+          onClick={() => {
+            // Remember the explicit choice so the locale-redirect edge
+            // function stops redirecting away from it.
+            document.cookie = `NEXT_LOCALE=${locale}; path=/; max-age=31536000; SameSite=Lax`;
+          }}
         >
           {languageLabelDictionary[locale]}
         </Link>
