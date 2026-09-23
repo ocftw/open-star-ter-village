@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'packages/webapp/**'
+      - 'packages/link-analytics/**'
       - 'homepage/**'
       - 'package.json'
       - 'pnpm-lock.yaml'
@@ -68,6 +69,11 @@ jobs:
                 webapp=true
                 homepage=true
                 ;;
+              packages/link-analytics/*)
+                # Bundled into both apps, so a change here must test and ship both.
+                webapp=true
+                homepage=true
+                ;;
               .github/scripts/validate-pr-evidence.*|.github/workflows/pr-evidence.yml|.github/pull_request_template.md|.github/copilot-instructions.md|CONTRIBUTING.md|AGENTS.md|CLAUDE.md)
                 policy=true
                 ;;
@@ -127,6 +133,10 @@ jobs:
           cache-dependency-path: pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile
       - run: pnpm homepage lint
+      # The shared package sits outside both apps' lint roots; both apps still
+      # typecheck it through their imports.
+      - name: Check shared link-analytics formatting
+        run: pnpm homepage exec prettier --check ../packages/link-analytics
       - name: Test Netlify functions
         run: node --test netlify/oauth.test.mjs netlify/locale-redirect.test.mjs
       # A placeholder container id, never the production one: the analytics spec
