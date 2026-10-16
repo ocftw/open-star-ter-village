@@ -52,6 +52,21 @@ RFC (Planner)
 See [GitHub issue #365](https://github.com/ocftw/open-star-ter-village/issues/365)
 for the archived workflow proposal and current discussion.
 
+### RFCs
+
+RFCs live in GitHub issues, not in the repository. Never commit an RFC, its
+review notes, or its progress files.
+
+- Draft the RFC body following the section structure of
+  `.github/ISSUE_TEMPLATE/rfc.yml`, outside the repository (for example in a
+  scratch directory), and share it with the human for review before filing.
+- File it as a GitHub issue titled `[RFC]: <title>` only after the human
+  approves the draft.
+- Track the lifecycle status, design changes, review findings, and
+  implementation links on that issue. Break accepted work into sub-issues for
+  plans and tasks.
+- Reference the RFC issue from related plans, tasks, and pull requests.
+
 ## Pull Requests
 
 Before creating or updating a pull request, read `CONTRIBUTING.md` and
