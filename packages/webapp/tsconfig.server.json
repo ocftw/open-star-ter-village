@@ -1,11 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2017",
-    "module": "commonjs",
+    "module": "NodeNext",
     "lib": ["ES2017"],
     "outDir": "./dist",
     "strict": true,
-    "moduleResolution": "node",
+    "moduleResolution": "NodeNext",
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -13,6 +13,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["./src/server.ts", "./src/env.ts", "./src/game/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": ["./src/server.ts", "./src/env.ts", "./src/game/**/*.ts", "./src/server/persistence/**/*.ts"],
+  "exclude": ["node_modules", "**/*.test.ts", "**/*.test.tsx"]
 }

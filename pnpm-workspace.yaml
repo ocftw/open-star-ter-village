@@ -33,3 +33,6 @@ packageExtensions:
     peerDependencies:
       '@types/react': ^19
       '@types/react-dom': ^19
+
+patchedDependencies:
+  boardgame.io@0.50.2: patches/boardgame.io@0.50.2.patch
