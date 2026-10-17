@@ -10,6 +10,12 @@ primary_region = "sin"
 
 [env]
   NEXT_PUBLIC_GAME_SERVER_URL = "https://your-village-app.fly.dev:3001"
+  # Optional RFC 009 persistence, after #446 and #447 ship:
+  # MATCH_RESUME_WINDOW_HOURS = "24"
+  # Store DATABASE_URL, MATCH_PERSISTENCE=member (or off), and
+  # GAME_SERVER_AUTH_SECRET as runtime Fly secrets, never as build args.
+  # Use <database-app>.internal in DATABASE_URL. The database runs in a
+  # separate private app; see fly.postgres.toml.example and the webapp README.
 
 [[services]]
   protocol = "tcp"

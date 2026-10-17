@@ -158,6 +158,106 @@ post-alpha persistence task lands.
 Run the [`webapp-deploy-smoke-test` agent skill](skills/webapp-deploy-smoke-test/SKILL.md)
 after every deploy.
 
+### Match persistence: OCF handover (#449)
+
+These are maintainer operating notes for
+[RFC 009](https://github.com/ocftw/open-star-ter-village/issues/445).
+**Do not provision, deploy, restart production, or change Fly secrets during
+the usability-test deployment freeze.** Secret changes can restart Machines.
+The current server is memory-only; the settings and health field below require
+[#446](https://github.com/ocftw/open-star-ter-village/issues/446) and
+[#447](https://github.com/ocftw/open-star-ter-village/issues/447) to ship first.
+Member-hosted matches will only be saved once member sign-in issues host tokens;
+there is no interim persistence for guest-hosted matches.
+
+#### Configuration examples
+
+Use the repository-root [`fly.toml.example`](../../fly.toml.example) for the game
+app and [`fly.postgres.toml.example`](../../fly.postgres.toml.example) for a
+separate self-run PostgreSQL 16 app. The database example uses `sin`, one
+shared-cpu-1x Machine with 512 MB RAM (1 GB is an option), and a `postgres_data`
+volume mounted at `/var/lib/postgresql/data`. Create the volume at **3 GB**;
+the example does not create it. Keep one database Machine, on the same private
+network as the game app, with no public IP allocation or proxy services. Leave
+Fly's default automatic volume snapshots enabled. Extra backups, replication,
+archiving, and restore procedures are outside this RFC.
+
+The database needs a `POSTGRES_PASSWORD` Fly secret before its first boot.
+The game app needs these **runtime** settings after the implementation ships:
+
+| Setting | Value and effect |
+| --- | --- |
+| `DATABASE_URL` | Fly secret, e.g. `postgres://village:URL_ENCODED_PASSWORD@your-village-postgres.internal:5432/village`. Use the database app's private `.internal` hostname and percent-encode the password. |
+| `MATCH_PERSISTENCE` | Fly secret: `member` enables member-hosted saves; `off` opens no database connection. Without `DATABASE_URL`, the default is `off`; with it, the default is `member`. |
+| `GAME_SERVER_AUTH_SECRET` | Strong random Fly secret shared by Next.js and the game server for HS256 host tokens. Never use a `NEXT_PUBLIC_` name or a Docker build argument. |
+| `MATCH_RESUME_WINDOW_HOURS` | Optional runtime setting, default `24`; controls both startup loading and abandoned-match marking. For a class spanning lessons, use e.g. `48`. |
+
+Keep secret values out of the repository, command transcripts, logs, and Sentry.
+An OCF maintainer can import `NAME=VALUE` entries through standard input with
+`fly secrets import --app <game-app>` from a protected file outside the checkout.
+Use a separate secret import for the database app's `POSTGRES_PASSWORD`.
+These commands are for a maintenance window after the freeze, not this handover.
+
+#### Maintainer provisioning and acceptance checklist
+
+- [ ] After the freeze and implementation prerequisites, create the PostgreSQL
+  app in the OCF Fly organization/private network, using official `postgres:16`,
+  `sin`, shared-cpu-1x, 512 MB (or 1 GB), and one 3 GB volume. Keep automatic
+  snapshots enabled, one Machine, no public IPs, and no public service ports.
+- [ ] Set the database password before boot; set `DATABASE_URL`,
+  `MATCH_PERSISTENCE=member`, and `GAME_SERVER_AUTH_SECRET` on the game app.
+  Deploy the persistence build outside an active play session after the freeze.
+- [ ] Check `fly ips list --app <database-app>` and the deployed database config:
+  no public IPs, no `services` or `http_service`. From the game Machine, verify
+  the private hostname resolves and connects on port 5432; inspect sanitized
+  startup logs for migration/loading success. Do not publish the connection URL.
+- [ ] Request `https://<game-app>.fly.dev:3001/health`; expect HTTP 200 and
+  `persistence: "on"`. This proves initialization, not that a guest-hosted match
+  is stored. `"off"` means memory-only; `"degraded"` means database startup failed
+  and this run is memory-only. Recover the database and restart outside play
+  sessions to retry initialization.
+- [ ] Once member sign-in is available, run the deploy smoke test with a member
+  host and two guests, recording reconnect and continued play after a restart.
+- [ ] Record the actual monthly estimate and billing in #449: game Machine,
+  database Machine, volume/snapshots, and transfer, converted to TWD. Confirm
+  the total is at or under **NT$1,240/month**; do not treat this config as proof
+  of cost. Recheck when resizing or pricing changes.
+
+#### Rotate secrets and switch persistence off
+
+During an approved maintenance window, rotate the database user's password
+through a private PostgreSQL session (for example psql's interactive
+`\password village`), then update the database app's `POSTGRES_PASSWORD` secret
+and the game app's `DATABASE_URL`. Changing `POSTGRES_PASSWORD` alone only affects
+initialization of an empty data directory; it does not change an existing role.
+Rotate `GAME_SERVER_AUTH_SECRET` on both token issuer and verifier together;
+existing host tokens then fail verification and create guest-hosted matches.
+After either rotation, verify `/health` and a member-hosted create/save flow.
+
+For budget shutdown, first finish active play sessions, then have a maintainer run:
+
+```bash
+fly secrets set MATCH_PERSISTENCE=off --app <game-app>
+# Wait for the game Machine update; verify HTTP 200 and persistence: "off".
+curl --fail https://<game-app>.fly.dev:3001/health
+# Only after "off" is confirmed, stop the database Machine.
+fly machine stop <database-machine-id> --app <database-app>
+```
+
+Confirm new guest create/join/play still works with the database stopped.
+Restarting the game app discards memory-only matches; schedule changes outside
+play sessions. A stopped database still incurs volume/snapshot charges. Keep
+the volume if saved matches should remain; deletion and retention are outside
+this handover. To resume persistence, start the database Machine, restore
+`MATCH_PERSISTENCE=member` in another maintenance window, and verify `"on"`.
+Matches older than the configured resume window will not load.
+
+References: [Fly app configuration](https://fly.io/docs/reference/configuration/),
+[private networking](https://fly.io/docs/networking/private-networking/),
+[secret updates](https://fly.io/docs/apps/secrets/),
+[official PostgreSQL image](https://hub.docker.com/_/postgres), and
+[Fly pricing](https://fly.io/docs/about/pricing/).
+
 ### UptimeRobot Monitoring
 
 Fork maintainers can mirror the alpha uptime checks with a free UptimeRobot
