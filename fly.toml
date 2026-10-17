@@ -1,5 +1,7 @@
 app = "open-star-ter-village"
 primary_region = "sin"
+kill_signal = "SIGTERM"
+kill_timeout = 30
 
 [build]
   dockerfile = "Dockerfile"

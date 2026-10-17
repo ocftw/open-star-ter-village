@@ -90,7 +90,7 @@ public URLs only. It does not contain Fly API tokens, CORS secrets, webhooks, or
 private credentials. For your own deployment, start from `fly.toml.example` and
 replace the app name and public URLs.
 
-Both Fly configs use one Fly app and one container. The Next.js client listens
+The game-server Fly configs use one Fly app and one container. The Next.js client listens
 on port `3000`, and the boardgame.io server listens on port `3001`.
 
 Required configuration:
@@ -152,8 +152,8 @@ The alpha runs on `shared-cpu-1x` with 256 MB memory and keeps one machine warm.
 Expect roughly USD $2-5/month depending on region, transfer, and Fly pricing
 changes.
 
-Match state is in memory for alpha. Restarts lose active matches until the
-post-alpha persistence task lands.
+The deployed alpha is memory-only. This persistence build can additionally save
+member-hosted matches when configured below; guest-hosted matches remain in memory.
 
 Run the [`webapp-deploy-smoke-test` agent skill](skills/webapp-deploy-smoke-test/SKILL.md)
 after every deploy.
@@ -164,11 +164,25 @@ These are maintainer operating notes for
 [RFC 009](https://github.com/ocftw/open-star-ter-village/issues/445).
 **Do not provision, deploy, restart production, or change Fly secrets during
 the usability-test deployment freeze.** Secret changes can restart Machines.
-The current server is memory-only; the settings and health field below require
-[#446](https://github.com/ocftw/open-star-ter-village/issues/446) and
-[#447](https://github.com/ocftw/open-star-ter-village/issues/447) to ship first.
+The settings and health field below require this persistence build to be
+running. They implement [#446](https://github.com/ocftw/open-star-ter-village/issues/446)
+and [#447](https://github.com/ocftw/open-star-ter-village/issues/447).
 Member-hosted matches will only be saved once member sign-in issues host tokens;
 there is no interim persistence for guest-hosted matches.
+
+The server runs games synchronously in boardgame.io's `InMemory` subclass;
+PostgreSQL upserts run afterward in one queue per member-hosted match. The checked-in
+pnpm patch only exports boardgame.io 0.50.2's existing `InMemory` class and its type;
+it does not change move handling. Node.js 24 supports the ESM runtime dependencies,
+and the server compiler uses NodeNext resolution. `pnpm webapp build` copies the
+SQL migration scripts into the compiled server output.
+
+On SIGTERM/SIGINT, the launcher forwards the signal to both children. The game
+server stops intake and drains pending saves within 10 seconds. On timeout it
+logs unsaved match IDs and exits with failure. Fly's 30-second `kill_timeout`
+leaves time for forwarding, drain, and process cleanup. A hard crash can lose
+recent moves that had not reached PostgreSQL; a database outage keeps gameplay
+in memory and retries the newest pending state with backoff.
 
 #### Configuration examples
 

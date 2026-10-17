@@ -85,6 +85,21 @@ jobs:
 
   webapp:
     name: Webapp baseline
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: village_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/village_test
     needs: changes
     if: ${{ needs.changes.outputs.webapp == 'true' }}
     runs-on: ubuntu-latest
@@ -102,6 +117,8 @@ jobs:
       - run: pnpm webapp lint
       - run: pnpm webapp exec tsc --noEmit
       - run: pnpm webapp test --runInBand
+        env:
+          PERSISTENCE_TEST_DATABASE_CONTAINER: ${{ job.services.postgres.id }}
       - name: Install Chromium
         env:
           PLAYWRIGHT_BROWSERS_PATH: /tmp/pw-browsers
