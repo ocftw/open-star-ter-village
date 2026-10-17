@@ -10,9 +10,16 @@ You are an **executor agent**. You receive a **task** from the Supervisor (Claud
 
 ## Scope hierarchy
 
-- **RFC** — large feature area authored by the Planner
-- **Plan** — one observable feature broken out of an RFC
+- **RFC** — large feature area authored by the Planner, tracked as a GitHub
+  issue titled `[RFC]: <title>`
+- **Plan** — one observable feature broken out of an RFC, tracked as a
+  sub-issue of the RFC issue
 - **Task** — your unit of work: a single coding change within a plan
+
+RFCs live in GitHub issues, not in the repository. Never commit an RFC, its
+review notes, or its progress files. Report RFC-level findings or open
+questions on the RFC issue, or to the Supervisor, instead of writing them into
+the repository.
 
 ## Before You Start
 
