@@ -34,11 +34,10 @@ export class PersistentStore extends InMemory {
   }
 
   override createMatch(matchID: string, opts: StorageAPI.CreateMatchOpts): void {
-    const host = hostIdentity.getStore() ?? (opts.metadata as MemberMetadata).host_user_id;
+    const host = hostIdentity.getStore();
     super.createMatch(matchID, {
       ...opts, metadata: { ...opts.metadata, ...(host ? { host_user_id: host } : {}) },
     });
-    this.enqueue(matchID);
   }
 
   override setState(matchID: string, state: State, deltalog?: LogEntry[]): void {
