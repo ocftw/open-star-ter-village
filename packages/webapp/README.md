@@ -254,7 +254,7 @@ The web app uses a two-process architecture for online multiplayer:
 - **Game server:** runs on port `3001` locally using boardgame.io and Socket.IO.
 
 Important implementation decisions archived in
-[RFC 005 issue #430](https://github.com/ocftw/open-star-ter-village/issues/430):
+[Online Multiplayer Support RFC (#430)](https://github.com/ocftw/open-star-ter-village/issues/430):
 
 - Use `3001` for the game server port.
 - Set `NEXT_PUBLIC_GAME_SERVER_URL=http://localhost:3001` for local development.

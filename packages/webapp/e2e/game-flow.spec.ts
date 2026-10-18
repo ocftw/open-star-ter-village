@@ -5,7 +5,7 @@
  * Scenarios 5–10 cover event banner, turn indicator, endActionTurn,
  * contributions, and the 加班 Overtime token.
  *
- * Interaction model (redesign, RFC #399): there is no action toolbar.
+ * Interaction model (redesign, Webapp Visual Redesign RFC (#399)): there is no action toolbar.
  * - Tap a hand card  → create-project mode (then tap a job card to assign)
  * - Tap a job card   → recruit mode (then tap a project slot)
  * - Tap a project    → contribute mode (own vs joined inferred by ownership)
