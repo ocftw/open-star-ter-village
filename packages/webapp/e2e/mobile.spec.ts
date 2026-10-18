@@ -1,6 +1,6 @@
 /**
  * Mobile smoke tests (390×844 viewport): the bottom-sheet board layout
- * (design: MobileVariantA, RFC #399 PR 4) plus responsive lobby screens.
+ * (design: MobileVariantA, Webapp Visual Redesign RFC (#399), PR 4) plus responsive lobby screens.
  */
 import { test, expect } from '@playwright/test';
 import { closeDevTools, openDevTools } from './devTools';
