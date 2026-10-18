@@ -6,6 +6,7 @@ import game from "./game";
 import { loadWebappEnv } from "./env";
 import { hostIdentityMiddleware } from "./server/persistence/hostIdentity";
 import { initializePersistence } from "./server/persistence";
+import { PersistenceConfigError } from "./server/persistence/config";
 import { PersistentStore } from "./server/persistence/PersistentStore";
 import { drainOnShutdown } from "./server/persistence/shutdown";
 
@@ -107,8 +108,10 @@ export async function serve(games: Game[] = [game]) {
   return { server, servers, persistence };
 }
 
-if (require.main === module) void serve().catch(async () => {
-  console.error('Game server startup failed');
-  await captureStartupError(new Error('Game server startup failed'));
+if (require.main === module) void serve().catch(async (error: unknown) => {
+  // Only these fixed config messages are safe; other errors can contain secrets.
+  const reported = error instanceof PersistenceConfigError ? error : new Error('Game server startup failed');
+  console.error(error instanceof PersistenceConfigError ? `Game server startup failed: ${reported.message}` : reported.message);
+  await captureStartupError(reported);
   process.exit(1);
 });
