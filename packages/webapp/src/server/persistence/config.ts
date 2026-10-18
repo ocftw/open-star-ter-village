@@ -1,5 +1,4 @@
 export interface PersistenceConfig {
-  enabled: boolean;
   resumeWindowHours: number;
 }
 
@@ -14,5 +13,5 @@ export function persistenceConfig(env: Record<string, string | undefined>): Pers
   if (!Number.isFinite(hours) || hours <= 0) {
     throw new PersistenceConfigError('MATCH_RESUME_WINDOW_HOURS must be a positive number');
   }
-  return { enabled, resumeWindowHours: hours };
+  return { resumeWindowHours: hours };
 }

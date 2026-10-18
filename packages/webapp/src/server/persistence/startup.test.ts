@@ -28,6 +28,13 @@ it.each([{}, { MATCH_PERSISTENCE: 'member' }, { ...env, MATCH_PERSISTENCE: 'off'
   expect(Pool).not.toHaveBeenCalled();
 });
 
+it.each([{ MATCH_PERSISTENCE: 'off', DATABASE_URL: 'must-not-connect' }, {}])
+('ignores an invalid resume window when database usage is disabled: %j', async config => {
+  const result = await initializePersistence({ ...config, MATCH_RESUME_WINDOW_HOURS: 'invalid' });
+  expect(result.status).toBe('off');
+  expect(Pool).not.toHaveBeenCalled();
+});
+
 it('falls back to plain memory and reports one sanitized startup error', async () => {
   pool.connect.mockRejectedValue(new Error('secret connection details'));
   const result = await initializePersistence(env);

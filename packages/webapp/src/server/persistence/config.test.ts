@@ -1,13 +1,13 @@
 import { persistenceConfig } from './config';
 
 it.each([{}, { MATCH_PERSISTENCE: 'member' }, { MATCH_PERSISTENCE: 'off', DATABASE_URL: 'must-not-connect' }])
-('disables database usage for %j', env => {
-  expect(persistenceConfig(env).enabled).toBe(false);
+('accepts disabled persistence configuration for %j', env => {
+  expect(persistenceConfig(env)).toEqual({ resumeWindowHours: 24 });
 });
 
 it('defaults to member persistence with a database URL and a 24-hour window', () => {
   expect(persistenceConfig({ DATABASE_URL: 'postgres://test' })).toEqual({
-    enabled: true, resumeWindowHours: 24,
+    resumeWindowHours: 24,
   });
 });
 
