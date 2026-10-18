@@ -28,6 +28,9 @@ importers:
 
   homepage:
     dependencies:
+      '@open-star-ter-village/link-analytics':
+        specifier: workspace:*
+        version: link:../packages/link-analytics
       decap-cms-app:
         specifier: 3.14.1
         version: 3.14.1(@types/hoist-non-react-statics@3.3.7(@types/react@19.2.17))(@types/node@24.13.6)(@types/react@19.2.17)(graphql@15.10.2)(immer@11.1.15)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(scheduler@0.27.0)(supports-color@8.1.1)(use-sync-external-store@1.6.0(react@19.2.7))
@@ -78,6 +81,8 @@ importers:
         specifier: 6.0.3
         version: 6.0.3
 
+  packages/link-analytics: {}
+
   packages/webapp:
     dependencies:
       '@emotion/cache':
@@ -101,6 +106,9 @@ importers:
       '@mui/material-nextjs':
         specifier: ^5.15.11
         version: 5.18.0(@emotion/cache@11.14.0)(@mui/material@5.18.0(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1)(supports-color@8.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1)(supports-color@8.1.1))(@types/react@18.3.31)(react@18.3.1)(supports-color@8.1.1))(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@types/react@18.3.31)(next@14.2.3(@babel/core@7.29.7(supports-color@8.1.1))(@opentelemetry/api@1.9.1)(@playwright/test@1.61.1)(@types/react-dom@18.3.7(@types/react@18.3.31))(@types/react@18.3.31)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
+      '@open-star-ter-village/link-analytics':
+        specifier: workspace:*
+        version: link:../link-analytics
       '@reduxjs/toolkit':
         specifier: ^2.2.5
         version: 2.12.0(react-redux@9.3.0(@types/react@18.3.31)(react@18.3.1)(redux@5.0.1))(react@18.3.1)
