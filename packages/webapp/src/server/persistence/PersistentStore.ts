@@ -131,7 +131,8 @@ export class PersistentStore extends InMemory {
           updated_at = now()
       `, [saved.match_id, saved.game_name, saved.game_version, saved.host_user_id,
         JSON.stringify(saved.state), JSON.stringify(saved.initial_state),
-        JSON.stringify(saved.metadata), JSON.stringify(saved.state.ctx.gameover ?? null),
+        JSON.stringify(saved.metadata),
+        saved.state.ctx.gameover === undefined ? null : JSON.stringify(saved.state.ctx.gameover),
         saved.state._stateID, saved.state.ctx.gameover !== undefined, saved.abandoned_at]);
       queue.failures = 0;
     } catch {

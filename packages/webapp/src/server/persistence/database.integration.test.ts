@@ -52,12 +52,46 @@ integration('PostgreSQL persistence schema and abandoned-match job', () => {
     expect(table.rows[0].reloptions).toContain('fillfactor=70');
   });
 
+  it('stores SQL NULL for unfinished matches and preserves explicit JSON game-over results', async () => {
+    expect(runNative(`
+      const { Pool } = require('pg');
+      const { InitializeGame } = require('boardgame.io/internal');
+      const { PersistentStore } = require('./src/server/persistence/PersistentStore');
+      (async () => {
+        const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+        try {
+          const store = new PersistentStore(pool);
+          for (const [suffix, gameover] of [['unfinished', undefined], ['null-result', null], ['winner', { winner: '0' }]]) {
+            const state = InitializeGame({ game: { name: 'test', setup: () => ({}) }, numPlayers: 3 });
+            if (gameover !== undefined) state.ctx.gameover = gameover;
+            store.createMatch('${matchPrefix}-' + suffix, { initialState: state,
+              metadata: { gameName: 'test', players: {}, createdAt: 0, updatedAt: 0, host_user_id: 'member' } });
+          }
+          await store.flush();
+          console.log('saved');
+        } finally { await pool.end(); }
+      })().catch(() => { console.error('save failed'); process.exitCode = 1; });
+    `)).toBe('saved');
+    const { rows } = await pool.query(`select match_id, result is null as sql_null,
+      jsonb_typeof(result) as json_type, result, is_gameover from matches
+      where match_id = any($1) order by match_id`, [[
+      `${matchPrefix}-unfinished`, `${matchPrefix}-null-result`, `${matchPrefix}-winner`,
+    ]]);
+    expect(rows.map(row => ({ suffix: row.match_id.slice(matchPrefix.length), sqlNull: row.sql_null,
+      jsonType: row.json_type, result: row.result, finished: row.is_gameover }))).toEqual([
+      { suffix: '-null-result', sqlNull: false, jsonType: 'null', result: null, finished: true },
+      { suffix: '-unfinished', sqlNull: true, jsonType: null, result: null, finished: false },
+      { suffix: '-winner', sqlNull: false, jsonType: 'object', result: { winner: '0' }, finished: true },
+    ]);
+  });
+
   it('marks idle rows without deleting them and honors a 48-hour window', async () => {
+    const idlePrefix = `${matchPrefix}-idle`;
     for (const [suffix, hours, finished] of [['old', 49, false], ['between', 30, false], ['recent', 1, false], ['finished', 50, true]] as const) {
       await pool.query(`insert into matches
         (match_id,game_name,game_version,host_user_id,state,initial_state,metadata,state_id,is_gameover,updated_at)
         values ($1,'test','1','member','{}','{}','{}',0,$2,now()-($3*interval '1 hour'))`,
-      [`${matchPrefix}-${suffix}`, finished, hours]);
+      [`${idlePrefix}-${suffix}`, finished, hours]);
     }
     const invoke = (hours: number) => runNative(`
       const { Pool } = require('pg');
@@ -69,11 +103,11 @@ integration('PostgreSQL persistence schema and abandoned-match job', () => {
       })().catch(() => { console.error('mark failed'); process.exitCode = 1; });
     `);
     expect(invoke(48)).toBe('marked');
-    const result = await pool.query('select match_id, abandoned_at from matches where match_id like $1', [`${matchPrefix}%`]);
+    const result = await pool.query('select match_id, abandoned_at from matches where match_id like $1', [`${idlePrefix}%`]);
     expect(result.rowCount).toBe(4);
-    expect(result.rows.filter(row => row.abandoned_at !== null).map(row => row.match_id)).toEqual([`${matchPrefix}-old`]);
+    expect(result.rows.filter(row => row.abandoned_at !== null).map(row => row.match_id)).toEqual([`${idlePrefix}-old`]);
     expect(invoke(24)).toBe('marked');
-    const between = await pool.query('select abandoned_at from matches where match_id=$1', [`${matchPrefix}-between`]);
+    const between = await pool.query('select abandoned_at from matches where match_id=$1', [`${idlePrefix}-between`]);
     expect(between.rows[0].abandoned_at).not.toBeNull();
   });
 });
