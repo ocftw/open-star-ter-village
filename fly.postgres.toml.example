@@ -1,0 +1,29 @@
+# OCF maintainer reference for RFC 009 / #449. Do not deploy during the freeze.
+# Copy outside the repository, replace the app name, and create it in the same
+# Fly organization/private network as the game server, after approval.
+app = "your-village-postgres"
+primary_region = "sin"
+
+[build]
+  image = "postgres:16"
+
+[env]
+  POSTGRES_DB = "village"
+  POSTGRES_USER = "village"
+  # Set POSTGRES_PASSWORD as a Fly secret before the first boot.
+  # Changing that secret later does not rotate an existing database password.
+
+[[mounts]]
+  source = "postgres_data"
+  destination = "/var/lib/postgresql/data"
+  # Provision one 3 GB volume in sin; leave automatic snapshots enabled.
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 512 # Use 1024 for headroom if the budget permits.
+
+# Intentionally no services, http_service, public IPs, or Flycast address.
+# Connect directly over the private network on port 5432. Verify PostgreSQL
+# listens on IPv6 (the official image's listen_addresses='*' permits this).
+# Keep exactly one database Machine; this example provides no replication.

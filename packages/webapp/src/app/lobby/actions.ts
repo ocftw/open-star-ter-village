@@ -1,5 +1,6 @@
 import { LobbyClientError } from 'boardgame.io/client';
 import { GAME_NAME, lobbyClient } from '@/lib/lobbyClient';
+import { getHostToken } from '@/lib/getHostToken';
 import type { MatchCredentials } from '@/lib/matchCredentials';
 
 export type LobbyMatch = Awaited<ReturnType<typeof lobbyClient.getMatch>>;
@@ -126,7 +127,12 @@ export async function getMatch(matchID: string): Promise<LobbyMatch> {
 }
 
 export async function createRoom(playerName: string, numPlayers: number): Promise<MatchCredentials> {
-  const { matchID } = await lobbyClient.createMatch(GAME_NAME, { numPlayers });
+  const token = await getHostToken();
+  const { matchID } = token
+    ? await lobbyClient.createMatch(GAME_NAME, { numPlayers }, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    : await lobbyClient.createMatch(GAME_NAME, { numPlayers });
   try {
     return await joinRoom(matchID, playerName, '0');
   } catch (error) {

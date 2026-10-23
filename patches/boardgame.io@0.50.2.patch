@@ -1,0 +1,30 @@
+diff --git a/dist/cjs/server.js b/dist/cjs/server.js
+index e6848d4a594e3019a521a26fccea7d440da18162..2b37722be19a9a85c89a548298c46e39bee3824c 100644
+--- a/dist/cjs/server.js
++++ b/dist/cjs/server.js
+@@ -4070,3 +4070,5 @@ exports.FlatFile = FlatFile;
+ exports.Origins = Origins;
+ exports.Server = Server;
+ exports.SocketIO = SocketIO;
++
++exports.InMemory = InMemory;
+diff --git a/server/index.d.ts b/server/index.d.ts
+new file mode 100644
+index 0000000000000000000000000000000000000000..e16fa4e1363fbcef0d9ab3b78fad1dbc1cec54e4
+--- /dev/null
++++ b/server/index.d.ts
+@@ -0,0 +1,2 @@
++export * from '../dist/types/packages/server';
++export { InMemory } from '../dist/types/src/server/db/inmemory';
+diff --git a/server/package.json b/server/package.json
+index 131efd1e587197941ad4b693222066d4b19eb543..516edf8431bd1a3bed22128f2cadffde291c4ac1 100644
+--- a/server/package.json
++++ b/server/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "boardgame.io/server",
+   "private": true,
+-  "types": "../dist/types/packages/server.d.ts",
++  "types": "index.d.ts",
+   "main": "../dist/cjs/server.js"
+ }
