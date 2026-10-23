@@ -106,6 +106,28 @@ it('uses request-scoped identity and preserves it when updating metadata', async
   expect(query.mock.calls[0][1][3]).toBe('verified-member');
 });
 
+it.each([
+  { member: true, nextHost: undefined, expectedHost: 'member', queuesNext: true },
+  { member: false, nextHost: undefined, expectedHost: undefined, queuesNext: false },
+  { member: true, nextHost: 'existing-member', expectedHost: 'existing-member', queuesNext: false },
+])('preserves rematch host continuity: %j', async ({ member, nextHost, expectedHost, queuesNext }) => {
+  const { store, query } = setup();
+  store.createMatch('source', { initialState: initialState(), metadata: metadata(member) });
+  store.createMatch('next', { initialState: initialState(),
+    metadata: { ...metadata(false), ...(nextHost ? { host_user_id: nextHost } : {}) } });
+  await store.flush();
+  query.mockClear();
+
+  store.setMetadata('source', { ...metadata(member), nextMatchID: 'next' });
+
+  expect((store.fetch('next', { metadata: true }).metadata as MemberMetadata).host_user_id).toBe(expectedHost);
+  expect(store.pendingMatchIDs().includes('next')).toBe(queuesNext);
+  await store.flush();
+  expect(query.mock.calls.filter(([, values]) => values[0] === 'next')).toHaveLength(queuesNext ? 1 : 0);
+  if (queuesNext) expect(query.mock.calls.find(([, values]) => values[0] === 'next')![1][3]).toBe('member');
+  if (!member) expect(query).not.toHaveBeenCalled();
+});
+
 it('loads without writes, saves game-over results, and retains a removed match as abandoned', async () => {
   const { store, query } = setup();
   const state = initialState();

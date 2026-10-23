@@ -49,6 +49,12 @@ export class PersistentStore extends InMemory {
     const host = (this.metadata.get(matchID) as MemberMetadata | undefined)?.host_user_id;
     super.setMetadata(matchID, host ? { ...metadata, host_user_id: host } : metadata);
     this.enqueue(matchID);
+    if (host && metadata.nextMatchID) {
+      const next = this.metadata.get(metadata.nextMatchID) as MemberMetadata | undefined;
+      if (next && !next.host_user_id) {
+        this.setMetadata(metadata.nextMatchID, { ...next, host_user_id: host });
+      }
+    }
   }
 
   override wipe(matchID: string): void {

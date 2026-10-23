@@ -151,6 +151,29 @@ integration('running server with real PostgreSQL', () => {
     await second.stop();
   }, 45000);
 
+  it('persists a member-hosted play-again match and restores it after restart', async () => {
+    const first = await start();
+    const matchID = await create(first, true);
+    const { playerCredentials } = await first.lobby.joinMatch(first.name, matchID, {
+      playerID: '0', playerName: 'Member host',
+    });
+    const response = await fetch(`${first.url}/games/${first.name}/${matchID}/playAgain`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ playerID: '0', credentials: playerCredentials }),
+    });
+    expect(response.status).toBe(200);
+    const { nextMatchID } = await response.json() as { nextMatchID: string };
+    matches.push(nextMatchID);
+    await first.command('flush');
+    const stored = await pool.query('select host_user_id from matches where match_id=$1', [nextMatchID]);
+    expect(stored.rows).toEqual([{ host_user_id: 'integration-member' }]);
+    await first.stop();
+
+    const second = await start();
+    expect((await fetch(`${second.url}/games/${second.name}/${nextMatchID}`)).status).toBe(200);
+    await second.stop();
+  }, 45000);
+
   it('creates guests for missing, expired, and invalid tokens; none survives a restart or has a row', async () => {
     const first = await start();
     const ids = [await create(first, false), await create(first, true, hostToken(true)), await create(first, true, 'invalid-token')];
