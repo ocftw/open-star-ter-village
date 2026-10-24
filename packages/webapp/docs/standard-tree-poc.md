@@ -71,6 +71,8 @@ unavailable, update all corresponding names/URLs in the test config together.
 
 ```sh
 flyctl apps create open-star-ter-village-tree-poc
+flyctl ips allocate-v4 --shared --app open-star-ter-village-tree-poc
+flyctl ips allocate-v6 --app open-star-ter-village-tree-poc
 flyctl secrets set --app open-star-ter-village-tree-poc \
   GAME_SERVER_ORIGINS=https://open-star-ter-village-tree-poc.fly.dev
 flyctl deploy --config fly.tree-poc.toml --ha=false \
