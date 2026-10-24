@@ -9,6 +9,7 @@ type ProjectCardFaceProps = {
   'data-testid'?: string;
   /** 斜槓青年: makes requirement rows tappable target positions. */
   professionPicker?: ProfessionPicker;
+  hideProjectType?: boolean;
 };
 
 /**
@@ -20,9 +21,10 @@ export default function ProjectCardFace({
   selected = false,
   onClick,
   professionPicker,
+  hideProjectType = false,
   ...rest
 }: ProjectCardFaceProps) {
-  const typeMeta = getProjectTypeMetaByName(card.type);
+  const typeMeta = hideProjectType ? undefined : getProjectTypeMetaByName(card.type);
   return (
     <div
       onClick={onClick}
@@ -56,7 +58,7 @@ export default function ProjectCardFace({
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <span style={{ width: 7, height: 7, borderRadius: 999, background: 'white' }} />
-          <span style={{ fontWeight: 800, fontSize: 13 }}>{card.type}</span>
+          <span style={{ fontWeight: 800, fontSize: 13 }}>{hideProjectType ? '專案' : card.type}</span>
         </div>
         <div style={{ display: 'flex', gap: 3 }} aria-label={`難度 ${card.difficulty}`}>
           {Array.from({ length: card.difficulty }).map((_, i) => (

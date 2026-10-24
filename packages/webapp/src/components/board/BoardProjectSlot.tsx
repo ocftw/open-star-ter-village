@@ -26,6 +26,7 @@ type BoardProjectSlotProps = {
   idle: boolean;
   /** 斜槓青年: makes eligible requirement rows tappable targets. */
   professionPicker?: ProfessionPicker;
+  hideProjectType?: boolean;
 };
 
 const seatColor = (worker: PlayerID) => `var(--p${worker})`;
@@ -38,6 +39,7 @@ export default function BoardProjectSlot({
   onIdleTap,
   idle,
   professionPicker,
+  hideProjectType = false,
 }: BoardProjectSlotProps) {
   const dispatch = useAppDispatch();
   const slotsInteractive = useAppSelector(isProjectSlotsInteractive);
@@ -50,7 +52,7 @@ export default function BoardProjectSlot({
   if (!slot.card) return null;
 
   const card = slot.card;
-  const typeMeta = getProjectTypeMetaByName(card.type);
+  const typeMeta = hideProjectType ? undefined : getProjectTypeMetaByName(card.type);
   const isOwn = playerID !== null && slot.owner === playerID;
   const selected = slotsInteractive && !!selectedSlots[slot.id];
   // In contribute mode, only this player's worker rows on the right slots are adjustable.
@@ -122,7 +124,7 @@ export default function BoardProjectSlot({
           letterSpacing: '0.04em',
         }}
       >
-        {card.type}
+        {hideProjectType ? '專案' : card.type}
       </div>
       {isOwn && (
         <div

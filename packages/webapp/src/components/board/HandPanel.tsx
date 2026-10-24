@@ -1,3 +1,4 @@
+import { hasNode } from '@/game/standard/tree';
 import { GameContext } from '@/components/GameContextHelpers';
 import { ProjectCard } from '@/game';
 import { PlayersSelector } from '@/game/store/slice/players';
@@ -55,7 +56,7 @@ export default function HandPanel({
   const selectedJobCard = selectedJobId
     ? JobSlotsSelector.getJobCardById(G.table.jobSlots, selectedJobId)
     : undefined;
-  const overrideAvailable = RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, playerID);
+  const overrideAvailable = RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, playerID) || hasNode(G, 'data-5');
   const professionPickerFor = (card: ProjectCard): ProfessionPicker | undefined => {
     if (currentAction !== UserActionMoves.CreateProject) return undefined;
     if (!overrideAvailable || !selectedJobCard || !selectedCards[card.id]) return undefined;
@@ -108,6 +109,7 @@ export default function HandPanel({
           <div key={card.id} style={strip ? { flexShrink: 0, width: 210 } : undefined}>
             <ProjectCardFace
               card={card}
+              hideProjectType={!!G.standard}
               data-testid={`hand-card-${card.id}`}
               selected={handInteractive && !!selectedCards[card.id]}
               onClick={idle || handInteractive ? () => handleTap(card.id) : undefined}

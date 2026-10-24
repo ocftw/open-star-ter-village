@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { STANDARD_RULES_ENABLED, Ruleset } from '@/game/standard/config';
 import { useRouter } from 'next/navigation';
 import { Alert, Snackbar } from '@mui/material';
 import { PaperCard, StickerButton } from '@/components/design';
@@ -72,6 +73,8 @@ function CardHeading({
 export default function LobbyPage() {
   const router = useRouter();
   const [playerName, setPlayerName] = React.useState('');
+  const [ruleset, setRuleset] = React.useState<Ruleset>('simple');
+  const playerCounts = ruleset === 'tree-poc-v1' ? [2, 3, 4] : PLAYER_COUNT_OPTIONS;
   const [numPlayers, setNumPlayers] = React.useState<number>(3);
   const [matches, setMatches] = React.useState<VisibleMatch[]>([]);
   const [mySeatMatchIDs, setMySeatMatchIDs] = React.useState<Record<string, boolean>>({});
@@ -158,7 +161,7 @@ export default function LobbyPage() {
     setIsCreating(true);
 
     try {
-      const credentials = await createRoom(trimmedPlayerName, numPlayers);
+      const credentials = await createRoom(trimmedPlayerName, numPlayers, ruleset);
       saveCredentials(credentials);
       router.push(`/game/${credentials.matchID}`);
     } catch (error) {
@@ -234,10 +237,18 @@ export default function LobbyPage() {
                 error={playerName.length > 0 && !playerNameIsValid}
                 helper="1 到 20 個字 · Use 1 to 20 visible characters."
               />
+              {STANDARD_RULES_ENABLED && <label>遊戲規則 · Rules
+                <select aria-label="遊戲規則" value={ruleset} disabled={isCreating} onChange={e => {
+                  setRuleset(e.target.value as Ruleset); setNumPlayers(3);
+                }}>
+                  <option value="simple">簡易模式 · Simplified</option>
+                  <option value="tree-poc-v1">標準模式 — 星源樹測試版 v1</option>
+                </select>
+              </label>}
               <Segmented
                 label="玩家人數 · Players"
-                options={PLAYER_COUNT_OPTIONS}
-                value={numPlayers as (typeof PLAYER_COUNT_OPTIONS)[number]}
+                options={playerCounts}
+                value={numPlayers}
                 onChange={(count) => setNumPlayers(count)}
                 disabled={isCreating}
               />
