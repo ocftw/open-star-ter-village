@@ -303,6 +303,7 @@ export default function GameRoomPage() {
               <h1 style={{ display: 'flex', flexDirection: 'column', gap: 2, fontSize: 22, fontWeight: 800 }}>
                 等待玩家加入 <span className="en-cap">Waiting room</span>
               </h1>
+              {match.setupData?.ruleset === 'tree-poc-v1' && <p>標準模式 · 星源樹測試版 v1 · 2–4 人</p>}
               <span
                 className="sticker"
                 style={{ background: 'var(--orange-soft)', borderColor: 'var(--orange)' }}

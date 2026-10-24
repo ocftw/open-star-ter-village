@@ -70,6 +70,7 @@ export default function MatchRow({
         </div>
         <div style={{ fontSize: 11, color: 'var(--ink-mute)', marginTop: 2 }}>
           {formatDate(match.createdAt)} · {status}
+          {match.setupData?.ruleset === 'tree-poc-v1' && ' · 星源樹測試版 v1'}
         </div>
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexShrink: 0 }}>
