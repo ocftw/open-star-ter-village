@@ -1,3 +1,5 @@
+import { roomSetupError, Ruleset } from '../standard/config';
+import { standardState } from '../standard/state';
 import { Ctx, DefaultPluginAPIs } from 'boardgame.io';
 import rawProjectCards from '../data/card/projects.json';
 import rawJobCards from '../data/card/jobs.json';
@@ -37,13 +39,28 @@ interface RawJobCard {
 }
 
 export interface GameSetupData {
+  ruleset?: Ruleset;
   /** Forces a specific event card to appear first in the event deck (for demos/tests). */
   forcedFirstEvent?: string;
 }
 
 export const setup: SetupFn<GameState> = ({ ctx, random }, setupData?: GameSetupData) => {
+  if (setupData?.ruleset !== undefined) {
+    const error = roomSetupError(setupData, ctx.numPlayers);
+    if (error) throw new Error(error);
+  }
   // get default game state
   const G = GameStore.initialState();
+  if (setupData?.ruleset === 'tree-poc-v1') {
+    G.standard = standardState();
+    G.rules.type = 'standard';
+    G.rules.table.maxJobSlots = 6;
+    G.rules.table.maxProjectSlots = 6;
+    G.rules.player.maxActionTokens = 3;
+    G.rules.action.recruit.initialContributionValue = 1;
+    G.rules.action.contributeOwnedProjects.maxContributionValue = 3;
+    G.rules.action.contributeJoinedProjects.maxContributionValue = 4;
+  }
 
   // Set event card count based on player count (Simplified Mode rulebook):
   // 2 players → 6 cards, 3 players → 5 cards, 4+ players → 4 cards
@@ -59,7 +76,8 @@ export const setup: SetupFn<GameState> = ({ ctx, random }, setupData?: GameSetup
 
   const projectCards = mapToProjectCards(rawProjectCards as unknown as RawProjectCard[]);
   const shuffledProjectCards = random.Shuffle(projectCards);
-  DeckMutator.initialize(G.decks.projects, shuffledProjectCards);
+  DeckMutator.initialize(G.decks.projects, G.standard ? shuffledProjectCards.filter(c => c.difficulty <= 2) : shuffledProjectCards);
+  if (G.standard) G.decks.advanced = { drawPile: shuffledProjectCards.filter(c => c.difficulty > 2), discardPile: [] };
 
   const mapToJobCards = (rawJobCards: RawJobCard[]): JobCard[] => {
     const jobCards: JobCard[] = [];
@@ -81,6 +99,7 @@ export const setup: SetupFn<GameState> = ({ ctx, random }, setupData?: GameSetup
 
   // TODO: Validate event card function names
   const eventCards = rawEventCards.map(rawEventCard => ({ id: getUuid(random.Number), ...rawEventCard }) as unknown as EventCard);
+  if (G.standard) eventCards.push({ id: getUuid(random.Number), name: '數位政委', description: '場內每個專案的發起人，可選擇該專案上任一玩家的 1 個貢獻方塊前進 1 格，不可超過專案需求。', function_name: 'digital_minister', type: 'basic' } as EventCard);
   // find end game event card
   // pick N random event cards based on rule and shuffle them
   // add end game event card to the end

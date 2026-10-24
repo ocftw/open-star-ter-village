@@ -16,5 +16,6 @@ export const endActionTurn: GameMove<EndActionTurn> = ({ G, ctx, events }) => {
     G.table.actionPhaseDone = true;
     return;
   }
+  if (G.standard) { G.standard.phase = 'settlement'; return; }
   events.endTurn();
 };

@@ -10,6 +10,7 @@ export type ClientGameState = Omit<GameState, 'decks' | 'players'> & {
 };
 
 export interface GameState {
+  standard?: import("../standard/state").StandardState;
   rules: Rule;
   decks: Decks;
   table: Table;

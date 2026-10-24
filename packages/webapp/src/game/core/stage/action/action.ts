@@ -1,3 +1,4 @@
+import { growTree } from '@/game/standard/engine';
 import { createProject } from "./move/createProject";
 import { recruit } from "./move/recruit";
 import { contributeOwnedProjects } from "./move/contributeOwnedProjects";
@@ -19,6 +20,7 @@ const withErrorBoundary = (moveFn: (...args: any[]) => any, fallback: any) => (.
 
 export const action: GameStageConfig = {
   moves: {
+    growTree: { client: false, move: growTree },
     createProject: {
       client: false,
       move: withErrorBoundary(createProject, INVALID_MOVE),

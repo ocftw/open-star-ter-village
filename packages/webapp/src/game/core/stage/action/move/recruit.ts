@@ -1,3 +1,5 @@
+import { fillMarket } from '@/game/standard/engine';
+import { ProjectSlotSelector } from '@/game/store/slice/projectSlot/projectSlot';
 import { ProjectBoardSelector } from '@/game/store/slice/projectBoard';
 import { DeckMutator, DeckSelector } from '@/game/store/slice/deck';
 import { ProjectSlotMutator } from '@/game/store/slice/projectSlot/projectSlot';
@@ -46,7 +48,7 @@ export const recruit: GameMove<Recruit> = ({ G, playerID }, jobCardId, projectSl
   // player-chosen required position, never under an unrequired profession.
   const matchesRequirement = Object.keys(activeProject.card!.requirements).includes(jobCard.name);
   const effectiveJobName = matchesRequirement ? jobCard.name : assignedJobName!;
-  ProjectSlotMutator.assignWorker(activeProject, effectiveJobName, playerID, initialContributionValue);
+  ProjectSlotMutator.assignWorker(activeProject, effectiveJobName, playerID, G.standard ? Math.min(initialContributionValue, activeProject.card!.requirements[effectiveJobName] - ProjectSlotSelector.getJobContribution(activeProject, effectiveJobName)) : initialContributionValue);
 
   // Refill job card
   const maxJobSlots = RuleSelector.getTableMaxJobSlots(G.rules);
@@ -54,4 +56,5 @@ export const recruit: GameMove<Recruit> = ({ G, playerID }, jobCardId, projectSl
   const jobCards = DeckSelector.peek(G.decks.jobs, refillCardNumber);
   DeckMutator.draw(G.decks.jobs, refillCardNumber);
   JobSlotsMutator.addJobCards(G.table.jobSlots, jobCards);
+  if (G.standard) fillMarket(G);
 };

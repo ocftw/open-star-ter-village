@@ -1,3 +1,5 @@
+import { advanceStandard, beginStandardEvent, resetStandardTurn, resolveStandardChoice } from './standard/engine';
+import { roomSetupError } from './standard/config';
 import { Game } from 'boardgame.io';
 import { TurnOrder } from 'boardgame.io/core';
 import { GameState } from './store/store';
@@ -14,9 +16,10 @@ import { refill } from './core/handler/refill';
 
 export const OpenStarTerVillage: Game<GameState, Record<string, unknown>, GameSetupData> = {
   name: 'OpenStarTerVillage',
-  minPlayers: 3,
+  minPlayers: 2,
   maxPlayers: 6,
   setup: setup,
+  validateSetupData: (data, numPlayers) => roomSetupError(data, numPlayers),
   turn: {
     /**
      * Use CUSTOM_FROM so boardgame.io re-reads G.playOrder at the start of
@@ -27,12 +30,15 @@ export const OpenStarTerVillage: Game<GameState, Record<string, unknown>, GameSe
     order: TurnOrder.CUSTOM_FROM('playOrder'),
     onBegin: (context) => {
       const { G, ctx } = context;
-      // The final event queues endGame in onEnd. boardgame.io can begin the
-      // next turn before that event flushes, when the event deck is empty.
+      // endGame queued by the final event can flush after the next turn begins.
+      if (G.standard && G.decks.events.drawPile.length === 0 && !G.table.eventSlot) return;
       if (ctx.playOrderPos === 0 && G.decks.events.drawPile.length > 0) {
         playEventCard(context);
+        beginStandardEvent(context.G);
       }
+      advanceStandard(context);
     },
+    onMove: advanceStandard,
     /**
      * send current player to action stage.
      * Do not set maxMoves as action points because following reasons
@@ -48,8 +54,10 @@ export const OpenStarTerVillage: Game<GameState, Record<string, unknown>, GameSe
     },
     stages: {
       action,
+      standardChoice: { moves: { resolveStandardChoice: { client: false, move: resolveStandardChoice } } },
     },
     endIf: ({ G, ctx }) => {
+      if (G.standard) return G.standard.phase === 'ready' ? true : undefined;
       const outOfAP = PlayersSelector.getNumActionTokens(G.players, ctx.currentPlayer) === 0;
       if (!outOfAP) return undefined;
       // Last player must discard 2 job cards (四大自由) before the turn can end.
@@ -59,10 +67,12 @@ export const OpenStarTerVillage: Game<GameState, Record<string, unknown>, GameSe
     },
     onEnd: (context) => {
       const { ctx } = context;
-      settleProjects(context);
+      if (!context.G.standard) settleProjects(context);
       scoreLeftoverActionTokens(context);
-      refill(context);
+      if (context.G.standard) resetStandardTurn(context.G, ctx.currentPlayer);
+      else refill(context);
       if (ctx.playOrderPos === ctx.numPlayers - 1) {
+        if (context.G.standard && context.G.table.eventSlot?.type === 'last_round') context.G.standard.finishedAt = Date.now();
         removeEventCard(context);
 
         passStartPlayerToken(context);

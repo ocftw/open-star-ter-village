@@ -1,3 +1,4 @@
+import { fillMarket } from '@/game/standard/engine';
 import { DeckMutator, DeckSelector } from '@/game/store/slice/deck';
 import { GameMove } from '@/game/core/type';
 import { RuleSelector } from '@/game/store/slice/rule';
@@ -31,6 +32,7 @@ export const removeAndRefillJobs: GameMove<RemoveAndRefillJobs> = ({ G, playerID
   DeckMutator.draw(G.decks.jobs, refillCardNumber);
   JobSlotsMutator.addJobCards(G.table.jobSlots, jobCardsToRefill);
 
+  if (G.standard) fillMarket(G);
   const victoryPoints = RuleSelector.getActionVictoryPoints(G.rules, 'removeAndRefillJobs');
   ScoreBoardMutator.add(G.table.scoreBoard, playerID, victoryPoints);
 };
