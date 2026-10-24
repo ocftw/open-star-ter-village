@@ -1,6 +1,7 @@
 /** @type {import('jest').Config} */
 const config = {
   preset: 'ts-jest',
+  modulePathIgnorePatterns: ['<rootDir>/dist/', '<rootDir>/.next/'],
   testEnvironment: 'node',
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   moduleNameMapper: {
