@@ -3,6 +3,7 @@ import DeckSlice, { Deck } from "./deck";
 
 export type Decks = {
   projects: Deck<ProjectCard>;
+  advanced?: Deck<ProjectCard>;
   jobs: Deck<JobCard>;
   events: Deck<EventCard>;
 };

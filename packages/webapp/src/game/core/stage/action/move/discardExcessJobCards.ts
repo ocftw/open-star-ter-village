@@ -22,5 +22,6 @@ export const discardExcessJobCards: GameMove<DiscardExcessJobCards> = ({ G, even
   DeckMutator.discard(G.decks.jobs, cardsToDiscard);
   G.table.fourFreedomsPendingDiscards = [];
   G.table.actionPhaseDone = false;
+  if (G.standard) { G.standard.phase = 'settlement'; return; }
   events.endTurn();
 };
