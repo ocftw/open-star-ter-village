@@ -7,7 +7,7 @@ import { growthReason, NODES } from '../src/game/standard/tree';
 import { validateCreateProject, validateContributeOwnedProjects, validateContributeJoinedProjects } from '../src/game/core/stage/action/validate';
 import type { ClientGameState } from '../src/game/store/store';
 
-const server = `http://localhost:${process.env.PLAYWRIGHT_GAME_SERVER_PORT ?? '3001'}`;
+const server = process.env.PLAYWRIGHT_GAME_SERVER_URL ?? `http://localhost:${process.env.PLAYWRIGHT_GAME_SERVER_PORT ?? '3131'}`;
 const lobby = new LobbyClient({ server });
 const name = 'OpenStarTerVillage';
 
@@ -33,7 +33,7 @@ for (const count of [2,3,4]) test(`Socket.IO ${count}-player game completes, syn
     return {id:String(i),credential:joined.playerCredentials};
   }));
   await lobby.updatePlayer(name,matchID,{playerID:'0',credentials:seats[0].credential,data:{started:true}});
-  const clients=seats.map(seat=>Client({game:OpenStarTerVillage, multiplayer:SocketIO({server}),matchID,playerID:seat.id,credentials:seat.credential}));
+  const clients=seats.map(seat=>Client({game:OpenStarTerVillage, multiplayer:SocketIO({server,socketOpts:{transports:['websocket']}}),matchID,playerID:seat.id,credentials:seat.credential}));
   try {
     clients.forEach(c=>c.start());
     await expect.poll(()=>clients.every(c=>c.getState()?.isConnected)).toBe(true);
