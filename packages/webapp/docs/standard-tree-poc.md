@@ -78,6 +78,18 @@ flyctl deploy --config fly.tree-poc.toml --ha=false \
 flyctl scale count 1 --app open-star-ter-village-tree-poc
 ```
 
+Run the same suite against the deployed app (from outside Fly):
+
+```sh
+PLAYWRIGHT_BASE_URL=https://open-star-ter-village-tree-poc.fly.dev \
+PLAYWRIGHT_GAME_SERVER_URL=https://open-star-ter-village-tree-poc.fly.dev:3001 \
+PLAYWRIGHT_BROWSERS_PATH=/tmp/pw-browsers \
+  pnpm webapp exec playwright test --config playwright.standard.config.ts --reporter=line
+```
+
+The network clients require WebSocket transport; these checks cannot pass using
+HTTP polling alone. They create disposable test rooms.
+
 This test configuration has no production analytics and uses one always-on
 Singapore machine. Verify `/`, `/lobby`, `:3001/health` and the lobby REST endpoint,
 then follow the repository deploy-smoke-test skill. Never deploy during tests.
