@@ -6,6 +6,12 @@ Traditional Chinese / English content.
 
 Rulebook: [Rulebook of Open StarTer Village](https://drive.google.com/file/d/1gBGKhavLdDQ-J1elxQNN6E7Sdz0ZBTeO/view?usp=drive_link)
 
+## Standard Mode playtest
+
+Feature-flagged 星源樹測試版 v1 supports 2–4 players with fully enforced tree
+abilities and the revised 數位政委 event. Simplified remains the default.
+See [rules, verification and isolated deployment](docs/standard-tree-poc.md).
+
 ## Runtime
 
 - Next.js client: `http://localhost:3000`
