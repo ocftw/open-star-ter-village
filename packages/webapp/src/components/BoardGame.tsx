@@ -181,6 +181,7 @@ const Board: React.FC<GameContext> = (gameContext) => {
             <BoardProjectSlot
               key={slot.id}
               slot={slot}
+              contributionLimit={RuleSelector.getMaxContributionValue(G.rules, slot.owner === playerID ? 'contributeOwnedProjects' : 'contributeJoinedProjects')}
               hideProjectType={!!G.standard}
               playerID={playerID}
               matchData={matchData}
