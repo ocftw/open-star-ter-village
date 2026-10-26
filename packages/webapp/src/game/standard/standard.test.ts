@@ -266,3 +266,16 @@ test('Source 5 permits a second initiation through overtime without a second ent
   expect(G.players['0'].token.actions).toBe(1);
   expect(validateCreateProject(G,'0','c','j3',undefined,{useOvertime:true}).valid).toBe(false);
 });
+
+test('Government 4 wildcard recruits into another profession even when printed profession is full', () => {
+  const G = state();
+  const slot = project(G, 'target', '1', 4);
+  slot.card!.requirements['法務專家'] = 2;
+  G.rules.event = {...G.rules.event, ignoreFirstWorkerRequirement: {'0': true}};
+  G.table.jobSlots = [{id:'wild',name:'工程師'}];
+  enqueue(G, 'government4', '0', 'new');
+  const choice = G.standard!.choices[0];
+  const target = choiceOptions(G, choice).find(o => o.target.jobName === '法務專家')!.target;
+  resolveStandardChoice(context(G), choice.id, target);
+  expect(slot.contributions).toContainEqual({jobName:'法務專家', worker:'0', value:1});
+});

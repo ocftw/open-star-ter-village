@@ -73,8 +73,8 @@ export function choiceOptions(G: GameState | ClientGameState, c: Choice): Choice
     if (c.kind === 'government4') {
       if (slot.card!.id === c.projectId || G.players[c.playerId].token.workers < 1) continue;
       for (const card of G.table.jobSlots) {
-        const jobs = Object.keys(slot.card!.requirements).includes(card.name) ? [card.name]
-          : G.rules.event?.ignoreFirstWorkerRequirement?.[c.playerId] ? Object.keys(slot.card!.requirements) : [];
+        const jobs = G.rules.event?.ignoreFirstWorkerRequirement?.[c.playerId] ? Object.keys(slot.card!.requirements)
+          : Object.keys(slot.card!.requirements).includes(card.name) ? [card.name] : [];
         for (const jobName of jobs) {
           if (ProjectSlotSelector.hasWorker(slot, jobName, c.playerId) || ProjectSlotSelector.getJobContribution(slot, jobName) >= slot.card!.requirements[jobName]) continue;
           options.push({ label: `${slot.card!.name} / ${card.name} → ${jobName}`, target: { projectId: slot.card!.id, jobName, jobCardId: card.id } });

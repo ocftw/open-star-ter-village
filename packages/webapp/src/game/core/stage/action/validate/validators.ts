@@ -122,8 +122,8 @@ export const validateRecruit = (
     return invalid('PROJECT_SLOT_NOT_FOUND');
   }
 
-  // Matching cards use their own profession; assignedJobName is ignored.
-  if (Object.keys(activeProject.card.requirements).includes(jobCard.name)) {
+  // An explicit wildcard target takes precedence over the printed profession.
+  if (!(assignedJobName && RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, playerID)) && Object.keys(activeProject.card.requirements).includes(jobCard.name)) {
     if (ProjectSlotSelector.hasWorker(activeProject, jobCard.name, playerID)) {
       return invalid('WORKER_ALREADY_ASSIGNED', { jobName: jobCard.name });
     }
@@ -134,7 +134,7 @@ export const validateRecruit = (
     return VALID;
   }
 
-  // Mismatched card: only valid through 斜槓青年, targeting a chosen position.
+  // Wildcard assignment validates the chosen position, not the printed profession.
   if (!RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, playerID)) {
     return invalid('PROJECT_JOB_NOT_REQUIRED', { jobName: jobCard.name });
   }

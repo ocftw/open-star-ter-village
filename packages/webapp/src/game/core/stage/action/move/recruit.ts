@@ -47,7 +47,7 @@ export const recruit: GameMove<Recruit> = ({ G, playerID }, jobCardId, projectSl
   // 斜槓青年: a mismatched card records its contribution under the
   // player-chosen required position, never under an unrequired profession.
   const matchesRequirement = Object.keys(activeProject.card!.requirements).includes(jobCard.name);
-  const effectiveJobName = matchesRequirement ? jobCard.name : assignedJobName!;
+  const effectiveJobName = ignoreRequirement && assignedJobName ? assignedJobName : matchesRequirement ? jobCard.name : assignedJobName!;
   ProjectSlotMutator.assignWorker(activeProject, effectiveJobName, playerID, G.standard ? Math.min(initialContributionValue, activeProject.card!.requirements[effectiveJobName] - ProjectSlotSelector.getJobContribution(activeProject, effectiveJobName)) : initialContributionValue);
 
   // Refill job card
