@@ -27,6 +27,7 @@ type BoardProjectSlotProps = {
   /** 斜槓青年: makes eligible requirement rows tappable targets. */
   professionPicker?: ProfessionPicker;
   hideProjectType?: boolean;
+  contributionLimit?: number;
 };
 
 const seatColor = (worker: PlayerID) => `var(--p${worker})`;
@@ -40,6 +41,7 @@ export default function BoardProjectSlot({
   idle,
   professionPicker,
   hideProjectType = false,
+  contributionLimit = Infinity,
 }: BoardProjectSlotProps) {
   const dispatch = useAppDispatch();
   const slotsInteractive = useAppSelector(isProjectSlotsInteractive);
@@ -288,7 +290,7 @@ export default function BoardProjectSlot({
                       aria-label={`增加 ${jobName} 貢獻`}
                       data-testid="contribution-increment"
                       data-remaining={remaining}
-                      disabled={remaining <= 0}
+                      disabled={remaining <= 0 || pendingContributions.reduce((sum, c) => sum + c.value, 0) >= contributionLimit}
                       onClick={() =>
                         dispatch(updateContribute({ slotId: slot.id, jobName, diffAmount: pending + 1 }))
                       }

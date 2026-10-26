@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { render, within } from '@testing-library/react';
+import { fireEvent, render, within } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import BoardProjectSlot from './BoardProjectSlot';
 import { makeStore } from '@/lib/store';
@@ -66,4 +66,20 @@ describe('BoardProjectSlot requirement rows', () => {
         expect(el.childElementCount).toBe(0);
       });
   });
+});
+
+it('stops at the action budget and removes zero allocations after decrement', () => {
+  const store = makeStore();
+  store.dispatch(setOwnedContributionInteractive());
+  const view = render(<Provider store={store}><BoardProjectSlot slot={slot} playerID="0" idle={false} contributionLimit={3} /></Provider>);
+  const plus = view.getByTestId('contribution-increment') as HTMLButtonElement;
+  const minus = view.getByTestId('contribution-decrement') as HTMLButtonElement;
+  for(let i=0;i<5;i++) fireEvent.click(plus);
+  expect(plus.disabled).toBe(true);
+  expect(store.getState().contributions.contributions[0].value).toBe(3);
+  for(let i=0;i<5;i++) fireEvent.click(minus);
+  expect(minus.disabled).toBe(true);
+  expect(store.getState().contributions.contributions).toEqual([]);
+  fireEvent.click(plus);
+  expect(store.getState().contributions.contributions[0].value).toBe(1);
 });
