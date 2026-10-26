@@ -13,7 +13,7 @@ on the server, including rematches. Existing state retains its ruleset; moves
 never read the release switch. The in-memory server loses matches on restart.
 Simplified remains the default (3–6 players). Standard allows 2, 3 or 4 players.
 
-Standard uses the 0/0/3/6/9 village-wide completion thresholds and the supplied
+Standard uses the 0/0/2/4/6 village-wide completion thresholds and the supplied
 alternating diagonal connections. Each node costs 1 AP; ten hearts, two per
 tier. Project types are ignored and hidden; difficulty and talent requirements
 remain. All fifteen abilities are implemented. Entry cards are difficulty 1–2;
@@ -103,4 +103,4 @@ Reserve 60–90 minutes each for two-player and four-player sessions on the same
 frozen release. Export the public JSON summary at the end. It includes version,
 build, duration, event/choice log, completions, tree growth rounds, scores and
 remaining hearts; it excludes credentials and private hands. Compare reachability
-of tiers 3–5, growth choices and ability clarity before considering 2/4/6 thresholds.
+of tiers 3–5, growth choices and ability clarity with the revised 2/4/6 thresholds.
