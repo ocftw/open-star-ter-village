@@ -1,7 +1,7 @@
 import type { ClientGameState, GameState } from '../store/store';
 import type { Branch, NodeId } from './state';
 export const BRANCHES: Branch[] = ['source', 'data', 'government'];
-export const THRESHOLDS = [0, 0, 3, 6, 9];
+export const THRESHOLDS = [0, 0, 2, 4, 6];
 export const REWARDS = [1, 1, 2, 2, 4];
 export const NODE_LABELS: Record<Branch, string[]> = {
   source: ['人力區 6 → 8', '協助貢獻 4 → 5', '工程師發起貢獻 1 → 3', '結案者推進另一工程師 1 點', '發起花費 2 → 1 AP'],

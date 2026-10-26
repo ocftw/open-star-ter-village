@@ -67,7 +67,7 @@ describe('tree', () => {
     expect(predecessors('source-4')).toContain('data-3');
     expect(predecessors('data-5')).toContain('source-4');
   });
-  test.each([[3, 3], [4, 6], [5, 9]])('tier %i requires %i village completions', (tier, threshold) => {
+  test.each([[3, 2], [4, 4], [5, 6]])('tier %i requires %i village completions', (tier, threshold) => {
     const G = state(); G.standard!.grown = [`source-${tier - 1}` as never];
     const node = `source-${tier}` as never;
     G.standard!.completedProjectIds = Array.from({ length: threshold - 1 }, (_, i) => `${i}`);
