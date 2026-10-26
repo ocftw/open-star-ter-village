@@ -7,7 +7,7 @@ import { choiceOptions, ChoiceTarget } from '@/game/standard/engine';
 import type { NodeId } from '@/game/standard/state';
 import { StickerButton } from '../design';
 
-const branchLabels = ['開源支', '資料支', '政府支'];
+const branchLabels = ['開源', '資料', '政府'];
 export default function StandardPanel({ gameContext }: { gameContext: GameContext }) {
   const { G, ctx, playerID, moves, matchData } = gameContext;
   const [selected, setSelected] = React.useState<NodeId | null>(null);
@@ -33,7 +33,7 @@ export default function StandardPanel({ gameContext }: { gameContext: GameContex
     <p>全村結案 {s.completedProjectIds.length} · 愛心剩餘 {remaining} · 第 {s.round} 輪 · {playerID !== null ? `行動點 ${G.players[playerID].token.actions}` : '觀戰'}</p>
     {s.nextEvent && <p>下一事件：{s.nextEvent.name} — {s.nextEvent.description}</p>}
     <details><summary>測試規則與能力連線</summary>
-      <p>2–4 人；專案類型不影響規則。每層最多 2 顆；成長花 1 AP。同支向上，斜線依箭頭單向。第 3／4／5 層需要全村結案 3／6／9。每種行動一回合一次，加班可重複一次 1 AP 行動。</p>
+      <p>2–4 人；專案類型不影響規則。每層最多 2 顆；成長花 1 AP。同一分支可向上成長，跨分支須依箭頭方向。第 3／4／5 層需要全村結案 {THRESHOLDS.slice(2).join("／")} 個專案。每種行動一回合一次，加班可重複一次 1 AP 行動。</p>
       <p>數位政委：每個專案的發起人可選任一玩家的 1 個方塊前進 1 格。推進完成時，方塊擁有者獲結案獎勵。政府5：貢獻一半向下取整，分配至自己的既有方塊，不超過需求。</p>
       <p>影響力超過 20 可抽進階卡；結案專案不回牌堆。重新整理可恢復座位；伺服器重啟會失去本局。</p>
     </details>
