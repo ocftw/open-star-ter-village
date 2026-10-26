@@ -75,7 +75,6 @@ const Board: React.FC<GameContext> = (gameContext) => {
     if (currentAction !== UserActionMoves.Recruit) return undefined;
     if (!overrideAvailable || !selectedJobCard || !slot.card) return undefined;
     if (!projectSelectionMap[slot.id]) return undefined;
-    if (Object.keys(slot.card.requirements).includes(selectedJobCard.name)) return undefined;
     return {
       eligibleJobNames: getEligibleTargetJobNames(slot, playerID!),
       selectedJobName: assignedJobName,
