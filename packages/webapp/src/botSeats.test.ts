@@ -1,0 +1,136 @@
+import type { AddressInfo } from 'node:net';
+import { Server, Origins } from 'boardgame.io/server';
+import { Client, LobbyClient } from 'boardgame.io/client';
+import { SocketIO } from 'boardgame.io/multiplayer';
+import game from './game';
+import { ADD_BOT_PATH, REMOVE_BOT_PATH, addBotHandler, removeBotHandler } from './botSeats';
+import { startBotRunner } from './botRunner';
+import { createProfileBot } from './game/bots/profileBot';
+import { BALANCED } from './game/bots/profiles';
+import { activePlayer } from './game/bots/runner';
+import { seededRandom } from './game/bots/random';
+import { BOT_STRATEGIES } from './game/bots/strategies';
+import type { ClientGameState } from './game/store/store';
+
+jest.setTimeout(90_000);
+
+const gameName = game.name!;
+const server = Server({ games: [game], origins: [Origins.LOCALHOST] });
+server.router.post(ADD_BOT_PATH, addBotHandler(server.db, gameName));
+server.router.post(REMOVE_BOT_PATH, removeBotHandler(server.db, gameName));
+let running: Awaited<ReturnType<typeof server.run>>;
+let url = '';
+let lobby: LobbyClient;
+
+beforeAll(async () => {
+  jest.spyOn(console, 'log').mockImplementation(() => {});
+  running = await server.run({ port: 0 });
+  url = `http://localhost:${(running.appServer.address() as AddressInfo).port}`;
+  lobby = new LobbyClient({ server: url });
+});
+afterAll(() => server.kill(running));
+
+async function room(numPlayers: number, ruleset?: string) {
+  const { matchID } = await lobby.createMatch(gameName, { numPlayers, ...(ruleset ? { setupData: { ruleset } } : {}) });
+  const host = await lobby.joinMatch(gameName, matchID, { playerID: '0', playerName: 'Host' });
+  return { matchID, credentials: host.playerCredentials };
+}
+
+const post = (path: string, body: unknown) =>
+  fetch(`${url}${path}`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+
+describe('bot seat endpoints', () => {
+  test('the host seats a named bot whose credential stays on the server', async () => {
+    const { matchID, credentials } = await room(3, 'tree-poc-v1');
+    const response = await post(`/games/${gameName}/${matchID}/bots`, { playerID: '0', credentials, seat: 2, strategy: 'balanced' });
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ seat: 2, name: BOT_STRATEGIES.balanced.names[0], strategy: 'balanced' });
+    const second = await (await post(`/games/${gameName}/${matchID}/bots`, { playerID: '0', credentials, seat: 1 })).json();
+    expect(second.name).toBe(BOT_STRATEGIES.balanced.names[1]);
+
+    const match = await lobby.getMatch(gameName, matchID);
+    expect(match.players[2]).toMatchObject({ name: BOT_STRATEGIES.balanced.names[0], data: { bot: { strategy: 'balanced' } } });
+    expect(match.players[2]).not.toHaveProperty('credentials');
+  });
+
+  test.each([
+    ['a non-host', { playerID: '1', credentials: 'x', seat: 1 }, 403],
+    ['a wrong host credential', { playerID: '0', credentials: 'wrong', seat: 1 }, 403],
+    ['the host seat', { seat: 0 }, 400],
+    ['a seat outside the room', { seat: 5 }, 400],
+    ['an unknown strategy', { seat: 1, strategy: 'cheater' }, 400],
+  ])('rejects %s', async (_, body, status) => {
+    const { matchID, credentials } = await room(2, 'tree-poc-v1');
+    const response = await post(`/games/${gameName}/${matchID}/bots`, { playerID: '0', credentials, ...body });
+    expect(response.status).toBe(status);
+  });
+
+  test('rejects taken seats, Simplified rooms and started games', async () => {
+    const taken = await room(2, 'tree-poc-v1');
+    await lobby.joinMatch(gameName, taken.matchID, { playerID: '1', playerName: 'Guest' });
+    expect((await post(`/games/${gameName}/${taken.matchID}/bots`, { playerID: '0', credentials: taken.credentials, seat: 1 })).status).toBe(409);
+
+    const simple = await room(3);
+    expect((await post(`/games/${gameName}/${simple.matchID}/bots`, { playerID: '0', credentials: simple.credentials, seat: 1 })).status).toBe(400);
+
+    const started = await room(2, 'tree-poc-v1');
+    await lobby.updatePlayer(gameName, started.matchID, { playerID: '0', credentials: started.credentials, data: { started: true } });
+    expect((await post(`/games/${gameName}/${started.matchID}/bots`, { playerID: '0', credentials: started.credentials, seat: 1 })).status).toBe(409);
+  });
+
+  test('the host removes a bot, but cannot remove a human', async () => {
+    const { matchID, credentials } = await room(3, 'tree-poc-v1');
+    await post(`/games/${gameName}/${matchID}/bots`, { playerID: '0', credentials, seat: 1 });
+    await lobby.joinMatch(gameName, matchID, { playerID: '2', playerName: 'Guest' });
+    expect((await post(`/games/${gameName}/${matchID}/bots/2/remove`, { playerID: '0', credentials })).status).toBe(409);
+    expect((await post(`/games/${gameName}/${matchID}/bots/1/remove`, { playerID: '1', credentials })).status).toBe(403);
+    expect((await post(`/games/${gameName}/${matchID}/bots/1/remove`, { playerID: '0', credentials })).status).toBe(200);
+    const match = await lobby.getMatch(gameName, matchID);
+    expect(match.players[1].name).toBeUndefined();
+    expect(match.players[1].data).toBeUndefined();
+    expect(match.players[2].name).toBe('Guest');
+  });
+});
+
+describe('bot runner', () => {
+  test('a server bot plays its seat to the end of a Standard game against a human seat', async () => {
+    const { matchID, credentials } = await room(2, 'tree-poc-v1');
+    await post(`/games/${gameName}/${matchID}/bots`, { playerID: '0', credentials, seat: 1 });
+    await lobby.updatePlayer(gameName, matchID, { playerID: '0', credentials, data: { started: true } });
+
+    const runner = startBotRunner({ db: server.db, game, serverURL: url, pollMs: 50, moveDelayMs: 0, log: () => {} });
+    const host = Client({ game, multiplayer: SocketIO({ server: url, socketOpts: { transports: ['websocket'] } }), matchID, playerID: '0', credentials, debug: false });
+    host.start();
+    const hostBot = createProfileBot(BALANCED);
+    const random = seededRandom(matchID);
+    const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+    let botMoves = 0;
+    let lastStateID = -1;
+    try {
+      await runner.tick();
+      expect(runner.activeSeats()).toEqual([`${matchID}:1`]);
+      for (let i = 0; i < 4000; i++) {
+        const state = host.getState();
+        if (state?.ctx.gameover) break;
+        if (state?.isConnected && state._stateID !== lastStateID && activePlayer(state.ctx) === '0') {
+          lastStateID = state._stateID;
+          const action = hostBot.decide({ view: state.G as unknown as ClientGameState, ctx: state.ctx, playerID: '0', random });
+          (host.moves as Record<string, (...args: unknown[]) => void>)[action.move](...action.args);
+        } else if (state && state._stateID !== lastStateID && activePlayer(state.ctx) === '1') {
+          lastStateID = state._stateID;
+          botMoves++;
+        }
+        await wait(10);
+      }
+      const final = host.getState()!;
+      expect(final.ctx.gameover).toBeDefined();
+      expect(final.G.standard!.round).toBe(7);
+      expect(botMoves).toBeGreaterThan(5);
+      await runner.tick();
+      expect(runner.activeSeats()).toEqual([]);
+    } finally {
+      host.stop();
+      runner.stop();
+    }
+  });
+});
