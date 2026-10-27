@@ -185,8 +185,19 @@ describe('bot runner', () => {
     try {
       await runner.tick();
       expect(runner.activeSeats()).toEqual([`${matchID}:1`]);
+      for (let i = 0; i < 200 && liveSockets(matchID, '1') === 0; i++) await new Promise(r => setTimeout(r, 20));
+      expect(liveSockets(matchID, '1')).toBe(1);
+      // The bot must already be disconnected when the match is deleted.
+      let seatsAtWipe: string[] | undefined;
+      const wipe = server.db.wipe.bind(server.db);
+      const spy = jest.spyOn(server.db, 'wipe').mockImplementation((id: string) => {
+        seatsAtWipe = runner.activeSeats();
+        return wipe(id);
+      });
       await lobby.leaveMatch(gameName, matchID, { playerID: '0', credentials });
       await runner.tick();
+      spy.mockRestore();
+      expect(seatsAtWipe).toEqual([]);
       expect(runner.activeSeats()).toEqual([]);
       await expect(lobby.getMatch(gameName, matchID)).rejects.toThrow(/404/);
     } finally {
