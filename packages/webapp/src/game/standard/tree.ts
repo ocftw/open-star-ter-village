@@ -1,3 +1,4 @@
+import { standardEvent } from './events';
 import type { ClientGameState, GameState } from '../store/store';
 import type { Branch, NodeId } from './state';
 export const BRANCHES: Branch[] = ['source', 'data', 'government'];
@@ -24,6 +25,8 @@ export function growthReason(G: GameState | ClientGameState, node: NodeId, playe
   const s = G.standard;
   if (!s || !NODES.includes(node)) return '無效能力';
   if (s.phase !== 'action' || s.choices.length) return '請先完成待處理選擇';
+  if (standardEvent(G, 'no_tree_growth')) return '又老又窮啊：本輪不可成長';
+  if (overtime && standardEvent(G, 'no_overtime')) return '減薪休假啊：本輪不可加班';
   if (s.grown.includes(node)) return '已成長';
   if (s.grown.length >= 10) return '愛心已用完';
   const tier = Number(node.split('-')[1]);

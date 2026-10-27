@@ -1,3 +1,6 @@
+import rawEvents from '../data/card/events.json';
+import { STANDARD_EVENTS } from './events';
+import { recruit } from '../core/stage/action/move/recruit';
 import { Client } from 'boardgame.io/client';
 import { INVALID_MOVE } from 'boardgame.io/core';
 import { OpenStarTerVillage } from '../game';
@@ -11,7 +14,7 @@ import { playerView } from '../core/playerView';
 import type { FnContext } from 'boardgame.io';
 import { createProject } from '../core/stage/action/move/createProject';
 import { eventCardHandlers } from '../core/handler/eventCardHandlers';
-import { validateCreateProject } from '../core/stage/action/validate';
+import { validateCreateProject, validateContributeOwnedProjects, validateOvertime } from '../core/stage/action/validate';
 
 function fixture(numPlayers = 2) {
   const client = Client({ game: { ...OpenStarTerVillage, playerView: ({ G }) => G, seed: 'standard-test', setup: ctx => setup(ctx, { ruleset: 'tree-poc-v1', forcedFirstEvent: 'digital_minister' }) }, numPlayers });
@@ -278,4 +281,86 @@ test('Government 4 wildcard recruits into another profession even when printed p
   const target = choiceOptions(G, choice).find(o => o.target.jobName === '法務專家')!.target;
   resolveStandardChoice(context(G), choice.id, target);
   expect(slot.contributions).toContainEqual({jobName:'法務專家', worker:'0', value:1});
+});
+
+
+describe('complete Standard event deck', () => {
+  test.each([...STANDARD_EVENTS, ...rawEvents.filter(e => e.type === 'basic'), {name:'數位政委',function_name:'digital_minister'}])('$name can be revealed in Standard while Simplified excludes Standard-only cards', card => {
+    const c = Client({game:{...OpenStarTerVillage, setup:ctx => setup(ctx,{ruleset:'tree-poc-v1',forcedFirstEvent:card.function_name})},numPlayers:2});
+    c.start(); const G = c.getState()!.G;
+    expect(G.table.eventSlot?.function_name).toBe(card.function_name);
+    const raw = setup({ctx:{numPlayers:3,playOrder:['0','1','2']}, random:{Number:()=>0.4,Shuffle:(x:unknown[])=>x}} as never,{forcedFirstEvent:card.function_name});
+    expect(raw.decks.events.drawPile.some(e=>e.type==='standard')).toBe(false);
+    c.stop();
+  });
+  test('Old and Poor blocks growth without consuming AP and expires on next event', () => {
+    const G=state(); G.table.eventSlot={...STANDARD_EVENTS[0],id:'e'};
+    expect(growTree(context(G),'source-1')).toBe(INVALID_MOVE);
+    expect(G.players['0'].token.actions).toBe(3);
+    G.table.eventSlot={...STANDARD_EVENTS[1],id:'next'};
+    expect(growthReason(G,'source-1','0')).toBeUndefined();
+  });
+  test('Github blocks owner contributions; shark checks current occupied slots', () => {
+    const G=state(); const p=project(G,'one');
+    G.table.eventSlot={...STANDARD_EVENTS[1],id:'e'};
+    expect(validateContributeOwnedProjects(G,'0',[{projectSlotId:p.id,jobName:'工程師',value:1}])).toMatchObject({valid:false,reason:'ACTION_UNAVAILABLE'});
+    G.table.eventSlot={...STANDARD_EVENTS[3],id:'e'};
+    project(G,'two');
+    expect(validateCreateProject(G,'0','missing','missing')).toMatchObject({valid:false,reason:'ACTION_UNAVAILABLE'});
+    G.table.projectBoard[1].card=undefined;
+    expect(validateCreateProject(G,'0','missing','missing')).not.toMatchObject({reason:'ACTION_UNAVAILABLE'});
+  });
+  test('pandemic retreats each cube, preserves floor and owner token, not on moves', () => {
+    const G=state(); const a=project(G,'a','0',3); const b=project(G,'b','1',1);
+    G.table.eventSlot={...STANDARD_EVENTS[2],id:'e'}; beginStandardEvent(G);
+    expect(a.contributions[0].value).toBe(2); expect(b.contributions[0].value).toBe(1); expect(a.ownerToken).toBe(1);
+    syncTreeRules(G); expect(a.contributions[0].value).toBe(2);
+  });
+  test('vacation blocks ordinary and tree overtime but allows normal growth', () => {
+    const G=state(); G.table.eventSlot={...STANDARD_EVENTS[5],id:'e'};
+    expect(validateOvertime(G,'0','recruit')).toMatchObject({valid:false,reason:'OVERTIME_UNAVAILABLE'});
+    expect(growthReason(G,'source-1','0')).toBeUndefined();
+    expect(growthReason(G,'source-1','0',true)).toContain('不可加班');
+    G.table.eventSlot={...STANDARD_EVENTS[0],id:'next'};
+    expect(validateOvertime(G,'0','recruit')).not.toMatchObject({reason:'OVERTIME_UNAVAILABLE'});
+  });
+  test('liver queues one optional extra recruitment, costs card/token but no AP, no recursion', () => {
+    const G=state(); project(G,'target','1',1,5,'工程師','1');
+    G.table.eventSlot={...STANDARD_EVENTS[4],id:'e'}; beginStandardEvent(G);
+    G.table.jobSlots=[{id:'a',name:'工程師'},{id:'b',name:'工程師'}];
+    const other=project(G,'other','1',1,5,'工程師','1');
+    recruit(context(G),'a',G.table.projectBoard[0].id);
+    const c=G.standard!.choices[0]; expect(c.kind).toBe('extraRecruit');
+    const ap=G.players['0'].token.actions, workers=G.players['0'].token.workers;
+    const target=choiceOptions(G,c).find(o=>o.target.projectId===other.card!.id)!.target;
+    expect(resolveStandardChoice(context(G,'1'),c.id,target)).toBe(INVALID_MOVE);
+    resolveStandardChoice(context(G),c.id,target);
+    expect(G.players['0'].token.actions).toBe(ap); expect(G.players['0'].token.workers).toBe(workers-1);
+    expect(G.standard!.choices).toHaveLength(0);
+    expect(resolveStandardChoice(context(G),c.id,target)).toBe(INVALID_MOVE);
+    expect(G.standard!.extraRecruitUsed?.['0']).toBe(true);
+  });
+});
+
+test('Government 5 only offers own existing cubes with capacity; does not create new cubes', () => {
+  const G=state(); const p=project(G,'other','1',1,4,'工程師','1');
+  enqueue(G,'government5','0','done',3);
+  const choice=G.standard!.choices[0];
+  expect(choiceOptions(G,choice)).toEqual([]);
+  expect(resolveStandardChoice(context(G),choice.id,{projectId:'other',worker:'0',jobName:'工程師'})).toBe(INVALID_MOVE);
+  p.contributions.push({jobName:'工程師',worker:'0',value:1});
+  expect(choiceOptions(G,choice)).toHaveLength(1);
+  resolveStandardChoice(context(G),choice.id,null);
+  expect(p.contributions).toHaveLength(2);
+});
+test('liver choice can skip, survives serialized state restoration, and resets next round', () => {
+  const G=state(); project(G,'p','1',1,5,'工程師','1');
+  G.table.eventSlot={...STANDARD_EVENTS[4],id:'e'}; beginStandardEvent(G);
+  G.table.jobSlots=[{id:'a',name:'工程師'}];
+  recruit(context(G),'a',G.table.projectBoard[0].id);
+  const copy=structuredClone(G);
+  expect(copy.standard!.choices[0].kind).toBe('extraRecruit');
+  resolveStandardChoice(context(copy),copy.standard!.choices[0].id,null);
+  expect(copy.standard!.extraRecruitUsed?.['0']).toBe(true);
+  beginStandardEvent(copy); expect(copy.standard!.extraRecruitUsed).toEqual({});
 });

@@ -1,3 +1,4 @@
+import { STANDARD_EVENTS } from '@/game/standard/events';
 import { roomSetupError, Ruleset } from '../standard/config';
 import { standardState } from '../standard/state';
 import { Ctx, DefaultPluginAPIs } from 'boardgame.io';
@@ -100,6 +101,7 @@ export const setup: SetupFn<GameState> = ({ ctx, random }, setupData?: GameSetup
   // TODO: Validate event card function names
   const eventCards = rawEventCards.map(rawEventCard => ({ id: getUuid(random.Number), ...rawEventCard }) as unknown as EventCard);
   if (G.standard) eventCards.push({ id: getUuid(random.Number), name: '數位政委', description: '場內每個專案的發起人，可選擇該專案上任一玩家的 1 個貢獻方塊前進 1 格，不可超過專案需求。', function_name: 'digital_minister', type: 'basic' } as EventCard);
+  if (G.standard) eventCards.push(...STANDARD_EVENTS.map(card => ({...card, id: getUuid(random.Number)})));
   // find end game event card
   // pick N random event cards based on rule and shuffle them
   // add end game event card to the end
@@ -112,7 +114,7 @@ export const setup: SetupFn<GameState> = ({ ctx, random }, setupData?: GameSetup
   }
   const endGameEventCard = lastRoundEventCards[0];
 
-  const basicEventCards = eventCards.filter(card => card.type === 'basic');
+  const basicEventCards = eventCards.filter(card => card.type === 'basic' || (G.standard && card.type === 'standard'));
   const nonEndGameEventCardCount = RuleSelector.getNonEndGameNumberOfEventCards(G.rules);
 
   // Support a demo/test mode: when the URL contains ?demo=<key>, force that

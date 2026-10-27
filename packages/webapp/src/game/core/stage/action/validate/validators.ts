@@ -1,3 +1,4 @@
+import { standardEvent, eventActionBlocked } from '@/game/standard/events';
 import { hasNode } from '@/game/standard/tree';
 import { PlayerID } from 'boardgame.io';
 import { RuleSelector } from '@/game/store/slice/rule';
@@ -25,6 +26,7 @@ const validateSlotAndActionTokens = (
   opts?: SlotOptions,
 ): ValidationResult => {
   if (G.standard && (G.standard.choices.length || G.standard.phase !== 'action' || G.table.actionPhaseDone)) return invalid('ACTION_UNAVAILABLE');
+  if (eventActionBlocked(G, actionName)) return invalid('ACTION_UNAVAILABLE');
   if (!RuleSelector.isActionSlotAvailable(G.rules, actionName)) {
     return invalid('ACTION_UNAVAILABLE');
   }
@@ -270,7 +272,9 @@ export const validateOvertime = (
   playerID: PlayerID,
   actionName: ActionMoveName,
 ): ValidationResult => {
+  if (standardEvent(G, 'no_overtime')) return invalid('OVERTIME_UNAVAILABLE');
   if (G.standard && (G.standard.choices.length || G.standard.phase !== 'action' || G.table.actionPhaseDone)) return invalid('ACTION_UNAVAILABLE');
+  if (eventActionBlocked(G, actionName)) return invalid('ACTION_UNAVAILABLE');
   if (!RuleSelector.isActionSlotAvailable(G.rules, actionName)) {
     return invalid('ACTION_UNAVAILABLE');
   }
