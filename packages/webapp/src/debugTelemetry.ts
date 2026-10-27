@@ -1,7 +1,5 @@
 import type { GameState } from './game/store/store';
 
-/** Opt-in switch for the telemetry debug endpoint. Set only on test deployments. */
-export const DEBUG_TELEMETRY_ENV = 'DEBUG_TELEMETRY';
 export const DEBUG_TELEMETRY_PATH = '/debug/matches/:matchID/telemetry';
 
 interface MatchStore {

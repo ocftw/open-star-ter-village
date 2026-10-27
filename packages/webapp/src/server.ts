@@ -71,7 +71,7 @@ async function serve() {
   });
 
   if (env.debugTelemetry) {
-    console.warn(`DEBUG_TELEMETRY is on: ${DEBUG_TELEMETRY_PATH} exposes balance telemetry. Never enable it in production.`);
+    console.warn(`DEBUG_TELEMETRY is on: ${DEBUG_TELEMETRY_PATH} exposes balance telemetry. Use it only on test deployments, never on the live game server.`);
     server.router.get(DEBUG_TELEMETRY_PATH, debugTelemetryHandler(server.db));
   }
 

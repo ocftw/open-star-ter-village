@@ -35,10 +35,19 @@ describe('Standard telemetry', () => {
   });
 
   test('counts every queued choice as resolved, skipped or dropped', () => {
+    expect(G.standard!.choices).toEqual([]);
     for (const stats of Object.values(telemetry.choices)) {
-      expect(stats!.resolved + stats!.skipped + stats!.noTarget).toBeGreaterThanOrEqual(stats!.queued);
+      expect(stats!.resolved + stats!.skipped + stats!.noTarget).toBe(stats!.queued);
     }
     expect(telemetry.government5.used).toBeLessThanOrEqual(telemetry.government5.budget);
+  });
+
+  test('counts each multi-point Government 5 point as its own queued choice', () => {
+    const bot = createProfileBot(BALANCED);
+    const games = ['a', 'b', 'c', 'd'].map(seed => runGame({ numPlayers: 4, seed: `gov5-${seed}`, bots: bot }).state.G.standard!.telemetry!);
+    const gov5 = games.map(t => t.choices.government5).filter(Boolean);
+    expect(gov5.length).toBeGreaterThan(0);
+    for (const stats of gov5) expect(stats!.resolved + stats!.skipped + stats!.noTarget).toBe(stats!.queued);
   });
 
   test('records the first round each player passes 20 influence', () => {
