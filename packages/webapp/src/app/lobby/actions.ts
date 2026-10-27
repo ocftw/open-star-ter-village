@@ -144,6 +144,7 @@ export async function joinRoom(
   const joinedMatch = await lobbyClient.joinMatch(GAME_NAME, matchID, {
     playerID: preferredSeatID,
     playerName,
+    data: { displayName: playerName },
   });
 
   return {
@@ -186,6 +187,8 @@ export async function startRoom(matchID: string, playerID: string, credential: s
     credentials: credential,
     data: {
       started: true,
+      displayName: (await lobbyClient.getMatch(GAME_NAME, matchID)).players
+        .find((player) => String(player.id) === playerID)?.data?.displayName,
     },
   });
 }

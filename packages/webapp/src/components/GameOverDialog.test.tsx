@@ -57,6 +57,18 @@ describe('GameOverDialog (#419 end-game modal)', () => {
     expect(getByText('9 VP')).toBeTruthy();
   });
 
+  it('uses the saved public name when a finished player has left', () => {
+    const context = makeContext({ gameover: { winners: ['1'] } });
+    context.matchData = [
+      { id: 0, name: 'Alice' },
+      { id: 1, data: { displayName: 'Bob' } },
+      { id: 2, name: 'Carol' },
+    ] as never;
+    const { getByText } = render(<GameOverDialog gameContext={context} open onClose={jest.fn()} />);
+
+    expect(getByText(/Bob 獲勝/)).toBeTruthy();
+  });
+
   it('offers 再玩一次 only when this browser holds seat credentials', () => {
     const noCreds = render(<GameOverDialog gameContext={makeContext()} open onClose={jest.fn()} />);
     expect(noCreds.queryByTestId('play-again')).toBeNull();
