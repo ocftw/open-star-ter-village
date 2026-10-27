@@ -93,6 +93,24 @@ describe('bot seat endpoints', () => {
 });
 
 describe('bot runner', () => {
+  test('stops a bot when the host leaves mid-game and the match is terminated', async () => {
+    const { matchID, credentials } = await room(2, 'tree-poc-v1');
+    await post(`/games/${gameName}/${matchID}/bots`, { playerID: '0', credentials, seat: 1 });
+    const runner = startBotRunner({ db: server.db, game, serverURL: url, pollMs: 60_000, moveDelayMs: 0, log: () => {} });
+    try {
+      await runner.tick();
+      expect(runner.activeSeats()).toEqual([]);
+      await lobby.updatePlayer(gameName, matchID, { playerID: '0', credentials, data: { started: true } });
+      await runner.tick();
+      expect(runner.activeSeats()).toEqual([`${matchID}:1`]);
+      await lobby.leaveMatch(gameName, matchID, { playerID: '0', credentials });
+      await runner.tick();
+      expect(runner.activeSeats()).toEqual([]);
+    } finally {
+      runner.stop();
+    }
+  });
+
   test('a server bot plays its seat to the end of a Standard game against a human seat', async () => {
     const { matchID, credentials } = await room(2, 'tree-poc-v1');
     await post(`/games/${gameName}/${matchID}/bots`, { playerID: '0', credentials, seat: 1 });
