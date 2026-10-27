@@ -176,6 +176,25 @@ describe('bot runner', () => {
     }
   });
 
+  test('stops running bots and deletes the room when the last human leaves mid-game', async () => {
+    const { matchID, credentials } = await room(2, 'tree-poc-v1');
+    await post(`/games/${gameName}/${matchID}/bots`, { playerID: '0', credentials, seat: 1 });
+    await lobby.updatePlayer(gameName, matchID, { playerID: '0', credentials, data: { started: true } });
+    const host = await connect(matchID, '0', credentials);
+    const runner = startBotRunner({ db: server.db, game, serverURL: url, isPlayerConnected: socketPresence(server.transport), pollMs: 60_000, moveDelayMs: 60_000, log: () => {} });
+    try {
+      await runner.tick();
+      expect(runner.activeSeats()).toEqual([`${matchID}:1`]);
+      await lobby.leaveMatch(gameName, matchID, { playerID: '0', credentials });
+      await runner.tick();
+      expect(runner.activeSeats()).toEqual([]);
+      await expect(lobby.getMatch(gameName, matchID)).rejects.toThrow(/404/);
+    } finally {
+      host.stop();
+      runner.stop();
+    }
+  });
+
   test('ignores a player seat that only claims to be a bot', async () => {
     const { matchID, credentials } = await room(2, 'tree-poc-v1');
     await lobby.joinMatch(gameName, matchID, { playerID: '1', playerName: 'Sneaky', data: { bot: { strategy: 'balanced' } } });

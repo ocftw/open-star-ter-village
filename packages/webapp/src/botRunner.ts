@@ -45,11 +45,26 @@ export interface BotRunnerOptions {
   log?: (message: string) => void;
 }
 
-/** Live-socket presence from boardgame.io's Socket.IO transport, falling back to the stored flag. */
-export function socketPresence(transport: unknown): NonNullable<BotRunnerOptions['isPlayerConnected']> {
-  const clients = (transport as { clientInfo?: Map<string, { matchID: string; playerID: string }> } | undefined)?.clientInfo;
-  if (!(clients instanceof Map)) return (_, player) => Boolean(player.isConnected);
-  return (matchID, player) => Array.from(clients.values()).some(client => client.matchID === matchID && client.playerID === String(player.id));
+/**
+ * Live-socket presence from boardgame.io's Socket.IO transport (its internal
+ * `clientInfo` map, as of 0.50), falling back to the stored flag. Warns once
+ * if the map's entries stop looking as expected after a boardgame.io upgrade.
+ */
+export function socketPresence(transport: unknown, log: (message: string) => void = console.warn): NonNullable<BotRunnerOptions['isPlayerConnected']> {
+  const clients = (transport as { clientInfo?: Map<string, unknown> } | undefined)?.clientInfo;
+  if (!(clients instanceof Map)) {
+    log('bot runner: transport has no clientInfo map; falling back to stored isConnected');
+    return (_, player) => Boolean(player.isConnected);
+  }
+  let warned = false;
+  return (matchID, player) => Array.from(clients.values()).some(client => {
+    const { matchID: clientMatchID, playerID } = (client ?? {}) as { matchID?: unknown; playerID?: unknown };
+    if (typeof clientMatchID !== 'string' && !warned) {
+      warned = true;
+      log('bot runner: unexpected transport clientInfo entry shape; bots may not detect connected humans');
+    }
+    return clientMatchID === matchID && playerID === String(player.id);
+  });
 }
 
 /** Resend a move only if the server has not answered it within this time. */
@@ -140,6 +155,13 @@ export function startBotRunner({ db, game, serverURL, pollMs = 2000, moveDelayMs
       const humans = players.filter(player => player.name?.trim() && !isServerBotSeat(player));
       // boardgame.io deletes a match once nobody is seated; bot seats keep their names, so finish the job.
       if (humans.length === 0) {
+        // Disconnect its bots first so a reconnecting bot cannot recreate the match on sync.
+        for (const [key, seat] of Array.from(seats)) {
+          if (key.startsWith(`${matchID}:`)) {
+            seat.stop();
+            seats.delete(key);
+          }
+        }
         await db.wipe(matchID);
         log(`match ${matchID} deleted: only bots were left`);
         continue;
