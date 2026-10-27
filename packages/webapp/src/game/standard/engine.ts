@@ -137,6 +137,8 @@ export const resolveStandardChoice: GameMove<(id: number, target: ChoiceTarget |
   s.choices.shift();
   if (c.kind === 'government5' && target && c.budget > 1) {
     s.choices.unshift({ ...c, id: s.nextChoiceId++, budget: c.budget - 1 });
+    // Each point is its own choice; its budget was counted when first queued.
+    trackQueued(G, c.kind, 0);
   }
 }
 function settleStandard(G: GameState) {

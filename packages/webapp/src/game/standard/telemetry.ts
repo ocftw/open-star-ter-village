@@ -16,6 +16,7 @@ export interface ProjectTelemetry {
   contributions?: Record<PlayerID, number>;
 }
 
+/** Per choice kind; each Government 5 point is its own choice, so queued = resolved + skipped + noTarget. */
 export interface ChoiceTelemetry {
   queued: number;
   resolved: number;

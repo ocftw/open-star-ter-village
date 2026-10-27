@@ -72,8 +72,9 @@ The `nodeImpact` values are initial guesses. Recalibrate them from batch data
 `G.standard.telemetry` records balance data on the server: per project its
 difficulty, initiator, finisher and contribution snapshot; the first round each
 player passes 20 influence; advanced draws; queued, resolved, skipped and
-target-less counts per choice kind; and Government 5 budget versus points used
-(each resolved point counts once).
+target-less counts per choice kind (each Government 5 point is its own choice,
+so queued = resolved + skipped + target-less); and Government 5 budget versus
+points used.
 
 `playerView` always removes it, so players and spectators never receive it and
 the player export is unchanged. Only the bot runner and debug mode can read it.
@@ -85,7 +86,7 @@ For human playtests on a **test deployment only**:
 
 1. Start the game server with `DEBUG_TELEMETRY=1`. It logs a warning and adds
    `GET /debug/matches/:matchID/telemetry`. Without the flag the route does not
-   exist (404). Never set it in production.
+   exist (404). Never set it on the live game server.
 2. Open the game page with `?debug=1`, e.g. `/game/<matchID>?debug=1`. A debug
    panel under the tree shows the telemetry (projects with initiator, finisher
    and contribution snapshot; Government 5 budget; advanced draws; choice
