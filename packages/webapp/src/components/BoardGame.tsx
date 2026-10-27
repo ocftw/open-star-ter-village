@@ -7,7 +7,8 @@ import { Game } from 'boardgame.io';
 import { GameState, ProjectSlotState } from '@/game';
 import { GameContext } from './GameContextHelpers';
 import { GAME_NAME, GAME_SERVER_URL, lobbyClient } from '@/lib/lobbyClient';
-import { getLobbyErrorMessage, joinRoom } from '@/app/lobby/actions';
+import { getLobbyErrorMessage, getMatch, joinRoom } from '@/app/lobby/actions';
+import { usePolling } from '@/lib/usePolling';
 import { loadCredentials, saveCredentials, type MatchCredentials } from '@/lib/matchCredentials';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import {
@@ -307,11 +308,27 @@ export function GameOverDialog({
   const [savedCredentials, setSavedCredentials] = React.useState<MatchCredentials | null>(null);
   const [isRematching, setIsRematching] = React.useState(false);
   const [rematchError, setRematchError] = React.useState<string | null>(null);
+  const [nextMatchID, setNextMatchID] = React.useState<string | null>(null);
+  const [dismissedInvitation, setDismissedInvitation] = React.useState<string | null>(null);
+  const hasFinished = gameover !== undefined;
   React.useEffect(() => {
-    if (isMultiplayer && open) {
-      setSavedCredentials(loadCredentials(matchID));
-    }
-  }, [isMultiplayer, matchID, open]);
+    setSavedCredentials(isMultiplayer && hasFinished ? loadCredentials(matchID) : null);
+    setNextMatchID(null);
+    setDismissedInvitation(null);
+  }, [isMultiplayer, matchID, hasFinished]);
+
+  // playAgain persists this on the completed match, so peers recover the
+  // invitation after refresh/reconnect even if they closed the result dialog.
+  usePolling(async () => {
+    const metadata = await getMatch(matchID);
+    const invitation = metadata.nextMatchID ?? null;
+    if (invitation !== nextMatchID) setNextMatchID(invitation);
+  }, 3_000, isMultiplayer && hasFinished && savedCredentials !== null);
+  const invitationVisible = nextMatchID !== null && dismissedInvitation !== nextMatchID;
+  const handleClose = () => {
+    setDismissedInvitation(nextMatchID);
+    onClose();
+  };
 
   const handlePlayAgain = async () => {
     if (!savedCredentials) return;
@@ -323,8 +340,15 @@ export function GameOverDialog({
         credentials: savedCredentials.credential,
       });
       const playerName = savedCredentials.playerName ?? getPlayerName(matchData, savedCredentials.playerID);
-      const joined = await joinRoom(nextMatchID, playerName);
-      saveCredentials(joined);
+      const existingCredentials = loadCredentials(nextMatchID);
+      const nextMatch = await getMatch(nextMatchID);
+      const existingSeat = existingCredentials && nextMatch.players.find(
+        player => String(player.id) === existingCredentials.playerID && player.name === playerName,
+      );
+      if (!existingSeat) {
+        const joined = await joinRoom(nextMatchID, playerName);
+        saveCredentials(joined);
+      }
       router.push(`/game/${nextMatchID}`);
     } catch (error) {
       setRematchError(getLobbyErrorMessage(error, '無法開新的一局，請稍後再試。 · Could not start the next game.'));
@@ -333,9 +357,15 @@ export function GameOverDialog({
   };
 
   return (
-    <Modal open={open} onClose={onClose} ariaLabel="遊戲結束" width="min(440px, 100%)">
+    <Modal open={open || invitationVisible} onClose={handleClose} ariaLabel="遊戲結束" width="min(440px, 100%)">
       {gameover && (
         <div>
+          {invitationVisible && (
+            <div role="status" data-testid="rematch-invitation" style={{ background: 'var(--teal-soft)', borderRadius: 12, padding: 12, marginBottom: 14 }}>
+              <strong>下一局已開好，一起再玩一局吧！</strong>
+              <div className="en-cap">The next game is ready — join your group</div>
+            </div>
+          )}
           <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 40 }}>🏆</div>
               <h2 style={{ fontWeight: 900, fontSize: 22, color: 'var(--ink)' }}>遊戲結束</h2>
@@ -406,7 +436,7 @@ export function GameOverDialog({
                   style={{ flex: 1 }}
                   data-testid="play-again"
                 >
-                  {isRematching ? '開新一局中…' : '再玩一次'} <span className="tag-en" style={{ color: 'rgba(255,255,255,0.85)' }}>Play again</span>
+                  {isRematching ? '加入中…' : nextMatchID ? '加入下一局' : '再玩一次'} <span className="tag-en" style={{ color: 'rgba(255,255,255,0.85)' }}>{nextMatchID ? 'Join next game' : 'Play again'}</span>
                 </StickerButton>
               )}
               <StickerButton
@@ -418,7 +448,7 @@ export function GameOverDialog({
                 回大廳 <span className="tag-en">Lobby</span>
               </StickerButton>
             </div>
-            <StickerButton variant="ghost" size="sm" onClick={onClose} style={{ width: '100%', marginTop: 10 }}>
+            <StickerButton variant="ghost" size="sm" onClick={handleClose} style={{ width: '100%', marginTop: 10 }}>
               關閉，查看最終盤面 · Close and inspect the board
             </StickerButton>
             <ProjectCatalogLink
