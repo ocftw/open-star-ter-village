@@ -8,6 +8,7 @@
 **/test-results
 **/playwright-report
 **/*.test.ts
+**/*.fixture.cjs
 **/*.test.tsx
 **/*.spec.ts
 **/*.spec.tsx
