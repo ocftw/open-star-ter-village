@@ -67,6 +67,53 @@ All code lives in `src/game/bots/`.
 The `nodeImpact` values are initial guesses. Recalibrate them from batch data
 (points per AP, node growth rate, ability trigger counts) and rerun.
 
+## Bots in game rooms
+
+In a Standard room, the host can seat bots before starting:
+
+1. In the waiting room, each empty seat shows **＋ 電腦 · Add bot** to the host.
+   With more than one strategy registered, a picker appears next to it.
+2. A bot seat shows its name, `BOT`, and its strategy, e.g. `🤖 平衡型 Balanced`.
+   The host can free it with **✕** until the game starts. Other players see
+   bots but no controls.
+3. Bot seats count as filled, so the host can start once every seat is a
+   human or a bot. In game, bot names carry a 🤖 marker.
+
+Rules:
+
+- Bots play Standard rooms only, and only the host (seat 0) can add or remove
+  them, before the game starts.
+- Bots use the same player view as humans: no decks, no other hands.
+- Bot seats do not keep a room alive: a room whose only connected seats are
+  bots counts as abandoned.
+- If a human leaves mid-game the match ends as before, and its bots stop.
+- Matches live in server memory, so a server restart ends bot games too.
+
+How it works on the server:
+
+- `POST /games/OpenStarTerVillage/:matchID/bots` with
+  `{ playerID: "0", credentials, seat, strategy }` seats a bot.
+  `POST /games/OpenStarTerVillage/:matchID/bots/:seat/remove` with
+  `{ playerID: "0", credentials }` frees it (`src/botSeats.ts`).
+- The bot seat's metadata gets a name from the strategy's name list, `data:
+  { bot: { strategy } }`, and a random credential. The lobby API strips
+  credentials, so it never leaves the server.
+- `src/botRunner.ts` polls matches every 2 s. For each bot seat of a started,
+  unfinished match, it connects a multiplayer client with that credential and
+  plays the seat. It waits `BOT_MOVE_DELAY_MS` (default 800) before each move
+  so humans can follow, and disconnects when the game ends, the match is
+  terminated or deleted, or the seat stops being a bot.
+
+### Adding a strategy
+
+1. Add a weight profile in `src/game/bots/profiles.ts`.
+2. Register it in `BOT_STRATEGIES` (`src/game/bots/strategies.ts`) with an `id`,
+   a `label`, a short `description` and a list of seat names, at least three
+   so a full room never repeats one.
+
+The waiting room then offers it automatically, and the CLI accepts it with
+`--profile <id>` once it is also added to `PROFILES`.
+
 ## Telemetry
 
 `G.standard.telemetry` records balance data on the server: per project its
