@@ -1,0 +1,77 @@
+import type { State } from 'boardgame.io';
+import { playerView } from '@/game/core/playerView';
+import type { GameState } from '@/game/store/store';
+import { createProfileBot } from './profileBot';
+import { nodeValue, position, scoreAction } from './evaluate';
+import { BALANCED, withWeights } from './profiles';
+import { initialState } from './runner';
+import type { BotAction } from './types';
+
+function actionState(): State<GameState> {
+  const state = structuredClone(initialState(2, 'profile-test'));
+  // Start the action stage for the current player with an empty board.
+  state.G.standard!.phase = 'action';
+  state.G.standard!.choices = [];
+  state.ctx = { ...state.ctx, activePlayers: { [state.ctx.currentPlayer]: 'action' } };
+  return state;
+}
+
+function addProject(G: GameState, id: string, owner: string, requirement: number, value: number) {
+  const slot = G.table.projectBoard.find(s => !s.card)!;
+  Object.assign(slot, {
+    card: { id, name: id, type: 'ignored', difficulty: 1, description: '', requirements: { 工程師: requirement } },
+    owner, ownerToken: 1, lastContributor: owner, contributions: [{ jobName: '工程師', worker: owner, value }],
+  });
+  return slot;
+}
+
+function decide(state: State<GameState>, playerID: string): BotAction {
+  const view = playerView({ G: state.G, ctx: state.ctx, playerID });
+  return createProfileBot(BALANCED).decide({ view, ctx: state.ctx, playerID, random: () => 0 });
+}
+
+describe('balanced profile', () => {
+  test('finishes a project it can complete this turn over a partial contribution', () => {
+    const state = actionState();
+    const me = state.ctx.currentPlayer;
+    const near = addProject(state.G, 'near', me, 4, 2);
+    const far = addProject(state.G, 'far', me, 8, 1);
+    const p = position(playerView({ G: state.G, ctx: state.ctx, playerID: me }), state.ctx, me, BALANCED);
+    const finish = { move: 'contributeOwnedProjects', args: [[{ projectSlotId: near.id, jobName: '工程師', value: 2 }], undefined] };
+    const partial = { move: 'contributeOwnedProjects', args: [[{ projectSlotId: far.id, jobName: '工程師', value: 2 }], undefined] };
+    expect(scoreAction(p, finish)).toBeGreaterThan(scoreAction(p, partial));
+  });
+
+  test('never prefers overtime over the same action without it', () => {
+    const state = actionState();
+    const me = state.ctx.currentPlayer;
+    const slot = addProject(state.G, 'own', me, 6, 1);
+    const p = position(playerView({ G: state.G, ctx: state.ctx, playerID: me }), state.ctx, me, BALANCED);
+    const contribution = [{ projectSlotId: slot.id, jobName: '工程師', value: 1 }];
+    expect(scoreAction(p, { move: 'contributeOwnedProjects', args: [contribution, undefined] }))
+      .toBeGreaterThan(scoreAction(p, { move: 'contributeOwnedProjects', args: [contribution, { useOvertime: true }] }));
+  });
+
+  test('tree node value starts from the reward and grows with its consequence impact', () => {
+    const state = actionState();
+    const me = state.ctx.currentPlayer;
+    const view = playerView({ G: state.G, ctx: state.ctx, playerID: me });
+    const noImpact = { ...BALANCED, nodeImpact: { ...BALANCED.nodeImpact, 'data-1': 0 } };
+    const noUnlock = withWeights(noImpact, { unlock: 0 });
+    expect(nodeValue(position(view, state.ctx, me, noUnlock), 'data-1')).toBeCloseTo(1);
+    expect(nodeValue(position(view, state.ctx, me, BALANCED), 'data-3')).toBeGreaterThan(nodeValue(position(view, state.ctx, me, BALANCED), 'data-1'));
+  });
+
+  test('leftover AP in the last round raises the cost of spending AP', () => {
+    const state = actionState();
+    const me = state.ctx.currentPlayer;
+    state.G.rules.settlement.leftoverActionTokensVictoryPoints = 1;
+    const p = position(playerView({ G: state.G, ctx: state.ctx, playerID: me }), state.ctx, me, BALANCED);
+    expect(p.apCost).toBe(1);
+  });
+
+  test('plays a legal opening move instead of ending the turn', () => {
+    const state = actionState();
+    expect(decide(state, state.ctx.currentPlayer).move).not.toBe('endActionTurn');
+  });
+});
