@@ -1,5 +1,6 @@
 import { hasNode } from '@/game/standard/tree';
 import { enqueue, fillMarket } from '@/game/standard/engine';
+import { trackInitiation } from '@/game/standard/telemetry';
 import { ProjectBoardMutator, ProjectBoardSelector } from '@/game/store/slice/projectBoard';
 import { DeckMutator, DeckSelector } from '@/game/store/slice/deck';
 import { ProjectSlotMutator } from '@/game/store/slice/projectSlot/projectSlot';
@@ -67,6 +68,7 @@ export const createProject: GameMove<CreateProject> = ({ G, playerID }, projectC
   JobSlotsMutator.addJobCards(G.table.jobSlots, jobCards);
 
   if (G.standard) fillMarket(G);
+  trackInitiation(G, projectCard, playerID);
   if (hasNode(G, 'government-4')) enqueue(G, 'government4', playerID, projectCard.id);
   const victoryPoints = RuleSelector.getActionVictoryPoints(G.rules, 'createProject');
   ScoreBoardMutator.add(G.table.scoreBoard, playerID, victoryPoints);

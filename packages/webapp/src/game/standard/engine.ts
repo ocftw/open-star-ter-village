@@ -10,10 +10,12 @@ import { PlayersMutator } from '../store/slice/players';
 import { ActionSlotsMutator } from '../store/slice/actionSlots';
 import type { GameMove } from '../core/type';
 import { RuleMutator } from '../store/slice/rule';
+import { trackAdvancedDraw, trackCompletion, trackNoTarget, trackQueued, trackResolved, trackScores } from './telemetry';
 
 export function enqueue(G: GameState, kind: ChoiceKind, playerId: string, projectId?: string, budget = 1) {
   const s = G.standard!;
   s.choices.push({ id: s.nextChoiceId++, kind, playerId, projectId, budget });
+  trackQueued(G, kind, budget);
 }
 export function log(G: GameState, kind: string, playerId?: string, target?: string) {
   G.standard!.log.push({ round: G.standard!.round, kind, playerId, target });
@@ -110,8 +112,10 @@ export const resolveStandardChoice: GameMove<(id: number, target: ChoiceTarget |
       const advancedEligible = G.table.scoreBoard[playerID] > 20;
       const preferred = target.pile === 'advanced' ? G.decks.advanced! : G.decks.projects;
       const fallback = target.pile === 'advanced' ? G.decks.projects : advancedEligible ? G.decks.advanced! : undefined;
+      const advancedBefore = G.decks.advanced!.drawPile.length;
       const card = preferred.drawPile.shift() ?? fallback?.drawPile.shift();
       if (card) G.players[playerID].hand.projects.push(card);
+      if (G.decks.advanced!.drawPile.length < advancedBefore) trackAdvancedDraw(G, playerID);
     } else {
       const slot = G.table.projectBoard.find(p => p.card?.id === target.projectId)!;
       if (c.kind === 'government4' || c.kind === 'extraRecruit') {
@@ -128,6 +132,7 @@ export const resolveStandardChoice: GameMove<(id: number, target: ChoiceTarget |
     }
     log(G, c.kind, playerID, JSON.stringify(target));
   } else log(G, `${c.kind}:skip`, playerID);
+  trackResolved(G, c, !target);
   // A fresh ID for each point prevents duplicate submissions spending twice.
   s.choices.shift();
   if (c.kind === 'government5' && target && c.budget > 1) {
@@ -150,6 +155,7 @@ function settleStandard(G: GameState) {
     PlayersMutator.addWorkerTokens(G.players, slot.owner, slot.ownerToken);
     s.completedProjectIds.push(slot.card!.id);
     log(G, 'complete', slot.lastContributor, slot.card!.name);
+    trackCompletion(G, slot);
     if (hasNode(G, 'source-4') && engineer) enqueue(G, 'source4', slot.lastContributor, slot.card!.id);
     if (hasNode(G, 'government-5') && ownerContribution >= 2) enqueue(G, 'government5', slot.owner, slot.card!.id, Math.floor(ownerContribution / 2));
   }
@@ -182,7 +188,8 @@ export function advanceStandard(context: FnContext<GameState>) {
   if (!s) return;
   // Run after every move and at turn start; only one player owns a pending choice.
   while (true) {
-    while (s.choices.length && choiceOptions(G, s.choices[0]).length === 0) s.choices.shift();
+    trackScores(G);
+    while (s.choices.length && choiceOptions(G, s.choices[0]).length === 0) trackNoTarget(G, s.choices.shift()!);
     if (s.choices.length) {
       const owner = s.choices[0].playerId;
       if (ctx.activePlayers?.[owner] !== 'standardChoice' || Object.keys(ctx.activePlayers).length !== 1) {
