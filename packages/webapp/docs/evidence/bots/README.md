@@ -1,6 +1,6 @@
 # Bot players — milestone 1 evidence
 
-Runtime commit `c054221`, Node 22.22.0, 4 vCPU Linux container, 2026-10-27.
+Runtime commit `31127ce`, Node 22.22.0, 4 vCPU Linux container, 2026-10-27.
 
 ## Batch run
 
@@ -9,7 +9,7 @@ pnpm webapp bots --games 100 --seed evidence
 ```
 
 300 games (100 each at 2/3/4 players, Balanced in every seat) finished in
-**15.9 s** with **0 failed games**. Files: [summary.csv](summary.csv),
+**16.1 s** with **0 failed games**. Files: [summary.csv](summary.csv),
 [summary.json](summary.json), one game export with telemetry
 ([game-evidence-4p-0.json](game-evidence-4p-0.json)) and its move log
 ([moves-evidence-4p-0.jsonl](moves-evidence-4p-0.jsonl)).
