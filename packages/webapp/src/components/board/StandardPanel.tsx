@@ -1,4 +1,5 @@
 'use client';
+import { experimentLabel, government5Description } from '@/game/standard/config';
 import React from 'react';
 import type { GameContext } from '../GameContextHelpers';
 import { getPlayerName } from '../playerNameMap';
@@ -30,11 +31,12 @@ export default function StandardPanel({ gameContext }: { gameContext: GameContex
   }
   return <section className="paper-card" style={{ padding: 16, margin: 12 }} aria-label="星源樹測試版 v1">
     <h2>標準模式 · 星源樹測試版 v1</h2>
+    <p>{experimentLabel(s.experiments)}</p>
     <p>全村結案 {s.completedProjectIds.length} · 愛心剩餘 {remaining} · 第 {s.round} 輪 · {playerID !== null ? `行動點 ${G.players[playerID].token.actions}` : '觀戰'}</p>
     {s.nextEvent && <p>下一事件：{s.nextEvent.name} — {s.nextEvent.description}</p>}
     <details><summary>測試規則與能力連線</summary>
       <p>2–4 人；專案類型不影響規則。每層最多 2 顆；成長花 1 AP。同一分支可向上成長，跨分支須依箭頭方向。第 3／4／5 層需要全村結案 {THRESHOLDS.slice(2).join("／")} 個專案。每種行動一回合一次，加班可重複一次 1 AP 行動。</p>
-      <p>數位政委：每個專案的發起人可選任一玩家的 1 個方塊前進 1 格。推進完成時，方塊擁有者獲結案獎勵。政府5：貢獻一半向下取整，分配至自己的既有方塊，不超過需求。</p>
+      <p>數位政委：每個專案的發起人可選任一玩家的 1 個方塊前進 1 格。推進完成時，方塊擁有者獲結案獎勵。政府 5：{government5Description(s.experiments)}</p>
       <p>影響力超過 20 可抽進階卡；結案專案不回牌堆。重新整理可恢復座位；伺服器重啟會失去本局。</p>
     </details>
     <div style={{ overflowX: 'auto', margin: '12px 0' }}>
@@ -69,6 +71,7 @@ export default function StandardPanel({ gameContext }: { gameContext: GameContex
     </div>}
     {choice && <div role="region" aria-label="待處理選擇" aria-live="polite" style={{ padding: 12, border: '2px solid var(--orange)', marginTop: 12 }}>
       <h3>{{ extraRecruit: '抱歉了我的肝：可免費再招募一次', digitalMinister: '數位政委：選擇 1 個貢獻方塊', government4: '政府4：免費招募至另一專案', source4: '開源4：推進另一工程師', government5: `政府5：剩餘 ${choice.budget} 點`, discard: '政府1：可棄 1 張專案卡', draw: '選擇補牌來源' }[choice.kind]}</h3>
+      {choice.kind === 'government5' && <p>{government5Description(s.experiments)} 可分配部分點數後略過。</p>}
       <p>等待 {getPlayerName(matchData, choice.playerId)} 選擇</p>
       {choice.playerId === playerID && <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
         {choiceOptions(G, choice).map((option, index) => <StickerButton key={`${choice.id}:${index}`} size="sm" variant="ghost" onClick={() => moveApi.resolveStandardChoice(choice.id, option.target)}>{option.label}</StickerButton>)}

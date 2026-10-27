@@ -1,4 +1,4 @@
-import type { Ruleset } from '@/game/standard/config';
+import type { Ruleset, StandardExperiments } from '@/game/standard/config';
 import { LobbyClientError } from 'boardgame.io/client';
 import { GAME_NAME, GAME_SERVER_URL, lobbyClient } from '@/lib/lobbyClient';
 import { isBotSeat } from '@/game/bots/seat';
@@ -136,8 +136,8 @@ export async function getMatch(matchID: string): Promise<LobbyMatch> {
   return lobbyClient.getMatch(GAME_NAME, matchID);
 }
 
-export async function createRoom(playerName: string, numPlayers: number, ruleset: Ruleset = 'simple'): Promise<MatchCredentials> {
-  const { matchID } = await lobbyClient.createMatch(GAME_NAME, { numPlayers, ...(ruleset === 'simple' ? {} : { setupData: { ruleset } }) });
+export async function createRoom(playerName: string, numPlayers: number, ruleset: Ruleset = 'simple', experiments?: StandardExperiments): Promise<MatchCredentials> {
+  const { matchID } = await lobbyClient.createMatch(GAME_NAME, { numPlayers, ...(ruleset === 'simple' ? {} : { setupData: { ruleset, ...(experiments ? {experiments} : {}) } }) });
   try {
     return await joinRoom(matchID, playerName, '0');
   } catch (error) {

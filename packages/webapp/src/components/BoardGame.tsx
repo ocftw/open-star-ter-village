@@ -342,7 +342,7 @@ export function GameOverDialog({
       const { nextMatchID } = await lobbyClient.playAgain(GAME_NAME, matchID, {
         playerID: savedCredentials.playerID,
         credentials: savedCredentials.credential,
-        ...(G.standard ? { setupData: { ruleset: G.standard.version } } : {}),
+        ...(G.standard ? { setupData: { ruleset: G.standard.version, experiments: G.standard.experiments } } : {}),
       });
       const playerName = savedCredentials.playerName ?? getPlayerName(matchData, savedCredentials.playerID);
       const existingCredentials = loadCredentials(nextMatchID);

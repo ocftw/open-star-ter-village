@@ -27,7 +27,8 @@ test('lobby offers Standard with only 2/3/4 seats and rejects forged room reques
 
 for (const count of [2,3,4]) test(`Socket.IO ${count}-player game completes, synchronizes and reconnects`, async () => {
   test.setTimeout(120_000);
-  const { matchID } = await lobby.createMatch(name,{ numPlayers:count, setupData:{ruleset:'tree-poc-v1',forcedFirstEvent:'digital_minister'} });
+  const experiments = { government5: count === 2 ? 'existing' : 'any', completionRewards: count === 3 ? 'fixed' : 'difficulty' };
+  const { matchID } = await lobby.createMatch(name,{ numPlayers:count, setupData:{ruleset:'tree-poc-v1',forcedFirstEvent:'digital_minister',experiments} });
   const seats=await Promise.all(Array.from({length:count},async(_,i)=> {
     const joined=await lobby.joinMatch(name,matchID,{playerID:String(i),playerName:`Test ${i+1}`});
     return {id:String(i),credential:joined.playerCredentials};
@@ -75,6 +76,9 @@ for (const count of [2,3,4]) test(`Socket.IO ${count}-player game completes, syn
     }
     expect(steps).toBeLessThan(250);
     expect(clients[0].getState()!.G.standard!.round).toBe(9-count);
+    expect(clients[0].getState()!.G.standard!.experiments).toEqual(experiments);
+    const { nextMatchID } = await lobby.playAgain(name, matchID, { playerID: '0', credentials: seats[0].credential, setupData: { ruleset: 'tree-poc-v1', experiments: clients[0].getState()!.G.standard!.experiments } });
+    expect((await lobby.getMatch(name, nextMatchID)).setupData.experiments).toEqual(experiments);
   } finally { clients.forEach(c=>c.stop());  }
 });
 
@@ -103,4 +107,53 @@ test('Standard board renders and survives a browser refresh', async ({ page }) =
   await page.screenshot({path:'test-results/standard-desktop.png',fullPage:true});
   await page.reload();
   await expect(page.getByRole('heading',{name:'標準模式 · 星源樹測試版 v1'})).toBeVisible();
+});
+
+
+test('room experiments persist from creation through waiting room, board, refresh and export', async ({ page, request }) => {
+  await page.goto('/lobby');
+  await page.getByPlaceholder('你的暱稱').fill('實驗房主');
+  await page.getByLabel('遊戲規則', { exact: true }).selectOption('tree-poc-v1');
+  await expect(page.getByLabel('政府 5 分配範圍')).toHaveValue('existing');
+  await expect(page.getByLabel('發起／結案獎勵')).toHaveValue('fixed');
+  await page.getByLabel('政府 5 分配範圍').selectOption('any');
+  await expect(page.getByLabel('發起／結案獎勵')).toHaveValue('fixed');
+  await page.getByLabel('發起／結案獎勵').selectOption('difficulty');
+  await page.getByTestId('create-room-card').getByRole('button', { name: '2', exact: true }).click();
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.screenshot({ path: 'test-results/experiments-lobby.png', fullPage: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.screenshot({ path: 'test-results/experiments-lobby-mobile.png', fullPage: true });
+  await page.getByRole('button', { name: '建立房間 · Create', exact: true }).click();
+  await page.waitForURL('**/game/*');
+  const matchID = new URL(page.url()).pathname.split('/').pop()!;
+  const experiments = { government5: 'any', completionRewards: 'difficulty' };
+  expect((await lobby.getMatch(name, matchID)).setupData.experiments).toEqual(experiments);
+  await expect(page.getByText(/政府 5：不限既有方塊/)).toBeVisible();
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.screenshot({ path: 'test-results/experiments-waiting.png', fullPage: true });
+  await lobby.joinMatch(name, matchID, { playerID: '1', playerName: '實驗玩家' });
+  await page.getByRole('button', { name: '開始遊戲 · Start game', exact: true }).click();
+  await expect(page.getByRole('heading', { name: '標準模式 · 星源樹測試版 v1' })).toBeVisible();
+  await page.reload();
+  await expect(page.getByText(/政府 5：不限既有方塊/)).toBeVisible();
+  await page.screenshot({ path: 'test-results/experiments-board.png', fullPage: true });
+  const downloadPromise = page.waitForEvent('download');
+  await page.getByRole('button', { name: '匯出公開測試摘要' }).click();
+  const download = await downloadPromise;
+  const stream = await download.createReadStream();
+  const chunks: Buffer[] = [];
+  for await (const chunk of stream!) chunks.push(chunk);
+  const summary = JSON.parse(Buffer.concat(chunks).toString());
+  expect(summary.experiments).toEqual(experiments);
+  expect(summary).not.toHaveProperty('telemetry');
+  expect(summary).not.toHaveProperty('decks');
+  await download.saveAs('test-results/experiments-export.json');
+  for (const setupData of [
+    { ruleset: 'tree-poc-v1', experiments: { ...experiments, government5: 'everyone' } },
+    { ruleset: 'simple', experiments },
+  ]) {
+    const response = await request.post(`${server}/games/${name}/create`, { data: { numPlayers: 3, setupData } });
+    expect(response.status()).toBe(400);
+  }
 });
