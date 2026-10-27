@@ -143,25 +143,47 @@ export default function SeatCard({
           <div className="en-cap">
             Seat {seatIndex}
             {isYou ? ' · YOU' : ''}
+            {botLabel ? ' · BOT' : ''}
           </div>
         </div>
       </div>
       <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
         {botLabel ? (
-          <span className="sticker" data-testid={`seat-${seatIndex}-bot`} style={{ background: 'var(--teal-soft)', borderColor: 'var(--ink)' }}>
-            🤖 電腦 · {botLabel}
+          <span className="sticker" data-testid={`seat-${seatIndex}-bot`} style={{ background: 'var(--teal-soft)', borderColor: 'var(--ink)', whiteSpace: 'nowrap' }}>
+            🤖 {botLabel}
           </span>
         ) : (
           <span className="sticker" style={{ background: '#dcf3e3', borderColor: '#1f7a3a', color: '#1f7a3a' }}>
             ✓ 已入座 Seated
           </span>
         )}
-        {onRemoveBot && (
-          <StickerButton variant="ghost" size="sm" data-testid={`seat-${seatIndex}-remove-bot`} disabled={busy} onClick={onRemoveBot} style={{ marginLeft: 'auto' }}>
-            移除 · Remove
-          </StickerButton>
-        )}
       </div>
+      {onRemoveBot && (
+        <button
+          type="button"
+          data-testid={`seat-${seatIndex}-remove-bot`}
+          aria-label={`移除 Seat ${seatIndex} 電腦 Remove bot`}
+          title="移除電腦 Remove bot"
+          disabled={busy}
+          onClick={onRemoveBot}
+          style={{
+            position: 'absolute',
+            top: 8,
+            right: 8,
+            width: 26,
+            height: 26,
+            borderRadius: 999,
+            border: '1.5px solid var(--ink)',
+            background: 'white',
+            boxShadow: '0 2px 0 var(--ink)',
+            cursor: busy ? 'default' : 'pointer',
+            fontWeight: 800,
+            lineHeight: 1,
+          }}
+        >
+          ✕
+        </button>
+      )}
     </div>
   );
 }
