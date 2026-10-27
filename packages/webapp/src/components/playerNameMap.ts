@@ -1,4 +1,5 @@
 import { FilteredMetadata, PlayerID } from "boardgame.io";
+import { isBotSeat } from "@/game/bots/seat";
 
 /** Stub display names for seats without lobby metadata (local development sessions). */
 export const stubPlayerNameMap: Record<PlayerID, string> = {
@@ -13,7 +14,7 @@ export const stubPlayerNameMap: Record<PlayerID, string> = {
 /**
  * Resolve a seat's display name. Multiplayer matches use the name entered in
  * the lobby (boardgame.io match metadata); local sessions fall back to the
- * static stub map.
+ * static stub map. Bot seats are marked so players can tell them apart.
  */
 export const getPlayerName = (
   matchData: FilteredMetadata | undefined,
@@ -21,5 +22,6 @@ export const getPlayerName = (
 ): string => {
   const player = matchData?.[Number(id)];
   const savedName = (player as { data?: { displayName?: unknown } } | undefined)?.data?.displayName;
-  return player?.name?.trim() || (typeof savedName === 'string' ? savedName.trim() : '') || stubPlayerNameMap[id] || `玩家 ${id}`;
+  const name = player?.name?.trim() || (typeof savedName === 'string' ? savedName.trim() : '') || stubPlayerNameMap[id] || `玩家 ${id}`;
+  return player && isBotSeat(player as { data?: unknown }) ? `${name} 🤖` : name;
 };

@@ -36,6 +36,17 @@ describe('getLobbyStatus / toVisibleMatch (#420 abandoned-match lobby filter)', 
     expect(toVisibleMatch(match)).toBeNull();
   });
 
+  it('hides a match whose only connected seats are bots', () => {
+    const bot = { name: '阿衡', data: { bot: { strategy: 'balanced' } }, isConnected: true };
+    expect(getLobbyStatus(makeMatch([{ ...startedHost, isConnected: false }, bot]))).toBe('Abandoned');
+    expect(getLobbyStatus(makeMatch([{ ...startedHost, isConnected: true }, bot]))).toBe('In Progress');
+  });
+
+  it('counts a bot seat as filled', () => {
+    const match = makeMatch([{ name: 'Alice' }, { name: '阿衡', data: { bot: { strategy: 'balanced' } } }]);
+    expect(getLobbyStatus(match)).toBe('Full');
+  });
+
   it('hides finished matches', () => {
     const match = makeMatch([startedHost, { name: 'Bob' }, { name: 'Carol' }], {
       gameover: { winners: ['0'] },
