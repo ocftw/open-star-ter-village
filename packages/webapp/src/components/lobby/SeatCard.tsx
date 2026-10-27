@@ -167,21 +167,37 @@ export default function SeatCard({
           disabled={busy}
           onClick={onRemoveBot}
           style={{
+            // 44×44 hit area around a 26px visual, matching the seat-card target size from #425.
             position: 'absolute',
-            top: 8,
-            right: 8,
-            width: 26,
-            height: 26,
-            borderRadius: 999,
-            border: '1.5px solid var(--ink)',
-            background: 'white',
-            boxShadow: '0 2px 0 var(--ink)',
+            top: 0,
+            right: 0,
+            width: 44,
+            height: 44,
+            padding: 0,
+            border: 'none',
+            background: 'transparent',
+            display: 'grid',
+            placeItems: 'center',
             cursor: busy ? 'default' : 'pointer',
-            fontWeight: 800,
-            lineHeight: 1,
           }}
         >
-          ✕
+          <span
+            aria-hidden
+            style={{
+              width: 26,
+              height: 26,
+              borderRadius: 999,
+              border: '1.5px solid var(--ink)',
+              background: 'white',
+              boxShadow: '0 2px 0 var(--ink)',
+              display: 'grid',
+              placeItems: 'center',
+              fontWeight: 800,
+              lineHeight: 1,
+            }}
+          >
+            ✕
+          </span>
         </button>
       )}
     </div>

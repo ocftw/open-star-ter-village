@@ -93,7 +93,7 @@ export default function LobbyPage() {
   const fetchMatches = React.useCallback(async (silent = false): Promise<boolean> => {
     const requestSequence = ++fetchSequence.current;
     try {
-      const nextMatches = await listPublicMatches();
+      const nextMatches = await listPublicMatches((matchID) => loadCredentials(matchID) !== null);
       if (requestSequence !== fetchSequence.current) return false;
       hasSuccessfulFetch.current = true;
       setMatches(nextMatches);
