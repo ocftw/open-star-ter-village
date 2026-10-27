@@ -3,6 +3,7 @@ import * as Sentry from "@sentry/node";
 import packageJson from "../package.json";
 import game from "./game";
 import { loadWebappEnv } from "./env";
+import { registerLobbyUpdates } from "./server/lobbyUpdates";
 
 const packageVersion = packageJson.version;
 const gameName = 'OpenStarTerVillage';
@@ -38,6 +39,8 @@ async function serve() {
       Origins.LOCALHOST_IN_DEVELOPMENT,
     ],
   });
+
+  registerLobbyUpdates(server);
 
   // boardgame.io's playAgain read-check-create-write is not atomic. Serialize
   // these rare requests so concurrent players receive the same next match.

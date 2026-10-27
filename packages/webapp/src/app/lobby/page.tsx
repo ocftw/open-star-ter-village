@@ -10,7 +10,7 @@ import MatchRow from '@/components/lobby/MatchRow';
 import Note from '@/components/lobby/Note';
 import Segmented from '@/components/lobby/Segmented';
 import { loadCredentials, saveCredentials, type MatchCredentials } from '@/lib/matchCredentials';
-import { usePolling } from '@/lib/usePolling';
+import { useLobbyUpdates } from '@/lib/useLobbyUpdates';
 import { useSnackbar } from '@/lib/useSnackbar';
 import GameIntentTracker from '@/components/GameIntentTracker';
 import {
@@ -80,14 +80,19 @@ export default function LobbyPage() {
   const [isCreating, setIsCreating] = React.useState(false);
   const [isRefreshing, setIsRefreshing] = React.useState(false);
   const [joiningMatchID, setJoiningMatchID] = React.useState<string | null>(null);
+  const fetchSequence = React.useRef(0);
+  const hasSuccessfulFetch = React.useRef(false);
   const { snackbar, showSnackbar, closeSnackbar } = useSnackbar();
 
   const trimmedPlayerName = playerName.trim();
   const playerNameIsValid = isValidPlayerName(playerName);
 
-  const fetchMatches = React.useCallback(async (silent = false) => {
+  const fetchMatches = React.useCallback(async (silent = false): Promise<boolean> => {
+    const requestSequence = ++fetchSequence.current;
     try {
       const nextMatches = await listPublicMatches();
+      if (requestSequence !== fetchSequence.current) return false;
+      hasSuccessfulFetch.current = true;
       setMatches(nextMatches);
       // Rooms this browser still holds a seat credential for get 回到桌子
       // instead of Join (#421). Validity is re-checked by the room page —
@@ -100,13 +105,18 @@ export default function LobbyPage() {
         ),
       );
       setLoadError(false);
+      return true;
     } catch (error) {
-      if (!silent) {
+      // Keep reporting the initial load failure even if a newer SSE retry has
+      // already started. Once any request succeeds, ignore failures from older
+      // requests so they cannot obscure the current room list.
+      if (!hasSuccessfulFetch.current || (requestSequence === fetchSequence.current && !silent)) {
         setLoadError(true);
+        showSnackbar(getLobbyErrorMessage(error, 'Unable to load matches.'), 'error');
       }
-      showSnackbar(getLobbyErrorMessage(error, 'Unable to load matches.'), 'error');
+      return false;
     } finally {
-      setIsLoading(false);
+      if (requestSequence === fetchSequence.current) setIsLoading(false);
     }
   }, [showSnackbar]);
 
@@ -121,7 +131,7 @@ export default function LobbyPage() {
     void fetchMatches();
   }, [fetchMatches]);
 
-  usePolling(React.useCallback(() => fetchMatches(true), [fetchMatches]), 10_000);
+  useLobbyUpdates(React.useCallback(() => fetchMatches(true), [fetchMatches]));
 
   const handlePlayerNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const nextValue = event.target.value;
