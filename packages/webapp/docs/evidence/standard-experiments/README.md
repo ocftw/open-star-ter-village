@@ -1,5 +1,9 @@
 # Standard room experiments — 2026-10-27 (Asia/Saigon)
 
+**Deployment update:** both options are now deployed after rebasing onto main.
+See [runtime 6c6f5116 and public verification](6c6f5116/README.md).
+The records below describe the initial local implementation.
+
 ## Deployment performed first
 
 Pulled `origin/feat/standard-tree-poc` by fast-forward from `8ee27f97` to
@@ -21,7 +25,7 @@ information assertions, and board browser refresh. This is one external network,
 not cellular or three independent networks. Latency SLA and notification alerts
 were not tested. In-memory rooms are lost on restart.
 
-## New experiments: local verification, not yet deployed
+## Initial experiments verification (before deployment)
 
 Built Next.js and the game server at localhost ports 3140/3141. Six Playwright
 scenarios exercised real lobby REST, browser creation and WebSocket clients:
