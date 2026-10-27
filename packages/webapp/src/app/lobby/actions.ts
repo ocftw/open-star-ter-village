@@ -68,7 +68,16 @@ export function isAbandonedMatch(players: LobbyMatch['players']): boolean {
   return players.length > 0 && players.every((player) => !player.name?.trim() || player.isConnected === false || isBotSeat(player));
 }
 
-export function getLobbyStatus(match: LobbyMatch): LobbyStatus {
+export interface LobbyViewer {
+  /**
+   * The viewing browser still holds a seat credential for the room. That player
+   * may only be disconnected (e.g. a solo human playing bots who opened the
+   * lobby), so the nobody-connected rule must not hide the room from them.
+   */
+  holdsSeat?: boolean;
+}
+
+export function getLobbyStatus(match: LobbyMatch, { holdsSeat = false }: LobbyViewer = {}): LobbyStatus {
   const seatsFilled = getFilledSeatCount(match);
   const totalSeats = match.players.length;
 
@@ -76,7 +85,7 @@ export function getLobbyStatus(match: LobbyMatch): LobbyStatus {
     return 'Finished';
   }
 
-  if (isAbandonedMatch(match.players)) {
+  if (!holdsSeat && isAbandonedMatch(match.players)) {
     return 'Abandoned';
   }
 
@@ -99,8 +108,8 @@ export function getLobbyStatus(match: LobbyMatch): LobbyStatus {
   return 'In Progress';
 }
 
-export function toVisibleMatch(match: LobbyMatch): VisibleMatch | null {
-  const status = getLobbyStatus(match);
+export function toVisibleMatch(match: LobbyMatch, viewer: LobbyViewer = {}): VisibleMatch | null {
+  const status = getLobbyStatus(match, viewer);
   if (status === 'Finished' || status === 'Abandoned') {
     return null;
   }
@@ -114,11 +123,11 @@ export function toVisibleMatch(match: LobbyMatch): VisibleMatch | null {
   };
 }
 
-export async function listPublicMatches(): Promise<VisibleMatch[]> {
+export async function listPublicMatches(holdsSeat: (matchID: string) => boolean = () => false): Promise<VisibleMatch[]> {
   const response = await lobbyClient.listMatches(GAME_NAME);
 
   return response.matches
-    .map(toVisibleMatch)
+    .map((match) => toVisibleMatch(match, { holdsSeat: holdsSeat(match.matchID) }))
     .filter((match): match is VisibleMatch => match !== null)
     .sort((left, right) => right.match.updatedAt - left.match.updatedAt);
 }

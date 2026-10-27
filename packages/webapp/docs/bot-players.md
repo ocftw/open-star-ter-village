@@ -31,7 +31,8 @@ game fails.
 
 ## How it works
 
-All code lives in `src/game/bots/`.
+Bot logic lives in `src/game/bots/`; the game-room parts (seat endpoints and
+the bot runner) are `src/botSeats.ts` and `src/botRunner.ts`.
 
 - `enumerate.ts` lists every legal move for one player from **that player's view
   only** (own hand and the public board; no decks or other hands). Each candidate
@@ -84,9 +85,16 @@ Rules:
 - Bots play Standard rooms only, and only the host (seat 0) can add or remove
   them, before the game starts.
 - Bots use the same player view as humans: no decks, no other hands.
-- Bot seats do not keep a room alive: a room whose only connected seats are
-  bots counts as abandoned.
+- Bot seats do not keep a room alive:
+  - Bots pause while no human in the room is connected, and resume when one
+    reconnects.
+  - The lobby hides such a room from everyone except a browser that still
+    holds a seat in it, so a solo player can use 回到桌子 to return.
+  - Once no human is seated (for example the host leaves a room of bots), the
+    server deletes the room.
 - If a human leaves mid-game the match ends as before, and its bots stop.
+- Bot seats are recognised on the server by a server-generated credential
+  (`bot:` prefix), not by seat data a player could set.
 - Matches live in server memory, so a server restart ends bot games too.
 
 How it works on the server:

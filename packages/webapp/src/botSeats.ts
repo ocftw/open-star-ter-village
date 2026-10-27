@@ -1,9 +1,19 @@
 import { randomUUID } from 'node:crypto';
 import type { IncomingMessage } from 'node:http';
-import { isBotSeat, type BotSeatData } from './game/bots/seat';
+import { getBotStrategy, type BotSeatData } from './game/bots/seat';
 import { DEFAULT_BOT_STRATEGY, isBotStrategy, pickBotName } from './game/bots/strategies';
 
 export const ADD_BOT_PATH = '/games/:name/:id/bots';
+/** Bot seat credentials carry this prefix; players cannot choose their own credentials, so it marks server-made bots. */
+export const BOT_CREDENTIAL_PREFIX = 'bot:';
+
+/**
+ * True only for seats this server made into bots. Players can write any
+ * `data` to their own seat, so `data.bot` alone is not trusted on the server.
+ */
+export function isServerBotSeat(player: { data?: unknown; credentials?: string }): boolean {
+  return getBotStrategy(player.data) !== undefined && Boolean(player.credentials?.startsWith(BOT_CREDENTIAL_PREFIX));
+}
 export const REMOVE_BOT_PATH = '/games/:name/:id/bots/:seat/remove';
 
 interface PlayerMetadata {
@@ -95,7 +105,7 @@ export function addBotHandler(db: BotSeatStore, gameName: string) {
     const name = pickBotName(strategy, taken);
     const data: BotSeatData = { bot: { strategy } };
     // The credential never leaves the server: the lobby strips credentials and the bot runner reads it here.
-    metadata.players[seat.id] = { ...seat, name, credentials: randomUUID(), data };
+    metadata.players[seat.id] = { ...seat, name, credentials: `${BOT_CREDENTIAL_PREFIX}${randomUUID()}`, data };
     await db.setMetadata(ctx.params.id, metadata);
     ctx.body = { seat: seat.id, name, strategy };
   };
@@ -109,7 +119,7 @@ export function removeBotHandler(db: BotSeatStore, gameName: string) {
     if (!metadata) return;
     const seat = seatOf(metadata, ctx.params.seat);
     if (!seat) return fail(ctx, 400, 'Invalid seat');
-    if (!isBotSeat(seat)) return fail(ctx, 409, 'That seat is not a bot');
+    if (!isServerBotSeat(seat)) return fail(ctx, 409, 'That seat is not a bot');
 
     metadata.players[seat.id] = { id: seat.id };
     await db.setMetadata(ctx.params.id, metadata);

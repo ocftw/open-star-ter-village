@@ -42,6 +42,15 @@ describe('getLobbyStatus / toVisibleMatch (#420 abandoned-match lobby filter)', 
     expect(getLobbyStatus(makeMatch([{ ...startedHost, isConnected: true }, bot]))).toBe('In Progress');
   });
 
+  it('keeps a disconnected room visible to the browser that holds a seat in it', () => {
+    const bot = { name: '阿衡', data: { bot: { strategy: 'balanced' } }, isConnected: false };
+    const match = makeMatch([{ ...startedHost, isConnected: false }, bot]);
+    expect(toVisibleMatch(match)).toBeNull();
+    expect(toVisibleMatch(match, { holdsSeat: true })?.status).toBe('In Progress');
+    // A terminated match stays hidden even from seat holders.
+    expect(toVisibleMatch(makeMatch([startedHost, {}]), { holdsSeat: true })).toBeNull();
+  });
+
   it('counts a bot seat as filled', () => {
     const match = makeMatch([{ name: 'Alice' }, { name: '阿衡', data: { bot: { strategy: 'balanced' } } }]);
     expect(getLobbyStatus(match)).toBe('Full');

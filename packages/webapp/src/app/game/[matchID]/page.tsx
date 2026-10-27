@@ -197,11 +197,13 @@ export default function GameRoomPage() {
     }
   };
 
-  const updateBots = async (update: () => Promise<void>, failure: string) => {
+  /** Runs a bot seat change, then moves focus to the control that replaced the clicked one. */
+  const updateBots = async (update: () => Promise<void>, failure: string, focusTestId: string) => {
     setIsUpdatingBots(true);
     try {
       await update();
       await pollMatch();
+      requestAnimationFrame(() => document.querySelector<HTMLElement>(`[data-testid="${focusTestId}"]`)?.focus());
     } catch (error) {
       showSnackbar(getLobbyErrorMessage(error, failure), 'error');
     } finally {
@@ -210,10 +212,10 @@ export default function GameRoomPage() {
   };
 
   const handleAddBot = (seat: number, strategy: string) =>
-    void updateBots(() => addBot(matchID, credentials!, seat, strategy), 'Unable to add a bot.');
+    void updateBots(() => addBot(matchID, credentials!, seat, strategy), 'Unable to add a bot.', `seat-${seat}-remove-bot`);
 
   const handleRemoveBot = (seat: number) =>
-    void updateBots(() => removeBot(matchID, credentials!, seat), 'Unable to remove the bot.');
+    void updateBots(() => removeBot(matchID, credentials!, seat), 'Unable to remove the bot.', `seat-${seat}-add-bot`);
 
   const handleRefreshNow = async () => {
     setIsRefreshing(true);

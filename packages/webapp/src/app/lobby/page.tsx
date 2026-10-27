@@ -90,7 +90,7 @@ export default function LobbyPage() {
 
   const fetchMatches = React.useCallback(async (silent = false) => {
     try {
-      const nextMatches = await listPublicMatches();
+      const nextMatches = await listPublicMatches((matchID) => loadCredentials(matchID) !== null);
       setMatches(nextMatches);
       // Rooms this browser still holds a seat credential for get 回到桌子
       // instead of Join (#421). Validity is re-checked by the room page —

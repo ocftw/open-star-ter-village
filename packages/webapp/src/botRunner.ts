@@ -5,6 +5,7 @@ import { createProfileBot } from './game/bots/profileBot';
 import { seededRandom } from './game/bots/random';
 import { activePlayer } from './game/bots/runner';
 import { getBotStrategy } from './game/bots/seat';
+import { isServerBotSeat } from './botSeats';
 import type { ClientGameState } from './game/store/store';
 
 interface PlayerMetadata {
@@ -12,16 +13,19 @@ interface PlayerMetadata {
   name?: string;
   credentials?: string;
   data?: unknown;
+  isConnected?: boolean;
 }
 
 interface MatchMetadata {
   players: Record<number, PlayerMetadata>;
+  setupData?: unknown;
   gameover?: unknown;
 }
 
 export interface BotRunnerStore {
   listMatches(opts: { gameName: string }): unknown;
   fetch(matchID: string, opts: { metadata: true }): unknown;
+  wipe(matchID: string): unknown;
 }
 
 export interface BotRunnerOptions {
@@ -113,12 +117,25 @@ export function startBotRunner({ db, game, serverURL, pollMs = 2000, moveDelayMs
     const matchIDs = (await db.listMatches({ gameName: game.name! })) as string[];
     for (const matchID of matchIDs) {
       const { metadata } = ((await db.fetch(matchID, { metadata: true })) ?? {}) as { metadata?: MatchMetadata };
-      if (!metadata || metadata.gameover !== undefined) continue;
+      if (!metadata) continue;
       const players = Object.values(metadata.players);
+      const bots = players.filter(isServerBotSeat);
+      if (bots.length === 0) continue;
+      const humans = players.filter(player => player.name?.trim() && !isServerBotSeat(player));
+      // boardgame.io deletes a match once nobody is seated; bot seats keep their names, so finish the job.
+      if (humans.length === 0) {
+        await db.wipe(matchID);
+        log(`match ${matchID} deleted: only bots were left`);
+        continue;
+      }
+      if (metadata.gameover !== undefined) continue;
+      if ((metadata.setupData as { ruleset?: unknown } | undefined)?.ruleset !== 'tree-poc-v1') continue;
       const started = (metadata.players[0]?.data as { started?: unknown } | undefined)?.started === true;
       // A vacated seat after start means the match was terminated (#420).
       if (!started || players.some(player => !player.name?.trim())) continue;
-      for (const player of players) {
+      // Pause bots while no human is connected; they resume when someone reconnects.
+      if (!humans.some(player => player.isConnected)) continue;
+      for (const player of bots) {
         const strategy = getBotStrategy(player.data);
         if (strategy && player.credentials) {
           wanted.set(`${matchID}:${player.id}`, { matchID, playerID: String(player.id), credentials: player.credentials, strategy: strategy.id });
