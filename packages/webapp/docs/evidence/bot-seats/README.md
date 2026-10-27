@@ -1,6 +1,6 @@
 # Bot seats in game rooms — evidence
 
-Runtime commit `38c8283`, 2026-10-27, Node 22.22.0, Chromium (Playwright).
+Runtime commit `7544b25`, 2026-10-27, Node 22.22.0, Chromium (Playwright).
 
 ## Setup
 
@@ -37,8 +37,17 @@ Runtime commit `38c8283`, 2026-10-27, Node 22.22.0, Chromium (Playwright).
      points each, and the 數位政委 choices resolved by the bots. The
      scoreboard and turn order show `阿衡 🤖` and `天平 🤖`.
    ![Board after the bots' turns](board-after-bot-turns.png)
-7. **390×844 viewport, 4-player room with bots in seats 1 and 3.** No
-   horizontal overflow (0 px), and the ✕ control stays inside the card.
+7. **The solo host leaves the board for the lobby.**
+   - The game server logged both bots `stopped`, because no human had a
+     live socket.
+   - The host's lobby shows the room with **回到桌子 · Return**. The second
+     browser with no seat does not see the room (0 rows).
+   - Return reopened the board, and the server logged both bots `started`
+     again.
+   ![Lobby row for the host](lobby-return.png)
+8. **390×844 viewport, 4-player room with bots in seats 1 and 3.** No
+   horizontal overflow (0 px). The ✕ control's 44×44 hit area sits in the
+   card's top-right corner, around a 26 px visual.
    ![Mobile seats](waiting-room-bots-mobile.png)
 
 ## Automated coverage
@@ -53,5 +62,13 @@ Runtime commit `38c8283`, 2026-10-27, Node 22.22.0, Chromium (Playwright).
   - The host also cannot remove a human seat.
 - **Full game:** a server bot plays a full 2-player Standard game against a
   test client in the host seat, reaching game over in round 7.
-- **Stopping:** the runner stops the bot when the game ends, or when the host
-  leaves mid-game and the match is terminated.
+- **Stopping and pausing:**
+  - The runner stops the bot at game over, or when a human leaves mid-game
+    and the match is terminated.
+  - It pauses bots while no human has a live socket.
+  - It keeps them running when one of a human's sockets closes but another is
+    live (boardgame.io's stored flag goes stale there, so it checks live
+    sockets).
+- **Cleanup:** a room is deleted once only bots are seated in it.
+- **Spoofing:** a seat whose player set `data.bot` without a server bot
+  credential is not played and cannot be removed as a bot.
