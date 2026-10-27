@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { fireEvent, render, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, waitFor } from '@testing-library/react';
 import { GameOverDialog } from './BoardGame';
 import { GameContext } from '@/components/GameContextHelpers';
 
@@ -19,8 +19,10 @@ jest.mock('@/lib/lobbyClient', () => ({
 }));
 
 const joinRoomMock = jest.fn();
+const getMatchMock = jest.fn();
 jest.mock('@/app/lobby/actions', () => ({
   joinRoom: (...args: unknown[]) => joinRoomMock(...args),
+  getMatch: (...args: unknown[]) => getMatchMock(...args),
   getLobbyErrorMessage: (_e: unknown, fallback: string) => fallback,
 }));
 
@@ -46,6 +48,8 @@ describe('GameOverDialog (#419 end-game modal)', () => {
     pushMock.mockReset();
     playAgainMock.mockReset();
     joinRoomMock.mockReset();
+    getMatchMock.mockReset();
+    getMatchMock.mockResolvedValue({ players: [] });
   });
 
   it('shows the tie winners and the full VP ranking', () => {
@@ -133,5 +137,64 @@ describe('GameOverDialog (#419 end-game modal)', () => {
     );
     expect(link.getAttribute('target')).toBe('_blank');
     expect(link.getAttribute('rel')).toBe('noopener noreferrer');
+  });
+});
+
+
+describe('rematch invitation (#459)', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    pushMock.mockReset();
+    playAgainMock.mockReset();
+    joinRoomMock.mockReset();
+    getMatchMock.mockReset();
+    localStorage.setItem(CREDS_KEY, JSON.stringify({matchID:'room-1', playerID:'0', credential:'secret', playerName:'Alice'}));
+    getMatchMock.mockResolvedValue({nextMatchID:'room-2', players:[]});
+  });
+
+  it('notifies a player who closed the results, and recovers after refresh', async () => {
+    const first = render(<GameOverDialog gameContext={makeContext()} open={false} onClose={jest.fn()} />);
+    await waitFor(() => expect(first.getByTestId('rematch-invitation')).toBeTruthy());
+    expect(first.getByTestId('play-again').textContent).toContain('加入下一局');
+    first.unmount();
+    const refreshed = render(<GameOverDialog gameContext={makeContext()} open={false} onClose={jest.fn()} />);
+    await waitFor(() => expect(refreshed.getByTestId('rematch-invitation')).toBeTruthy());
+  });
+
+  it('dismisses the invitation without navigating or reopening for the same next match', async () => {
+    jest.useFakeTimers();
+    try {
+      const onClose = jest.fn();
+      const view = render(<GameOverDialog gameContext={makeContext()} open={false} onClose={onClose} />);
+      await act(async () => {});
+      fireEvent.click(view.getByText(/關閉，查看最終盤面/));
+      expect(onClose).toHaveBeenCalledTimes(1);
+      expect(view.queryByTestId('rematch-invitation')).toBeNull();
+      await act(async () => { jest.advanceTimersByTime(3000); });
+      expect(view.queryByTestId('rematch-invitation')).toBeNull();
+      expect(pushMock).not.toHaveBeenCalled();
+      expect(joinRoomMock).not.toHaveBeenCalled();
+    } finally { jest.useRealTimers(); }
+  });
+
+  it('joins the shared next game from the invitation', async () => {
+    playAgainMock.mockResolvedValue({nextMatchID:'room-2'});
+    joinRoomMock.mockResolvedValue({matchID:'room-2',playerID:'1',credential:'new-secret',playerName:'Alice'});
+    const view = render(<GameOverDialog gameContext={makeContext()} open={false} onClose={jest.fn()} />);
+    await waitFor(() => expect(view.getByTestId('rematch-invitation')).toBeTruthy());
+    fireEvent.click(view.getByTestId('play-again'));
+    await waitFor(() => expect(pushMock).toHaveBeenCalledWith('/game/room-2'));
+    expect(joinRoomMock).toHaveBeenCalledWith('room-2','Alice');
+  });
+
+  it('returns to an already joined next room without claiming another seat', async () => {
+    localStorage.setItem('open-star-ter-village.match-credentials.room-2', JSON.stringify({matchID:'room-2',playerID:'1',credential:'new-secret',playerName:'Alice'}));
+    playAgainMock.mockResolvedValue({nextMatchID:'room-2'});
+    getMatchMock.mockImplementation(async id => id === 'room-1' ? {nextMatchID:'room-2',players:[]} : {players:[{id:1,name:'Alice'}]});
+    const view = render(<GameOverDialog gameContext={makeContext()} open={false} onClose={jest.fn()} />);
+    await waitFor(() => expect(view.getByTestId('rematch-invitation')).toBeTruthy());
+    fireEvent.click(view.getByTestId('play-again'));
+    await waitFor(() => expect(pushMock).toHaveBeenCalledWith('/game/room-2'));
+    expect(joinRoomMock).not.toHaveBeenCalled();
   });
 });
