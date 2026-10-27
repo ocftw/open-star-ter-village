@@ -61,3 +61,19 @@ test('polls in browsers without EventSource', async () => {
   await act(async () => jest.advanceTimersByTime(10_000));
   expect(refresh).toHaveBeenCalledTimes(1);
 });
+
+test('retries a failed live refresh while EventSource remains open, then stops after recovery', async () => {
+  const refresh = jest.fn()
+    .mockResolvedValueOnce(false)
+    .mockResolvedValueOnce(true);
+  renderHook(() => useLobbyUpdates(refresh));
+  const source = MockEventSource.instances[0];
+  source.readyState = MockEventSource.OPEN;
+
+  await act(async () => source.onmessage!());
+  expect(refresh).toHaveBeenCalledTimes(1);
+  await act(async () => jest.advanceTimersByTime(10_000));
+  expect(refresh).toHaveBeenCalledTimes(2);
+  await act(async () => jest.advanceTimersByTime(10_000));
+  expect(refresh).toHaveBeenCalledTimes(2);
+});

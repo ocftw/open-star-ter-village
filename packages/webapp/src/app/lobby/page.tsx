@@ -81,16 +81,18 @@ export default function LobbyPage() {
   const [isRefreshing, setIsRefreshing] = React.useState(false);
   const [joiningMatchID, setJoiningMatchID] = React.useState<string | null>(null);
   const fetchSequence = React.useRef(0);
+  const hasSuccessfulFetch = React.useRef(false);
   const { snackbar, showSnackbar, closeSnackbar } = useSnackbar();
 
   const trimmedPlayerName = playerName.trim();
   const playerNameIsValid = isValidPlayerName(playerName);
 
-  const fetchMatches = React.useCallback(async (silent = false) => {
+  const fetchMatches = React.useCallback(async (silent = false): Promise<boolean> => {
     const requestSequence = ++fetchSequence.current;
     try {
       const nextMatches = await listPublicMatches();
-      if (requestSequence !== fetchSequence.current) return;
+      if (requestSequence !== fetchSequence.current) return false;
+      hasSuccessfulFetch.current = true;
       setMatches(nextMatches);
       // Rooms this browser still holds a seat credential for get 回到桌子
       // instead of Join (#421). Validity is re-checked by the room page —
@@ -103,12 +105,16 @@ export default function LobbyPage() {
         ),
       );
       setLoadError(false);
+      return true;
     } catch (error) {
-      if (requestSequence !== fetchSequence.current) return;
-      if (!silent) {
+      // Keep reporting the initial load failure even if a newer SSE retry has
+      // already started. Once any request succeeds, ignore failures from older
+      // requests so they cannot obscure the current room list.
+      if (!hasSuccessfulFetch.current || (requestSequence === fetchSequence.current && !silent)) {
         setLoadError(true);
+        showSnackbar(getLobbyErrorMessage(error, 'Unable to load matches.'), 'error');
       }
-      showSnackbar(getLobbyErrorMessage(error, 'Unable to load matches.'), 'error');
+      return false;
     } finally {
       if (requestSequence === fetchSequence.current) setIsLoading(false);
     }
