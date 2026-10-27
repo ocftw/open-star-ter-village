@@ -1,3 +1,4 @@
+import { completionReward } from '@/game/standard/config';
 import type { Ctx, PlayerID } from 'boardgame.io';
 import type { ClientGameState } from '@/game/store/store';
 import type { JobCard, ProjectCard } from '@/game/card';
@@ -49,15 +50,15 @@ const filledShare = (slot: ProjectSlot) => {
 /** Expected points `me` gets from a project: settled value if it completes, half-value at game end if not. */
 function projectValue(p: Position, slot: ProjectSlot): number {
   const mine = ProjectSlotSelector.getPlayerContribution(slot, p.me);
-  if (isComplete(slot)) return mine + (slot.owner === p.me ? ownerBonus(p) : 0);
+  if (isComplete(slot)) return mine + (slot.owner === p.me ? ownerBonus(p, slot) : 0);
   const horizon = p.roundsLeft >= 3 ? 1 : p.roundsLeft === 2 ? 0.75 : 0.4;
   const base = p.profile.weights.baseCompletionChance;
   const chance = Math.min(0.95, (base + (1 - base) * filledShare(slot)) * horizon);
-  const stake = mine + (slot.owner === p.me ? ownerBonus(p) : 0);
+  const stake = mine + (slot.owner === p.me ? ownerBonus(p, slot) : 0);
   return chance * stake + (1 - chance) * 0.5 * mine;
 }
 
-const ownerBonus = (p: Position) => p.view.rules.settlement.projectOwnerVictoryPoints + (p.view.rules.event?.extraOwnerVictoryPoints ?? 0);
+const ownerBonus = (p: Position, slot: ProjectSlot) => completionReward(p.view.standard?.experiments, slot.card!.difficulty, p.view.rules.settlement.projectOwnerVictoryPoints) + (p.view.rules.event?.extraOwnerVictoryPoints ?? 0);
 
 function applyChanges(slot: ProjectSlot, changes: Change[]): ProjectSlot {
   const next: ProjectSlot = { ...slot, contributions: slot.contributions.map(c => ({ ...c })) };
@@ -75,7 +76,7 @@ function projectDelta(p: Position, before: ProjectSlot | undefined, after: Proje
   const w = p.profile.weights;
   let delta = projectValue(p, after) - (before ? projectValue(p, before) : 0);
   if (isComplete(after) && !(before && isComplete(before))) {
-    if (after.lastContributor === p.me) delta += p.view.rules.settlement.lastContributorVictoryPoints;
+    if (after.lastContributor === p.me) delta += completionReward(p.view.standard?.experiments, after.card!.difficulty, p.view.rules.settlement.lastContributorVictoryPoints);
     const returned = after.contributions.filter(c => c.worker === p.me).length + (after.owner === p.me ? after.ownerToken : 0);
     delta += returned * w.workerToken;
     delta += w.villageCompletion * (0.5 + 0.5 * w.village);
@@ -143,8 +144,9 @@ function choiceValue(p: Position, target: ChoiceTarget | null): number {
   const slot = slotByProject(p, target.projectId);
   if (!slot || !target.jobName) return 0;
   if (choice.kind === 'government4' || choice.kind === 'extraRecruit') return recruitValue(p, slot, target.jobName);
-  // digitalMinister, source4, government5: push one existing cube by 1.
-  return projectDelta(p, slot, applyChanges(slot, [{ jobName: target.jobName, worker: target.worker!, value: 1 }]));
+  // Government 5 may spend a reserve token to create the player's first cube here.
+  const newCubeCost = choice.kind === 'government5' && !ProjectSlotSelector.hasWorker(slot, target.jobName, p.me) ? w.workerToken : 0;
+  return projectDelta(p, slot, applyChanges(slot, [{ jobName: target.jobName, worker: target.worker!, value: 1 }])) - newCubeCost;
 }
 
 /** Score of one legal action from `me`'s point of view; ending the turn scores 0. */

@@ -1,3 +1,4 @@
+import type { StandardExperiments } from '@/game/standard/config';
 import type { Ctx, PlayerID, State } from 'boardgame.io';
 import { CreateGameReducer, InitializeGame } from 'boardgame.io/internal';
 import { OpenStarTerVillage } from '@/game/game';
@@ -21,6 +22,7 @@ export interface GameSpec {
   bots: Bot | Record<PlayerID, Bot>;
   /** Fail the game if it has not ended after this many moves. */
   stepLimit?: number;
+  experiments?: StandardExperiments;
 }
 
 export interface GameRun {
@@ -47,8 +49,8 @@ export function activePlayer(ctx: Ctx): PlayerID {
   return ctx.activePlayers ? Object.keys(ctx.activePlayers)[0] : ctx.currentPlayer;
 }
 
-export function initialState(numPlayers: number, seed: string): State<GameState> {
-  return InitializeGame({ game: botGame(seed), numPlayers, setupData: { ruleset: 'tree-poc-v1' } }) as State<GameState>;
+export function initialState(numPlayers: number, seed: string, experiments?: StandardExperiments): State<GameState> {
+  return InitializeGame({ game: botGame(seed), numPlayers, setupData: { ruleset: 'tree-poc-v1', experiments } }) as State<GameState>;
 }
 
 export function gameReducer(seed: string) {
@@ -62,9 +64,9 @@ export function gameReducer(seed: string) {
  * Each bot sees only its own player view. A move the game rejects fails the
  * run immediately instead of being retried.
  */
-export function runGame({ numPlayers, seed, bots, stepLimit = 2000 }: GameSpec): GameRun {
+export function runGame({ numPlayers, seed, bots, stepLimit = 2000, experiments }: GameSpec): GameRun {
   const reduce = gameReducer(seed);
-  let state = initialState(numPlayers, seed);
+  let state = initialState(numPlayers, seed, experiments);
   const seatRandom: Record<PlayerID, () => number> = {};
   const moves: MoveRecord[] = [];
 

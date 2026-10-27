@@ -1,3 +1,4 @@
+import type { StandardExperiments } from './config';
 import type { EventCard } from '../card';
 import { emptyTelemetry, type StandardTelemetry } from './telemetry';
 export type Branch = 'source' | 'data' | 'government';
@@ -7,6 +8,7 @@ export interface Choice { id: number; kind: ChoiceKind; playerId: string; projec
 export interface PublicLog { round: number; kind: string; playerId?: string; target?: string }
 export interface StandardState {
   version: 'tree-poc-v1';
+  experiments?: StandardExperiments;
   startedAt: number;
   finishedAt?: number;
   grown: NodeId[];

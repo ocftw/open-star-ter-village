@@ -364,3 +364,103 @@ test('liver choice can skip, survives serialized state restoration, and resets n
   expect(copy.standard!.extraRecruitUsed?.['0']).toBe(true);
   beginStandardEvent(copy); expect(copy.standard!.extraRecruitUsed).toEqual({});
 });
+
+
+describe('per-match experiments', () => {
+  test.each(['existing','any'] as const)('persists %s with either reward option', government5 => {
+    for (const completionRewards of ['fixed','difficulty'] as const) {
+      const experiments={government5,completionRewards};
+      expect(roomSetupError({ruleset:'tree-poc-v1',experiments},2)).toBeUndefined();
+      const client=Client({game:{...OpenStarTerVillage,setup:ctx=>setup(ctx,{ruleset:'tree-poc-v1',experiments})},numPlayers:2});
+      client.start(); expect(client.getState()!.G.standard!.experiments).toEqual(experiments); client.stop();
+    }
+  });
+  test('rejects forged experiments and keeps omitted flags at the original rules', () => {
+    expect(state().standard!.experiments).toEqual({government5:'existing',completionRewards:'fixed'});
+    for (const experiments of [null, [], {government5:'everyone',completionRewards:'fixed'}, {government5:'existing',completionRewards:'random'}, {government5:'any',completionRewards:'fixed',extra:true}]) {
+      expect(roomSetupError({ruleset:'tree-poc-v1',experiments},2)).toBeDefined();
+    }
+    expect(roomSetupError({ruleset:'simple',experiments:{government5:'any',completionRewards:'fixed'}},3)).toBeDefined();
+  });
+  test.each([1,2,3,4])('difficulty %i gives both bonuses independently plus accounting event', difficulty => {
+    for (const completionRewards of ['fixed','difficulty'] as const) {
+      const G=state(); G.standard!.experiments={government5:'existing',completionRewards};
+      const p=project(G,'scored','0',4,4,'工程師','1'); p.card!.difficulty=difficulty;
+      G.rules.event={...G.rules.event,extraOwnerVictoryPoints:2};
+      G.standard!.phase='settlement'; advanceStandard(context(G));
+      const reward=completionRewards==='fixed'?2:difficulty;
+      expect(G.table.scoreBoard['0']).toBe(reward+2);
+      expect(G.table.scoreBoard['1']).toBe(4+reward);
+      advanceStandard(context(G)); expect(G.table.scoreBoard['1']).toBe(4+reward);
+    }
+  });
+});
+
+describe('Government 5 new-cube experiment', () => {
+  function anyState() {
+    const G = state();
+    G.standard!.experiments = { government5: 'any', completionRewards: 'fixed' };
+    return G;
+  }
+  test('spends one reserve per new own cube, no card or AP, and never spends again on that cube', () => {
+    const G = anyState(); const p = project(G, 'other', '1', 1, 6, '工程師', '1');
+    G.players['0'].token.workers = 1;
+    const actions = G.players['0'].token.actions;
+    const market = structuredClone(G.table.jobSlots);
+    enqueue(G, 'government5', '0', 'done', 3);
+    const first = G.standard!.choices[0];
+    const target = choiceOptions(G, first)[0].target;
+    expect(resolveStandardChoice(context(G, '1'), first.id, target)).toBe(INVALID_MOVE);
+    resolveStandardChoice(context(G), first.id, target);
+    expect(G.players['0'].token.workers).toBe(0);
+    expect(p.contributions).toContainEqual({ worker: '0', jobName: '工程師', value: 1 });
+    const snapshot = structuredClone(G);
+    expect(resolveStandardChoice(context(G), first.id, target)).toBe(INVALID_MOVE);
+    expect(G).toEqual(snapshot);
+    const restored = JSON.parse(JSON.stringify(G)) as GameState;
+    expect(choiceOptions(restored, restored.standard!.choices[0])).toHaveLength(1);
+    resolveStandardChoice(context(restored), restored.standard!.choices[0].id, target);
+    expect(restored.players['0'].token.workers).toBe(0);
+    expect(restored.table.projectBoard[0].contributions).toContainEqual({ worker: '0', jobName: '工程師', value: 2 });
+    expect(restored.table.projectBoard[0].contributions).toContainEqual({ worker: '1', jobName: '工程師', value: 1 });
+    resolveStandardChoice(context(restored), restored.standard!.choices[0].id, null);
+    expect(restored.standard!.choices).toEqual([]);
+    expect(restored.players['0'].token.actions).toBe(actions);
+    expect(restored.table.jobSlots).toEqual(market);
+  });
+  test('rejects empty reserves, other players, nonexistent professions, full columns and the origin', () => {
+    const G = anyState(); const p = project(G, 'other', '1', 1, 2, '工程師', '1');
+    project(G, 'origin', '0', 1, 5);
+    enqueue(G, 'government5', '0', 'origin', 3);
+    const c = G.standard!.choices[0];
+    const target = { projectId: 'other', worker: '0', jobName: '工程師' };
+    for (const bad of [{ ...target, worker: '1' }, { ...target, jobName: '法務' }, { ...target, projectId: 'origin' }]) {
+      expect(resolveStandardChoice(context(G), c.id, bad)).toBe(INVALID_MOVE);
+    }
+    G.players['0'].token.workers = 0;
+    expect(choiceOptions(G, c)).toEqual([]);
+    expect(resolveStandardChoice(context(G), c.id, target)).toBe(INVALID_MOVE);
+    G.players['0'].token.workers = 1;
+    resolveStandardChoice(context(G), c.id, target);
+    expect(p.lastContributor).toBe('0');
+    expect(choiceOptions(G, G.standard!.choices[0])).toEqual([]);
+    const snapshot = structuredClone(G);
+    expect(resolveStandardChoice(context(G), G.standard!.choices[0].id, target)).toBe(INVALID_MOVE);
+    expect(G).toEqual(snapshot);
+  });
+  test('chained completion returns exactly the spent cube, credits the finisher and scores once', () => {
+    const G = anyState(); project(G, 'other', '1', 1, 2, '工程師', '1');
+    G.players['0'].token.workers = 1;
+    G.standard!.phase = 'settlement';
+    enqueue(G, 'government5', '0', 'done', 2);
+    resolveStandardChoice(context(G), G.standard!.choices[0].id, { projectId: 'other', worker: '0', jobName: '工程師' });
+    expect(G.players['0'].token.workers).toBe(0);
+    advanceStandard(context(G));
+    expect(G.players['0'].token.workers).toBe(1);
+    expect(G.table.scoreBoard['0']).toBe(3);
+    expect(G.standard!.completedProjectIds).toEqual(['other']);
+    advanceStandard(context(G));
+    expect(G.players['0'].token.workers).toBe(1);
+    expect(G.table.scoreBoard['0']).toBe(3);
+  });
+});

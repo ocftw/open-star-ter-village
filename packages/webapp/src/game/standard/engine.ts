@@ -1,3 +1,4 @@
+import { completionReward } from './config';
 import type { FnContext } from 'boardgame.io';
 import { INVALID_MOVE } from 'boardgame.io/core';
 import type { GameState, ClientGameState } from '../store/store';
@@ -84,6 +85,16 @@ export function choiceOptions(G: GameState | ClientGameState, c: Choice): Choice
       }
       continue;
     }
+    if (c.kind === 'government5' && G.standard?.experiments?.government5 === 'any') {
+      if (slot.card!.id === c.projectId) continue;
+      for (const jobName of Object.keys(slot.card!.requirements)) {
+        const cube = slot.contributions.find(cube => cube.worker === c.playerId && cube.jobName === jobName);
+        if (!cube && G.players[c.playerId].token.workers < 1) continue;
+        if (ProjectSlotSelector.getJobContribution(slot, jobName) >= slot.card!.requirements[jobName]) continue;
+        options.push({ label: `${slot.card!.name} / ${jobName} ${cube ? `${cube.value} → ${cube.value + 1}` : '新增自己的方塊 · 庫存 −1'}`, target: { projectId: slot.card!.id, worker: c.playerId, jobName } });
+      }
+      continue;
+    }
     for (const cube of slot.contributions) {
       if (c.kind !== 'digitalMinister' && cube.worker !== c.playerId) continue;
       if (c.kind === 'source4' && cube.jobName !== '工程師') continue;
@@ -127,6 +138,9 @@ export const resolveStandardChoice: GameMove<(id: number, target: ChoiceTarget |
         if (G.rules.event?.ignoreFirstWorkerRequirement?.[playerID]) RuleMutator.consumeIgnoreFirstWorkerRequirement(G.rules, playerID);
         fillMarket(G);
       } else {
+        if (c.kind === 'government5' && !ProjectSlotSelector.hasWorker(slot, target.jobName!, playerID)) {
+          G.players[playerID].token.workers--;
+        }
         ProjectSlotMutator.pushWorker(slot, target.jobName!, target.worker!, 1);
       }
     }
@@ -152,8 +166,10 @@ function settleStandard(G: GameState) {
       ScoreBoardMutator.add(G.table.scoreBoard, cube.worker, cube.value);
       PlayersMutator.addWorkerTokens(G.players, cube.worker, 1);
     }
-    ScoreBoardMutator.add(G.table.scoreBoard, slot.owner, G.rules.settlement.projectOwnerVictoryPoints + (G.rules.event?.extraOwnerVictoryPoints ?? 0));
-    ScoreBoardMutator.add(G.table.scoreBoard, slot.lastContributor, G.rules.settlement.lastContributorVictoryPoints);
+    const ownerReward = completionReward(s.experiments, slot.card!.difficulty, G.rules.settlement.projectOwnerVictoryPoints);
+    const finisherReward = completionReward(s.experiments, slot.card!.difficulty, G.rules.settlement.lastContributorVictoryPoints);
+    ScoreBoardMutator.add(G.table.scoreBoard, slot.owner, ownerReward + (G.rules.event?.extraOwnerVictoryPoints ?? 0));
+    ScoreBoardMutator.add(G.table.scoreBoard, slot.lastContributor, finisherReward);
     PlayersMutator.addWorkerTokens(G.players, slot.owner, slot.ownerToken);
     s.completedProjectIds.push(slot.card!.id);
     log(G, 'complete', slot.lastContributor, slot.card!.name);

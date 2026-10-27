@@ -75,3 +75,20 @@ describe('balanced profile', () => {
     expect(decide(state, state.ctx.currentPlayer).move).not.toBe('endActionTurn');
   });
 });
+
+test('bot evaluates the selected completion reward and new Government 5 cube cost', () => {
+  const state = actionState();
+  const me = state.ctx.currentPlayer;
+  const other = me === '0' ? '1' : '0';
+  const slot = addProject(state.G, 'experiment', other, 8, 1);
+  slot.card!.difficulty = 4;
+  state.G.standard!.experiments = { government5: 'any', completionRewards: 'fixed' };
+  state.G.standard!.choices = [{ id: 1, kind: 'government5', playerId: me, projectId: 'done', budget: 1 }];
+  const action = { move: 'resolveStandardChoice', args: [1, { projectId: 'experiment', worker: me, jobName: '工程師' }] };
+  const score = (workerToken: number) => scoreAction(position(playerView({ G: state.G, ctx: state.ctx, playerID: me }), state.ctx, me, withWeights(BALANCED, { workerToken })), action);
+  expect(score(0) - score(1)).toBeCloseTo(1);
+  slot.contributions[0].value = 7;
+  const fixed = score(0);
+  state.G.standard!.experiments.completionRewards = 'difficulty';
+  expect(score(0) - fixed).toBeCloseTo(2 * BALANCED.weights.points);
+});

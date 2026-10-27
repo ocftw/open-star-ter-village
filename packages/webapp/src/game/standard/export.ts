@@ -1,3 +1,4 @@
+import { DEFAULT_EXPERIMENTS } from './config';
 import type { Ctx } from 'boardgame.io';
 import type { ClientGameState, GameState } from '../store/store';
 import type { StandardTelemetry } from './telemetry';
@@ -18,7 +19,7 @@ export function buildStandardExport(G: GameState | ClientGameState, ctx: Ctx, { 
   const s = G.standard!;
   const remainingHearts = 10 - s.grown.length;
   return {
-    ruleset: s.version, build, players: ctx.numPlayers, rounds: s.round,
+    ruleset: s.version, experiments: { ...(s.experiments ?? DEFAULT_EXPERIMENTS) }, build, players: ctx.numPlayers, rounds: s.round,
     completedProjectIds: s.completedProjectIds, grown: s.grown, remainingHearts, scores: G.table.scoreBoard,
     outcome: treeOutcome(remainingHearts), finished: Boolean(ctx.gameover), log: s.log, exportedAt: new Date(now).toISOString(),
     durationSeconds: Math.floor(((s.finishedAt ?? now) - s.startedAt) / 1000),
