@@ -3,10 +3,10 @@ import * as Sentry from "@sentry/node";
 import packageJson from "../package.json";
 import game from "./game";
 import { loadWebappEnv } from "./env";
-import { registerLobbyUpdates } from "./server/lobbyUpdates";
 import { DEBUG_TELEMETRY_PATH, debugTelemetryHandler } from "./debugTelemetry";
 import { ADD_BOT_PATH, REMOVE_BOT_PATH, addBotHandler, removeBotHandler } from "./botSeats";
 import { socketPresence, startBotRunner } from "./botRunner";
+import { registerLobbyUpdates } from "./server/lobbyUpdates";
 
 const packageVersion = packageJson.version;
 const gameName = 'OpenStarTerVillage';

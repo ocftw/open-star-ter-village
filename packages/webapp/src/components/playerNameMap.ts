@@ -20,8 +20,9 @@ export const getPlayerName = (
   matchData: FilteredMetadata | undefined,
   id: PlayerID,
 ): string => {
-  const player = matchData?.[Number(id)];
-  const savedName = (player as { data?: { displayName?: unknown } } | undefined)?.data?.displayName;
+  // The server sends each seat's `data` (minus credentials); boardgame.io's type omits it.
+  const player = matchData?.[Number(id)] as ({ name?: string; data?: unknown } & { data?: { displayName?: unknown } }) | undefined;
+  const savedName = player?.data?.displayName;
   const name = player?.name?.trim() || (typeof savedName === 'string' ? savedName.trim() : '') || stubPlayerNameMap[id] || `玩家 ${id}`;
-  return player && isBotSeat(player as { data?: unknown }) ? `${name} 🤖` : name;
+  return player && isBotSeat(player) ? `${name} 🤖` : name;
 };
