@@ -10,7 +10,7 @@ import MatchRow from '@/components/lobby/MatchRow';
 import Note from '@/components/lobby/Note';
 import Segmented from '@/components/lobby/Segmented';
 import { loadCredentials, saveCredentials, type MatchCredentials } from '@/lib/matchCredentials';
-import { usePolling } from '@/lib/usePolling';
+import { useLobbyUpdates } from '@/lib/useLobbyUpdates';
 import { useSnackbar } from '@/lib/useSnackbar';
 import GameIntentTracker from '@/components/GameIntentTracker';
 import {
@@ -80,14 +80,17 @@ export default function LobbyPage() {
   const [isCreating, setIsCreating] = React.useState(false);
   const [isRefreshing, setIsRefreshing] = React.useState(false);
   const [joiningMatchID, setJoiningMatchID] = React.useState<string | null>(null);
+  const fetchSequence = React.useRef(0);
   const { snackbar, showSnackbar, closeSnackbar } = useSnackbar();
 
   const trimmedPlayerName = playerName.trim();
   const playerNameIsValid = isValidPlayerName(playerName);
 
   const fetchMatches = React.useCallback(async (silent = false) => {
+    const requestSequence = ++fetchSequence.current;
     try {
       const nextMatches = await listPublicMatches();
+      if (requestSequence !== fetchSequence.current) return;
       setMatches(nextMatches);
       // Rooms this browser still holds a seat credential for get 回到桌子
       // instead of Join (#421). Validity is re-checked by the room page —
@@ -101,12 +104,13 @@ export default function LobbyPage() {
       );
       setLoadError(false);
     } catch (error) {
+      if (requestSequence !== fetchSequence.current) return;
       if (!silent) {
         setLoadError(true);
       }
       showSnackbar(getLobbyErrorMessage(error, 'Unable to load matches.'), 'error');
     } finally {
-      setIsLoading(false);
+      if (requestSequence === fetchSequence.current) setIsLoading(false);
     }
   }, [showSnackbar]);
 
@@ -121,7 +125,7 @@ export default function LobbyPage() {
     void fetchMatches();
   }, [fetchMatches]);
 
-  usePolling(React.useCallback(() => fetchMatches(true), [fetchMatches]), 10_000);
+  useLobbyUpdates(React.useCallback(() => fetchMatches(true), [fetchMatches]));
 
   const handlePlayerNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const nextValue = event.target.value;
