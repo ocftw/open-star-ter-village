@@ -6,7 +6,7 @@ import { loadWebappEnv } from "./env";
 import { registerLobbyUpdates } from "./server/lobbyUpdates";
 import { DEBUG_TELEMETRY_PATH, debugTelemetryHandler } from "./debugTelemetry";
 import { ADD_BOT_PATH, REMOVE_BOT_PATH, addBotHandler, removeBotHandler } from "./botSeats";
-import { startBotRunner } from "./botRunner";
+import { socketPresence, startBotRunner } from "./botRunner";
 
 const packageVersion = packageJson.version;
 const gameName = 'OpenStarTerVillage';
@@ -85,7 +85,13 @@ async function serve() {
     port: env.port,
     callback: () => {
       console.log(`Main server running on port ${env.port}...`);
-      startBotRunner({ db: server.db, game, serverURL: `http://localhost:${env.port}`, moveDelayMs: env.botMoveDelayMs });
+      startBotRunner({
+        db: server.db,
+        game,
+        serverURL: `http://localhost:${env.port}`,
+        moveDelayMs: env.botMoveDelayMs,
+        isPlayerConnected: socketPresence(server.transport),
+      });
     },
   };
 

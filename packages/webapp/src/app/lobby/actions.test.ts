@@ -47,7 +47,8 @@ describe('getLobbyStatus / toVisibleMatch (#420 abandoned-match lobby filter)', 
     const match = makeMatch([{ ...startedHost, isConnected: false }, bot]);
     expect(toVisibleMatch(match)).toBeNull();
     expect(toVisibleMatch(match, { holdsSeat: true })?.status).toBe('In Progress');
-    // A terminated match stays hidden even from seat holders.
+    // Rooms without bots keep the old rule, and terminated matches stay hidden.
+    expect(toVisibleMatch(makeMatch([{ ...startedHost, isConnected: false }, { name: 'Bob', isConnected: false }]), { holdsSeat: true })).toBeNull();
     expect(toVisibleMatch(makeMatch([startedHost, {}]), { holdsSeat: true })).toBeNull();
   });
 

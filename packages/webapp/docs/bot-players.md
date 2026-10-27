@@ -96,6 +96,8 @@ Rules:
 - Bot seats are recognised on the server by a server-generated credential
   (`bot:` prefix), not by seat data a player could set.
 - Matches live in server memory, so a server restart ends bot games too.
+- Play again (再來一局) starts a fresh room without the bots; the host adds
+  them again.
 
 How it works on the server:
 
@@ -110,7 +112,9 @@ How it works on the server:
   unfinished match, it connects a multiplayer client with that credential and
   plays the seat. It waits `BOT_MOVE_DELAY_MS` (default 800) before each move
   so humans can follow, and disconnects when the game ends, the match is
-  terminated or deleted, or the seat stops being a bot.
+  terminated or deleted, the seat stops being a bot, or no human in the room
+  has a live socket (bots resume when one reconnects). It deletes a room once
+  only bots are seated in it.
 
 ### Adding a strategy
 

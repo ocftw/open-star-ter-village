@@ -36,7 +36,20 @@ export interface BotRunnerOptions {
   pollMs?: number;
   /** Pause before each bot move so humans can follow the game. */
   moveDelayMs?: number;
+  /**
+   * Whether a human seat has a live connection. Defaults to the stored
+   * `isConnected` flag, which goes stale when one of several sockets closes;
+   * the server passes `socketPresence(server.transport)` instead.
+   */
+  isPlayerConnected?: (matchID: string, player: { id: number; isConnected?: boolean }) => boolean;
   log?: (message: string) => void;
+}
+
+/** Live-socket presence from boardgame.io's Socket.IO transport, falling back to the stored flag. */
+export function socketPresence(transport: unknown): NonNullable<BotRunnerOptions['isPlayerConnected']> {
+  const clients = (transport as { clientInfo?: Map<string, { matchID: string; playerID: string }> } | undefined)?.clientInfo;
+  if (!(clients instanceof Map)) return (_, player) => Boolean(player.isConnected);
+  return (matchID, player) => Array.from(clients.values()).some(client => client.matchID === matchID && client.playerID === String(player.id));
 }
 
 /** Resend a move only if the server has not answered it within this time. */
@@ -105,11 +118,14 @@ class BotSeat {
 }
 
 /**
- * Plays every bot seat of every started, unfinished match. Polls the match
- * store, connects a client per bot seat, and disconnects it when the game
- * ends, the match is terminated or deleted, or the seat is no longer a bot.
+ * Plays the bot seats of started, unfinished Standard matches. Polls the match
+ * store and connects a client per bot seat while at least one human in the
+ * match is connected. Disconnects bots when the game ends, the match is
+ * terminated or deleted, the seat is no longer a bot, or no human is
+ * connected (they resume on reconnect). Deletes a match once only bots are
+ * seated in it.
  */
-export function startBotRunner({ db, game, serverURL, pollMs = 2000, moveDelayMs = 800, log = console.log }: BotRunnerOptions) {
+export function startBotRunner({ db, game, serverURL, pollMs = 2000, moveDelayMs = 800, isPlayerConnected = (_, player) => Boolean(player.isConnected), log = console.log }: BotRunnerOptions) {
   const seats = new Map<string, BotSeat>();
 
   async function wantedSeats(): Promise<Map<string, SeatAssignment>> {
@@ -134,7 +150,7 @@ export function startBotRunner({ db, game, serverURL, pollMs = 2000, moveDelayMs
       // A vacated seat after start means the match was terminated (#420).
       if (!started || players.some(player => !player.name?.trim())) continue;
       // Pause bots while no human is connected; they resume when someone reconnects.
-      if (!humans.some(player => player.isConnected)) continue;
+      if (!humans.some(player => isPlayerConnected(matchID, player))) continue;
       for (const player of bots) {
         const strategy = getBotStrategy(player.data);
         if (strategy && player.credentials) {
