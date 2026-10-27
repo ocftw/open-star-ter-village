@@ -2,6 +2,8 @@ export interface WebappEnv {
   gameServerOrigins: string[];
   isProduction: boolean;
   port: number;
+  /** Exposes the telemetry debug endpoint; for test deployments only. */
+  debugTelemetry: boolean;
 }
 
 const DEFAULT_GAME_SERVER_PORT = 3001;
@@ -56,5 +58,6 @@ export function loadWebappEnv(env: NodeJS.ProcessEnv = process.env): WebappEnv {
     gameServerOrigins: parseGameServerOrigins(env.GAME_SERVER_ORIGINS, isProduction),
     isProduction,
     port: parsePort(env.PORT, isProduction),
+    debugTelemetry: env.DEBUG_TELEMETRY === '1',
   };
 }

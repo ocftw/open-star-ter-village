@@ -1,0 +1,363 @@
+{
+  "profile": {
+    "name": "balanced",
+    "weights": {
+      "points": 1,
+      "baseCompletionChance": 0.25,
+      "village": 0.3,
+      "villageCompletion": 1,
+      "tree": 1,
+      "unlock": 0.5,
+      "pointsPerAP": 1,
+      "apCost": 0.3,
+      "overtime": 0.1,
+      "workerToken": 0.2,
+      "presence": 0.5,
+      "initiation": 0,
+      "advancedDraw": -0.5,
+      "marketLoss": 0.2
+    },
+    "nodeImpact": {
+      "source-1": 0.2,
+      "source-2": 0.3,
+      "source-3": 0.4,
+      "source-4": 0.4,
+      "source-5": 0.6,
+      "data-1": 0.2,
+      "data-2": 0.5,
+      "data-3": 1,
+      "data-4": 0.3,
+      "data-5": 0.3,
+      "government-1": 0.1,
+      "government-2": 0.1,
+      "government-3": 0.2,
+      "government-4": 0.5,
+      "government-5": 0.5
+    }
+  },
+  "playerCounts": [
+    2,
+    3,
+    4
+  ],
+  "gamesPerCount": 100,
+  "seconds": 16.106,
+  "failures": [],
+  "summaries": [
+    {
+      "numPlayers": 2,
+      "games": 100,
+      "avgMoves": 45.21,
+      "score": {
+        "mean": 48.84,
+        "min": 29,
+        "median": 49,
+        "max": 69
+      },
+      "avgWinningScore": 52.87,
+      "avgWinningMargin": 8.06,
+      "seatWinRate": {
+        "0": 0.37,
+        "1": 0.63
+      },
+      "tierReachRate": {
+        "3": 1,
+        "4": 0.62,
+        "5": 0.02
+      },
+      "avgRemainingHearts": 2.81,
+      "outcomes": {
+        "星源樹發光": 60,
+        "星源樹甦醒中": 38,
+        "星源樹繁盛": 2
+      },
+      "avgCompletions": 4.33,
+      "completionsByDifficulty": {
+        "1": 393,
+        "2": 40
+      },
+      "advancedDraws": 0,
+      "advancedCompletions": 0,
+      "avgFirstOver20Round": 4.98,
+      "government5": {
+        "gamesUnlocked": 2,
+        "budget": 0,
+        "used": 0
+      },
+      "choices": {
+        "draw": {
+          "queued": 436,
+          "resolved": 436,
+          "skipped": 0,
+          "noTarget": 0
+        },
+        "extraRecruit": {
+          "queued": 28,
+          "resolved": 28,
+          "skipped": 0,
+          "noTarget": 0
+        },
+        "source4": {
+          "queued": 44,
+          "resolved": 7,
+          "skipped": 0,
+          "noTarget": 37
+        },
+        "government4": {
+          "queued": 10,
+          "resolved": 10,
+          "skipped": 0,
+          "noTarget": 0
+        },
+        "discard": {
+          "queued": 159,
+          "resolved": 107,
+          "skipped": 52,
+          "noTarget": 0
+        },
+        "digitalMinister": {
+          "queued": 96,
+          "resolved": 62,
+          "skipped": 0,
+          "noTarget": 34
+        }
+      },
+      "nodeGrowthRate": {
+        "source-1": 0.58,
+        "source-2": 1,
+        "source-3": 0.59,
+        "source-4": 0.62,
+        "source-5": 0.02,
+        "data-1": 1,
+        "data-2": 1,
+        "data-3": 1,
+        "data-4": 0.44,
+        "data-5": 0,
+        "government-1": 0.37,
+        "government-2": 0,
+        "government-3": 0.41,
+        "government-4": 0.14,
+        "government-5": 0.02
+      },
+      "neverGrown": [
+        "data-5",
+        "government-2"
+      ],
+      "neverQueuedChoices": [
+        "government5"
+      ]
+    },
+    {
+      "numPlayers": 3,
+      "games": 100,
+      "avgMoves": 60.32,
+      "score": {
+        "mean": 47.87,
+        "min": 29,
+        "median": 48,
+        "max": 76
+      },
+      "avgWinningScore": 53.09,
+      "avgWinningMargin": 4.77,
+      "seatWinRate": {
+        "0": 0.22,
+        "1": 0.41,
+        "2": 0.38
+      },
+      "tierReachRate": {
+        "3": 1,
+        "4": 0.98,
+        "5": 0.72
+      },
+      "avgRemainingHearts": 0.6,
+      "outcomes": {
+        "星源樹繁盛": 72,
+        "星源樹發光": 26,
+        "星源樹甦醒中": 2
+      },
+      "avgCompletions": 6.61,
+      "completionsByDifficulty": {
+        "1": 586,
+        "2": 75
+      },
+      "advancedDraws": 0,
+      "advancedCompletions": 0,
+      "avgFirstOver20Round": 4.44,
+      "government5": {
+        "gamesUnlocked": 70,
+        "budget": 240,
+        "used": 101
+      },
+      "choices": {
+        "draw": {
+          "queued": 500,
+          "resolved": 500,
+          "skipped": 0,
+          "noTarget": 0
+        },
+        "source4": {
+          "queued": 225,
+          "resolved": 49,
+          "skipped": 0,
+          "noTarget": 176
+        },
+        "government5": {
+          "queued": 143,
+          "resolved": 101,
+          "skipped": 0,
+          "noTarget": 42
+        },
+        "government4": {
+          "queued": 27,
+          "resolved": 26,
+          "skipped": 0,
+          "noTarget": 1
+        },
+        "extraRecruit": {
+          "queued": 38,
+          "resolved": 37,
+          "skipped": 0,
+          "noTarget": 1
+        },
+        "discard": {
+          "queued": 29,
+          "resolved": 20,
+          "skipped": 9,
+          "noTarget": 0
+        },
+        "digitalMinister": {
+          "queued": 92,
+          "resolved": 71,
+          "skipped": 0,
+          "noTarget": 21
+        }
+      },
+      "nodeGrowthRate": {
+        "source-1": 0.95,
+        "source-2": 1,
+        "source-3": 0.86,
+        "source-4": 0.98,
+        "source-5": 0.72,
+        "data-1": 1,
+        "data-2": 1,
+        "data-3": 1,
+        "data-4": 0.88,
+        "data-5": 0.02,
+        "government-1": 0.05,
+        "government-2": 0,
+        "government-3": 0.14,
+        "government-4": 0.1,
+        "government-5": 0.7
+      },
+      "neverGrown": [
+        "government-2"
+      ],
+      "neverQueuedChoices": []
+    },
+    {
+      "numPlayers": 4,
+      "games": 100,
+      "avgMoves": 67.42,
+      "score": {
+        "mean": 41.25,
+        "min": 24,
+        "median": 41,
+        "max": 58
+      },
+      "avgWinningScore": 47.65,
+      "avgWinningMargin": 4.9,
+      "seatWinRate": {
+        "0": 0.05,
+        "1": 0.21,
+        "2": 0.3,
+        "3": 0.45
+      },
+      "tierReachRate": {
+        "3": 1,
+        "4": 1,
+        "5": 0.96
+      },
+      "avgRemainingHearts": 0.08,
+      "outcomes": {
+        "星源樹繁盛": 96,
+        "星源樹發光": 4
+      },
+      "avgCompletions": 7.7,
+      "completionsByDifficulty": {
+        "1": 649,
+        "2": 121
+      },
+      "advancedDraws": 0,
+      "advancedCompletions": 0,
+      "avgFirstOver20Round": 4.04,
+      "government5": {
+        "gamesUnlocked": 90,
+        "budget": 511,
+        "used": 119
+      },
+      "choices": {
+        "extraRecruit": {
+          "queued": 56,
+          "resolved": 54,
+          "skipped": 0,
+          "noTarget": 2
+        },
+        "draw": {
+          "queued": 452,
+          "resolved": 452,
+          "skipped": 0,
+          "noTarget": 0
+        },
+        "source4": {
+          "queued": 306,
+          "resolved": 53,
+          "skipped": 0,
+          "noTarget": 253
+        },
+        "government5": {
+          "queued": 236,
+          "resolved": 119,
+          "skipped": 0,
+          "noTarget": 117
+        },
+        "digitalMinister": {
+          "queued": 77,
+          "resolved": 60,
+          "skipped": 0,
+          "noTarget": 17
+        },
+        "discard": {
+          "queued": 29,
+          "resolved": 22,
+          "skipped": 7,
+          "noTarget": 0
+        }
+      },
+      "nodeGrowthRate": {
+        "source-1": 0.97,
+        "source-2": 1,
+        "source-3": 1,
+        "source-4": 1,
+        "source-5": 0.96,
+        "data-1": 1,
+        "data-2": 1,
+        "data-3": 1,
+        "data-4": 1,
+        "data-5": 0.06,
+        "government-1": 0.03,
+        "government-2": 0,
+        "government-3": 0,
+        "government-4": 0,
+        "government-5": 0.9
+      },
+      "neverGrown": [
+        "government-2",
+        "government-3",
+        "government-4"
+      ],
+      "neverQueuedChoices": [
+        "government4"
+      ]
+    }
+  ]
+}

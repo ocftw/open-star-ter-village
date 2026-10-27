@@ -11,6 +11,7 @@ Rulebook: [Rulebook of Open StarTer Village](https://drive.google.com/file/d/1gB
 Feature-flagged 星源樹測試版 v1 supports 2–4 players with fully enforced tree
 abilities and the revised 數位政委 event. Simplified remains the default.
 See [rules, verification and isolated deployment](docs/standard-tree-poc.md).
+Run seeded bot-only games with `pnpm webapp bots`; see [bot players](docs/bot-players.md).
 
 ## Runtime
 
@@ -29,6 +30,7 @@ pnpm webapp build      # Build Next.js and compile the game server
 pnpm webapp start      # Start the built app and game server
 pnpm webapp test       # Run Jest tests
 pnpm webapp lint       # Run ESLint
+pnpm webapp bots       # Run a batch of Standard bot games
 ```
 
 Run all pnpm workspaces from the repository root:
@@ -344,6 +346,9 @@ in Redux.
 - `GAME_SERVER_ORIGINS` sets the comma-separated list of allowed client origins
   for the game server in production.
 - `PORT` overrides the game server port; it defaults to `3001`.
+- `DEBUG_TELEMETRY=1` exposes Standard balance telemetry at
+  `/debug/matches/:matchID/telemetry` for `?debug=1` pages. Test deployments
+  only; see [bot players](docs/bot-players.md#human-debug-mode).
 - `@/*` maps to `packages/webapp/src/*`.
 
 ## Coding Constraints

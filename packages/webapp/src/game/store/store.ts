@@ -5,8 +5,9 @@ import RuleSlice, { Rule } from "./slice/rule";
 import { PlayerID } from "boardgame.io";
 
 /** The game state as seen by a client (after playerView strips server-only data). */
-export type ClientGameState = Omit<GameState, 'decks' | 'players'> & {
+export type ClientGameState = Omit<GameState, 'decks' | 'players' | 'standard'> & {
   players: ClientPlayers;
+  standard?: Omit<import("../standard/state").StandardState, 'telemetry'>;
 };
 
 export interface GameState {

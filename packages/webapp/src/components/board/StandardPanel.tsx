@@ -5,13 +5,16 @@ import { getPlayerName } from '../playerNameMap';
 import { BRANCHES, NODES, NODE_LABELS, THRESHOLDS, REWARDS, predecessors, growthReason } from '@/game/standard/tree';
 import { choiceOptions, ChoiceTarget } from '@/game/standard/engine';
 import type { NodeId } from '@/game/standard/state';
+import { buildStandardExport, treeOutcome } from '@/game/standard/export';
 import { StickerButton } from '../design';
+import DebugTelemetryPanel, { useDebugMode } from './DebugTelemetryPanel';
 
 const branchLabels = ['開源', '資料', '政府'];
 export default function StandardPanel({ gameContext }: { gameContext: GameContext }) {
   const { G, ctx, playerID, moves, matchData } = gameContext;
   const [selected, setSelected] = React.useState<NodeId | null>(null);
   const [overtime, setOvertime] = React.useState(false);
+  const debug = useDebugMode();
   const s = G.standard;
   if (!s) return null;
   const choice = s.choices[0];
@@ -19,12 +22,9 @@ export default function StandardPanel({ gameContext }: { gameContext: GameContex
   const moveApi = moves as unknown as { growTree: (id: NodeId, overtime: boolean) => void; resolveStandardChoice: (id: number, target: ChoiceTarget | null) => void };
   const reason = selected && playerID ? growthReason(G, selected, playerID, overtime) : undefined;
   const remaining = 10 - s.grown.length;
-  const outcome = remaining === 0 ? '星源樹繁盛' : remaining <= 3 ? '星源樹發光' : remaining <= 6 ? '星源樹甦醒中' : '星源樹枯萎';
+  const outcome = treeOutcome(remaining);
   function exportSummary() {
-    const summary = { ruleset: s!.version, build: process.env.NEXT_PUBLIC_BUILD_SHA ?? 'local', players: ctx.numPlayers, rounds: s!.round,
-      completedProjectIds: s!.completedProjectIds, grown: s!.grown, remainingHearts: remaining, scores: G.table.scoreBoard,
-      outcome, finished: Boolean(ctx.gameover), log: s!.log, exportedAt: new Date().toISOString(),
-      durationSeconds: Math.floor(((s!.finishedAt ?? Date.now()) - s!.startedAt) / 1000) };
+    const summary = buildStandardExport(G, ctx, { build: process.env.NEXT_PUBLIC_BUILD_SHA ?? 'local' });
     const url = URL.createObjectURL(new Blob([JSON.stringify(summary, null, 2)], { type: 'application/json' }));
     const a = document.createElement('a'); a.href = url; a.download = `tree-poc-${gameContext.matchID}.json`; a.click(); URL.revokeObjectURL(url);
   }
@@ -77,5 +77,6 @@ export default function StandardPanel({ gameContext }: { gameContext: GameContex
     </div>}
     {ctx.gameover && <p>集體成果：{outcome}</p>}
     <StickerButton variant="ghost" size="sm" onClick={exportSummary}>匯出公開測試摘要</StickerButton>
+    {debug && <DebugTelemetryPanel gameContext={gameContext} />}
   </section>;
 }

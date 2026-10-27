@@ -15,8 +15,13 @@ export const playerView = ({ G, playerID }: { G: GameState; ctx: Ctx; playerID: 
     }
   }
 
+  // Telemetry is balance data for bots and debug mode only; players never receive it.
+  const standard = view.standard && { ...view.standard };
+  if (standard) delete standard.telemetry;
+
   return {
     ...view,
+    ...(standard ? { standard } : {}),
     players: publicPlayers,
   };
 }

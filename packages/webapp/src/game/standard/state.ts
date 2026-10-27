@@ -1,4 +1,5 @@
 import type { EventCard } from '../card';
+import { emptyTelemetry, type StandardTelemetry } from './telemetry';
 export type Branch = 'source' | 'data' | 'government';
 export type NodeId = `${Branch}-${1 | 2 | 3 | 4 | 5}`;
 export type ChoiceKind = 'extraRecruit' | 'digitalMinister' | 'government4' | 'source4' | 'government5' | 'discard' | 'draw';
@@ -18,8 +19,10 @@ export interface StandardState {
   log: PublicLog[];
   nextEvent?: EventCard;
   extraRecruitUsed?: Record<string, boolean>;
+  /** Server-only balance data; stripped by playerView. */
+  telemetry?: StandardTelemetry;
 }
 export const standardState = (): StandardState => ({
   version: 'tree-poc-v1', startedAt: Date.now(), grown: [], completedProjectIds: [], choices: [], nextChoiceId: 1,
-  phase: 'action', growthUsed: false, round: 0, log: [],
+  phase: 'action', growthUsed: false, round: 0, log: [], telemetry: emptyTelemetry(),
 });

@@ -1,0 +1,4 @@
+numPlayers,games,avgMoves,scoreMean,scoreMin,scoreMedian,scoreMax,avgWinningScore,avgWinningMargin,tier3Reach,tier4Reach,tier5Reach,avgRemainingHearts,avgCompletions,advancedDraws,advancedCompletions,avgFirstOver20Round,gov5GamesUnlocked,gov5Budget,gov5Used
+2,100,45.21,48.84,29,49,69,52.87,8.06,1,0.62,0.02,2.81,4.33,0,0,4.98,2,0,0
+3,100,60.32,47.87,29,48,76,53.09,4.77,1,0.98,0.72,0.6,6.61,0,0,4.44,70,240,101
+4,100,67.42,41.25,24,41,58,47.65,4.9,1,1,0.96,0.08,7.7,0,0,4.04,90,511,119

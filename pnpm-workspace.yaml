@@ -9,6 +9,7 @@ overrides:
 
 allowBuilds:
   '@sentry/cli': true
+  esbuild: false
   sharp: true
   unrs-resolver: true
 
