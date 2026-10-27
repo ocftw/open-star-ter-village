@@ -1,8 +1,11 @@
 import { playerView } from '../core/playerView';
 import { createProfileBot } from '../bots/profileBot';
 import { BALANCED } from '../bots/profiles';
-import { runGame } from '../bots/runner';
+import { initialState, runGame } from '../bots/runner';
+import type { GameState } from '../store/store';
+import { enqueue, resolveStandardChoice } from './engine';
 import { buildStandardExport } from './export';
+import type { FnContext } from 'boardgame.io';
 
 const run = runGame({ numPlayers: 3, seed: 'telemetry', bots: createProfileBot(BALANCED) });
 const G = run.state.G;
@@ -43,11 +46,22 @@ describe('Standard telemetry', () => {
   });
 
   test('counts each multi-point Government 5 point as its own queued choice', () => {
-    const bot = createProfileBot(BALANCED);
-    const games = ['a', 'b', 'c', 'd'].map(seed => runGame({ numPlayers: 4, seed: `gov5-${seed}`, bots: bot }).state.G.standard!.telemetry!);
-    const gov5 = games.map(t => t.choices.government5).filter(Boolean);
-    expect(gov5.length).toBeGreaterThan(0);
-    for (const stats of gov5) expect(stats!.resolved + stats!.skipped + stats!.noTarget).toBe(stats!.queued);
+    const state = structuredClone(initialState(2, 'gov5').G);
+    state.standard!.choices = [];
+    const slot = state.table.projectBoard.find(s => !s.card)!;
+    Object.assign(slot, {
+      card: { id: 'target', name: 'target', type: 'ignored', difficulty: 1, description: '', requirements: { 工程師: 10 } },
+      owner: '0', ownerToken: 1, lastContributor: '0', contributions: [{ jobName: '工程師', worker: '0', value: 1 }],
+    });
+    enqueue(state, 'government5', '0', 'completed-project', 3);
+    const move = { G: state, playerID: '0' } as unknown as FnContext<GameState> & { playerID: string };
+    const target = { projectId: 'target', worker: '0', jobName: '工程師' };
+    resolveStandardChoice(move, state.standard!.choices[0].id, target);
+    resolveStandardChoice(move, state.standard!.choices[0].id, target);
+    resolveStandardChoice(move, state.standard!.choices[0].id, null);
+    const t = state.standard!.telemetry!;
+    expect(t.choices.government5).toEqual({ queued: 3, resolved: 2, skipped: 1, noTarget: 0 });
+    expect(t.government5).toEqual({ budget: 3, used: 2 });
   });
 
   test('records the first round each player passes 20 influence', () => {
