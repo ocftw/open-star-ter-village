@@ -70,8 +70,8 @@ export function choiceOptions(G: GameState | ClientGameState, c: Choice): Choice
   const options: ChoiceOption[] = [];
   for (const slot of unfinished) {
     if (c.kind === 'digitalMinister' && slot.card!.id !== c.projectId) continue;
-    if (c.kind === 'government4') {
-      if (slot.card!.id === c.projectId || G.players[c.playerId].token.workers < 1) continue;
+    if (c.kind === 'government4' || c.kind === 'extraRecruit') {
+      if ((c.kind === 'government4' && slot.card!.id === c.projectId) || G.players[c.playerId].token.workers < 1) continue;
       for (const card of G.table.jobSlots) {
         const jobs = G.rules.event?.ignoreFirstWorkerRequirement?.[c.playerId] ? Object.keys(slot.card!.requirements)
           : Object.keys(slot.card!.requirements).includes(card.name) ? [card.name] : [];
@@ -114,7 +114,7 @@ export const resolveStandardChoice: GameMove<(id: number, target: ChoiceTarget |
       if (card) G.players[playerID].hand.projects.push(card);
     } else {
       const slot = G.table.projectBoard.find(p => p.card?.id === target.projectId)!;
-      if (c.kind === 'government4') {
+      if (c.kind === 'government4' || c.kind === 'extraRecruit') {
         const index = G.table.jobSlots.findIndex(card => card.id === target.jobCardId);
         G.decks.jobs.discardPile.push(...G.table.jobSlots.splice(index, 1));
         G.players[playerID].token.workers--;
@@ -159,6 +159,12 @@ export function beginStandardEvent(G: GameState) {
   if (!G.standard) return;
   const s = G.standard;
   s.round++;
+  s.extraRecruitUsed = {};
+  if (G.table.eventSlot?.function_name === 'retreat_contributions') {
+    for (const slot of G.table.projectBoard) if (slot.card) {
+      for (const cube of slot.contributions) cube.value = Math.max(1, cube.value - 1);
+    }
+  }
   log(G, 'event', undefined, G.table.eventSlot?.name);
   if (G.table.eventSlot?.function_name === 'digital_minister') {
     s.phase = 'event';

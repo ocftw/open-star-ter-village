@@ -18,7 +18,7 @@ alternating diagonal connections. Each node costs 1 AP; ten hearts, two per
 tier. Project types are ignored and hidden; difficulty and talent requirements
 remain. All fifteen abilities are implemented. Entry cards are difficulty 1–2;
 advanced cards are difficulty 3–4 and are drawable only above 20 influence.
-The seven existing events plus revised 數位政委 form the test event pool.
+Standard uses all 14 printed events (13 ordinary plus the final event), including the revised 數位政委. Simplified retains its existing event pool.
 Draw 6/5/4 ordinary events for 2/3/4 players, then the final event.
 
 ## Explicit test interpretations
@@ -104,3 +104,19 @@ frozen release. Export the public JSON summary at the end. It includes version,
 build, duration, event/choice log, completions, tree growth rounds, scores and
 remaining hearts; it excludes credentials and private hands. Compare reachability
 of tiers 3–5, growth choices and ability clarity with the revised 2/4/6 thresholds.
+
+## Full Standard event rules
+
+Source: `game-content/event-cards.md`. Six Standard-only cards are added:
+又老又窮啊 blocks growth; GitHub 當機了 blocks initiator contributions;
+猛漢肺炎來襲 moves each existing cube back one (floor 1, owner marker unchanged);
+鯊魚咬斷海底電纜 checks the current board and blocks initiation at two or more projects;
+減薪休假啊 blocks ordinary and growth overtime; 抱歉了我的肝 queues an optional
+second recruitment after the player's first ordinary recruit that round. It costs
+one labor card and worker token, no AP or overtime, applies Data 2, and does not
+recursively grant another recruitment. Government 4 is an ability choice, not an
+ordinary recruit action, so does not trigger it. Choice state survives reconnect;
+no eligible targets automatically skips. Event restrictions expire with the event
+and do not remove permanent tree upgrades. Event draw counts remain 6/5/4 plus final.
+
+Balance audit: [findings and data limits](balance-audit.md).

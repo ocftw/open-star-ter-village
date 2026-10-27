@@ -68,7 +68,7 @@ export default function StandardPanel({ gameContext }: { gameContext: GameContex
       <StickerButton disabled={!active || !!reason} onClick={() => { moveApi.growTree(selected, overtime); setSelected(null); setOvertime(false); }}>確認成長 · 1 AP</StickerButton>
     </div>}
     {choice && <div role="region" aria-label="待處理選擇" aria-live="polite" style={{ padding: 12, border: '2px solid var(--orange)', marginTop: 12 }}>
-      <h3>{{ digitalMinister: '數位政委：選擇 1 個貢獻方塊', government4: '政府4：免費招募至另一專案', source4: '開源4：推進另一工程師', government5: `政府5：剩餘 ${choice.budget} 點`, discard: '政府1：可棄 1 張專案卡', draw: '選擇補牌來源' }[choice.kind]}</h3>
+      <h3>{{ extraRecruit: '抱歉了我的肝：可免費再招募一次', digitalMinister: '數位政委：選擇 1 個貢獻方塊', government4: '政府4：免費招募至另一專案', source4: '開源4：推進另一工程師', government5: `政府5：剩餘 ${choice.budget} 點`, discard: '政府1：可棄 1 張專案卡', draw: '選擇補牌來源' }[choice.kind]}</h3>
       <p>等待 {getPlayerName(matchData, choice.playerId)} 選擇</p>
       {choice.playerId === playerID && <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
         {choiceOptions(G, choice).map((option, index) => <StickerButton key={`${choice.id}:${index}`} size="sm" variant="ghost" onClick={() => moveApi.resolveStandardChoice(choice.id, option.target)}>{option.label}</StickerButton>)}

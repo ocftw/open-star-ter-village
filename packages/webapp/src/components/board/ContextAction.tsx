@@ -1,3 +1,4 @@
+import { eventActionBlocked } from '@/game/standard/events';
 import React, { useEffect } from 'react';
 import { Alert, Snackbar } from '@mui/material';
 import { GameContext } from '@/components/GameContextHelpers';
@@ -158,7 +159,7 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
       : null;
 
   // The tapped action is disabled by the current rule set (rare).
-  const ruleUnavailable = actionName !== null && !RuleSelector.isActionSlotAvailable(G.rules, actionName);
+  const ruleUnavailable = actionName !== null && (!RuleSelector.isActionSlotAvailable(G.rules, actionName) || eventActionBlocked(G, actionName));
   // The tapped action's worker-placement slot is already taken this round —
   // the contextual entry point for 加班 Overtime (F-005).
   const occupied = actionName !== null && !ruleUnavailable && isSlotOccupied(actionName);

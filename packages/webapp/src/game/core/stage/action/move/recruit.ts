@@ -1,4 +1,5 @@
-import { fillMarket } from '@/game/standard/engine';
+import { standardEvent } from '@/game/standard/events';
+import { fillMarket, enqueue } from '@/game/standard/engine';
 import { ProjectSlotSelector } from '@/game/store/slice/projectSlot/projectSlot';
 import { ProjectBoardSelector } from '@/game/store/slice/projectBoard';
 import { DeckMutator, DeckSelector } from '@/game/store/slice/deck';
@@ -57,4 +58,9 @@ export const recruit: GameMove<Recruit> = ({ G, playerID }, jobCardId, projectSl
   DeckMutator.draw(G.decks.jobs, refillCardNumber);
   JobSlotsMutator.addJobCards(G.table.jobSlots, jobCards);
   if (G.standard) fillMarket(G);
+  if (standardEvent(G, 'extra_recruit') && !G.standard!.extraRecruitUsed?.[playerID]) {
+    G.standard!.extraRecruitUsed ??= {};
+    G.standard!.extraRecruitUsed[playerID] = true;
+    enqueue(G, 'extraRecruit', playerID);
+  }
 };
