@@ -79,6 +79,21 @@ target-less counts per choice kind; and Government 5 budget versus points used
 the player export is unchanged. Only the bot runner and debug mode can read it.
 Matches created before telemetry existed simply have none.
 
+### Human debug mode
+
+For human playtests on a **test deployment only**:
+
+1. Start the game server with `DEBUG_TELEMETRY=1`. It logs a warning and adds
+   `GET /debug/matches/:matchID/telemetry`. Without the flag the route does not
+   exist (404). Never set it in production.
+2. Open the game page with `?debug=1`, e.g. `/game/<matchID>?debug=1`. A debug
+   panel under the tree shows the telemetry (projects with initiator, finisher
+   and contribution snapshot; Government 5 budget; advanced draws; choice
+   counts) and an export button that includes it.
+
+Without the server flag, `?debug=1` shows nothing. On the isolated tree-poc
+Fly app: `flyctl secrets set --app open-star-ter-village-tree-poc DEBUG_TELEMETRY=1`.
+
 ## CI
 
 `src/game/bots/*.test.ts` checks that every enumerated action is accepted across
