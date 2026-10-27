@@ -4,7 +4,7 @@ import type { NodeId } from '@/game/standard/state';
 export interface Weights {
   /** Multiplier on the bot's own immediate and expected points. */
   points: number;
-  /** Completion chance of an empty project; grows linearly to 1 as positions fill. */
+  /** Completion chance of an empty project; grows linearly as positions fill (capped at 0.95, lower in the last two rounds). */
   baseCompletionChance: number;
   /** Share of a benefit to other players that the bot also values (shared tree, village goals). */
   village: number;

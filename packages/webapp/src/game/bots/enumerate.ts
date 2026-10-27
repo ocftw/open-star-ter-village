@@ -137,7 +137,9 @@ const actionStageMoves = (view: ClientGameState, ctx: Ctx, playerID: PlayerID): 
 };
 
 /**
- * Every legal move for `playerID`, computed from that player's view only.
+ * Legal moves for `playerID`, computed from that player's view only: every
+ * growth, start, recruit and choice, plus a curated set of contributions and
+ * market refills.
  * Each candidate passes the same validators the UI preflight uses, so a bot
  * choosing any of them should never be rejected by the server.
  */
