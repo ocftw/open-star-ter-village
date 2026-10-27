@@ -1,6 +1,7 @@
 import type { Ruleset } from '@/game/standard/config';
 import { LobbyClientError } from 'boardgame.io/client';
-import { GAME_NAME, lobbyClient } from '@/lib/lobbyClient';
+import { GAME_NAME, GAME_SERVER_URL, lobbyClient } from '@/lib/lobbyClient';
+import { isBotSeat } from '@/game/bots/seat';
 import type { MatchCredentials } from '@/lib/matchCredentials';
 
 export type LobbyMatch = Awaited<ReturnType<typeof lobbyClient.getMatch>>;
@@ -62,9 +63,9 @@ export function hasHostStarted(match: Pick<LobbyMatch, 'players'>): boolean {
   );
 }
 
-function isAbandonedMatch(players: LobbyMatch['players']): boolean {
-  // A match is abandoned if every player either has no name or is disconnected.
-  return players.length > 0 && players.every((player) => !player.name?.trim() || player.isConnected === false);
+/** A match is abandoned once no human is seated and connected; bot seats keep no room alive. */
+export function isAbandonedMatch(players: LobbyMatch['players']): boolean {
+  return players.length > 0 && players.every((player) => !player.name?.trim() || player.isConnected === false || isBotSeat(player));
 }
 
 export function getLobbyStatus(match: LobbyMatch): LobbyStatus {
@@ -189,6 +190,28 @@ export async function startRoom(matchID: string, playerID: string, credential: s
       started: true,
     },
   });
+}
+
+async function postBotSeat(path: string, body: Record<string, unknown>): Promise<void> {
+  const response = await fetch(`${GAME_SERVER_URL}/games/${GAME_NAME}/${path}`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!response.ok) {
+    const { error } = (await response.json().catch(() => ({}))) as { error?: string };
+    throw new Error(error ?? `Request failed (${response.status})`);
+  }
+}
+
+/** Host only, before the game starts: seat a server-run bot of `strategy` in an empty seat. */
+export async function addBot(matchID: string, host: MatchCredentials, seat: number, strategy: string): Promise<void> {
+  await postBotSeat(`${matchID}/bots`, { playerID: host.playerID, credentials: host.credential, seat, strategy });
+}
+
+/** Host only, before the game starts: free a bot seat. */
+export async function removeBot(matchID: string, host: MatchCredentials, seat: number): Promise<void> {
+  await postBotSeat(`${matchID}/bots/${seat}/remove`, { playerID: host.playerID, credentials: host.credential });
 }
 
 /** True when the server says the match does not exist (deleted, expired, or never created). */

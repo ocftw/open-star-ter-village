@@ -1,17 +1,49 @@
-import { PLAYER_COLORS } from '@/components/design';
+import React from 'react';
+import { PLAYER_COLORS, StickerButton } from '@/components/design';
+
+type BotStrategyOption = { id: string; label: string };
 
 type SeatCardProps = {
   seatIndex: number;
   playerName?: string;
   isHost?: boolean;
   isYou?: boolean;
+  /** Strategy label when the seat holds a bot. */
+  botLabel?: string;
+  /** Host only: offered on an empty seat to seat a bot. */
+  onAddBot?: (strategyId: string) => void;
+  botStrategies?: BotStrategyOption[];
+  /** Host only: offered on a bot seat to free it. */
+  onRemoveBot?: () => void;
+  busy?: boolean;
 };
+
+function AddBotControl({ seatIndex, strategies, onAdd, busy }: { seatIndex: number; strategies: BotStrategyOption[]; onAdd: (id: string) => void; busy: boolean }) {
+  const [strategy, setStrategy] = React.useState(strategies[0]?.id ?? '');
+  return (
+    <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginTop: 6 }}>
+      {strategies.length > 1 && (
+        <select aria-label={`Seat ${seatIndex} 電腦策略 Bot strategy`} value={strategy} onChange={(e) => setStrategy(e.target.value)} disabled={busy}>
+          {strategies.map((option) => <option key={option.id} value={option.id}>{option.label}</option>)}
+        </select>
+      )}
+      <StickerButton variant="ghost" size="sm" data-testid={`seat-${seatIndex}-add-bot`} disabled={busy} onClick={() => onAdd(strategy)}>
+        ＋ 電腦 · Add bot
+      </StickerButton>
+    </div>
+  );
+}
 
 export default function SeatCard({
   seatIndex,
   playerName,
   isHost = false,
   isYou = false,
+  botLabel,
+  onAddBot,
+  botStrategies = [],
+  onRemoveBot,
+  busy = false,
 }: SeatCardProps) {
   if (!playerName) {
     return (
@@ -30,8 +62,11 @@ export default function SeatCard({
         }}
       >
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: 22 }}>＋</div>
+          {!onAddBot && <div style={{ fontSize: 22 }}>＋</div>}
           <div>Seat {seatIndex}</div>
+          {onAddBot && botStrategies.length > 0 && (
+            <AddBotControl seatIndex={seatIndex} strategies={botStrategies} onAdd={onAddBot} busy={busy} />
+          )}
         </div>
       </div>
     );
@@ -111,10 +146,21 @@ export default function SeatCard({
           </div>
         </div>
       </div>
-      <div style={{ marginTop: 'auto' }}>
-        <span className="sticker" style={{ background: '#dcf3e3', borderColor: '#1f7a3a', color: '#1f7a3a' }}>
-          ✓ 已入座 Seated
-        </span>
+      <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
+        {botLabel ? (
+          <span className="sticker" data-testid={`seat-${seatIndex}-bot`} style={{ background: 'var(--teal-soft)', borderColor: 'var(--ink)' }}>
+            🤖 電腦 · {botLabel}
+          </span>
+        ) : (
+          <span className="sticker" style={{ background: '#dcf3e3', borderColor: '#1f7a3a', color: '#1f7a3a' }}>
+            ✓ 已入座 Seated
+          </span>
+        )}
+        {onRemoveBot && (
+          <StickerButton variant="ghost" size="sm" data-testid={`seat-${seatIndex}-remove-bot`} disabled={busy} onClick={onRemoveBot} style={{ marginLeft: 'auto' }}>
+            移除 · Remove
+          </StickerButton>
+        )}
       </div>
     </div>
   );
