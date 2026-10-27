@@ -4,7 +4,7 @@ import { Client, LobbyClient } from 'boardgame.io/client';
 import { SocketIO } from 'boardgame.io/multiplayer';
 import game from './game';
 import { ADD_BOT_PATH, REMOVE_BOT_PATH, addBotHandler, removeBotHandler } from './botSeats';
-import { startBotRunner } from './botRunner';
+import { socketPresence, startBotRunner } from './botRunner';
 import { createProfileBot } from './game/bots/profileBot';
 import { BALANCED } from './game/bots/profiles';
 import { activePlayer } from './game/bots/runner';
@@ -93,10 +93,17 @@ describe('bot seat endpoints', () => {
 });
 
 describe('bot runner', () => {
+  /** Live sockets the server has registered for a seat. */
+  const liveSockets = (matchID: string, playerID: string) =>
+    Array.from((server.transport as unknown as { clientInfo: Map<string, { matchID: string; playerID: string }> }).clientInfo.values())
+      .filter(client => client.matchID === matchID && client.playerID === playerID).length;
+
+  /** Connects a client for a seat and waits until the server has registered its socket. */
   const connect = async (matchID: string, playerID: string, credentials: string) => {
+    const before = liveSockets(matchID, playerID);
     const client = Client({ game, multiplayer: SocketIO({ server: url, socketOpts: { transports: ['websocket'] } }), matchID, playerID, credentials, debug: false });
     client.start();
-    for (let i = 0; i < 200 && !(await lobby.getMatch(gameName, matchID)).players[Number(playerID)].isConnected; i++) await new Promise(r => setTimeout(r, 20));
+    for (let i = 0; i < 200 && liveSockets(matchID, playerID) <= before; i++) await new Promise(r => setTimeout(r, 20));
     return client;
   };
 
@@ -104,7 +111,7 @@ describe('bot runner', () => {
     const { matchID, credentials } = await room(3, 'tree-poc-v1');
     await post(`/games/${gameName}/${matchID}/bots`, { playerID: '0', credentials, seat: 1 });
     const guest = await lobby.joinMatch(gameName, matchID, { playerID: '2', playerName: 'Guest' });
-    const runner = startBotRunner({ db: server.db, game, serverURL: url, pollMs: 60_000, moveDelayMs: 60_000, log: () => {} });
+    const runner = startBotRunner({ db: server.db, game, serverURL: url, isPlayerConnected: socketPresence(server.transport), pollMs: 60_000, moveDelayMs: 60_000, log: () => {} });
     let host: ReturnType<typeof Client> | undefined;
     try {
       await runner.tick();
@@ -125,13 +132,42 @@ describe('bot runner', () => {
     }
   });
 
+  test('keeps bots running when one of a human\'s sockets closes but another is live', async () => {
+    const { matchID, credentials } = await room(2, 'tree-poc-v1');
+    await post(`/games/${gameName}/${matchID}/bots`, { playerID: '0', credentials, seat: 1 });
+    await lobby.updatePlayer(gameName, matchID, { playerID: '0', credentials, data: { started: true } });
+    const tab1 = await connect(matchID, '0', credentials);
+    const tab2 = await connect(matchID, '0', credentials);
+    const runner = startBotRunner({ db: server.db, game, serverURL: url, isPlayerConnected: socketPresence(server.transport), pollMs: 60_000, moveDelayMs: 60_000, log: () => {} });
+    let tab1Open = true;
+    let tab2Open = true;
+    try {
+      tab1.stop();
+      tab1Open = false;
+      // boardgame.io marks the seat disconnected on any socket close.
+      for (let i = 0; i < 200 && (await lobby.getMatch(gameName, matchID)).players[0].isConnected; i++) await new Promise(r => setTimeout(r, 20));
+      expect((await lobby.getMatch(gameName, matchID)).players[0].isConnected).toBe(false);
+      await runner.tick();
+      expect(runner.activeSeats()).toEqual([`${matchID}:1`]);
+      tab2.stop();
+      tab2Open = false;
+      for (let i = 0; i < 200 && liveSockets(matchID, '0') > 0; i++) await new Promise(r => setTimeout(r, 20));
+      await runner.tick();
+      expect(runner.activeSeats()).toEqual([]);
+    } finally {
+      if (tab1Open) tab1.stop();
+      if (tab2Open) tab2.stop();
+      runner.stop();
+    }
+  });
+
   test('deletes a room once only bots are left in it', async () => {
     const { matchID, credentials } = await room(3, 'tree-poc-v1');
     await post(`/games/${gameName}/${matchID}/bots`, { playerID: '0', credentials, seat: 1 });
     await post(`/games/${gameName}/${matchID}/bots`, { playerID: '0', credentials, seat: 2 });
     await lobby.leaveMatch(gameName, matchID, { playerID: '0', credentials });
     await expect(lobby.getMatch(gameName, matchID)).resolves.toBeDefined();
-    const runner = startBotRunner({ db: server.db, game, serverURL: url, pollMs: 60_000, log: () => {} });
+    const runner = startBotRunner({ db: server.db, game, serverURL: url, isPlayerConnected: socketPresence(server.transport), pollMs: 60_000, log: () => {} });
     try {
       await runner.tick();
       await expect(lobby.getMatch(gameName, matchID)).rejects.toThrow(/404/);
@@ -146,7 +182,7 @@ describe('bot runner', () => {
     expect((await post(`/games/${gameName}/${matchID}/bots/1/remove`, { playerID: '0', credentials })).status).toBe(409);
     await lobby.updatePlayer(gameName, matchID, { playerID: '0', credentials, data: { started: true } });
     const host = await connect(matchID, '0', credentials);
-    const runner = startBotRunner({ db: server.db, game, serverURL: url, pollMs: 60_000, log: () => {} });
+    const runner = startBotRunner({ db: server.db, game, serverURL: url, isPlayerConnected: socketPresence(server.transport), pollMs: 60_000, log: () => {} });
     try {
       await runner.tick();
       expect(runner.activeSeats()).toEqual([]);
@@ -162,7 +198,7 @@ describe('bot runner', () => {
     await post(`/games/${gameName}/${matchID}/bots`, { playerID: '0', credentials, seat: 1 });
     await lobby.updatePlayer(gameName, matchID, { playerID: '0', credentials, data: { started: true } });
 
-    const runner = startBotRunner({ db: server.db, game, serverURL: url, pollMs: 50, moveDelayMs: 0, log: () => {} });
+    const runner = startBotRunner({ db: server.db, game, serverURL: url, isPlayerConnected: socketPresence(server.transport), pollMs: 50, moveDelayMs: 0, log: () => {} });
     const host = await connect(matchID, '0', credentials);
     const hostBot = createProfileBot(BALANCED);
     const random = seededRandom(matchID);

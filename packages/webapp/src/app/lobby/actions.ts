@@ -70,9 +70,9 @@ export function isAbandonedMatch(players: LobbyMatch['players']): boolean {
 
 export interface LobbyViewer {
   /**
-   * The viewing browser still holds a seat credential for the room. That player
-   * may only be disconnected (e.g. a solo human playing bots who opened the
-   * lobby), so the nobody-connected rule must not hide the room from them.
+   * The viewing browser still holds a seat credential for the room. In a room
+   * with bots that player may just be disconnected (a solo human who opened the
+   * lobby), so the nobody-connected rule must not hide it from them.
    */
   holdsSeat?: boolean;
 }
@@ -85,7 +85,7 @@ export function getLobbyStatus(match: LobbyMatch, { holdsSeat = false }: LobbyVi
     return 'Finished';
   }
 
-  if (!holdsSeat && isAbandonedMatch(match.players)) {
+  if (isAbandonedMatch(match.players) && !(holdsSeat && match.players.some(isBotSeat))) {
     return 'Abandoned';
   }
 
