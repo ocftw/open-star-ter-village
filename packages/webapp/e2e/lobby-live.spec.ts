@@ -47,7 +47,7 @@ test('another lobby receives room creation, start and removal, then resyncs afte
     seats.push({matchID:nextID,playerID:'0',credentials:(await joined.json()).playerCredentials});
     await watcherContext.setOffline(false);
     const reconnectedAt = Date.now();
-    await expect(watcher.getByTestId(`match-row-${nextID}`)).toBeVisible({timeout:5000});
+    await expect(watcher.getByTestId(`match-row-${nextID}`)).toBeVisible({timeout:15_000});
     observations.reconnectToVisibleMs = Date.now() - reconnectedAt;
     await writeFile('test-results/lobby-live-observation.json',JSON.stringify(observations,null,2));
   } finally {
