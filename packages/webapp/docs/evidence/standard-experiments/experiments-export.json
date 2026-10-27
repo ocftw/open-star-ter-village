@@ -1,0 +1,28 @@
+{
+  "ruleset": "tree-poc-v1",
+  "experiments": {
+    "government5": "any",
+    "completionRewards": "difficulty"
+  },
+  "build": "local",
+  "players": 2,
+  "rounds": 1,
+  "completedProjectIds": [],
+  "grown": [],
+  "remainingHearts": 10,
+  "scores": {
+    "0": 0,
+    "1": 0
+  },
+  "outcome": "星源樹枯萎",
+  "finished": false,
+  "log": [
+    {
+      "round": 1,
+      "kind": "event",
+      "target": "數位政委"
+    }
+  ],
+  "exportedAt": "2026-10-27T14:56:26.030Z",
+  "durationSeconds": 3
+}

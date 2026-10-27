@@ -120,3 +120,29 @@ no eligible targets automatically skips. Event restrictions expire with the even
 and do not remove permanent tree upgrades. Event draw counts remain 6/5/4 plus final.
 
 Balance audit: [findings and data limits](balance-audit.md).
+
+## Per-room rule experiments
+
+Standard room creation offers two independent options, with the current rules
+selected by default. The server validates both enums and copies the selection
+into authoritative `standard.experiments` at creation. Existing rooms without
+this field retain the original behavior. Simplified rooms cannot enable them.
+
+| Setting | Default | Experiment |
+| --- | --- | --- |
+| Government 5 | Allocate to the initiator's existing cubes on other projects | Allocate to any unfilled required profession on another project. Creating the initiator's own cube costs **one reserve worker token**, no labor card or AP. Advancing that existing cube costs no further token. No reserve means no new cube. |
+| Initiator / finisher rewards | +2 / +2 | Each gets the project's printed difficulty, +1 to +4. The annual-accounting event's initiator +2 remains additive. |
+
+Government 5 still grants `floor(initiator contribution / 2)` points without
+reducing the original score. It cannot advance another player's cube, exceed
+requirements or spend twice on a duplicate request. Chained completions return
+new cubes to inventory normally. Players may allocate some points and skip the
+rest. The two options yield four combinations; no deployment is needed between
+rooms once this version is deployed.
+
+The lobby, waiting room and tree panel show the settings. Reconnect restores
+pending decisions. Play Again forwards the same settings; the public JSON
+export and bot exports include `experiments`. Bots use the selected rewards and
+new-cube token cost in their action evaluation.
+
+[Runtime scenarios, screenshots and deployment record](evidence/standard-experiments/README.md).
