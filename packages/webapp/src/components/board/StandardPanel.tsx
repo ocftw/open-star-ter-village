@@ -7,12 +7,14 @@ import { choiceOptions, ChoiceTarget } from '@/game/standard/engine';
 import type { NodeId } from '@/game/standard/state';
 import { buildStandardExport, treeOutcome } from '@/game/standard/export';
 import { StickerButton } from '../design';
+import DebugTelemetryPanel, { useDebugMode } from './DebugTelemetryPanel';
 
 const branchLabels = ['開源', '資料', '政府'];
 export default function StandardPanel({ gameContext }: { gameContext: GameContext }) {
   const { G, ctx, playerID, moves, matchData } = gameContext;
   const [selected, setSelected] = React.useState<NodeId | null>(null);
   const [overtime, setOvertime] = React.useState(false);
+  const debug = useDebugMode();
   const s = G.standard;
   if (!s) return null;
   const choice = s.choices[0];
@@ -75,5 +77,6 @@ export default function StandardPanel({ gameContext }: { gameContext: GameContex
     </div>}
     {ctx.gameover && <p>集體成果：{outcome}</p>}
     <StickerButton variant="ghost" size="sm" onClick={exportSummary}>匯出公開測試摘要</StickerButton>
+    {debug && <DebugTelemetryPanel gameContext={gameContext} />}
   </section>;
 }

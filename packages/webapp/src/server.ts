@@ -4,6 +4,7 @@ import packageJson from "../package.json";
 import game from "./game";
 import { loadWebappEnv } from "./env";
 import { registerLobbyUpdates } from "./server/lobbyUpdates";
+import { DEBUG_TELEMETRY_PATH, debugTelemetryHandler } from "./debugTelemetry";
 
 const packageVersion = packageJson.version;
 const gameName = 'OpenStarTerVillage';
@@ -68,6 +69,11 @@ async function serve() {
       gameName,
     };
   });
+
+  if (env.debugTelemetry) {
+    console.warn(`DEBUG_TELEMETRY is on: ${DEBUG_TELEMETRY_PATH} exposes balance telemetry. Never enable it in production.`);
+    server.router.get(DEBUG_TELEMETRY_PATH, debugTelemetryHandler(server.db));
+  }
 
   const config = {
     port: env.port,

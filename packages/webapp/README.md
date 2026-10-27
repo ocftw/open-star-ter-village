@@ -346,6 +346,9 @@ in Redux.
 - `GAME_SERVER_ORIGINS` sets the comma-separated list of allowed client origins
   for the game server in production.
 - `PORT` overrides the game server port; it defaults to `3001`.
+- `DEBUG_TELEMETRY=1` exposes Standard balance telemetry at
+  `/debug/matches/:matchID/telemetry` for `?debug=1` pages. Test deployments
+  only; see [bot players](docs/bot-players.md#human-debug-mode).
 - `@/*` maps to `packages/webapp/src/*`.
 
 ## Coding Constraints
