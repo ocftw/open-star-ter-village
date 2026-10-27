@@ -4,6 +4,8 @@ import packageJson from "../package.json";
 import game from "./game";
 import { loadWebappEnv } from "./env";
 import { DEBUG_TELEMETRY_PATH, debugTelemetryHandler } from "./debugTelemetry";
+import { ADD_BOT_PATH, REMOVE_BOT_PATH, addBotHandler, removeBotHandler } from "./botSeats";
+import { startBotRunner } from "./botRunner";
 
 const packageVersion = packageJson.version;
 const gameName = 'OpenStarTerVillage';
@@ -72,9 +74,16 @@ async function serve() {
     server.router.get(DEBUG_TELEMETRY_PATH, debugTelemetryHandler(server.db));
   }
 
+  // Host-only bot seats; the bot runner below plays them once the game starts.
+  server.router.post(ADD_BOT_PATH, addBotHandler(server.db, gameName));
+  server.router.post(REMOVE_BOT_PATH, removeBotHandler(server.db, gameName));
+
   const config = {
     port: env.port,
-    callback: () => console.log(`Main server running on port ${env.port}...`),
+    callback: () => {
+      console.log(`Main server running on port ${env.port}...`);
+      startBotRunner({ db: server.db, game, serverURL: `http://localhost:${env.port}`, moveDelayMs: env.botMoveDelayMs });
+    },
   };
 
   server.run(config);
