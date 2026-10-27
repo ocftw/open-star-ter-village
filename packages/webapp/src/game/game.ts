@@ -26,8 +26,10 @@ export const OpenStarTerVillage: Game<GameState, Record<string, unknown>, GameSe
      */
     order: TurnOrder.CUSTOM_FROM('playOrder'),
     onBegin: (context) => {
-      const { ctx } = context;
-      if (ctx.playOrderPos === 0) {
+      const { G, ctx } = context;
+      // The final event queues endGame in onEnd. boardgame.io can begin the
+      // next turn before that event flushes, when the event deck is empty.
+      if (ctx.playOrderPos === 0 && G.decks.events.drawPile.length > 0) {
         playEventCard(context);
       }
     },

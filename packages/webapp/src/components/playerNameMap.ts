@@ -18,4 +18,8 @@ export const stubPlayerNameMap: Record<PlayerID, string> = {
 export const getPlayerName = (
   matchData: FilteredMetadata | undefined,
   id: PlayerID,
-): string => matchData?.[Number(id)]?.name?.trim() || stubPlayerNameMap[id] || `玩家 ${id}`;
+): string => {
+  const player = matchData?.[Number(id)];
+  const savedName = (player as { data?: { displayName?: unknown } } | undefined)?.data?.displayName;
+  return player?.name?.trim() || (typeof savedName === 'string' ? savedName.trim() : '') || stubPlayerNameMap[id] || `玩家 ${id}`;
+};

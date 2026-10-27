@@ -143,9 +143,12 @@ export default function GameRoomPage() {
   // A vacated seat in a started match means someone chose 離開座位 — the
   // game is terminated for everyone (#420). Detected from authoritative
   // lobby metadata (the socket does not push metadata changes mid-game).
+  const isFinished = Boolean(match?.gameover);
   const isTerminated =
-    Boolean(match) && hasStarted && match!.players.some((player) => !hasPlayerName(player));
-  const shouldShowBoard = Boolean(match) && allSeatsFilled && hasStarted && !isExpired;
+    Boolean(match) && !isFinished && hasStarted && match!.players.some((player) => !hasPlayerName(player));
+  // A completed match can have released seats. Keep mounting its final board
+  // and result instead of treating a post-game departure as early termination.
+  const shouldShowBoard = Boolean(match) && (allSeatsFilled || isFinished) && hasStarted && !isExpired;
   const isMutating = isStarting || isLeaving || isRefreshing;
 
   // Poll for the whole room lifetime (not just the waiting room): mid-game it
