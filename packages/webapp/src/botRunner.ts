@@ -1,7 +1,6 @@
 import type { Game } from 'boardgame.io';
 import { Client } from 'boardgame.io/client';
 import { SocketIO } from 'boardgame.io/multiplayer';
-import { createProfileBot } from './game/bots/profileBot';
 import { seededRandom } from './game/bots/random';
 import { activePlayer } from './game/bots/runner';
 import { getBotStrategy } from './game/bots/seat';
@@ -88,7 +87,7 @@ class BotSeat {
 
   constructor(private readonly seat: SeatAssignment, game: Game, serverURL: string, private readonly moveDelayMs: number, private readonly log: (message: string) => void) {
     const strategy = getBotStrategy({ bot: { strategy: seat.strategy } })!;
-    this.decide = createProfileBot(strategy.profile).decide;
+    this.decide = strategy.createBot(strategy.profile).decide;
     this.random = seededRandom(`${seat.matchID}:${seat.playerID}`);
     this.client = Client({
       game,

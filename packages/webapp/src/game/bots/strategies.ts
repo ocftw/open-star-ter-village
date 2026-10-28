@@ -1,4 +1,6 @@
+import { createProfileBot } from './profileBot';
 import { BALANCED, type Profile } from './profiles';
+import type { Bot } from './types';
 
 /** A bot strategy players can seat in a room. Add new strategies here. */
 export interface BotStrategy {
@@ -8,6 +10,8 @@ export interface BotStrategy {
   /** Seat names for this strategy; a room never seats two bots with the same name. */
   names: string[];
   profile: Profile;
+  /** Builds the strategy's bot from its profile or a copy with tuned weights. */
+  createBot: (profile: Profile) => Bot;
 }
 
 export const BOT_STRATEGIES: Record<string, BotStrategy> = {
@@ -17,6 +21,7 @@ export const BOT_STRATEGIES: Record<string, BotStrategy> = {
     description: '每一步選擇預期得分最高的行動，兼顧專案與星源樹。',
     names: ['阿衡', '天平', '均均', '中和', '小秤', '平平'],
     profile: BALANCED,
+    createBot: createProfileBot,
   },
 };
 

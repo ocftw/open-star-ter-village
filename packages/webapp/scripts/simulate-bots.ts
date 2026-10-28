@@ -12,6 +12,7 @@ import { parseArgs } from 'node:util';
 import { buildStandardExport } from '@/game/standard/export';
 import { createProfileBot } from '@/game/bots/profileBot';
 import { PROFILES, withWeights, type Weights } from '@/game/bots/profiles';
+import { BOT_STRATEGIES, isBotStrategy } from '@/game/bots/strategies';
 import { BotGameError, runGame, type GameRun } from '@/game/bots/runner';
 import { summarize, summaryCsv } from '@/game/bots/summary';
 
@@ -30,7 +31,7 @@ const { values } = parseArgs({
 const base = PROFILES[values.profile!];
 if (!base) throw new Error(`Unknown profile "${values.profile}". Available: ${Object.keys(PROFILES).join(', ')}`);
 const profile = values.weights ? withWeights(base, JSON.parse(values.weights) as Partial<Weights>) : base;
-const bot = createProfileBot(profile);
+const bot = (isBotStrategy(values.profile) ? BOT_STRATEGIES[values.profile].createBot : createProfileBot)(profile);
 const playerCounts = values.players!.split(',').map(Number);
 const games = Number(values.games);
 const outDir = resolve(values.out ?? join('bot-runs', new Date().toISOString().replace(/[:.]/g, '-')));
