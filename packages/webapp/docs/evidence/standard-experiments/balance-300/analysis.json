@@ -1,0 +1,4012 @@
+{
+  "seatComparisons": [
+    {
+      "numPlayers": 2,
+      "scenario": "A",
+      "firstSeat": 1,
+      "secondSeat": 2,
+      "winShareDifference": {
+        "mean": -0.24666666666666667,
+        "low": -0.35494119220071874,
+        "high": -0.1383921411326146
+      }
+    },
+    {
+      "numPlayers": 2,
+      "scenario": "B",
+      "firstSeat": 1,
+      "secondSeat": 2,
+      "winShareDifference": {
+        "mean": -0.24666666666666667,
+        "low": -0.35494119220071874,
+        "high": -0.1383921411326146
+      }
+    },
+    {
+      "numPlayers": 2,
+      "scenario": "C",
+      "firstSeat": 1,
+      "secondSeat": 2,
+      "winShareDifference": {
+        "mean": -0.31,
+        "low": -0.4143311546847709,
+        "high": -0.2056688453152291
+      }
+    },
+    {
+      "numPlayers": 2,
+      "scenario": "D",
+      "firstSeat": 1,
+      "secondSeat": 2,
+      "winShareDifference": {
+        "mean": -0.31,
+        "low": -0.4143311546847709,
+        "high": -0.2056688453152291
+      }
+    },
+    {
+      "numPlayers": 2,
+      "scenario": "B",
+      "baseline": "A",
+      "seat": 1,
+      "winShareChange": {
+        "mean": 0.0,
+        "low": 0.0,
+        "high": 0.0
+      }
+    },
+    {
+      "numPlayers": 2,
+      "scenario": "B",
+      "baseline": "A",
+      "seat": 2,
+      "winShareChange": {
+        "mean": 0.0,
+        "low": 0.0,
+        "high": 0.0
+      }
+    },
+    {
+      "numPlayers": 2,
+      "scenario": "C",
+      "baseline": "A",
+      "seat": 1,
+      "winShareChange": {
+        "mean": -0.03166666666666667,
+        "low": -0.10363696612325823,
+        "high": 0.0403036327899249
+      }
+    },
+    {
+      "numPlayers": 2,
+      "scenario": "C",
+      "baseline": "A",
+      "seat": 2,
+      "winShareChange": {
+        "mean": 0.03166666666666667,
+        "low": -0.0403036327899249,
+        "high": 0.10363696612325823
+      }
+    },
+    {
+      "numPlayers": 2,
+      "scenario": "D",
+      "baseline": "A",
+      "seat": 1,
+      "winShareChange": {
+        "mean": -0.03166666666666667,
+        "low": -0.10363696612325823,
+        "high": 0.0403036327899249
+      }
+    },
+    {
+      "numPlayers": 2,
+      "scenario": "D",
+      "baseline": "A",
+      "seat": 2,
+      "winShareChange": {
+        "mean": 0.03166666666666667,
+        "low": -0.0403036327899249,
+        "high": 0.10363696612325823
+      }
+    },
+    {
+      "numPlayers": 3,
+      "scenario": "A",
+      "firstSeat": 1,
+      "secondSeat": 2,
+      "winShareDifference": {
+        "mean": -0.17166666666666666,
+        "low": -0.25219115132225506,
+        "high": -0.09114218201107828
+      }
+    },
+    {
+      "numPlayers": 3,
+      "scenario": "A",
+      "firstSeat": 1,
+      "secondSeat": 3,
+      "winShareDifference": {
+        "mean": -0.24333333333333335,
+        "low": -0.3273270901525024,
+        "high": -0.15933957651416428
+      }
+    },
+    {
+      "numPlayers": 3,
+      "scenario": "A",
+      "firstSeat": 2,
+      "secondSeat": 3,
+      "winShareDifference": {
+        "mean": -0.07166666666666667,
+        "low": -0.16965594331772144,
+        "high": 0.026322609984388082
+      }
+    },
+    {
+      "numPlayers": 3,
+      "scenario": "B",
+      "firstSeat": 1,
+      "secondSeat": 2,
+      "winShareDifference": {
+        "mean": -0.175,
+        "low": -0.25422519224293927,
+        "high": -0.0957748077570607
+      }
+    },
+    {
+      "numPlayers": 3,
+      "scenario": "B",
+      "firstSeat": 1,
+      "secondSeat": 3,
+      "winShareDifference": {
+        "mean": -0.28,
+        "low": -0.3643101281890846,
+        "high": -0.19568987181091546
+      }
+    },
+    {
+      "numPlayers": 3,
+      "scenario": "B",
+      "firstSeat": 2,
+      "secondSeat": 3,
+      "winShareDifference": {
+        "mean": -0.105,
+        "low": -0.20530732813620994,
+        "high": -0.004692671863790035
+      }
+    },
+    {
+      "numPlayers": 3,
+      "scenario": "C",
+      "firstSeat": 1,
+      "secondSeat": 2,
+      "winShareDifference": {
+        "mean": -0.21166666666666667,
+        "low": -0.2946531326180808,
+        "high": -0.12868020071525252
+      }
+    },
+    {
+      "numPlayers": 3,
+      "scenario": "C",
+      "firstSeat": 1,
+      "secondSeat": 3,
+      "winShareDifference": {
+        "mean": -0.17166666666666666,
+        "low": -0.2519247939882636,
+        "high": -0.09140853934506969
+      }
+    },
+    {
+      "numPlayers": 3,
+      "scenario": "C",
+      "firstSeat": 2,
+      "secondSeat": 3,
+      "winShareDifference": {
+        "mean": 0.04,
+        "low": -0.056405486162221845,
+        "high": 0.13640548616222184
+      }
+    },
+    {
+      "numPlayers": 3,
+      "scenario": "D",
+      "firstSeat": 1,
+      "secondSeat": 2,
+      "winShareDifference": {
+        "mean": -0.21833333333333332,
+        "low": -0.3010975979112886,
+        "high": -0.13556906875537805
+      }
+    },
+    {
+      "numPlayers": 3,
+      "scenario": "D",
+      "firstSeat": 1,
+      "secondSeat": 3,
+      "winShareDifference": {
+        "mean": -0.175,
+        "low": -0.2548980297355744,
+        "high": -0.09510197026442557
+      }
+    },
+    {
+      "numPlayers": 3,
+      "scenario": "D",
+      "firstSeat": 2,
+      "secondSeat": 3,
+      "winShareDifference": {
+        "mean": 0.043333333333333335,
+        "low": -0.05327554093673341,
+        "high": 0.1399422076034001
+      }
+    },
+    {
+      "numPlayers": 3,
+      "scenario": "B",
+      "baseline": "A",
+      "seat": 1,
+      "winShareChange": {
+        "mean": -0.013333333333333334,
+        "low": -0.03397242840306288,
+        "high": 0.0073057617363962105
+      }
+    },
+    {
+      "numPlayers": 3,
+      "scenario": "B",
+      "baseline": "A",
+      "seat": 2,
+      "winShareChange": {
+        "mean": -0.01,
+        "low": -0.03887585452922225,
+        "high": 0.018875854529222247
+      }
+    },
+    {
+      "numPlayers": 3,
+      "scenario": "B",
+      "baseline": "A",
+      "seat": 3,
+      "winShareChange": {
+        "mean": 0.023333333333333334,
+        "low": -0.007595322872698925,
+        "high": 0.05426198953936559
+      }
+    },
+    {
+      "numPlayers": 3,
+      "scenario": "C",
+      "baseline": "A",
+      "seat": 1,
+      "winShareChange": {
+        "mean": 0.010555555555555556,
+        "low": -0.05028682872089756,
+        "high": 0.07139793983200868
+      }
+    },
+    {
+      "numPlayers": 3,
+      "scenario": "C",
+      "baseline": "A",
+      "seat": 2,
+      "winShareChange": {
+        "mean": 0.050555555555555555,
+        "low": -0.02344582442846494,
+        "high": 0.12455693553957606
+      }
+    },
+    {
+      "numPlayers": 3,
+      "scenario": "C",
+      "baseline": "A",
+      "seat": 3,
+      "winShareChange": {
+        "mean": -0.06111111111111111,
+        "low": -0.13430650273045028,
+        "high": 0.012084280508228053
+      }
+    },
+    {
+      "numPlayers": 3,
+      "scenario": "D",
+      "baseline": "A",
+      "seat": 1,
+      "winShareChange": {
+        "mean": 0.007222222222222222,
+        "low": -0.05397730961273241,
+        "high": 0.06842175405717685
+      }
+    },
+    {
+      "numPlayers": 3,
+      "scenario": "D",
+      "baseline": "A",
+      "seat": 2,
+      "winShareChange": {
+        "mean": 0.05388888888888889,
+        "low": -0.02037117419017173,
+        "high": 0.1281489519679495
+      }
+    },
+    {
+      "numPlayers": 3,
+      "scenario": "D",
+      "baseline": "A",
+      "seat": 3,
+      "winShareChange": {
+        "mean": -0.06111111111111111,
+        "low": -0.13430650273045028,
+        "high": 0.012084280508228053
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "A",
+      "firstSeat": 1,
+      "secondSeat": 2,
+      "winShareDifference": {
+        "mean": -0.095,
+        "low": -0.1593000247235738,
+        "high": -0.030699975276426192
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "A",
+      "firstSeat": 1,
+      "secondSeat": 3,
+      "winShareDifference": {
+        "mean": -0.20166666666666666,
+        "low": -0.27261817735590316,
+        "high": -0.13071515597743016
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "A",
+      "firstSeat": 1,
+      "secondSeat": 4,
+      "winShareDifference": {
+        "mean": -0.20333333333333334,
+        "low": -0.2744498848551013,
+        "high": -0.13221678181156538
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "A",
+      "firstSeat": 2,
+      "secondSeat": 3,
+      "winShareDifference": {
+        "mean": -0.10666666666666667,
+        "low": -0.18737110887362152,
+        "high": -0.02596222445971183
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "A",
+      "firstSeat": 2,
+      "secondSeat": 4,
+      "winShareDifference": {
+        "mean": -0.10833333333333334,
+        "low": -0.18934034088074747,
+        "high": -0.027326325785919203
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "A",
+      "firstSeat": 3,
+      "secondSeat": 4,
+      "winShareDifference": {
+        "mean": -0.0016666666666666668,
+        "low": -0.09097645058943844,
+        "high": 0.08764311725610512
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "B",
+      "firstSeat": 1,
+      "secondSeat": 2,
+      "winShareDifference": {
+        "mean": -0.115,
+        "low": -0.17971164468641979,
+        "high": -0.050288355313580224
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "B",
+      "firstSeat": 1,
+      "secondSeat": 3,
+      "winShareDifference": {
+        "mean": -0.22333333333333333,
+        "low": -0.29443181688028086,
+        "high": -0.15223484978638577
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "B",
+      "firstSeat": 1,
+      "secondSeat": 4,
+      "winShareDifference": {
+        "mean": -0.18166666666666667,
+        "low": -0.2505664864218695,
+        "high": -0.11276684691146382
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "B",
+      "firstSeat": 2,
+      "secondSeat": 3,
+      "winShareDifference": {
+        "mean": -0.10833333333333334,
+        "low": -0.19168539343200502,
+        "high": -0.024981273234661663
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "B",
+      "firstSeat": 2,
+      "secondSeat": 4,
+      "winShareDifference": {
+        "mean": -0.06666666666666667,
+        "low": -0.1469934654348758,
+        "high": 0.013660132101542447
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "B",
+      "firstSeat": 3,
+      "secondSeat": 4,
+      "winShareDifference": {
+        "mean": 0.041666666666666664,
+        "low": -0.04715748396826921,
+        "high": 0.13049081730160253
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "C",
+      "firstSeat": 1,
+      "secondSeat": 2,
+      "winShareDifference": {
+        "mean": -0.08611111111111111,
+        "low": -0.1427315575382765,
+        "high": -0.029490664683945726
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "C",
+      "firstSeat": 1,
+      "secondSeat": 3,
+      "winShareDifference": {
+        "mean": -0.11222222222222222,
+        "low": -0.16999768337680038,
+        "high": -0.05444676106764406
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "C",
+      "firstSeat": 1,
+      "secondSeat": 4,
+      "winShareDifference": {
+        "mean": -0.4172222222222222,
+        "low": -0.4892819433910021,
+        "high": -0.3451625010534423
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "C",
+      "firstSeat": 2,
+      "secondSeat": 3,
+      "winShareDifference": {
+        "mean": -0.026111111111111113,
+        "low": -0.09448288029824933,
+        "high": 0.04226065807602711
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "C",
+      "firstSeat": 2,
+      "secondSeat": 4,
+      "winShareDifference": {
+        "mean": -0.33111111111111113,
+        "low": -0.415609160807996,
+        "high": -0.2466130614142263
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "C",
+      "firstSeat": 3,
+      "secondSeat": 4,
+      "winShareDifference": {
+        "mean": -0.305,
+        "low": -0.3920252325368292,
+        "high": -0.2179747674631708
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "D",
+      "firstSeat": 1,
+      "secondSeat": 2,
+      "winShareDifference": {
+        "mean": -0.08444444444444445,
+        "low": -0.14062268750295326,
+        "high": -0.028266201385935635
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "D",
+      "firstSeat": 1,
+      "secondSeat": 3,
+      "winShareDifference": {
+        "mean": -0.12222222222222222,
+        "low": -0.18084269734526778,
+        "high": -0.06360174709917665
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "D",
+      "firstSeat": 1,
+      "secondSeat": 4,
+      "winShareDifference": {
+        "mean": -0.41555555555555557,
+        "low": -0.48736713885297733,
+        "high": -0.3437439722581338
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "D",
+      "firstSeat": 2,
+      "secondSeat": 3,
+      "winShareDifference": {
+        "mean": -0.03777777777777778,
+        "low": -0.10662592506100255,
+        "high": 0.031070369505446997
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "D",
+      "firstSeat": 2,
+      "secondSeat": 4,
+      "winShareDifference": {
+        "mean": -0.33111111111111113,
+        "low": -0.415100807781717,
+        "high": -0.24712141444050525
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "D",
+      "firstSeat": 3,
+      "secondSeat": 4,
+      "winShareDifference": {
+        "mean": -0.29333333333333333,
+        "low": -0.381299349210253,
+        "high": -0.20536731745641368
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "B",
+      "baseline": "A",
+      "seat": 1,
+      "winShareChange": {
+        "mean": -0.005,
+        "low": -0.03256508121941303,
+        "high": 0.022565081219413034
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "B",
+      "baseline": "A",
+      "seat": 2,
+      "winShareChange": {
+        "mean": 0.015,
+        "low": -0.02409124539806403,
+        "high": 0.05409124539806403
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "B",
+      "baseline": "A",
+      "seat": 3,
+      "winShareChange": {
+        "mean": 0.016666666666666666,
+        "low": -0.02886874976691926,
+        "high": 0.06220208310025259
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "B",
+      "baseline": "A",
+      "seat": 4,
+      "winShareChange": {
+        "mean": -0.02666666666666667,
+        "low": -0.06846038161362678,
+        "high": 0.015127048280293435
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "C",
+      "baseline": "A",
+      "seat": 1,
+      "winShareChange": {
+        "mean": -0.028888888888888888,
+        "low": -0.07735996962882441,
+        "high": 0.019582191851046628
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "C",
+      "baseline": "A",
+      "seat": 2,
+      "winShareChange": {
+        "mean": -0.03777777777777778,
+        "low": -0.09856920730866611,
+        "high": 0.023013651753110556
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "C",
+      "baseline": "A",
+      "seat": 3,
+      "winShareChange": {
+        "mean": -0.11833333333333333,
+        "low": -0.18734701235801313,
+        "high": -0.04931965430865354
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "C",
+      "baseline": "A",
+      "seat": 4,
+      "winShareChange": {
+        "mean": 0.185,
+        "low": 0.1107741194829237,
+        "high": 0.2592258805170763
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "D",
+      "baseline": "A",
+      "seat": 1,
+      "winShareChange": {
+        "mean": -0.030555555555555555,
+        "low": -0.0789029069649051,
+        "high": 0.01779179585379399
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "D",
+      "baseline": "A",
+      "seat": 2,
+      "winShareChange": {
+        "mean": -0.04111111111111111,
+        "low": -0.1022261261735987,
+        "high": 0.02000390395137648
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "D",
+      "baseline": "A",
+      "seat": 3,
+      "winShareChange": {
+        "mean": -0.11,
+        "low": -0.1788026318798012,
+        "high": -0.04119736812019881
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "D",
+      "baseline": "A",
+      "seat": 4,
+      "winShareChange": {
+        "mean": 0.18166666666666667,
+        "low": 0.10762371669248645,
+        "high": 0.2557096166408469
+      }
+    }
+  ],
+  "manifest": {
+    "build": "96a698e14be8b8f7e3d497cd1bda0c89c6240f26",
+    "startedAt": "2026-10-28T00:01:08.209Z",
+    "finishedAt": "2026-10-28T00:02:07.855Z",
+    "seconds": 59.646,
+    "seedPrefix": "standard-factorial-v1",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins."
+  },
+  "method": "Same seed and revealed event sequence paired across options. Win shares split ties. Approximate 95% game-level normal intervals; simultaneous seat intervals Bonferroni-adjusted within each count/scenario. Paired metric intervals use within-seed differences. No population-of-humans inference.",
+  "summaries": [
+    {
+      "numPlayers": 2,
+      "scenario": "A",
+      "games": 300,
+      "metrics": {
+        "score": {
+          "mean": 47.835,
+          "low": 47.14387108752691,
+          "high": 48.52612891247309
+        },
+        "winningMargin": {
+          "mean": 8.496666666666666,
+          "low": 7.8295185513367125,
+          "high": 9.163814781996619
+        },
+        "relativeMargin": {
+          "mean": 0.17871717851069263,
+          "low": 0.16453699330198268,
+          "high": 0.19289736371940258
+        },
+        "completions": {
+          "mean": 4.133333333333334,
+          "low": 4.017617533562291,
+          "high": 4.249049133104377
+        },
+        "remainingHearts": {
+          "mean": 2.8966666666666665,
+          "low": 2.7694684769768227,
+          "high": 3.0238648563565103
+        },
+        "tier5": {
+          "mean": 0.03,
+          "low": 0.010664340420389273,
+          "high": 0.049335659579610724
+        },
+        "government5Used": {
+          "mean": 0.01,
+          "low": -0.0045891524961438074,
+          "high": 0.02458915249614381
+        },
+        "advancedCompletions": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "seatSpread": 0.24666666666666665,
+      "tieGames": 8,
+      "seats": [
+        {
+          "numPlayers": 2,
+          "scenario": "A",
+          "seat": 1,
+          "splitWins": 113.0,
+          "outrightWins": 109,
+          "tiedWins": 8,
+          "winRate": {
+            "mean": 0.37666666666666665,
+            "low": 0.32252940389964063,
+            "high": 0.43080392943369267
+          },
+          "simultaneous95": {
+            "mean": 0.37666666666666665,
+            "low": 0.3147556267760262,
+            "high": 0.4385777065573071
+          },
+          "aboveUniform": false,
+          "belowUniform": true,
+          "meanScore": 46.306666666666665,
+          "meanTreePoints": 5.59,
+          "meanInitiatedCompletions": 1.98,
+          "meanFinishedCompletions": 2.0033333333333334
+        },
+        {
+          "numPlayers": 2,
+          "scenario": "A",
+          "seat": 2,
+          "splitWins": 187.0,
+          "outrightWins": 183,
+          "tiedWins": 8,
+          "winRate": {
+            "mean": 0.6233333333333333,
+            "low": 0.5691960705663073,
+            "high": 0.6774705961003593
+          },
+          "simultaneous95": {
+            "mean": 0.6233333333333333,
+            "low": 0.5614222934426929,
+            "high": 0.6852443732239737
+          },
+          "aboveUniform": true,
+          "belowUniform": false,
+          "meanScore": 49.36333333333334,
+          "meanTreePoints": 4.783333333333333,
+          "meanInitiatedCompletions": 2.1533333333333333,
+          "meanFinishedCompletions": 2.13
+        }
+      ],
+      "completionsByDifficulty": {
+        "2": 110,
+        "1": 1130
+      },
+      "tierReach": {
+        "3": 0.9966666666666667,
+        "4": 0.5566666666666666,
+        "5": 0.03
+      },
+      "government5": {
+        "gamesUnlocked": 9,
+        "budget": 11,
+        "used": 3,
+        "useRate": 0.2727272727272727,
+        "resolved": 3,
+        "skipped": 0,
+        "noTarget": 2
+      },
+      "advancedDraws": 0,
+      "roundOrders": [
+        {
+          "orders": [
+            {
+              "round": 1,
+              "players": [
+                "0",
+                "1"
+              ]
+            },
+            {
+              "round": 2,
+              "players": [
+                "0",
+                "1"
+              ]
+            },
+            {
+              "round": 3,
+              "players": [
+                "0",
+                "1"
+              ]
+            },
+            {
+              "round": 4,
+              "players": [
+                "0",
+                "1"
+              ]
+            },
+            {
+              "round": 5,
+              "players": [
+                "0",
+                "1"
+              ]
+            },
+            {
+              "round": 6,
+              "players": [
+                "0",
+                "1"
+              ]
+            },
+            {
+              "round": 7,
+              "players": [
+                "0",
+                "1"
+              ]
+            }
+          ],
+          "games": 300
+        }
+      ]
+    },
+    {
+      "numPlayers": 2,
+      "scenario": "B",
+      "games": 300,
+      "metrics": {
+        "score": {
+          "mean": 47.85666666666667,
+          "low": 47.15666392429182,
+          "high": 48.55666940904152
+        },
+        "winningMargin": {
+          "mean": 8.526666666666667,
+          "low": 7.857986440740539,
+          "high": 9.195346892592795
+        },
+        "relativeMargin": {
+          "mean": 0.17909855880365874,
+          "low": 0.16492604672979422,
+          "high": 0.19327107087752327
+        },
+        "completions": {
+          "mean": 4.136666666666667,
+          "low": 4.019712133653731,
+          "high": 4.2536211996796025
+        },
+        "remainingHearts": {
+          "mean": 2.8966666666666665,
+          "low": 2.7694684769768227,
+          "high": 3.0238648563565103
+        },
+        "tier5": {
+          "mean": 0.03,
+          "low": 0.010664340420389273,
+          "high": 0.049335659579610724
+        },
+        "government5Used": {
+          "mean": 0.05,
+          "low": -0.019333806540189735,
+          "high": 0.11933380654018974
+        },
+        "advancedCompletions": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "seatSpread": 0.24666666666666665,
+      "tieGames": 8,
+      "seats": [
+        {
+          "numPlayers": 2,
+          "scenario": "B",
+          "seat": 1,
+          "splitWins": 113.0,
+          "outrightWins": 109,
+          "tiedWins": 8,
+          "winRate": {
+            "mean": 0.37666666666666665,
+            "low": 0.32252940389964063,
+            "high": 0.43080392943369267
+          },
+          "simultaneous95": {
+            "mean": 0.37666666666666665,
+            "low": 0.3147556267760262,
+            "high": 0.4385777065573071
+          },
+          "aboveUniform": false,
+          "belowUniform": true,
+          "meanScore": 46.31333333333333,
+          "meanTreePoints": 5.59,
+          "meanInitiatedCompletions": 1.98,
+          "meanFinishedCompletions": 2.0033333333333334
+        },
+        {
+          "numPlayers": 2,
+          "scenario": "B",
+          "seat": 2,
+          "splitWins": 187.0,
+          "outrightWins": 183,
+          "tiedWins": 8,
+          "winRate": {
+            "mean": 0.6233333333333333,
+            "low": 0.5691960705663073,
+            "high": 0.6774705961003593
+          },
+          "simultaneous95": {
+            "mean": 0.6233333333333333,
+            "low": 0.5614222934426929,
+            "high": 0.6852443732239737
+          },
+          "aboveUniform": true,
+          "belowUniform": false,
+          "meanScore": 49.4,
+          "meanTreePoints": 4.783333333333333,
+          "meanInitiatedCompletions": 2.1566666666666667,
+          "meanFinishedCompletions": 2.1333333333333333
+        }
+      ],
+      "completionsByDifficulty": {
+        "2": 110,
+        "1": 1131
+      },
+      "tierReach": {
+        "3": 0.9966666666666667,
+        "4": 0.5566666666666666,
+        "5": 0.03
+      },
+      "government5": {
+        "gamesUnlocked": 9,
+        "budget": 15,
+        "used": 15,
+        "useRate": 1.0,
+        "resolved": 15,
+        "skipped": 0,
+        "noTarget": 0
+      },
+      "advancedDraws": 0,
+      "roundOrders": [
+        {
+          "orders": [
+            {
+              "round": 1,
+              "players": [
+                "0",
+                "1"
+              ]
+            },
+            {
+              "round": 2,
+              "players": [
+                "0",
+                "1"
+              ]
+            },
+            {
+              "round": 3,
+              "players": [
+                "0",
+                "1"
+              ]
+            },
+            {
+              "round": 4,
+              "players": [
+                "0",
+                "1"
+              ]
+            },
+            {
+              "round": 5,
+              "players": [
+                "0",
+                "1"
+              ]
+            },
+            {
+              "round": 6,
+              "players": [
+                "0",
+                "1"
+              ]
+            },
+            {
+              "round": 7,
+              "players": [
+                "0",
+                "1"
+              ]
+            }
+          ],
+          "games": 300
+        }
+      ]
+    },
+    {
+      "numPlayers": 2,
+      "scenario": "C",
+      "games": 300,
+      "metrics": {
+        "score": {
+          "mean": 42.401666666666664,
+          "low": 41.87620327477918,
+          "high": 42.92713005855415
+        },
+        "winningMargin": {
+          "mean": 7.5633333333333335,
+          "low": 6.858454459506247,
+          "high": 8.268212207160419
+        },
+        "relativeMargin": {
+          "mean": 0.1813824817671311,
+          "low": 0.16412580619214684,
+          "high": 0.19863915734211535
+        },
+        "completions": {
+          "mean": 2.86,
+          "low": 2.765592004183669,
+          "high": 2.954407995816331
+        },
+        "remainingHearts": {
+          "mean": 4.1033333333333335,
+          "low": 4.005434238510669,
+          "high": 4.201232428155998
+        },
+        "tier5": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "government5Used": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "advancedCompletions": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "seatSpread": 0.31000000000000005,
+      "tieGames": 17,
+      "seats": [
+        {
+          "numPlayers": 2,
+          "scenario": "C",
+          "seat": 1,
+          "splitWins": 103.5,
+          "outrightWins": 95,
+          "tiedWins": 17,
+          "winRate": {
+            "mean": 0.345,
+            "low": 0.29283442265761456,
+            "high": 0.3971655773423854
+          },
+          "simultaneous95": {
+            "mean": 0.345,
+            "low": 0.2853437674035892,
+            "high": 0.40465623259641076
+          },
+          "aboveUniform": false,
+          "belowUniform": true,
+          "meanScore": 40.70666666666666,
+          "meanTreePoints": 4.506666666666667,
+          "meanInitiatedCompletions": 1.3266666666666667,
+          "meanFinishedCompletions": 1.32
+        },
+        {
+          "numPlayers": 2,
+          "scenario": "C",
+          "seat": 2,
+          "splitWins": 196.5,
+          "outrightWins": 188,
+          "tiedWins": 17,
+          "winRate": {
+            "mean": 0.655,
+            "low": 0.6028344226576146,
+            "high": 0.7071655773423855
+          },
+          "simultaneous95": {
+            "mean": 0.655,
+            "low": 0.5953437674035893,
+            "high": 0.7146562325964108
+          },
+          "aboveUniform": true,
+          "belowUniform": false,
+          "meanScore": 44.096666666666664,
+          "meanTreePoints": 3.43,
+          "meanInitiatedCompletions": 1.5333333333333334,
+          "meanFinishedCompletions": 1.54
+        }
+      ],
+      "completionsByDifficulty": {
+        "2": 494,
+        "1": 364
+      },
+      "tierReach": {
+        "3": 0.9233333333333333,
+        "4": 0.1,
+        "5": 0
+      },
+      "government5": {
+        "gamesUnlocked": 0,
+        "budget": 0,
+        "used": 0,
+        "useRate": null,
+        "resolved": 0,
+        "skipped": 0,
+        "noTarget": 0
+      },
+      "advancedDraws": 0,
+      "roundOrders": [
+        {
+          "orders": [
+            {
+              "round": 1,
+              "players": [
+                "0",
+                "1"
+              ]
+            },
+            {
+              "round": 2,
+              "players": [
+                "0",
+                "1"
+              ]
+            },
+            {
+              "round": 3,
+              "players": [
+                "0",
+                "1"
+              ]
+            },
+            {
+              "round": 4,
+              "players": [
+                "0",
+                "1"
+              ]
+            },
+            {
+              "round": 5,
+              "players": [
+                "0",
+                "1"
+              ]
+            },
+            {
+              "round": 6,
+              "players": [
+                "0",
+                "1"
+              ]
+            },
+            {
+              "round": 7,
+              "players": [
+                "0",
+                "1"
+              ]
+            }
+          ],
+          "games": 300
+        }
+      ]
+    },
+    {
+      "numPlayers": 2,
+      "scenario": "D",
+      "games": 300,
+      "metrics": {
+        "score": {
+          "mean": 42.401666666666664,
+          "low": 41.87620327477918,
+          "high": 42.92713005855415
+        },
+        "winningMargin": {
+          "mean": 7.5633333333333335,
+          "low": 6.858454459506247,
+          "high": 8.268212207160419
+        },
+        "relativeMargin": {
+          "mean": 0.1813824817671311,
+          "low": 0.16412580619214684,
+          "high": 0.19863915734211535
+        },
+        "completions": {
+          "mean": 2.86,
+          "low": 2.765592004183669,
+          "high": 2.954407995816331
+        },
+        "remainingHearts": {
+          "mean": 4.1033333333333335,
+          "low": 4.005434238510669,
+          "high": 4.201232428155998
+        },
+        "tier5": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "government5Used": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "advancedCompletions": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "seatSpread": 0.31000000000000005,
+      "tieGames": 17,
+      "seats": [
+        {
+          "numPlayers": 2,
+          "scenario": "D",
+          "seat": 1,
+          "splitWins": 103.5,
+          "outrightWins": 95,
+          "tiedWins": 17,
+          "winRate": {
+            "mean": 0.345,
+            "low": 0.29283442265761456,
+            "high": 0.3971655773423854
+          },
+          "simultaneous95": {
+            "mean": 0.345,
+            "low": 0.2853437674035892,
+            "high": 0.40465623259641076
+          },
+          "aboveUniform": false,
+          "belowUniform": true,
+          "meanScore": 40.70666666666666,
+          "meanTreePoints": 4.506666666666667,
+          "meanInitiatedCompletions": 1.3266666666666667,
+          "meanFinishedCompletions": 1.32
+        },
+        {
+          "numPlayers": 2,
+          "scenario": "D",
+          "seat": 2,
+          "splitWins": 196.5,
+          "outrightWins": 188,
+          "tiedWins": 17,
+          "winRate": {
+            "mean": 0.655,
+            "low": 0.6028344226576146,
+            "high": 0.7071655773423855
+          },
+          "simultaneous95": {
+            "mean": 0.655,
+            "low": 0.5953437674035893,
+            "high": 0.7146562325964108
+          },
+          "aboveUniform": true,
+          "belowUniform": false,
+          "meanScore": 44.096666666666664,
+          "meanTreePoints": 3.43,
+          "meanInitiatedCompletions": 1.5333333333333334,
+          "meanFinishedCompletions": 1.54
+        }
+      ],
+      "completionsByDifficulty": {
+        "2": 494,
+        "1": 364
+      },
+      "tierReach": {
+        "3": 0.9233333333333333,
+        "4": 0.1,
+        "5": 0
+      },
+      "government5": {
+        "gamesUnlocked": 0,
+        "budget": 0,
+        "used": 0,
+        "useRate": null,
+        "resolved": 0,
+        "skipped": 0,
+        "noTarget": 0
+      },
+      "advancedDraws": 0,
+      "roundOrders": [
+        {
+          "orders": [
+            {
+              "round": 1,
+              "players": [
+                "0",
+                "1"
+              ]
+            },
+            {
+              "round": 2,
+              "players": [
+                "0",
+                "1"
+              ]
+            },
+            {
+              "round": 3,
+              "players": [
+                "0",
+                "1"
+              ]
+            },
+            {
+              "round": 4,
+              "players": [
+                "0",
+                "1"
+              ]
+            },
+            {
+              "round": 5,
+              "players": [
+                "0",
+                "1"
+              ]
+            },
+            {
+              "round": 6,
+              "players": [
+                "0",
+                "1"
+              ]
+            },
+            {
+              "round": 7,
+              "players": [
+                "0",
+                "1"
+              ]
+            }
+          ],
+          "games": 300
+        }
+      ]
+    },
+    {
+      "numPlayers": 3,
+      "scenario": "A",
+      "games": 300,
+      "metrics": {
+        "score": {
+          "mean": 47.33,
+          "low": 46.712462505835454,
+          "high": 47.94753749416454
+        },
+        "winningMargin": {
+          "mean": 5.223333333333334,
+          "low": 4.773163985872072,
+          "high": 5.673502680794595
+        },
+        "relativeMargin": {
+          "mean": 0.1118856299631965,
+          "low": 0.1019948738807541,
+          "high": 0.1217763860456389
+        },
+        "completions": {
+          "mean": 6.543333333333333,
+          "low": 6.41435642012403,
+          "high": 6.672310246542636
+        },
+        "remainingHearts": {
+          "mean": 0.6133333333333333,
+          "low": 0.5047822911519987,
+          "high": 0.7218843755146679
+        },
+        "tier5": {
+          "mean": 0.71,
+          "low": 0.6585671405223285,
+          "high": 0.7614328594776715
+        },
+        "government5Used": {
+          "mean": 0.71,
+          "low": 0.5401335133240169,
+          "high": 0.879866486675983
+        },
+        "advancedCompletions": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "seatSpread": 0.24333333333333335,
+      "tieGames": 21,
+      "seats": [
+        {
+          "numPlayers": 3,
+          "scenario": "A",
+          "seat": 1,
+          "splitWins": 58.5,
+          "outrightWins": 55,
+          "tiedWins": 7,
+          "winRate": {
+            "mean": 0.195,
+            "low": 0.15093390155598999,
+            "high": 0.23906609844401003
+          },
+          "simultaneous95": {
+            "mean": 0.195,
+            "low": 0.14117587345283283,
+            "high": 0.24882412654716718
+          },
+          "aboveUniform": false,
+          "belowUniform": true,
+          "meanScore": 45.39666666666667,
+          "meanTreePoints": 6.173333333333333,
+          "meanInitiatedCompletions": 2.05,
+          "meanFinishedCompletions": 2.13
+        },
+        {
+          "numPlayers": 3,
+          "scenario": "A",
+          "seat": 2,
+          "splitWins": 110.0,
+          "outrightWins": 101,
+          "tiedWins": 18,
+          "winRate": {
+            "mean": 0.36666666666666664,
+            "low": 0.31383861146165654,
+            "high": 0.41949472187167675
+          },
+          "simultaneous95": {
+            "mean": 0.36666666666666664,
+            "low": 0.3021403294369701,
+            "high": 0.43119300389636317
+          },
+          "aboveUniform": false,
+          "belowUniform": false,
+          "meanScore": 47.95333333333333,
+          "meanTreePoints": 6.303333333333334,
+          "meanInitiatedCompletions": 2.2266666666666666,
+          "meanFinishedCompletions": 2.1766666666666667
+        },
+        {
+          "numPlayers": 3,
+          "scenario": "A",
+          "seat": 3,
+          "splitWins": 131.5,
+          "outrightWins": 123,
+          "tiedWins": 17,
+          "winRate": {
+            "mean": 0.43833333333333335,
+            "low": 0.38373428326290204,
+            "high": 0.49293238340376466
+          },
+          "simultaneous95": {
+            "mean": 0.43833333333333335,
+            "low": 0.3716438308787433,
+            "high": 0.5050228357879234
+          },
+          "aboveUniform": true,
+          "belowUniform": false,
+          "meanScore": 48.64,
+          "meanTreePoints": 5.12,
+          "meanInitiatedCompletions": 2.2666666666666666,
+          "meanFinishedCompletions": 2.236666666666667
+        }
+      ],
+      "completionsByDifficulty": {
+        "1": 1742,
+        "2": 221
+      },
+      "tierReach": {
+        "3": 1,
+        "4": 0.99,
+        "5": 0.71
+      },
+      "government5": {
+        "gamesUnlocked": 205,
+        "budget": 710,
+        "used": 213,
+        "useRate": 0.3,
+        "resolved": 213,
+        "skipped": 0,
+        "noTarget": 147
+      },
+      "advancedDraws": 0,
+      "roundOrders": [
+        {
+          "orders": [
+            {
+              "round": 1,
+              "players": [
+                "0",
+                "1",
+                "2"
+              ]
+            },
+            {
+              "round": 2,
+              "players": [
+                "0",
+                "1",
+                "2"
+              ]
+            },
+            {
+              "round": 3,
+              "players": [
+                "0",
+                "1",
+                "2"
+              ]
+            },
+            {
+              "round": 4,
+              "players": [
+                "0",
+                "1",
+                "2"
+              ]
+            },
+            {
+              "round": 5,
+              "players": [
+                "0",
+                "1",
+                "2"
+              ]
+            },
+            {
+              "round": 6,
+              "players": [
+                "0",
+                "1",
+                "2"
+              ]
+            }
+          ],
+          "games": 300
+        }
+      ]
+    },
+    {
+      "numPlayers": 3,
+      "scenario": "B",
+      "games": 300,
+      "metrics": {
+        "score": {
+          "mean": 48.85444444444445,
+          "low": 48.00057614553717,
+          "high": 49.708312743351726
+        },
+        "winningMargin": {
+          "mean": 6.33,
+          "low": 5.66977778513311,
+          "high": 6.99022221486689
+        },
+        "relativeMargin": {
+          "mean": 0.1269176240643859,
+          "low": 0.11512487286441628,
+          "high": 0.1387103752643555
+        },
+        "completions": {
+          "mean": 6.886666666666667,
+          "low": 6.703881900241083,
+          "high": 7.06945143309225
+        },
+        "remainingHearts": {
+          "mean": 0.6133333333333333,
+          "low": 0.5047822911519987,
+          "high": 0.7218843755146679
+        },
+        "tier5": {
+          "mean": 0.71,
+          "low": 0.6585671405223285,
+          "high": 0.7614328594776715
+        },
+        "government5Used": {
+          "mean": 3.43,
+          "low": 2.8286685824270767,
+          "high": 4.031331417572924
+        },
+        "advancedCompletions": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "seatSpread": 0.28,
+      "tieGames": 11,
+      "seats": [
+        {
+          "numPlayers": 3,
+          "scenario": "B",
+          "seat": 1,
+          "splitWins": 54.5,
+          "outrightWins": 52,
+          "tiedWins": 5,
+          "winRate": {
+            "mean": 0.18166666666666667,
+            "low": 0.13858006456687,
+            "high": 0.22475326876646334
+          },
+          "simultaneous95": {
+            "mean": 0.18166666666666667,
+            "low": 0.12903893682910186,
+            "high": 0.23429439650423148
+          },
+          "aboveUniform": false,
+          "belowUniform": true,
+          "meanScore": 46.18666666666667,
+          "meanTreePoints": 6.17,
+          "meanInitiatedCompletions": 2.1266666666666665,
+          "meanFinishedCompletions": 2.183333333333333
+        },
+        {
+          "numPlayers": 3,
+          "scenario": "B",
+          "seat": 2,
+          "splitWins": 107.0,
+          "outrightWins": 102,
+          "tiedWins": 10,
+          "winRate": {
+            "mean": 0.3566666666666667,
+            "low": 0.3033664846654639,
+            "high": 0.4099668486678695
+          },
+          "simultaneous95": {
+            "mean": 0.3566666666666667,
+            "low": 0.2915636545480672,
+            "high": 0.42176967878526617
+          },
+          "aboveUniform": false,
+          "belowUniform": false,
+          "meanScore": 49.64,
+          "meanTreePoints": 6.303333333333334,
+          "meanInitiatedCompletions": 2.3766666666666665,
+          "meanFinishedCompletions": 2.283333333333333
+        },
+        {
+          "numPlayers": 3,
+          "scenario": "B",
+          "seat": 3,
+          "splitWins": 138.5,
+          "outrightWins": 135,
+          "tiedWins": 7,
+          "winRate": {
+            "mean": 0.46166666666666667,
+            "low": 0.4058267322307775,
+            "high": 0.5175066011025559
+          },
+          "simultaneous95": {
+            "mean": 0.46166666666666667,
+            "low": 0.39346149753235754,
+            "high": 0.5298718358009757
+          },
+          "aboveUniform": true,
+          "belowUniform": false,
+          "meanScore": 50.736666666666665,
+          "meanTreePoints": 5.123333333333333,
+          "meanInitiatedCompletions": 2.3833333333333333,
+          "meanFinishedCompletions": 2.42
+        }
+      ],
+      "completionsByDifficulty": {
+        "1": 1816,
+        "2": 250
+      },
+      "tierReach": {
+        "3": 1,
+        "4": 0.99,
+        "5": 0.71
+      },
+      "government5": {
+        "gamesUnlocked": 205,
+        "budget": 1048,
+        "used": 1029,
+        "useRate": 0.9818702290076335,
+        "resolved": 1029,
+        "skipped": 0,
+        "noTarget": 7
+      },
+      "advancedDraws": 0,
+      "roundOrders": [
+        {
+          "orders": [
+            {
+              "round": 1,
+              "players": [
+                "0",
+                "1",
+                "2"
+              ]
+            },
+            {
+              "round": 2,
+              "players": [
+                "0",
+                "1",
+                "2"
+              ]
+            },
+            {
+              "round": 3,
+              "players": [
+                "0",
+                "1",
+                "2"
+              ]
+            },
+            {
+              "round": 4,
+              "players": [
+                "0",
+                "1",
+                "2"
+              ]
+            },
+            {
+              "round": 5,
+              "players": [
+                "0",
+                "1",
+                "2"
+              ]
+            },
+            {
+              "round": 6,
+              "players": [
+                "0",
+                "1",
+                "2"
+              ]
+            }
+          ],
+          "games": 300
+        }
+      ]
+    },
+    {
+      "numPlayers": 3,
+      "scenario": "C",
+      "games": 300,
+      "metrics": {
+        "score": {
+          "mean": 40.01222222222222,
+          "low": 39.50572654901421,
+          "high": 40.51871789543023
+        },
+        "winningMargin": {
+          "mean": 5.056666666666667,
+          "low": 4.5860333511648825,
+          "high": 5.527299982168451
+        },
+        "relativeMargin": {
+          "mean": 0.12735964132108907,
+          "low": 0.11526825972266419,
+          "high": 0.13945102291951395
+        },
+        "completions": {
+          "mean": 4.376666666666667,
+          "low": 4.254160869735991,
+          "high": 4.4991724635973425
+        },
+        "remainingHearts": {
+          "mean": 2.5933333333333333,
+          "low": 2.468413007563169,
+          "high": 2.7182536591034974
+        },
+        "tier5": {
+          "mean": 0.05,
+          "low": 0.025296453751182585,
+          "high": 0.07470354624881742
+        },
+        "government5Used": {
+          "mean": 0.07333333333333333,
+          "low": -0.0030920854371552647,
+          "high": 0.14975875210382195
+        },
+        "advancedCompletions": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "seatSpread": 0.21166666666666667,
+      "tieGames": 32,
+      "seats": [
+        {
+          "numPlayers": 3,
+          "scenario": "C",
+          "seat": 1,
+          "splitWins": 61.666666666666664,
+          "outrightWins": 54,
+          "tiedWins": 16,
+          "winRate": {
+            "mean": 0.20555555555555555,
+            "low": 0.1616336256971561,
+            "high": 0.24947748541395498
+          },
+          "simultaneous95": {
+            "mean": 0.20555555555555555,
+            "low": 0.15190752238788033,
+            "high": 0.2592035887232308
+          },
+          "aboveUniform": false,
+          "belowUniform": true,
+          "meanScore": 37.84,
+          "meanTreePoints": 4.506666666666667,
+          "meanInitiatedCompletions": 1.3033333333333332,
+          "meanFinishedCompletions": 1.1833333333333333
+        },
+        {
+          "numPlayers": 3,
+          "scenario": "C",
+          "seat": 2,
+          "splitWins": 125.16666666666666,
+          "outrightWins": 114,
+          "tiedWins": 23,
+          "winRate": {
+            "mean": 0.4172222222222222,
+            "low": 0.3635564089936153,
+            "high": 0.47088803545082913
+          },
+          "simultaneous95": {
+            "mean": 0.4172222222222222,
+            "low": 0.35167261323781673,
+            "high": 0.4827718312066277
+          },
+          "aboveUniform": true,
+          "belowUniform": false,
+          "meanScore": 41.26,
+          "meanTreePoints": 3.046666666666667,
+          "meanInitiatedCompletions": 1.6233333333333333,
+          "meanFinishedCompletions": 1.6066666666666667
+        },
+        {
+          "numPlayers": 3,
+          "scenario": "C",
+          "seat": 3,
+          "splitWins": 113.16666666666666,
+          "outrightWins": 100,
+          "tiedWins": 27,
+          "winRate": {
+            "mean": 0.37722222222222224,
+            "low": 0.3249579195592905,
+            "high": 0.429486524885154
+          },
+          "simultaneous95": {
+            "mean": 0.37722222222222224,
+            "low": 0.3133844752974892,
+            "high": 0.4410599691469553
+          },
+          "aboveUniform": false,
+          "belowUniform": false,
+          "meanScore": 40.93666666666667,
+          "meanTreePoints": 3.466666666666667,
+          "meanInitiatedCompletions": 1.45,
+          "meanFinishedCompletions": 1.5866666666666667
+        }
+      ],
+      "completionsByDifficulty": {
+        "2": 811,
+        "1": 502
+      },
+      "tierReach": {
+        "3": 1,
+        "4": 0.6633333333333333,
+        "5": 0.05
+      },
+      "government5": {
+        "gamesUnlocked": 15,
+        "budget": 33,
+        "used": 22,
+        "useRate": 0.6666666666666666,
+        "resolved": 22,
+        "skipped": 0,
+        "noTarget": 3
+      },
+      "advancedDraws": 0,
+      "roundOrders": [
+        {
+          "orders": [
+            {
+              "round": 1,
+              "players": [
+                "0",
+                "1",
+                "2"
+              ]
+            },
+            {
+              "round": 2,
+              "players": [
+                "0",
+                "1",
+                "2"
+              ]
+            },
+            {
+              "round": 3,
+              "players": [
+                "0",
+                "1",
+                "2"
+              ]
+            },
+            {
+              "round": 4,
+              "players": [
+                "0",
+                "1",
+                "2"
+              ]
+            },
+            {
+              "round": 5,
+              "players": [
+                "0",
+                "1",
+                "2"
+              ]
+            },
+            {
+              "round": 6,
+              "players": [
+                "0",
+                "1",
+                "2"
+              ]
+            }
+          ],
+          "games": 300
+        }
+      ]
+    },
+    {
+      "numPlayers": 3,
+      "scenario": "D",
+      "games": 300,
+      "metrics": {
+        "score": {
+          "mean": 40.01777777777778,
+          "low": 39.5088895094124,
+          "high": 40.52666604614316
+        },
+        "winningMargin": {
+          "mean": 5.066666666666666,
+          "low": 4.595640868191898,
+          "high": 5.5376924651414345
+        },
+        "relativeMargin": {
+          "mean": 0.1275156476112725,
+          "low": 0.11542782324606868,
+          "high": 0.1396034719764763
+        },
+        "completions": {
+          "mean": 4.376666666666667,
+          "low": 4.254160869735991,
+          "high": 4.4991724635973425
+        },
+        "remainingHearts": {
+          "mean": 2.5933333333333333,
+          "low": 2.468413007563169,
+          "high": 2.7182536591034974
+        },
+        "tier5": {
+          "mean": 0.05,
+          "low": 0.025296453751182585,
+          "high": 0.07470354624881742
+        },
+        "government5Used": {
+          "mean": 0.11,
+          "low": -0.0032285662629448764,
+          "high": 0.22322856626294488
+        },
+        "advancedCompletions": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "seatSpread": 0.21833333333333335,
+      "tieGames": 32,
+      "seats": [
+        {
+          "numPlayers": 3,
+          "scenario": "D",
+          "seat": 1,
+          "splitWins": 60.666666666666664,
+          "outrightWins": 53,
+          "tiedWins": 16,
+          "winRate": {
+            "mean": 0.20222222222222222,
+            "low": 0.1585899677082054,
+            "high": 0.24585447673623903
+          },
+          "simultaneous95": {
+            "mean": 0.20222222222222222,
+            "low": 0.14892801031270658,
+            "high": 0.25551643413173786
+          },
+          "aboveUniform": false,
+          "belowUniform": true,
+          "meanScore": 37.84,
+          "meanTreePoints": 4.506666666666667,
+          "meanInitiatedCompletions": 1.3033333333333332,
+          "meanFinishedCompletions": 1.1833333333333333
+        },
+        {
+          "numPlayers": 3,
+          "scenario": "D",
+          "seat": 2,
+          "splitWins": 126.16666666666666,
+          "outrightWins": 115,
+          "tiedWins": 23,
+          "winRate": {
+            "mean": 0.42055555555555557,
+            "low": 0.3668250541805431,
+            "high": 0.474286056930568
+          },
+          "simultaneous95": {
+            "mean": 0.42055555555555557,
+            "low": 0.35492693383570995,
+            "high": 0.4861841772754012
+          },
+          "aboveUniform": true,
+          "belowUniform": false,
+          "meanScore": 41.276666666666664,
+          "meanTreePoints": 3.046666666666667,
+          "meanInitiatedCompletions": 1.6233333333333333,
+          "meanFinishedCompletions": 1.6066666666666667
+        },
+        {
+          "numPlayers": 3,
+          "scenario": "D",
+          "seat": 3,
+          "splitWins": 113.16666666666666,
+          "outrightWins": 100,
+          "tiedWins": 27,
+          "winRate": {
+            "mean": 0.37722222222222224,
+            "low": 0.3249579195592905,
+            "high": 0.429486524885154
+          },
+          "simultaneous95": {
+            "mean": 0.37722222222222224,
+            "low": 0.3133844752974892,
+            "high": 0.4410599691469553
+          },
+          "aboveUniform": false,
+          "belowUniform": false,
+          "meanScore": 40.93666666666667,
+          "meanTreePoints": 3.466666666666667,
+          "meanInitiatedCompletions": 1.45,
+          "meanFinishedCompletions": 1.5866666666666667
+        }
+      ],
+      "completionsByDifficulty": {
+        "2": 811,
+        "1": 502
+      },
+      "tierReach": {
+        "3": 1,
+        "4": 0.6633333333333333,
+        "5": 0.05
+      },
+      "government5": {
+        "gamesUnlocked": 15,
+        "budget": 33,
+        "used": 33,
+        "useRate": 1.0,
+        "resolved": 33,
+        "skipped": 0,
+        "noTarget": 0
+      },
+      "advancedDraws": 0,
+      "roundOrders": [
+        {
+          "orders": [
+            {
+              "round": 1,
+              "players": [
+                "0",
+                "1",
+                "2"
+              ]
+            },
+            {
+              "round": 2,
+              "players": [
+                "0",
+                "1",
+                "2"
+              ]
+            },
+            {
+              "round": 3,
+              "players": [
+                "0",
+                "1",
+                "2"
+              ]
+            },
+            {
+              "round": 4,
+              "players": [
+                "0",
+                "1",
+                "2"
+              ]
+            },
+            {
+              "round": 5,
+              "players": [
+                "0",
+                "1",
+                "2"
+              ]
+            },
+            {
+              "round": 6,
+              "players": [
+                "0",
+                "1",
+                "2"
+              ]
+            }
+          ],
+          "games": 300
+        }
+      ]
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "A",
+      "games": 300,
+      "metrics": {
+        "score": {
+          "mean": 40.748333333333335,
+          "low": 40.21881463069956,
+          "high": 41.27785203596711
+        },
+        "winningMargin": {
+          "mean": 4.616666666666666,
+          "low": 4.214167248702201,
+          "high": 5.019166084631132
+        },
+        "relativeMargin": {
+          "mean": 0.11365960322493736,
+          "low": 0.1037199254307532,
+          "high": 0.12359928101912152
+        },
+        "completions": {
+          "mean": 7.683333333333334,
+          "low": 7.53085137657891,
+          "high": 7.835815290087758
+        },
+        "remainingHearts": {
+          "mean": 0.16,
+          "low": 0.0906445782703043,
+          "high": 0.2293554217296957
+        },
+        "tier5": {
+          "mean": 0.93,
+          "low": 0.9010796868539515,
+          "high": 0.9589203131460486
+        },
+        "government5Used": {
+          "mean": 1.4966666666666666,
+          "low": 1.2280385962364861,
+          "high": 1.765294737096847
+        },
+        "advancedCompletions": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "seatSpread": 0.2033333333333333,
+      "tieGames": 21,
+      "seats": [
+        {
+          "numPlayers": 4,
+          "scenario": "A",
+          "seat": 1,
+          "splitWins": 37.5,
+          "outrightWins": 35,
+          "tiedWins": 5,
+          "winRate": {
+            "mean": 0.125,
+            "low": 0.08823474629609393,
+            "high": 0.16176525370390607
+          },
+          "simultaneous95": {
+            "mean": 0.125,
+            "low": 0.07814772303535186,
+            "high": 0.17185227696464814
+          },
+          "aboveUniform": false,
+          "belowUniform": true,
+          "meanScore": 38.84,
+          "meanTreePoints": 5.276666666666666,
+          "meanInitiatedCompletions": 1.81,
+          "meanFinishedCompletions": 1.9233333333333333
+        },
+        {
+          "numPlayers": 4,
+          "scenario": "A",
+          "seat": 2,
+          "splitWins": 66.0,
+          "outrightWins": 61,
+          "tiedWins": 10,
+          "winRate": {
+            "mean": 0.22,
+            "low": 0.17420044483311076,
+            "high": 0.26579955516688925
+          },
+          "simultaneous95": {
+            "mean": 0.22,
+            "low": 0.16163474402166855,
+            "high": 0.27836525597833145
+          },
+          "aboveUniform": false,
+          "belowUniform": false,
+          "meanScore": 40.52333333333333,
+          "meanTreePoints": 5.786666666666667,
+          "meanInitiatedCompletions": 2.0833333333333335,
+          "meanFinishedCompletions": 1.6966666666666668
+        },
+        {
+          "numPlayers": 4,
+          "scenario": "A",
+          "seat": 3,
+          "splitWins": 98.0,
+          "outrightWins": 91,
+          "tiedWins": 14,
+          "winRate": {
+            "mean": 0.32666666666666666,
+            "low": 0.2749363009804526,
+            "high": 0.37839703235288075
+          },
+          "simultaneous95": {
+            "mean": 0.32666666666666666,
+            "low": 0.260743405531778,
+            "high": 0.3925899278015553
+          },
+          "aboveUniform": true,
+          "belowUniform": false,
+          "meanScore": 41.72666666666667,
+          "meanTreePoints": 4.8966666666666665,
+          "meanInitiatedCompletions": 2.1233333333333335,
+          "meanFinishedCompletions": 1.75
+        },
+        {
+          "numPlayers": 4,
+          "scenario": "A",
+          "seat": 4,
+          "splitWins": 98.5,
+          "outrightWins": 92,
+          "tiedWins": 13,
+          "winRate": {
+            "mean": 0.3283333333333333,
+            "low": 0.27642837632720463,
+            "high": 0.380238290339462
+          },
+          "simultaneous95": {
+            "mean": 0.3283333333333333,
+            "low": 0.2621875794899177,
+            "high": 0.3944790871767489
+          },
+          "aboveUniform": true,
+          "belowUniform": false,
+          "meanScore": 41.903333333333336,
+          "meanTreePoints": 3.44,
+          "meanInitiatedCompletions": 1.6666666666666667,
+          "meanFinishedCompletions": 2.3133333333333335
+        }
+      ],
+      "completionsByDifficulty": {
+        "1": 1999,
+        "2": 306
+      },
+      "tierReach": {
+        "3": 1,
+        "4": 0.99,
+        "5": 0.93
+      },
+      "government5": {
+        "gamesUnlocked": 274,
+        "budget": 1655,
+        "used": 449,
+        "useRate": 0.27129909365558913,
+        "resolved": 449,
+        "skipped": 0,
+        "noTarget": 368
+      },
+      "advancedDraws": 0,
+      "roundOrders": [
+        {
+          "orders": [
+            {
+              "round": 1,
+              "players": [
+                "0",
+                "1",
+                "2",
+                "3"
+              ]
+            },
+            {
+              "round": 2,
+              "players": [
+                "0",
+                "1",
+                "2",
+                "3"
+              ]
+            },
+            {
+              "round": 3,
+              "players": [
+                "0",
+                "1",
+                "2",
+                "3"
+              ]
+            },
+            {
+              "round": 4,
+              "players": [
+                "0",
+                "1",
+                "2",
+                "3"
+              ]
+            },
+            {
+              "round": 5,
+              "players": [
+                "0",
+                "1",
+                "2",
+                "3"
+              ]
+            }
+          ],
+          "games": 300
+        }
+      ]
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "B",
+      "games": 300,
+      "metrics": {
+        "score": {
+          "mean": 43.75666666666667,
+          "low": 42.936791165523495,
+          "high": 44.57654216780984
+        },
+        "winningMargin": {
+          "mean": 6.613333333333333,
+          "low": 5.938457912548825,
+          "high": 7.288208754117842
+        },
+        "relativeMargin": {
+          "mean": 0.14689859590789453,
+          "low": 0.13313982457602525,
+          "high": 0.16065736723976382
+        },
+        "completions": {
+          "mean": 8.573333333333334,
+          "low": 8.333119511926219,
+          "high": 8.81354715474045
+        },
+        "remainingHearts": {
+          "mean": 0.16,
+          "low": 0.0906445782703043,
+          "high": 0.2293554217296957
+        },
+        "tier5": {
+          "mean": 0.93,
+          "low": 0.9010796868539515,
+          "high": 0.9589203131460486
+        },
+        "government5Used": {
+          "mean": 8.076666666666666,
+          "low": 7.213654134989303,
+          "high": 8.93967919834403
+        },
+        "advancedCompletions": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "seatSpread": 0.22333333333333333,
+      "tieGames": 21,
+      "seats": [
+        {
+          "numPlayers": 4,
+          "scenario": "B",
+          "seat": 1,
+          "splitWins": 36.0,
+          "outrightWins": 33,
+          "tiedWins": 6,
+          "winRate": {
+            "mean": 0.12,
+            "low": 0.08404895760383761,
+            "high": 0.15595104239616236
+          },
+          "simultaneous95": {
+            "mean": 0.12,
+            "low": 0.07418532375491664,
+            "high": 0.16581467624508334
+          },
+          "aboveUniform": false,
+          "belowUniform": true,
+          "meanScore": 41.03,
+          "meanTreePoints": 5.276666666666666,
+          "meanInitiatedCompletions": 1.9966666666666666,
+          "meanFinishedCompletions": 2.07
+        },
+        {
+          "numPlayers": 4,
+          "scenario": "B",
+          "seat": 2,
+          "splitWins": 70.5,
+          "outrightWins": 65,
+          "tiedWins": 11,
+          "winRate": {
+            "mean": 0.235,
+            "low": 0.18818202589937122,
+            "high": 0.28181797410062875
+          },
+          "simultaneous95": {
+            "mean": 0.235,
+            "low": 0.17533690867055446,
+            "high": 0.2946630913294455
+          },
+          "aboveUniform": false,
+          "belowUniform": false,
+          "meanScore": 43.843333333333334,
+          "meanTreePoints": 5.786666666666667,
+          "meanInitiatedCompletions": 2.4,
+          "meanFinishedCompletions": 1.9066666666666667
+        },
+        {
+          "numPlayers": 4,
+          "scenario": "B",
+          "seat": 3,
+          "splitWins": 103.0,
+          "outrightWins": 97,
+          "tiedWins": 12,
+          "winRate": {
+            "mean": 0.3433333333333333,
+            "low": 0.29072054179013507,
+            "high": 0.3959461248765316
+          },
+          "simultaneous95": {
+            "mean": 0.3433333333333333,
+            "low": 0.2762855413850534,
+            "high": 0.41038112528161325
+          },
+          "aboveUniform": true,
+          "belowUniform": false,
+          "meanScore": 45.516666666666666,
+          "meanTreePoints": 4.8966666666666665,
+          "meanInitiatedCompletions": 2.3766666666666665,
+          "meanFinishedCompletions": 2.0233333333333334
+        },
+        {
+          "numPlayers": 4,
+          "scenario": "B",
+          "seat": 4,
+          "splitWins": 90.5,
+          "outrightWins": 84,
+          "tiedWins": 13,
+          "winRate": {
+            "mean": 0.3016666666666667,
+            "low": 0.2509975369791741,
+            "high": 0.3523357963541593
+          },
+          "simultaneous95": {
+            "mean": 0.3016666666666667,
+            "low": 0.2370958053638964,
+            "high": 0.366237527969437
+          },
+          "aboveUniform": false,
+          "belowUniform": false,
+          "meanScore": 44.63666666666666,
+          "meanTreePoints": 3.44,
+          "meanInitiatedCompletions": 1.8,
+          "meanFinishedCompletions": 2.5733333333333333
+        }
+      ],
+      "completionsByDifficulty": {
+        "1": 2193,
+        "2": 379
+      },
+      "tierReach": {
+        "3": 1,
+        "4": 0.99,
+        "5": 0.93
+      },
+      "government5": {
+        "gamesUnlocked": 274,
+        "budget": 2455,
+        "used": 2423,
+        "useRate": 0.9869653767820774,
+        "resolved": 2423,
+        "skipped": 0,
+        "noTarget": 13
+      },
+      "advancedDraws": 4,
+      "roundOrders": [
+        {
+          "orders": [
+            {
+              "round": 1,
+              "players": [
+                "0",
+                "1",
+                "2",
+                "3"
+              ]
+            },
+            {
+              "round": 2,
+              "players": [
+                "0",
+                "1",
+                "2",
+                "3"
+              ]
+            },
+            {
+              "round": 3,
+              "players": [
+                "0",
+                "1",
+                "2",
+                "3"
+              ]
+            },
+            {
+              "round": 4,
+              "players": [
+                "0",
+                "1",
+                "2",
+                "3"
+              ]
+            },
+            {
+              "round": 5,
+              "players": [
+                "0",
+                "1",
+                "2",
+                "3"
+              ]
+            }
+          ],
+          "games": 300
+        }
+      ]
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "C",
+      "games": 300,
+      "metrics": {
+        "score": {
+          "mean": 35.49333333333333,
+          "low": 35.09379365206446,
+          "high": 35.8928730146022
+        },
+        "winningMargin": {
+          "mean": 3.9633333333333334,
+          "low": 3.59671040318969,
+          "high": 4.329956263476976
+        },
+        "relativeMargin": {
+          "mean": 0.11151139500001446,
+          "low": 0.10126883828676954,
+          "high": 0.12175395171325938
+        },
+        "completions": {
+          "mean": 5.426666666666667,
+          "low": 5.307897180624252,
+          "high": 5.545436152709081
+        },
+        "remainingHearts": {
+          "mean": 1.53,
+          "low": 1.4161377923644831,
+          "high": 1.643862207635517
+        },
+        "tier5": {
+          "mean": 0.2733333333333333,
+          "low": 0.22281762871405655,
+          "high": 0.3238490379526101
+        },
+        "government5Used": {
+          "mean": 0.12,
+          "low": 0.050842454341830795,
+          "high": 0.1891575456581692
+        },
+        "advancedCompletions": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "seatSpread": 0.4172222222222222,
+      "tieGames": 26,
+      "seats": [
+        {
+          "numPlayers": 4,
+          "scenario": "C",
+          "seat": 1,
+          "splitWins": 28.833333333333332,
+          "outrightWins": 23,
+          "tiedWins": 12,
+          "winRate": {
+            "mean": 0.0961111111111111,
+            "low": 0.06466528813926373,
+            "high": 0.12755693408295848
+          },
+          "simultaneous95": {
+            "mean": 0.0961111111111111,
+            "low": 0.056037719557124374,
+            "high": 0.13618450266509785
+          },
+          "aboveUniform": false,
+          "belowUniform": true,
+          "meanScore": 32.983333333333334,
+          "meanTreePoints": 4.4,
+          "meanInitiatedCompletions": 1.1166666666666667,
+          "meanFinishedCompletions": 1.2033333333333334
+        },
+        {
+          "numPlayers": 4,
+          "scenario": "C",
+          "seat": 2,
+          "splitWins": 54.666666666666664,
+          "outrightWins": 50,
+          "tiedWins": 10,
+          "winRate": {
+            "mean": 0.18222222222222223,
+            "low": 0.13967997549230357,
+            "high": 0.2247644689521409
+          },
+          "simultaneous95": {
+            "mean": 0.18222222222222223,
+            "low": 0.12800795941470672,
+            "high": 0.23643648502973774
+          },
+          "aboveUniform": false,
+          "belowUniform": true,
+          "meanScore": 34.806666666666665,
+          "meanTreePoints": 3.37,
+          "meanInitiatedCompletions": 1.5433333333333332,
+          "meanFinishedCompletions": 1.1766666666666667
+        },
+        {
+          "numPlayers": 4,
+          "scenario": "C",
+          "seat": 3,
+          "splitWins": 62.5,
+          "outrightWins": 55,
+          "tiedWins": 16,
+          "winRate": {
+            "mean": 0.20833333333333334,
+            "low": 0.16416046077323787,
+            "high": 0.2525062058934288
+          },
+          "simultaneous95": {
+            "mean": 0.20833333333333334,
+            "low": 0.1520410613915293,
+            "high": 0.2646256052751374
+          },
+          "aboveUniform": false,
+          "belowUniform": false,
+          "meanScore": 35.763333333333335,
+          "meanTreePoints": 3.1066666666666665,
+          "meanInitiatedCompletions": 1.58,
+          "meanFinishedCompletions": 1.29
+        },
+        {
+          "numPlayers": 4,
+          "scenario": "C",
+          "seat": 4,
+          "splitWins": 154.0,
+          "outrightWins": 146,
+          "tiedWins": 17,
+          "winRate": {
+            "mean": 0.5133333333333333,
+            "low": 0.45827701724485487,
+            "high": 0.5683896494218117
+          },
+          "simultaneous95": {
+            "mean": 0.5133333333333333,
+            "low": 0.443171604250622,
+            "high": 0.5834950624160447
+          },
+          "aboveUniform": true,
+          "belowUniform": false,
+          "meanScore": 38.42,
+          "meanTreePoints": 3.15,
+          "meanInitiatedCompletions": 1.1866666666666668,
+          "meanFinishedCompletions": 1.7566666666666666
+        }
+      ],
+      "completionsByDifficulty": {
+        "1": 601,
+        "2": 1027
+      },
+      "tierReach": {
+        "3": 1,
+        "4": 0.9633333333333334,
+        "5": 0.2733333333333333
+      },
+      "government5": {
+        "gamesUnlocked": 79,
+        "budget": 178,
+        "used": 36,
+        "useRate": 0.20224719101123595,
+        "resolved": 36,
+        "skipped": 0,
+        "noTarget": 32
+      },
+      "advancedDraws": 0,
+      "roundOrders": [
+        {
+          "orders": [
+            {
+              "round": 1,
+              "players": [
+                "0",
+                "1",
+                "2",
+                "3"
+              ]
+            },
+            {
+              "round": 2,
+              "players": [
+                "0",
+                "1",
+                "2",
+                "3"
+              ]
+            },
+            {
+              "round": 3,
+              "players": [
+                "0",
+                "1",
+                "2",
+                "3"
+              ]
+            },
+            {
+              "round": 4,
+              "players": [
+                "0",
+                "1",
+                "2",
+                "3"
+              ]
+            },
+            {
+              "round": 5,
+              "players": [
+                "0",
+                "1",
+                "2",
+                "3"
+              ]
+            }
+          ],
+          "games": 300
+        }
+      ]
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "D",
+      "games": 300,
+      "metrics": {
+        "score": {
+          "mean": 35.73,
+          "low": 35.266595239643586,
+          "high": 36.19340476035641
+        },
+        "winningMargin": {
+          "mean": 4.18,
+          "low": 3.769527088287785,
+          "high": 4.590472911712214
+        },
+        "relativeMargin": {
+          "mean": 0.11572012824392643,
+          "low": 0.10493502671720681,
+          "high": 0.12650522977064604
+        },
+        "completions": {
+          "mean": 5.496666666666667,
+          "low": 5.358618625558496,
+          "high": 5.634714707774838
+        },
+        "remainingHearts": {
+          "mean": 1.53,
+          "low": 1.4161377923644831,
+          "high": 1.643862207635517
+        },
+        "tier5": {
+          "mean": 0.2733333333333333,
+          "low": 0.22281762871405655,
+          "high": 0.3238490379526101
+        },
+        "government5Used": {
+          "mean": 0.79,
+          "low": 0.46888590495461074,
+          "high": 1.1111140950453893
+        },
+        "advancedCompletions": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "seatSpread": 0.41555555555555557,
+      "tieGames": 25,
+      "seats": [
+        {
+          "numPlayers": 4,
+          "scenario": "D",
+          "seat": 1,
+          "splitWins": 28.333333333333332,
+          "outrightWins": 23,
+          "tiedWins": 11,
+          "winRate": {
+            "mean": 0.09444444444444444,
+            "low": 0.06310415558069346,
+            "high": 0.12578473330819542
+          },
+          "simultaneous95": {
+            "mean": 0.09444444444444444,
+            "low": 0.05450554164719446,
+            "high": 0.13438334724169443
+          },
+          "aboveUniform": false,
+          "belowUniform": true,
+          "meanScore": 33.18666666666667,
+          "meanTreePoints": 4.4,
+          "meanInitiatedCompletions": 1.1333333333333333,
+          "meanFinishedCompletions": 1.22
+        },
+        {
+          "numPlayers": 4,
+          "scenario": "D",
+          "seat": 2,
+          "splitWins": 53.666666666666664,
+          "outrightWins": 49,
+          "tiedWins": 10,
+          "winRate": {
+            "mean": 0.17888888888888888,
+            "low": 0.1366694391172722,
+            "high": 0.22110833866050555
+          },
+          "simultaneous95": {
+            "mean": 0.17888888888888888,
+            "low": 0.12508598656362413,
+            "high": 0.23269179121415362
+          },
+          "aboveUniform": false,
+          "belowUniform": true,
+          "meanScore": 34.95333333333333,
+          "meanTreePoints": 3.37,
+          "meanInitiatedCompletions": 1.56,
+          "meanFinishedCompletions": 1.1866666666666668
+        },
+        {
+          "numPlayers": 4,
+          "scenario": "D",
+          "seat": 3,
+          "splitWins": 65.0,
+          "outrightWins": 58,
+          "tiedWins": 15,
+          "winRate": {
+            "mean": 0.21666666666666667,
+            "low": 0.17168321507327217,
+            "high": 0.2616501182600612
+          },
+          "simultaneous95": {
+            "mean": 0.21666666666666667,
+            "low": 0.15934142284125424,
+            "high": 0.2739919104920791
+          },
+          "aboveUniform": false,
+          "belowUniform": false,
+          "meanScore": 36.06333333333333,
+          "meanTreePoints": 3.1066666666666665,
+          "meanInitiatedCompletions": 1.6033333333333333,
+          "meanFinishedCompletions": 1.3133333333333332
+        },
+        {
+          "numPlayers": 4,
+          "scenario": "D",
+          "seat": 4,
+          "splitWins": 153.0,
+          "outrightWins": 145,
+          "tiedWins": 17,
+          "winRate": {
+            "mean": 0.51,
+            "low": 0.4549346097272984,
+            "high": 0.5650653902727016
+          },
+          "simultaneous95": {
+            "mean": 0.51,
+            "low": 0.4398267071131633,
+            "high": 0.5801732928868367
+          },
+          "aboveUniform": true,
+          "belowUniform": false,
+          "meanScore": 38.71666666666667,
+          "meanTreePoints": 3.15,
+          "meanInitiatedCompletions": 1.2,
+          "meanFinishedCompletions": 1.7766666666666666
+        }
+      ],
+      "completionsByDifficulty": {
+        "1": 612,
+        "2": 1037
+      },
+      "tierReach": {
+        "3": 1,
+        "4": 0.9633333333333334,
+        "5": 0.2733333333333333
+      },
+      "government5": {
+        "gamesUnlocked": 79,
+        "budget": 243,
+        "used": 237,
+        "useRate": 0.9753086419753086,
+        "resolved": 237,
+        "skipped": 0,
+        "noTarget": 2
+      },
+      "advancedDraws": 0,
+      "roundOrders": [
+        {
+          "orders": [
+            {
+              "round": 1,
+              "players": [
+                "0",
+                "1",
+                "2",
+                "3"
+              ]
+            },
+            {
+              "round": 2,
+              "players": [
+                "0",
+                "1",
+                "2",
+                "3"
+              ]
+            },
+            {
+              "round": 3,
+              "players": [
+                "0",
+                "1",
+                "2",
+                "3"
+              ]
+            },
+            {
+              "round": 4,
+              "players": [
+                "0",
+                "1",
+                "2",
+                "3"
+              ]
+            },
+            {
+              "round": 5,
+              "players": [
+                "0",
+                "1",
+                "2",
+                "3"
+              ]
+            }
+          ],
+          "games": 300
+        }
+      ]
+    }
+  ],
+  "pairedComparisons": [
+    {
+      "numPlayers": 2,
+      "comparison": "B-A",
+      "metrics": {
+        "score": {
+          "mean": 0.021666666666666667,
+          "low": -0.014833601760762226,
+          "high": 0.05816693509409556
+        },
+        "winningMargin": {
+          "mean": 0.03,
+          "low": -0.04308652793282165,
+          "high": 0.10308652793282165
+        },
+        "relativeMargin": {
+          "mean": 0.0003813802929661229,
+          "low": -0.0005868959580610791,
+          "high": 0.0013496565439933249
+        },
+        "completions": {
+          "mean": 0.0033333333333333335,
+          "low": -0.0031998799484668464,
+          "high": 0.009866546615133514
+        },
+        "remainingHearts": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "tier5": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "government5Used": {
+          "mean": 0.04,
+          "low": -0.01611185402053042,
+          "high": 0.09611185402053042
+        },
+        "advancedCompletions": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      }
+    },
+    {
+      "numPlayers": 2,
+      "comparison": "C-A",
+      "metrics": {
+        "score": {
+          "mean": -5.433333333333334,
+          "low": -6.205073668232197,
+          "high": -4.66159299843447
+        },
+        "winningMargin": {
+          "mean": -0.9333333333333333,
+          "low": -1.8576245078758986,
+          "high": -0.009042158790768196
+        },
+        "relativeMargin": {
+          "mean": 0.0026653032564384555,
+          "low": -0.0187115158356208,
+          "high": 0.02404212234849771
+        },
+        "completions": {
+          "mean": -1.2733333333333334,
+          "low": -1.3970825697792635,
+          "high": -1.1495840968874034
+        },
+        "remainingHearts": {
+          "mean": 1.2066666666666668,
+          "low": 1.0637127628542506,
+          "high": 1.349620570479083
+        },
+        "tier5": {
+          "mean": -0.03,
+          "low": -0.049335659579610724,
+          "high": -0.010664340420389273
+        },
+        "government5Used": {
+          "mean": -0.01,
+          "low": -0.02458915249614381,
+          "high": 0.0045891524961438074
+        },
+        "advancedCompletions": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      }
+    },
+    {
+      "numPlayers": 2,
+      "comparison": "D-A",
+      "metrics": {
+        "score": {
+          "mean": -5.433333333333334,
+          "low": -6.205073668232197,
+          "high": -4.66159299843447
+        },
+        "winningMargin": {
+          "mean": -0.9333333333333333,
+          "low": -1.8576245078758986,
+          "high": -0.009042158790768196
+        },
+        "relativeMargin": {
+          "mean": 0.0026653032564384555,
+          "low": -0.0187115158356208,
+          "high": 0.02404212234849771
+        },
+        "completions": {
+          "mean": -1.2733333333333334,
+          "low": -1.3970825697792635,
+          "high": -1.1495840968874034
+        },
+        "remainingHearts": {
+          "mean": 1.2066666666666668,
+          "low": 1.0637127628542506,
+          "high": 1.349620570479083
+        },
+        "tier5": {
+          "mean": -0.03,
+          "low": -0.049335659579610724,
+          "high": -0.010664340420389273
+        },
+        "government5Used": {
+          "mean": -0.01,
+          "low": -0.02458915249614381,
+          "high": 0.0045891524961438074
+        },
+        "advancedCompletions": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      }
+    },
+    {
+      "numPlayers": 2,
+      "comparison": "government5MainEffect",
+      "metrics": {
+        "score": {
+          "mean": 0.010833333333333334,
+          "low": -0.007416800880381113,
+          "high": 0.02908346754704778
+        },
+        "winningMargin": {
+          "mean": 0.015,
+          "low": -0.021543263966410826,
+          "high": 0.051543263966410825
+        },
+        "relativeMargin": {
+          "mean": 0.00019069014648306144,
+          "low": -0.00029344797903053954,
+          "high": 0.0006748282719966624
+        },
+        "completions": {
+          "mean": 0.0016666666666666668,
+          "low": -0.0015999399742334232,
+          "high": 0.004933273307566757
+        },
+        "remainingHearts": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "tier5": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "government5Used": {
+          "mean": 0.02,
+          "low": -0.00805592701026521,
+          "high": 0.04805592701026521
+        },
+        "advancedCompletions": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      }
+    },
+    {
+      "numPlayers": 2,
+      "comparison": "difficultyMainEffect",
+      "metrics": {
+        "score": {
+          "mean": -5.444166666666667,
+          "low": -6.219994575915715,
+          "high": -4.668338757417619
+        },
+        "winningMargin": {
+          "mean": -0.9483333333333334,
+          "low": -1.8743322303230727,
+          "high": -0.022334436343594
+        },
+        "relativeMargin": {
+          "mean": 0.0024746131099553947,
+          "low": -0.018921649275409912,
+          "high": 0.023870875495320704
+        },
+        "completions": {
+          "mean": -1.275,
+          "low": -1.3990906516383639,
+          "high": -1.150909348361636
+        },
+        "remainingHearts": {
+          "mean": 1.2066666666666668,
+          "low": 1.0637127628542506,
+          "high": 1.349620570479083
+        },
+        "tier5": {
+          "mean": -0.03,
+          "low": -0.049335659579610724,
+          "high": -0.010664340420389273
+        },
+        "government5Used": {
+          "mean": -0.03,
+          "low": -0.07150752955246517,
+          "high": 0.011507529552465173
+        },
+        "advancedCompletions": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      }
+    },
+    {
+      "numPlayers": 2,
+      "comparison": "interaction",
+      "metrics": {
+        "score": {
+          "mean": -0.021666666666666667,
+          "low": -0.05816693509409556,
+          "high": 0.014833601760762226
+        },
+        "winningMargin": {
+          "mean": -0.03,
+          "low": -0.10308652793282165,
+          "high": 0.04308652793282165
+        },
+        "relativeMargin": {
+          "mean": -0.0003813802929661229,
+          "low": -0.0013496565439933249,
+          "high": 0.0005868959580610791
+        },
+        "completions": {
+          "mean": -0.0033333333333333335,
+          "low": -0.009866546615133514,
+          "high": 0.0031998799484668464
+        },
+        "remainingHearts": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "tier5": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "government5Used": {
+          "mean": -0.04,
+          "low": -0.09611185402053042,
+          "high": 0.01611185402053042
+        },
+        "advancedCompletions": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      }
+    },
+    {
+      "numPlayers": 3,
+      "comparison": "B-A",
+      "metrics": {
+        "score": {
+          "mean": 1.5244444444444445,
+          "low": 1.1555441732271614,
+          "high": 1.8933447156617276
+        },
+        "winningMargin": {
+          "mean": 1.1066666666666667,
+          "low": 0.5922720191427798,
+          "high": 1.6210613141905537
+        },
+        "relativeMargin": {
+          "mean": 0.015031994101189404,
+          "low": 0.0070274945743840685,
+          "high": 0.023036493627994738
+        },
+        "completions": {
+          "mean": 0.3433333333333333,
+          "low": 0.2541705226595067,
+          "high": 0.43249614400715997
+        },
+        "remainingHearts": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "tier5": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "government5Used": {
+          "mean": 2.72,
+          "low": 2.168407925410757,
+          "high": 3.2715920745892433
+        },
+        "advancedCompletions": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      }
+    },
+    {
+      "numPlayers": 3,
+      "comparison": "C-A",
+      "metrics": {
+        "score": {
+          "mean": -7.317777777777778,
+          "low": -7.990050056982331,
+          "high": -6.6455054985732245
+        },
+        "winningMargin": {
+          "mean": -0.16666666666666666,
+          "low": -0.8356952066976099,
+          "high": 0.5023618733642766
+        },
+        "relativeMargin": {
+          "mean": 0.015474011357892573,
+          "low": -0.0005421170773733698,
+          "high": 0.03149013979315851
+        },
+        "completions": {
+          "mean": -2.1666666666666665,
+          "low": -2.318409582775776,
+          "high": -2.014923750557557
+        },
+        "remainingHearts": {
+          "mean": 1.98,
+          "low": 1.8299295459169174,
+          "high": 2.1300704540830826
+        },
+        "tier5": {
+          "mean": -0.66,
+          "low": -0.7175437011979531,
+          "high": -0.602456298802047
+        },
+        "government5Used": {
+          "mean": -0.6366666666666667,
+          "low": -0.8264911659938301,
+          "high": -0.4468421673395033
+        },
+        "advancedCompletions": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      }
+    },
+    {
+      "numPlayers": 3,
+      "comparison": "D-A",
+      "metrics": {
+        "score": {
+          "mean": -7.312222222222222,
+          "low": -7.98560643442275,
+          "high": -6.638838010021694
+        },
+        "winningMargin": {
+          "mean": -0.15666666666666668,
+          "low": -0.8250538224749833,
+          "high": 0.5117204891416498
+        },
+        "relativeMargin": {
+          "mean": 0.015630017648075988,
+          "low": -0.00037424907513566863,
+          "high": 0.031634284371287645
+        },
+        "completions": {
+          "mean": -2.1666666666666665,
+          "low": -2.318409582775776,
+          "high": -2.014923750557557
+        },
+        "remainingHearts": {
+          "mean": 1.98,
+          "low": 1.8299295459169174,
+          "high": 2.1300704540830826
+        },
+        "tier5": {
+          "mean": -0.66,
+          "low": -0.7175437011979531,
+          "high": -0.602456298802047
+        },
+        "government5Used": {
+          "mean": -0.6,
+          "low": -0.80900272829795,
+          "high": -0.39099727170205
+        },
+        "advancedCompletions": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      }
+    },
+    {
+      "numPlayers": 3,
+      "comparison": "government5MainEffect",
+      "metrics": {
+        "score": {
+          "mean": 0.765,
+          "low": 0.5798636837774154,
+          "high": 0.9501363162225847
+        },
+        "winningMargin": {
+          "mean": 0.5583333333333333,
+          "low": 0.30171256825486786,
+          "high": 0.8149540984117989
+        },
+        "relativeMargin": {
+          "mean": 0.007594000195686411,
+          "low": 0.003604712523063807,
+          "high": 0.011583287868309014
+        },
+        "completions": {
+          "mean": 0.17166666666666666,
+          "low": 0.12708526132975334,
+          "high": 0.21624807200357998
+        },
+        "remainingHearts": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "tier5": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "government5Used": {
+          "mean": 1.3783333333333334,
+          "low": 1.0973310464200714,
+          "high": 1.6593356202465954
+        },
+        "advancedCompletions": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      }
+    },
+    {
+      "numPlayers": 3,
+      "comparison": "difficultyMainEffect",
+      "metrics": {
+        "score": {
+          "mean": -8.077222222222222,
+          "low": -8.818046525187004,
+          "high": -7.33639791925744
+        },
+        "winningMargin": {
+          "mean": -0.715,
+          "low": -1.4189695545957803,
+          "high": -0.011030445404219602
+        },
+        "relativeMargin": {
+          "mean": 0.008036017452389578,
+          "low": -0.008050199593304325,
+          "high": 0.024122234498083484
+        },
+        "completions": {
+          "mean": -2.3383333333333334,
+          "low": -2.5014002671916895,
+          "high": -2.1752663994749772
+        },
+        "remainingHearts": {
+          "mean": 1.98,
+          "low": 1.8299295459169174,
+          "high": 2.1300704540830826
+        },
+        "tier5": {
+          "mean": -0.66,
+          "low": -0.7175437011979531,
+          "high": -0.602456298802047
+        },
+        "government5Used": {
+          "mean": -1.9783333333333333,
+          "low": -2.329687211198064,
+          "high": -1.6269794554686023
+        },
+        "advancedCompletions": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      }
+    },
+    {
+      "numPlayers": 3,
+      "comparison": "interaction",
+      "metrics": {
+        "score": {
+          "mean": -1.518888888888889,
+          "low": -1.886578871460959,
+          "high": -1.1511989063168189
+        },
+        "winningMargin": {
+          "mean": -1.0966666666666667,
+          "low": -1.6129564402325958,
+          "high": -0.5803768931007375
+        },
+        "relativeMargin": {
+          "mean": -0.014875987811005987,
+          "low": -0.022918093819094064,
+          "high": -0.006833881802917911
+        },
+        "completions": {
+          "mean": -0.3433333333333333,
+          "low": -0.43249614400715997,
+          "high": -0.2541705226595067
+        },
+        "remainingHearts": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "tier5": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "government5Used": {
+          "mean": -2.683333333333333,
+          "low": -3.2294022649849183,
+          "high": -2.137264401681748
+        },
+        "advancedCompletions": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      }
+    },
+    {
+      "numPlayers": 4,
+      "comparison": "B-A",
+      "metrics": {
+        "score": {
+          "mean": 3.0083333333333333,
+          "low": 2.576477612048497,
+          "high": 3.4401890546181697
+        },
+        "winningMargin": {
+          "mean": 1.9966666666666666,
+          "low": 1.3638457571361764,
+          "high": 2.629487576197157
+        },
+        "relativeMargin": {
+          "mean": 0.03323899268295717,
+          "low": 0.020750198124724027,
+          "high": 0.04572778724119032
+        },
+        "completions": {
+          "mean": 0.89,
+          "low": 0.7503522067235026,
+          "high": 1.0296477932764974
+        },
+        "remainingHearts": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "tier5": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "government5Used": {
+          "mean": 6.58,
+          "low": 5.810429318398318,
+          "high": 7.349570681601682
+        },
+        "advancedCompletions": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      }
+    },
+    {
+      "numPlayers": 4,
+      "comparison": "C-A",
+      "metrics": {
+        "score": {
+          "mean": -5.255,
+          "low": -5.81277877239774,
+          "high": -4.69722122760226
+        },
+        "winningMargin": {
+          "mean": -0.6533333333333333,
+          "low": -1.1810169018021544,
+          "high": -0.12564976486451218
+        },
+        "relativeMargin": {
+          "mean": -0.002148208224922901,
+          "low": -0.01571712596265385,
+          "high": 0.011420709512808047
+        },
+        "completions": {
+          "mean": -2.256666666666667,
+          "low": -2.426465909776798,
+          "high": -2.0868674235565354
+        },
+        "remainingHearts": {
+          "mean": 1.37,
+          "low": 1.2414399184539853,
+          "high": 1.498560081546015
+        },
+        "tier5": {
+          "mean": -0.6566666666666666,
+          "low": -0.7112765007019402,
+          "high": -0.6020568326313931
+        },
+        "government5Used": {
+          "mean": -1.3766666666666667,
+          "low": -1.6492071944150202,
+          "high": -1.1041261389183132
+        },
+        "advancedCompletions": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      }
+    },
+    {
+      "numPlayers": 4,
+      "comparison": "D-A",
+      "metrics": {
+        "score": {
+          "mean": -5.0183333333333335,
+          "low": -5.609356402885608,
+          "high": -4.427310263781059
+        },
+        "winningMargin": {
+          "mean": -0.43666666666666665,
+          "low": -0.9900925268401675,
+          "high": 0.11675919350683417
+        },
+        "relativeMargin": {
+          "mean": 0.0020605250189890695,
+          "low": -0.01179083858091297,
+          "high": 0.01591188861889111
+        },
+        "completions": {
+          "mean": -2.1866666666666665,
+          "low": -2.3682054206057193,
+          "high": -2.005127912727614
+        },
+        "remainingHearts": {
+          "mean": 1.37,
+          "low": 1.2414399184539853,
+          "high": 1.498560081546015
+        },
+        "tier5": {
+          "mean": -0.6566666666666666,
+          "low": -0.7112765007019402,
+          "high": -0.6020568326313931
+        },
+        "government5Used": {
+          "mean": -0.7066666666666667,
+          "low": -1.1211837509532112,
+          "high": -0.29214958238012206
+        },
+        "advancedCompletions": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      }
+    },
+    {
+      "numPlayers": 4,
+      "comparison": "government5MainEffect",
+      "metrics": {
+        "score": {
+          "mean": 1.6225,
+          "low": 1.3914167622614704,
+          "high": 1.8535832377385297
+        },
+        "winningMargin": {
+          "mean": 1.1066666666666667,
+          "low": 0.7797818962795012,
+          "high": 1.4335514370538323
+        },
+        "relativeMargin": {
+          "mean": 0.01872386296343457,
+          "low": 0.01225933027022533,
+          "high": 0.025188395656643808
+        },
+        "completions": {
+          "mean": 0.48,
+          "low": 0.40628625864051043,
+          "high": 0.5537137413594895
+        },
+        "remainingHearts": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "tier5": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "government5Used": {
+          "mean": 3.625,
+          "low": 3.1918961709829676,
+          "high": 4.058103829017032
+        },
+        "advancedCompletions": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      }
+    },
+    {
+      "numPlayers": 4,
+      "comparison": "difficultyMainEffect",
+      "metrics": {
+        "score": {
+          "mean": -6.640833333333333,
+          "low": -7.296156277093178,
+          "high": -5.985510389573489
+        },
+        "winningMargin": {
+          "mean": -1.5433333333333332,
+          "low": -2.119288714640308,
+          "high": -0.9673779520263583
+        },
+        "relativeMargin": {
+          "mean": -0.0166633379444455,
+          "low": -0.03055448010447346,
+          "high": -0.0027721957844175447
+        },
+        "completions": {
+          "mean": -2.6666666666666665,
+          "low": -2.8650160473336443,
+          "high": -2.4683172859996887
+        },
+        "remainingHearts": {
+          "mean": 1.37,
+          "low": 1.2414399184539853,
+          "high": 1.498560081546015
+        },
+        "tier5": {
+          "mean": -0.6566666666666666,
+          "low": -0.7112765007019402,
+          "high": -0.6020568326313931
+        },
+        "government5Used": {
+          "mean": -4.331666666666667,
+          "low": -4.840059560957294,
+          "high": -3.8232737723760395
+        },
+        "advancedCompletions": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      }
+    },
+    {
+      "numPlayers": 4,
+      "comparison": "interaction",
+      "metrics": {
+        "score": {
+          "mean": -2.7716666666666665,
+          "low": -3.2036403799882027,
+          "high": -2.3396929533451303
+        },
+        "winningMargin": {
+          "mean": -1.78,
+          "low": -2.43687803828142,
+          "high": -1.1231219617185801
+        },
+        "relativeMargin": {
+          "mean": -0.0290302594390452,
+          "low": -0.0420688439077918,
+          "high": -0.015991674970298596
+        },
+        "completions": {
+          "mean": -0.82,
+          "low": -0.9613107701739286,
+          "high": -0.6786892298260713
+        },
+        "remainingHearts": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "tier5": {
+          "mean": 0.0,
+          "low": 0.0,
+          "high": 0.0
+        },
+        "government5Used": {
+          "mean": -5.91,
+          "low": -6.686371236824724,
+          "high": -5.133628763175277
+        },
+        "advancedCompletions": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      }
+    }
+  ]
+}
