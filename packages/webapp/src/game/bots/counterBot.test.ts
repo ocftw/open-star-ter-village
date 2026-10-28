@@ -5,8 +5,9 @@ import type { GameState } from '@/game/store/store';
 import { createCounterBot, exposedToOthers, exposurePenalty } from './counterBot';
 import { position } from './evaluate';
 import { createProfileBot } from './profileBot';
-import { BALANCED, COUNTER } from './profiles';
+import { BALANCED, COUNTER, PROFILES } from './profiles';
 import { initialState, runGame } from './runner';
+import { BOT_STRATEGIES, isBotStrategy } from './strategies';
 import type { Bot } from './types';
 
 const balanced = createProfileBot(BALANCED);
@@ -83,5 +84,27 @@ describe('counter bot', () => {
     const p = position(view, state.ctx, me, COUNTER);
     const contribute = { move: 'contributeOwnedProjects', args: [[{ projectSlotId: slot.id, jobName: '工程師', value: 3 }], undefined] };
     expect(exposurePenalty(p, contribute)).toBe(0);
+  });
+});
+
+describe('counter strategy registry entry', () => {
+  test('is a seatable strategy whose bot uses the counter profile', () => {
+    const strategy = BOT_STRATEGIES.counter;
+    expect(isBotStrategy('counter')).toBe(true);
+    expect(strategy.id).toBe('counter');
+    expect(strategy.profile).toBe(PROFILES.counter);
+    expect(strategy.label).toMatch(/Counter/);
+    expect(strategy.description.length).toBeGreaterThan(0);
+    expect(strategy.createBot(strategy.profile).name).toBe('counter');
+  });
+
+  test('seat names do not clash with another strategy', () => {
+    const names = Object.values(BOT_STRATEGIES).flatMap(s => s.names);
+    expect(new Set(names).size).toBe(names.length);
+  });
+
+  test('keeps Balanced unchanged', () => {
+    expect(BOT_STRATEGIES.balanced.profile).toBe(BALANCED);
+    expect(BALANCED.weights).toMatchObject({ village: 0.3, tree: 1, unlock: 0.5, initiation: 0 });
   });
 });

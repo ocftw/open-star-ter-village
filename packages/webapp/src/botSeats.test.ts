@@ -53,6 +53,12 @@ describe('bot seat endpoints', () => {
     expect(match.players[2]).not.toHaveProperty('credentials');
   });
 
+  test('the host can seat a counter bot under its own names', async () => {
+    const { matchID, credentials } = await room(2, 'tree-poc-v1');
+    const response = await post(`/games/${gameName}/${matchID}/bots`, { playerID: '0', credentials, seat: 1, strategy: 'counter' });
+    expect(await response.json()).toEqual({ seat: 1, name: BOT_STRATEGIES.counter.names[0], strategy: 'counter' });
+  });
+
   test.each([
     ['a non-host', { playerID: '1', credentials: 'x', seat: 1 }, 403],
     ['a wrong host credential', { playerID: '0', credentials: 'wrong', seat: 1 }, 403],
@@ -223,9 +229,9 @@ describe('bot runner', () => {
     }
   });
 
-  test('a server bot plays its seat to the end of a Standard game against a human seat', async () => {
+  test.each(Object.keys(BOT_STRATEGIES))('a server %s bot plays its seat to the end of a Standard game against a human seat', async strategy => {
     const { matchID, credentials } = await room(2, 'tree-poc-v1');
-    await post(`/games/${gameName}/${matchID}/bots`, { playerID: '0', credentials, seat: 1 });
+    await post(`/games/${gameName}/${matchID}/bots`, { playerID: '0', credentials, seat: 1, strategy });
     await lobby.updatePlayer(gameName, matchID, { playerID: '0', credentials, data: { started: true } });
 
     const runner = startBotRunner({ db: server.db, game, serverURL: url, isPlayerConnected: socketPresence(server.transport), pollMs: 50, moveDelayMs: 0, log: () => {} });

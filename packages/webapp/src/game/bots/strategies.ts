@@ -1,5 +1,6 @@
+import { createCounterBot } from './counterBot';
 import { createProfileBot } from './profileBot';
-import { BALANCED, type Profile } from './profiles';
+import { BALANCED, COUNTER, type Profile } from './profiles';
 import type { Bot } from './types';
 
 /** A bot strategy players can seat in a room. Add new strategies here. */
@@ -22,6 +23,14 @@ export const BOT_STRATEGIES: Record<string, BotStrategy> = {
     names: ['阿衡', '天平', '均均', '中和', '小秤', '平平'],
     profile: BALANCED,
     createBot: createProfileBot,
+  },
+  counter: {
+    id: 'counter',
+    label: '反制型 Counter',
+    description: '少開專案、優先完成自己的專案，不留下讓後手玩家收尾的機會。',
+    names: ['阿制', '反手', '截截', '先鋒', '小盾', '守守'],
+    profile: COUNTER,
+    createBot: profile => createCounterBot({ profile }),
   },
 };
 
