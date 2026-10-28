@@ -20,11 +20,11 @@ export function normalizeStandardOptions(input: unknown): StandardOptions {
   if (input === undefined) return { ...DEFAULT_STANDARD_OPTIONS };
   if (!input || typeof input !== 'object' || Array.isArray(input)) throw new Error('Invalid Standard options');
   const value = input as Record<string, unknown>;
-  if (Object.keys(value).some(key => !Object.hasOwn(DEFAULT_STANDARD_OPTIONS, key))) throw new Error('Unknown Standard option');
+  if (Object.keys(value).some(key => !Object.prototype.hasOwnProperty.call(DEFAULT_STANDARD_OPTIONS, key))) throw new Error('Unknown Standard option');
   const result = { ...DEFAULT_STANDARD_OPTIONS, ...value };
   if (!['none', 'clockwise', 'counterclockwise'].includes(result.starterRotation as string) ||
       ![0, 1, 2].includes(result.extraRounds as number) ||
-      typeof result.treePreset !== 'string' || !Object.hasOwn(TREE_PRESETS, result.treePreset)) {
+      typeof result.treePreset !== 'string' || !Object.prototype.hasOwnProperty.call(TREE_PRESETS, result.treePreset)) {
     throw new Error('Invalid Standard options');
   }
   return result as StandardOptions;
