@@ -97,7 +97,7 @@ projects (its own 2★ completion rate roughly doubles) and to be the finisher
 more often. Ablations show that the tree weights and the opening cost each
 fail alone. In rooms a bot never takes seat 1, which is the host's, so the
 evidence also covers seats 3 and 4. See
-[the Advance evidence](evidence/bot-strategies/counter-1000/README.md).
+[the Advance evidence](evidence/bots/advance/README.md).
 
 ### Compare a profile with Novice
 
