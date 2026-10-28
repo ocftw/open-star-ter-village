@@ -11,7 +11,7 @@
   --accent: #1c5cab; --accent-soft: #e3eefb;
   --seq-0: #eef4fc; --seq-1: #cde2fb; --seq-2: #9ec5f4; --seq-3: #6da7ec; --seq-4: #3987e5; --seq-5: #256abf; --seq-6: #184f95; --seq-7: #0d366b;
   --div-neg: #2a78d6; --div-pos: #e34948; --div-mid: #f0efec;
-  --s-n: #2a78d6; --s-a: #eb6834; --star1: #86b6ef; --star2: #3987e5; --star3: #1c5cab; --star4: #0d366b;
+  --star1: #86b6ef; --star2: #3987e5; --star3: #1c5cab; --star4: #0d366b;
   --display: 'Bricolage Grotesque', 'PingFang TC', 'Noto Sans TC', system-ui, sans-serif;
   --body: 'Atkinson Hyperlegible', 'PingFang TC', 'Noto Sans TC', system-ui, sans-serif;
   --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
@@ -21,14 +21,14 @@
   --accent: #86b6ef; --accent-soft: #1d2b3b;
   --seq-0: #1b2633; --seq-1: #184f95; --seq-2: #1c5cab; --seq-3: #256abf; --seq-4: #3987e5; --seq-5: #6da7ec; --seq-6: #9ec5f4; --seq-7: #cde2fb;
   --div-neg: #3987e5; --div-pos: #e66767; --div-mid: #383835;
-  --s-n: #3987e5; --s-a: #d95926; --star1: #184f95; --star2: #256abf; --star3: #5598e7; --star4: #9ec5f4;
+  --star1: #184f95; --star2: #256abf; --star3: #5598e7; --star4: #9ec5f4;
   color-scheme: dark; } }
 :root[data-theme="dark"] {
   --bg: #11161c; --panel: #182029; --fg: #e8edf2; --muted: #a3b0bd; --faint: #6f7d8b; --rule: #2a3542;
   --accent: #86b6ef; --accent-soft: #1d2b3b;
   --seq-0: #1b2633; --seq-1: #184f95; --seq-2: #1c5cab; --seq-3: #256abf; --seq-4: #3987e5; --seq-5: #6da7ec; --seq-6: #9ec5f4; --seq-7: #cde2fb;
   --div-neg: #3987e5; --div-pos: #e66767; --div-mid: #383835;
-  --s-n: #3987e5; --s-a: #d95926; --star1: #184f95; --star2: #256abf; --star3: #5598e7; --star4: #9ec5f4;
+  --star1: #184f95; --star2: #256abf; --star3: #5598e7; --star4: #9ec5f4;
   color-scheme: dark; }
 * { box-sizing: border-box; }
 body { background: var(--bg); color: var(--fg); font: 15px/1.55 var(--body); }
@@ -118,11 +118,6 @@ td.num { font-family: var(--mono); }
     <div class="grid2" id="seats"></div>
   </section>
 
-  <section id="strategy-sec">
-    <header><span class="eyebrow">Bot strategies</span><h2>Novice vs Advance</h2>
-      <p class="note">N = Novice (新手型), A = Advance (進階型). Seat order is written seat 1 first. Per-player win rate counts only tables that seat both strategies.</p></header>
-    <div class="grid2"><div class="panel" id="strategy-chart"></div><div class="panel scroll" id="combo-table"></div></div>
-  </section>
 
   <section>
     <header><span class="eyebrow">星源樹</span><h2>Star tree progress</h2>
@@ -180,11 +175,20 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;',
 const STRATS = { N: 'Novice', A: 'Advance' };
 const present = Object.keys(STRATS).filter(k => A.scenarios.some(s => s.seatGames[k] > 0));
 const mixed = present.length > 1;
+// The seat with the highest or lowest win rate; its value is the gap from a fair share (1 ÷ players),
+// so pooled player counts stay comparable. A single player count also names the seat.
+function seatExtreme(list, pick) {
+  const per = A.manifest.playerCounts.filter(n => list.some(s => s.n === n)).map(n => {
+    const l = list.filter(s => s.n === n), wins = Array.from({ length: n }, (_, i) => mean(l.map(s => s.seatWin[i])));
+    const win = pick(...wins);
+    return { seat: wins.indexOf(win) + 1, win, edge: win - 1 / n };
+  });
+  const v = mean(per.map(p => p.edge));
+  return { v, text: per.length === 1 ? `S${per[0].seat} · ${pct(per[0].win)}` : pp(v) };
+}
 const METRICS = [
-  { id: 'seat1', label: 'Seat 1 edge (win − fair share)', fmt: pp, div: true, get: s => s.seatWin[0] - 1 / s.n },
-  { id: 'lastSeat', label: 'Last seat edge (win − fair share)', fmt: pp, div: true, get: s => s.seatWin[s.n - 1] - 1 / s.n },
-  { id: 'imbalance', label: 'Seat imbalance (largest gap from fair)', fmt: v => pct(v), get: s => s.seatImbalance },
-  { id: 'advance', label: 'Advance edge over Novice (per-player win, A − N)', fmt: pp, div: true, get: s => s.advanceAdvantage, mixedOnly: true },
+  { id: 'strongest', label: 'Strongest seat (seat · win rate)', fmt: pp, div: true, agg: list => seatExtreme(list, Math.max) },
+  { id: 'weakest', label: 'Weakest seat (seat · win rate)', fmt: pp, div: true, agg: list => seatExtreme(list, Math.min) },
   { id: 'top', label: 'Winning score', fmt: v => f(v, 1), get: s => s.topScore },
   { id: 'margin', label: 'Winning margin (1st − 2nd)', fmt: v => f(v, 2), get: s => s.margin },
   { id: 'ties', label: 'Tie rate', fmt: v => pct(v), get: s => s.tieRate },
@@ -197,14 +201,14 @@ const METRICS = [
   { id: 'adv', label: '3★–4★ projects played per game', fmt: v => f(v, 3), get: s => s.played[3] + s.played[4] },
   { id: 'g5', label: 'Government 5 points used per game', fmt: v => f(v, 2), get: s => s.government5[1] },
 ];
-if (!mixed) METRICS.splice(METRICS.findIndex(m => m.mixedOnly), 1);
 const M = Object.fromEntries(METRICS.map(m => [m.id, m]));
-const state = { n: A.manifest.playerCounts.includes(4) ? 4 : 'all', metric: 'seat1', preset: 'all', reward: 'all' };
+const state = { n: A.manifest.playerCounts.includes(4) ? 4 : 'all', metric: 'strongest', preset: 'all', reward: 'all' };
 const counts = A.manifest.playerCounts;
 
 // Pool scenario rows of the selected player counts: every row has the same game count, so pooling is a mean.
 const rows = (filter = () => true) => A.scenarios.filter(s => (state.n === 'all' || s.n === state.n) && filter(s));
-const metricMean = (m, list) => mean(list.map(m.get));
+const metricMean = (m, list) => m.agg ? m.agg(list).v : mean(list.map(m.get));
+const metricText = (m, list) => m.agg ? m.agg(list).text : m.fmt(metricMean(m, list));
 
 // ---------- tooltip ----------
 const tip = document.getElementById('tip');
@@ -248,10 +252,13 @@ function findings() {
   const seatsOf = (list, n) => Array.from({ length: n }, (_, i) => pct(mean(list.map(s => s.seatWin[i])))).join(' / ');
   const label = s => `${ROT_SHORT[s.options.starterRotation]} · +${s.options.extraRounds} rounds · ${PRESET[s.options.treePreset]} · ${s.rewards === 'fixed' ? 'fixed' : 'by stars'}`;
   for (const n of [...counts].sort((a, b) => b - a)) {
-    const rot = ROTS.map(r => { const l = at(n, s => s.options.starterRotation === r); return `${ROT_SHORT[r]} ${seatsOf(l, n)} (largest gap ${pct(mean(l.map(s => s.seatImbalance)))})`; });
-    const ex = [0, 1, 2].map(x => `+${x} ${pp(mean(at(n, s => s.options.extraRounds === x).map(M.seat1.get)))}`);
-    const ranked = at(n).slice().sort((a, b) => a.seatImbalance - b.seatImbalance);
-    items.push(`<b>${n} players, seat win rates (fair ${pct(1 / n)}):</b> ${rot.join('; ')}. Seat 1 edge by extra rounds: ${ex.join(', ')}. Most even scenario: ${label(ranked[0])}, largest gap ${pct(ranked[0].seatImbalance)}. Least even: ${label(ranked[ranked.length - 1])}, ${pct(ranked[ranked.length - 1].seatImbalance)}.`);
+    const ends = l => `strongest ${seatExtreme(l, Math.max).text}, weakest ${seatExtreme(l, Math.min).text}`;
+    const rot = ROTS.map(r => { const l = at(n, s => s.options.starterRotation === r); return `${ROT_SHORT[r]} ${seatsOf(l, n)}`; });
+    const ex = [0, 1, 2].map(x => `+${x}: ${ends(at(n, s => s.options.extraRounds === x))}`);
+    const spread = s => Math.max(...s.seatWin) - Math.min(...s.seatWin);
+    const ranked = at(n).slice().sort((a, b) => spread(a) - spread(b));
+    const first = ranked[0], last = ranked[ranked.length - 1];
+    items.push(`<b>${n} players, seat win rates (fair ${pct(1 / n)}):</b> ${rot.join('; ')}. By extra rounds, ${ex.join('; ')}. Most even scenario: ${label(first)} (${ends([first])}). Least even: ${label(last)} (${ends([last])}).`);
   }
   const tree = PRESETS.map(p => `${PRESET[p]} ${counts.map(n => { const l = at(n, s => s.options.treePreset === p); return `${n}p ${f(mean(l.map(s => s.grown)), 1)}/${pct(mean(l.map(s => s.tierHist[5])), 0)}`; }).join(' ')}`);
   items.push(`<b>Star tree, abilities grown / games reaching tier 5:</b> ${tree.join('; ')}.`);
@@ -259,10 +266,6 @@ function findings() {
   items.push(`<b>Projects per game, played/completed by stars:</b> ${stars.join('; ')}.`);
   const rw = REWARDS.map(r => { const l = A.scenarios.filter(s => s.rewards === r); return `${REWARD[r]}: ${f(mean(l.map(s => sum(s.completed))), 2)} completed, winning score ${f(mean(l.map(s => s.topScore)), 1)}, margin ${f(mean(l.map(s => s.margin)), 2)}`; });
   items.push(`<b>Completion reward (all player counts):</b> ${rw.join('; ')}.`);
-  if (mixed) {
-    const adv = counts.map(n => `${n}p ${pp(mean(at(n).map(s => s.advanceAdvantage)))}`);
-    items.push(`<b>Advance vs Novice:</b> per-player win-rate edge for Advance in mixed tables is ${adv.join(', ')}.`);
-  }
   document.getElementById('findings').innerHTML = items.map(i => `<li>${i}</li>`).join('');
 }
 
@@ -289,10 +292,10 @@ function renderHeat() {
   const colKeys = PRESETS.flatMap(p => REWARDS.map(w => [p, w]));
   const cells = rowKeys.map(([r, x]) => colKeys.map(([p, w]) => {
     const list = rows(s => s.options.starterRotation === r && s.options.extraRounds === x && s.options.treePreset === p && s.rewards === w);
-    return { r, x, p, w, v: metricMean(m, list), list };
+    return { r, x, p, w, v: metricMean(m, list), text: metricText(m, list), list };
   }));
   const scale = scaleFor(m, cells.flat().map(c => c.v));
-  document.getElementById('heat-legend').innerHTML = `<b style="color:var(--fg)">${esc(m.label)}</b> ${scale.legend} <span class="pill">${state.n === 'all' ? 'all player counts' : state.n + ' players'}</span>`;
+  document.getElementById('heat-legend').innerHTML = `<b style="color:var(--fg)">${esc(m.label)}</b> ${scale.legend}${m.agg ? '<span>color = seat win rate − fair share</span>' : ''} <span class="pill">${state.n === 'all' ? 'all player counts' : state.n + ' players'}</span>`;
   const cw = 92, ch = 34, left = 150, top = 52, gap = 2;
   const W = left + colKeys.length * cw + 4, H = top + rowKeys.length * ch + 8 + 2 * 6;
   let svg = `<svg viewBox="0 0 ${W} ${H}" width="${W}" role="img" aria-label="${esc(m.label)} heat map">`;
@@ -303,7 +306,7 @@ function renderHeat() {
     svg += `<text x="${left - 10}" y="${y + ch / 2 + 4}" text-anchor="end">${x === 0 ? `<tspan class="strong" style="fill:var(--fg)">${ROT_SHORT[r]}</tspan> ` : ''}+${x} rounds</text>`;
     cells[i].forEach((c, j) => {
       const fill = scale.color(c.v);
-      svg += `<g data-i="${i}" data-j="${j}"><rect x="${left + j * cw + gap / 2}" y="${y + gap / 2}" width="${cw - gap}" height="${ch - gap}" rx="3" fill="${fill}"/><text class="${inkFor(fill)}" x="${left + j * cw + cw / 2}" y="${y + ch / 2 + 4}" text-anchor="middle">${m.fmt(c.v)}</text></g>`;
+      svg += `<g data-i="${i}" data-j="${j}"><rect x="${left + j * cw + gap / 2}" y="${y + gap / 2}" width="${cw - gap}" height="${ch - gap}" rx="3" fill="${fill}"/><text class="${inkFor(fill)}" x="${left + j * cw + cw / 2}" y="${y + ch / 2 + 4}" text-anchor="middle">${c.text}</text></g>`;
     });
   });
   svg += '</svg>';
@@ -311,7 +314,7 @@ function renderHeat() {
   host.querySelectorAll('g[data-i]').forEach(g => {
     const c = cells[g.dataset.i][g.dataset.j];
     const seatWin = counts.filter(n => state.n === 'all' || n === state.n).map(n => { const l = c.list.filter(s => s.n === n); return `${n}p seats ${Array.from({ length: n }, (_, k) => pct(mean(l.map(s => s.seatWin[k])), 0)).join(' ')}`; });
-    bindTip(g, `<b>${ROT[c.r]} · +${c.x} rounds</b><br>${PRESET[c.p]} · ${REWARD[c.w]}<br>${esc(m.label)}: <b>${m.fmt(c.v)}</b><br>${seatWin.join('<br>')}<br>winning score ${f(mean(c.list.map(s => s.topScore)), 1)} · grown ${f(mean(c.list.map(s => s.grown)), 2)}`);
+    bindTip(g, `<b>${ROT[c.r]} · +${c.x} rounds</b><br>${PRESET[c.p]} · ${REWARD[c.w]}<br>${esc(m.label)}: <b>${c.text}</b><br>${seatWin.join('<br>')}<br>winning score ${f(mean(c.list.map(s => s.topScore)), 1)} · grown ${f(mean(c.list.map(s => s.grown)), 2)}`);
   });
 }
 
@@ -321,7 +324,7 @@ function dotRow(levels, m) {
   let lo = Math.min(...vals), hi = Math.max(...vals);
   if (m.div) { lo = Math.min(lo, 0); hi = Math.max(hi, 0); }
   const pad = (hi - lo) * 0.15 || Math.abs(hi) * 0.05 || 0.01; lo -= pad; hi += pad;
-  const W = 460, left = 150, right = 70, rh = 26, H = levels.length * rh + 26;
+  const W = 480, left = 150, right = 90, rh = 26, H = levels.length * rh + 26;
   const x = v => left + (v - lo) / (hi - lo) * (W - left - right);
   let s = `<svg viewBox="0 0 ${W} ${H}" width="${W}">`;
   if (m.div && lo < 0 && hi > 0) s += `<line x1="${x(0)}" x2="${x(0)}" y1="4" y2="${H - 20}" stroke="var(--faint)" stroke-dasharray="3 3"/>`;
@@ -331,17 +334,17 @@ function dotRow(levels, m) {
     s += `<line x1="${left}" x2="${W - right}" y1="${y}" y2="${y}" stroke="var(--rule)"/>`;
     s += `<text x="${left - 10}" y="${y + 4}" text-anchor="end" class="strong">${esc(l.label)}</text>`;
     s += `<circle cx="${x(l.v)}" cy="${y}" r="5.5" fill="var(--accent)" stroke="var(--panel)" stroke-width="2"/>`;
-    s += `<text x="${W - right + 8}" y="${y + 4}">${m.fmt(l.v)}</text>`;
+    s += `<text x="${W - right + 8}" y="${y + 4}">${l.text}</text>`;
   });
   return s + '</svg>';
 }
 function renderEffects() {
   const m = M[state.metric];
   const factors = [
-    ['Starter rotation', ROTS.map(r => ({ label: ROT[r], v: metricMean(m, rows(s => s.options.starterRotation === r)) }))],
-    ['Extra rounds', [0, 1, 2].map(x => ({ label: `+${x} rounds`, v: metricMean(m, rows(s => s.options.extraRounds === x)) }))],
-    ['Tree preset', PRESETS.map(p => ({ label: PRESET[p], v: metricMean(m, rows(s => s.options.treePreset === p)) }))],
-    ['Completion reward', REWARDS.map(r => ({ label: REWARD[r], v: metricMean(m, rows(s => s.rewards === r)) }))],
+    ['Starter rotation', ROTS.map(r => ({ label: ROT[r], v: metricMean(m, rows(s => s.options.starterRotation === r)), text: metricText(m, rows(s => s.options.starterRotation === r)) }))],
+    ['Extra rounds', [0, 1, 2].map(x => ({ label: `+${x} rounds`, v: metricMean(m, rows(s => s.options.extraRounds === x)), text: metricText(m, rows(s => s.options.extraRounds === x)) }))],
+    ['Tree preset', PRESETS.map(p => ({ label: PRESET[p], v: metricMean(m, rows(s => s.options.treePreset === p)), text: metricText(m, rows(s => s.options.treePreset === p)) }))],
+    ['Completion reward', REWARDS.map(r => ({ label: REWARD[r], v: metricMean(m, rows(s => s.rewards === r)), text: metricText(m, rows(s => s.rewards === r)) }))],
   ];
   document.getElementById('effects').innerHTML = factors.map(([name, levels]) => {
     const spread = Math.max(...levels.map(l => l.v)) - Math.min(...levels.map(l => l.v));
@@ -386,43 +389,6 @@ function renderSeats() {
 }
 
 // ---------- strategies ----------
-function renderStrategy() {
-  document.getElementById('strategy-sec').hidden = !mixed;
-  if (!mixed) return;
-  const ns = counts.filter(n => state.n === 'all' || n === state.n);
-  // Per-player win rate by strategy, grouped by how many Advance bots sit at the table.
-  const groups = ns.flatMap(n => Array.from({ length: n + 1 }, (_, c) => c).map(c => {
-    const combos = A.combos.filter(x => x.n === n && [...x.combo].filter(k => k === 'A').length === c);
-    const rate = k => { const seats = combos.flatMap(x => [...x.combo].map((s, i) => s === k ? x.winRate[i] : null)).filter(v => v !== null); return seats.length ? mean(seats) : null; };
-    return { n, c, N: rate('N'), A: rate('A') };
-  }));
-  const W = 460, left = 84, right = 16, rh = 22, top = 10, H = top + groups.length * rh + ns.length * 8 + 30;
-  const hi = Math.max(...groups.flatMap(g => [g.N ?? 0, g.A ?? 0])) * 1.1;
-  const x = v => left + v / hi * (W - left - right);
-  let s = `<svg viewBox="0 0 ${W} ${H}" width="${W}">`, yy = top;
-  [0, 0.2, 0.4, 0.6, 0.8].filter(t => t < hi).forEach(t => { s += `<line x1="${x(t)}" x2="${x(t)}" y1="${top}" y2="${H - 24}" stroke="var(--rule)"/><text x="${x(t)}" y="${H - 8}" text-anchor="middle">${pct(t, 0)}</text>`; });
-  let lastN = null;
-  groups.forEach(g => {
-    if (lastN !== null && g.n !== lastN) yy += 8; lastN = g.n;
-    s += `<text x="${left - 8}" y="${yy + 14}" text-anchor="end">${g.n}p ${g.c}A</text>`;
-    s += `<line x1="${x(1 / g.n)}" x2="${x(1 / g.n)}" y1="${yy + 2}" y2="${yy + rh - 2}" stroke="var(--fg)" stroke-dasharray="2 2"/>`;
-    for (const k of ['N', 'A']) if (g[k] !== null) s += `<circle cx="${x(g[k])}" cy="${yy + rh / 2}" r="5.5" fill="var(--s-${k.toLowerCase()})" stroke="var(--panel)" stroke-width="2"><title>${g.n}p, ${g.c} Advance: ${STRATS[k]} ${pct(g[k])}</title></circle>`;
-    yy += rh;
-  });
-  s += '</svg>';
-  document.getElementById('strategy-chart').innerHTML = `<h3>Per-player win rate by number of Advance bots</h3><div class="legend"><span><span class="sw" style="background:var(--s-n)"></span>Novice seat</span><span><span class="sw" style="background:var(--s-a)"></span>Advance seat</span><span>dashed tick = fair share</span></div><div class="scroll">${s}</div>`;
-  const list = A.combos.filter(x => ns.includes(x.n));
-  const table = ns.map(n => {
-    const combos = [...new Set(list.filter(x => x.n === n).map(x => x.combo))];
-    return combos.map(combo => {
-      const l = list.filter(x => x.n === n && x.combo === combo);
-      const wins = Array.from({ length: n }, (_, i) => mean(l.map(x => x.winRate[i])));
-      const scores = Array.from({ length: n }, (_, i) => mean(l.map(x => x.meanScore[i])));
-      return `<tr><td class="num">${combo}</td>${wins.map((w, i) => `<td class="num" style="color:var(--s-${combo[i].toLowerCase()})">${pct(w)}</td>`).join('')}${'<td></td>'.repeat(4 - n)}<td class="num">${scores.map(v => f(v, 1)).join(' / ')}</td></tr>`;
-    }).join('');
-  }).join('');
-  document.getElementById('combo-table').innerHTML = `<h3>Seat assignments (pooled over 72 scenarios)</h3><table><thead><tr><th>Seats</th><th>Win S1</th><th>S2</th><th>S3</th><th>S4</th><th>Mean score</th></tr></thead><tbody>${table}</tbody></table>`;
-}
 
 // ---------- tree ----------
 function treeRows() { return rows(s => (state.preset === 'all' || s.options.treePreset === state.preset) && (state.reward === 'all' || s.rewards === state.reward)); }
@@ -530,12 +496,12 @@ function renderBreakdown() {
 }
 
 // ---------- all table ----------
-let sortKey = 'seat1', sortDir = -1;
+let sortKey = 'strongest', sortDir = -1;
 function renderTable() {
   const cols = [
     { id: 'name', label: 'Scenario', get: s => s.id, fmt: (v, s) => `${ROT_SHORT[s.options.starterRotation]} · +${s.options.extraRounds} · ${PRESET[s.options.treePreset]} · ${s.rewards === 'fixed' ? 'fixed' : 'stars'}` },
     { id: 'n', label: 'P', get: s => s.n, fmt: v => v },
-    ...['seat1', 'imbalance', ...(mixed ? ['advance'] : []), 'top', 'margin', 'grown', 'tier5', 'completed', 'rate', 'adv'].map(id => ({ id, label: M[id].label.split(' (')[0], get: M[id].get, fmt: M[id].fmt })),
+    ...['strongest', 'weakest', 'top', 'margin', 'grown', 'tier5', 'completed', 'rate', 'adv'].map(id => ({ id, label: M[id].label.split(' (')[0], get: s => metricMean(M[id], [s]), fmt: (v, s) => metricText(M[id], [s]) })),
   ];
   const list = rows().slice().sort((a, b) => { const c = cols.find(c => c.id === sortKey); const x = c.get(a), y = c.get(b); return (x > y ? 1 : x < y ? -1 : 0) * sortDir; });
   document.getElementById('all-table').innerHTML = `<table><thead><tr>${cols.map(c => `<th class="sortable" data-k="${c.id}" aria-sort="${c.id === sortKey ? (sortDir > 0 ? 'ascending' : 'descending') : 'none'}">${esc(c.label)}${c.id === sortKey ? (sortDir > 0 ? ' ▲' : ' ▼') : ''}</th>`).join('')}</tr></thead><tbody>${list.map(s => `<tr>${cols.map((c, i) => `<td class="${i ? 'num' : ''}">${c.fmt(c.get(s), s)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
@@ -544,7 +510,7 @@ function renderTable() {
 
 function render() {
   document.querySelectorAll('#ctl-n button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === String(state.n))));
-  renderHeat(); renderEffects(); renderSeats(); renderStrategy(); renderTree(); renderProjects(); renderBreakdown(); renderTable();
+  renderHeat(); renderEffects(); renderSeats(); renderTree(); renderProjects(); renderBreakdown(); renderTable();
 }
 header(); findings(); controls(); render();
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', render);
