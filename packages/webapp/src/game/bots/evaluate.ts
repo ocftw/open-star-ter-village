@@ -6,7 +6,7 @@ import type { ContributionAction } from '@/game/core/ContributionAction';
 import type { ActionExecutionOptions } from '@/game/core/stage/action/validate';
 import type { ChoiceTarget } from '@/game/standard/engine';
 import type { NodeId } from '@/game/standard/state';
-import { hasNode, NODES, predecessors, REWARDS, THRESHOLDS } from '@/game/standard/tree';
+import { hasNode, NODES, predecessors, REWARDS, treeProgress } from '@/game/standard/tree';
 import type { ProjectSlot } from '@/game/store/slice/projectSlot/projectSlot';
 import { ProjectSlotSelector } from '@/game/store/slice/projectSlot/projectSlot';
 import { RuleSelector } from '@/game/store/slice/rule';
@@ -96,10 +96,10 @@ export function nodeValue(p: Position, node: NodeId): number {
   const beneficiaries = 1 + w.village * (p.ctx.numPlayers - 1);
   const consequence = p.profile.nodeImpact[node] * Math.max(0, p.roundsLeft - 0.5) * beneficiaries * w.pointsPerAP;
   const grown = p.view.standard?.grown ?? [];
-  const completed = p.view.standard?.completedProjectIds.length ?? 0;
+  const progress = treeProgress(p.view);
   const unlock = tier === 5 ? 0 : NODES
     .filter(next => predecessors(next).includes(node) && !grown.includes(next) && !predecessors(next).some(n => grown.includes(n)))
-    .reduce((sum, next) => sum + REWARDS[tier] * (completed >= THRESHOLDS[tier] ? 1 : 0.5), 0) * w.unlock;
+    .reduce((sum, next) => sum + REWARDS[tier] * (progress.value >= progress.thresholds[tier] ? 1 : 0.5), 0) * w.unlock;
   return (REWARDS[tier - 1] * w.points + consequence + unlock) * w.tree;
 }
 

@@ -172,6 +172,7 @@ function settleStandard(G: GameState) {
     ScoreBoardMutator.add(G.table.scoreBoard, slot.lastContributor, finisherReward);
     PlayersMutator.addWorkerTokens(G.players, slot.owner, slot.ownerToken);
     s.completedProjectIds.push(slot.card!.id);
+    s.completedComplexity = (s.completedComplexity ?? 0) + slot.card!.difficulty;
     log(G, 'complete', slot.lastContributor, slot.card!.name);
     trackCompletion(G, slot);
     if (hasNode(G, 'source-4') && engineer) enqueue(G, 'source4', slot.lastContributor, slot.card!.id);

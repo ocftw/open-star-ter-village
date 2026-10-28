@@ -7,6 +7,7 @@ import { OpenStarTerVillage } from '../game';
 import { setup } from '../core/setup';
 import { GameState } from '../store/store';
 import { roomSetupError } from './config';
+import { normalizeStandardOptions, TREE_PRESETS } from './options';
 import { standardState } from './state';
 import { predecessors, growthReason, NODES } from './tree';
 import { advanceStandard, beginStandardEvent, choiceOptions, enqueue, growTree, resolveStandardChoice, syncTreeRules } from './engine';
@@ -62,6 +63,38 @@ describe('Standard room contract', () => {
 });
 
 describe('tree', () => {
+  test.each(Object.keys(TREE_PRESETS))('checks every threshold of %s using the selected public metric', treePreset => {
+    for (let tier = 1; tier <= 5; tier++) {
+      const G = state();
+      G.standard!.options = normalizeStandardOptions({ treePreset });
+      const preset = TREE_PRESETS[G.standard!.options.treePreset];
+      const threshold = preset.thresholds[tier - 1];
+      G.standard!.grown = tier > 1 ? [`source-${tier - 1}` as import('./state').NodeId] : [];
+      const setProgress = (value: number) => {
+        G.standard!.completedComplexity = preset.metric === 'cc' ? value : 0;
+        G.standard!.completedProjectIds = Array.from({ length: preset.metric === 'count' ? value : 0 }, (_, i) => String(i));
+      };
+      if (threshold > 0) {
+        setProgress(threshold - 1);
+        expect(growthReason(G, `source-${tier}` as import('./state').NodeId, '0')).toContain('需要全村');
+      }
+      setProgress(threshold);
+      expect(growthReason(G, `source-${tier}` as import('./state').NodeId, '0')).toBeUndefined();
+    }
+  });
+
+  test('stores printed complexity once before a completed project leaves the board', () => {
+    const G = state();
+    const slot = project(G, 'complex', '0', 4, 4);
+    slot.card!.difficulty = 3;
+    G.standard!.phase = 'settlement';
+    advanceStandard(context(G));
+    expect(G.standard!.completedProjectIds).toEqual(['complex']);
+    expect(G.standard!.completedComplexity).toBe(3);
+    advanceStandard(context(G));
+    expect(G.standard!.completedComplexity).toBe(3);
+    expect(JSON.parse(JSON.stringify(G)).standard.completedComplexity).toBe(3);
+  });
   test('uses the eight directed diagonal edges', () => {
     expect(predecessors('source-2')).toEqual(['source-1', 'data-1']);
     expect(predecessors('government-2')).toEqual(['government-1']);

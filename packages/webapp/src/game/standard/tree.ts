@@ -1,8 +1,13 @@
 import { standardEvent } from './events';
 import type { ClientGameState, GameState } from '../store/store';
 import type { Branch, NodeId } from './state';
+import { TREE_PRESETS } from './options';
 export const BRANCHES: Branch[] = ['source', 'data', 'government'];
 export const THRESHOLDS = [0, 0, 2, 4, 6];
+export function treeProgress(G: Pick<GameState, 'standard'>) {
+  const preset = TREE_PRESETS[G.standard?.options?.treePreset ?? 'count-00246'];
+  return { ...preset, value: preset.metric === 'cc' ? (G.standard?.completedComplexity ?? 0) : (G.standard?.completedProjectIds.length ?? 0) };
+}
 export const REWARDS = [1, 1, 2, 2, 4];
 export const NODE_LABELS: Record<Branch, string[]> = {
   source: ['人力區 6 → 8', '協助貢獻 4 → 5', '工程師發起貢獻 1 → 3', '結案者推進另一工程師 1 點', '發起花費 2 → 1 AP'],
@@ -31,7 +36,8 @@ export function growthReason(G: GameState | ClientGameState, node: NodeId, playe
   if (s.grown.length >= 10) return '愛心已用完';
   const tier = Number(node.split('-')[1]);
   if (s.grown.filter(n => n.endsWith(`-${tier}`)).length >= 2) return '本層已滿 2 顆';
-  if (s.completedProjectIds.length < THRESHOLDS[tier - 1]) return `需要全村結案 ${THRESHOLDS[tier - 1]}`;
+  const progress = treeProgress(G);
+  if (progress.value < progress.thresholds[tier - 1]) return `需要全村${progress.metric === 'cc' ? '結案複雜度 CC' : '結案數'} ${progress.thresholds[tier - 1]}`;
   if (tier > 1 && !predecessors(node).some(n => s.grown.includes(n))) return '沒有相連下層能力';
   if (!G.players[playerId] || G.players[playerId].token.actions < 1) return '需要 1 行動點';
   if (s.growthUsed && !overtime) return '本回合已成長；可使用加班';
