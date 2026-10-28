@@ -1,6 +1,7 @@
 import { STANDARD_EVENTS } from '@/game/standard/events';
 import { roomSetupError, Ruleset, StandardExperiments, DEFAULT_EXPERIMENTS } from '../standard/config';
 import { standardState } from '../standard/state';
+import { normalizeStandardOptions, StandardOptions } from '../standard/options';
 import { Ctx, DefaultPluginAPIs } from 'boardgame.io';
 import rawProjectCards from '../data/card/projects.json';
 import rawJobCards from '../data/card/jobs.json';
@@ -42,6 +43,7 @@ interface RawJobCard {
 export interface GameSetupData {
   ruleset?: Ruleset;
   experiments?: StandardExperiments;
+  standardOptions?: StandardOptions;
   /** Forces a specific event card to appear first in the event deck (for demos/tests). */
   forcedFirstEvent?: string;
 }
@@ -55,6 +57,8 @@ export const setup: SetupFn<GameState> = ({ ctx, random }, setupData?: GameSetup
   const G = GameStore.initialState();
   if (setupData?.ruleset === 'tree-poc-v1') {
     G.standard = standardState();
+    G.standard.options = normalizeStandardOptions(setupData.standardOptions);
+    G.standard.completedComplexity = 0;
     G.standard.experiments = {...(setupData?.experiments ?? DEFAULT_EXPERIMENTS)};
     G.rules.type = 'standard';
     G.rules.table.maxJobSlots = 6;
@@ -68,6 +72,7 @@ export const setup: SetupFn<GameState> = ({ ctx, random }, setupData?: GameSetup
   // Set event card count based on player count (Simplified Mode rulebook):
   // 2 players → 6 cards, 3 players → 5 cards, 4+ players → 4 cards
   RuleMutator.setNumNonEndGameEventCards(G.rules, ctx.numPlayers);
+  if (G.standard) G.rules.numNonEndGameEventCards += G.standard.options!.extraRounds;
 
   // add cards to decks
   const mapToProjectCards = (rawProjectCards: RawProjectCard[]): ProjectCard[] => {

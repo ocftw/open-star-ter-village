@@ -1,4 +1,5 @@
 import type { StandardExperiments } from './config';
+import type { StandardOptions } from './options';
 import type { EventCard } from '../card';
 import { emptyTelemetry, type StandardTelemetry } from './telemetry';
 export type Branch = 'source' | 'data' | 'government';
@@ -9,6 +10,9 @@ export interface PublicLog { round: number; kind: string; playerId?: string; tar
 export interface StandardState {
   version: 'tree-poc-v1';
   experiments?: StandardExperiments;
+  /** Absent only in legacy serialized matches; never rewrite their settings. */
+  options?: StandardOptions;
+  completedComplexity?: number;
   startedAt: number;
   finishedAt?: number;
   grown: NodeId[];

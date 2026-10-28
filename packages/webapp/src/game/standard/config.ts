@@ -1,3 +1,4 @@
+import { normalizeStandardOptions } from './options';
 // Change this one line and redeploy to stop creation of Standard rooms.
 export const STANDARD_RULES_ENABLED = true;
 export interface StandardExperiments {
@@ -30,6 +31,9 @@ export function roomSetupError(data: unknown, count: number, enabled = STANDARD_
   const ruleset = (data as { ruleset?: unknown } | undefined)?.ruleset === undefined ? 'simple' : (data as { ruleset: unknown }).ruleset;
   if (ruleset !== 'simple' && ruleset !== 'tree-poc-v1') return 'Unknown ruleset';
   if (ruleset === 'tree-poc-v1' && !enabled) return 'Standard Mode is disabled';
+  const options = (data as { standardOptions?: unknown } | undefined)?.standardOptions;
+  if (options !== undefined && ruleset !== 'tree-poc-v1') return 'Options require Standard Mode';
+  try { normalizeStandardOptions(options); } catch (error) { return (error as Error).message; }
   const experiments = (data as {experiments?: unknown} | undefined)?.experiments;
   if (experiments !== undefined) {
     if (ruleset !== 'tree-poc-v1') return 'Experiments require Standard Mode';
