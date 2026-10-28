@@ -28,12 +28,12 @@ describe('SeatCard bot seats', () => {
 
   test('a bot seat shows its strategy and a remove control for the host', () => {
     const onRemoveBot = jest.fn();
-    const { rerender } = render(<SeatCard seatIndex={1} playerName="阿衡" botLabel="新手型 Novice" />);
+    const { rerender } = render(<SeatCard seatIndex={1} playerName="小新" botLabel="新手型 Novice" />);
     expect(screen.getByTestId('seat-1-bot').textContent).toContain('新手型 Novice');
     expect(screen.getByTestId('seat-1-filled').textContent).toContain('BOT');
     expect(screen.queryByTestId('seat-1-remove-bot')).toBeNull();
 
-    rerender(<SeatCard seatIndex={1} playerName="阿衡" botLabel="新手型 Novice" onRemoveBot={onRemoveBot} />);
+    rerender(<SeatCard seatIndex={1} playerName="小新" botLabel="新手型 Novice" onRemoveBot={onRemoveBot} />);
     fireEvent.click(screen.getByTestId('seat-1-remove-bot'));
     expect(onRemoveBot).toHaveBeenCalled();
   });

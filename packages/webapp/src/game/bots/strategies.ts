@@ -15,14 +15,14 @@ export const BOT_STRATEGIES: Record<string, BotStrategy> = {
     id: 'novice',
     label: '新手型 Novice',
     description: '每一步選擇預期得分最高的行動，兼顧專案與星源樹。',
-    names: ['阿衡', '天平', '均均', '中和', '小秤', '平平'],
+    names: ['小新', '菜菜', '嫩嫩', '初初', '萌萌', '阿學'],
     profile: NOVICE,
   },
   advance: {
     id: 'advance',
     label: '進階型 Advance',
     description: '少投資共享的星源樹、提高開案門檻，把行動用來完成自己的專案，搶在後手之前收尾。',
-    names: ['阿制', '反手', '截截', '先鋒', '小盾', '守守'],
+    names: ['老手', '高手', '阿達', '進進', '大師', '精精'],
     profile: ADVANCE,
   },
 };
