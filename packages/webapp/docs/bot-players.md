@@ -16,6 +16,8 @@ pnpm webapp bots --players 4 --games 20 --seed trial
 pnpm webapp bots --profile counter              # every seat plays Counter
 pnpm webapp bots --weights '{"advancedDraw":1}' # override profile weights as JSON
 pnpm webapp bots --no-move-log --out /tmp/run   # skip move logs, choose the output folder
+pnpm webapp bots --players 4 --games 10 --rotation counterclockwise --extra-rounds 2 --tree-preset cc-013610 --rewards difficulty
+pnpm webapp exec tsx scripts/verify-standard-room-options.ts /tmp/room-matrix.json
 ```
 
 Output goes to `packages/webapp/bot-runs/<timestamp>/` (gitignored):
@@ -30,7 +32,10 @@ Output goes to `packages/webapp/bot-runs/<timestamp>/` (gitignored):
 
 The same seed always replays the same game, so a failing or surprising seed
 can be rerun and inspected move by move. The command exits non-zero if any
-game fails.
+game fails. Room options use the same strict normalizer as the server. The matrix
+command runs all 108 configuration/player-count cases with fixed rewards, repeats
+each seed, verifies actual round orders, and records build/settings/scores/progress
+and move hashes. It is a smoke matrix, not evidence of game balance.
 
 ## How it works
 

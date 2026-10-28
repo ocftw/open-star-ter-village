@@ -13,13 +13,21 @@ on the server, including rematches. Existing state retains its ruleset; moves
 never read the release switch. The in-memory server loses matches on restart.
 Simplified remains the default (3–6 players). Standard allows 2, 3 or 4 players.
 
-Standard uses the 0/0/2/4/6 village-wide completion thresholds and the supplied
+Standard defaults to the 0/0/2/4/6 village-wide completion thresholds and the supplied
 alternating diagonal connections. Each node costs 1 AP; ten hearts, two per
 tier. Project types are ignored and hidden; difficulty and talent requirements
 remain. All fifteen abilities are implemented. Entry cards are difficulty 1–2;
 advanced cards are difficulty 3–4 and are drawable only above 20 influence.
 Standard uses all 14 printed events (13 ordinary plus the final event), including the revised 數位政委. Simplified retains its existing event pool.
-Draw 6/5/4 ordinary events for 2/3/4 players, then the final event.
+Draw 6/5/4 ordinary events for 2/3/4 players, plus the selected 0/1/2 extra
+ordinary events, then exactly one final event. Total rounds: `9 - players + extraRounds`.
+See the [implemented event catalog](poc-event-cards.json) for all card wording and function IDs.
+
+Room options are immutable after creation: starter rotation none (default),
+clockwise or counterclockwise; extra rounds 0 (default), 1 or 2; and tree presets
+count 0/0/2/4/6 (default), CC 0/0/2/4/6, CC 0/0/3/6/9 or CC 0/1/3/6/10.
+CC is the village-wide sum of printed difficulty on uniquely completed projects.
+Rotation changes the first seat each round, while within-round direction stays unchanged.
 
 ## Explicit test interpretations
 
@@ -34,7 +42,8 @@ Draw 6/5/4 ordinary events for 2/3/4 players, then the final event.
   The cube owner receives finisher credit if it completes the project.
 - Source 4: the finisher may advance their existing engineer cube elsewhere.
 - Government 5: floor half the initiator's contribution; distribute this bonus
-  one point at a time to their existing cubes elsewhere. Earned score is retained.
+  to their cubes elsewhere, including new cubes costing one reserve token each.
+  No card or AP cost. Earned score is retained.
 - Resolve Source 4 then Government 5 in board order. Never exceed requirements;
   newly completed projects settle once through the same queue. Ordinary actions
   settle at turn end. Events settle before the first action.
@@ -123,26 +132,31 @@ Balance audit: [findings and data limits](balance-audit.md).
 
 ## Per-room rule experiments
 
-Standard room creation offers two independent options, with the current rules
-selected by default. The server validates both enums and copies the selection
-into authoritative `standard.experiments` at creation. Existing rooms without
-this field retain the original behavior. Simplified rooms cannot enable them.
+New Standard rooms fix Government 5 to new-own-cube mode. The server rejects
+the retired existing-only option. Old serialized states retain their original
+behavior; historical A/B/C/D scripts explicitly opt into offline compatibility.
+The completion-reward selector remains available. Simplified rejects these options.
 
 | Setting | Default | Experiment |
 | --- | --- | --- |
-| Government 5 | Allocate to the initiator's existing cubes on other projects | Allocate to any unfilled required profession on another project. Creating the initiator's own cube costs **one reserve worker token**, no labor card or AP. Advancing that existing cube costs no further token. No reserve means no new cube. |
+| Government 5 (fixed) | Allocate to any unfilled required profession on another project. Creating the initiator's own cube costs **one reserve worker token**, no labor card or AP. | No selector. Advancing an existing cube costs no further token; no reserve means no new cube. |
 | Initiator / finisher rewards | +2 / +2 | Each gets the project's printed difficulty, +1 to +4. The annual-accounting event's initiator +2 remains additive. |
 
 Government 5 still grants `floor(initiator contribution / 2)` points without
 reducing the original score. It cannot advance another player's cube, exceed
 requirements or spend twice on a duplicate request. Chained completions return
 new cubes to inventory normally. Players may allocate some points and skip the
-rest. The two options yield four combinations; no deployment is needed between
-rooms once this version is deployed.
+rest. Rotation, extra rounds and tree presets yield 36 configurations per player
+count; both reward modes double that. Historical A/B/C/D evidence describes its
+original build, not the new scoring and rotation implementation.
 
 The lobby, waiting room and tree panel show the settings. Reconnect restores
 pending decisions. Play Again forwards the same settings; the public JSON
-export and bot exports include `experiments`. Bots use the selected rewards and
+export and bot exports include `experiments`, `standardOptions`, public CC progress
+and public history. History includes ordinary actions, score reasons, event
+effects and removed-project snapshots, but no hidden hands or discarded hand-card IDs.
+Final unfinished-project VP is floored separately for each player's contribution
+on each project, then summed. Bots use the selected rewards and
 new-cube token cost in their action evaluation.
 
 [Runtime scenarios, screenshots and deployment record](evidence/standard-experiments/README.md).
