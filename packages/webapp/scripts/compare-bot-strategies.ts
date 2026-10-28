@@ -4,6 +4,7 @@
  * four Standard rule options. Writes compact replayable evidence.
  *
  *   pnpm webapp exec tsx scripts/compare-bot-strategies.ts --challenger counter --games 300
+ *   pnpm webapp exec tsx scripts/compare-bot-strategies.ts --challenger counter --scenarios A --weights '{"initiation":0}'
  */
 import assert from 'node:assert/strict';
 import { execFileSync, spawn } from 'node:child_process';
@@ -13,7 +14,7 @@ import { join, resolve } from 'node:path';
 import { parseArgs } from 'node:util';
 import { gzipSync } from 'node:zlib';
 import { createProfileBot } from '@/game/bots/profileBot';
-import { BALANCED } from '@/game/bots/profiles';
+import { BALANCED, withWeights, type Weights } from '@/game/bots/profiles';
 import { runGame } from '@/game/bots/runner';
 import { BOT_STRATEGIES, isBotStrategy } from '@/game/bots/strategies';
 import type { Bot } from '@/game/bots/types';
@@ -26,13 +27,16 @@ const { values } = parseArgs({ options: {
   seed: { type: 'string', default: 'bot-strategies-v1' },
   players: { type: 'string', default: '2,3,4' },
   seats: { type: 'string', default: '1,2' },
+  scenarios: { type: 'string', default: 'A,B,C,D' },
+  // Ablations: override the challenger profile's weights as JSON (then `balanced` may be the challenger).
+  weights: { type: 'string' },
   jobs: { type: 'string', default: String(availableParallelism()) },
   out: { type: 'string', default: 'bot-runs/bot-strategies' },
   // Internal: run one player count and scenario, writing JSONL to this file.
   job: { type: 'string' },
 } });
 
-const SCENARIOS: { id: string; experiments: StandardExperiments }[] = [
+const ALL_SCENARIOS: { id: string; experiments: StandardExperiments }[] = [
   { id: 'A', experiments: { government5: 'existing', completionRewards: 'fixed' } },
   { id: 'B', experiments: { government5: 'any', completionRewards: 'fixed' } },
   { id: 'C', experiments: { government5: 'existing', completionRewards: 'difficulty' } },
@@ -40,8 +44,13 @@ const SCENARIOS: { id: string; experiments: StandardExperiments }[] = [
 ];
 const games = Number(values.games);
 assert.ok(Number.isInteger(games) && games > 0, 'games must be a positive integer');
-assert.ok(isBotStrategy(values.challenger) && values.challenger !== 'balanced', `challenger must be a registered strategy other than balanced: ${Object.keys(BOT_STRATEGIES).join(', ')}`);
+assert.ok(isBotStrategy(values.challenger), `challenger must be a registered strategy: ${Object.keys(BOT_STRATEGIES).join(', ')}`);
+assert.ok(values.challenger !== 'balanced' || values.weights, 'an unchanged Balanced challenger would only replay the baseline');
 const challengerStrategy = BOT_STRATEGIES[values.challenger];
+const weightOverrides = values.weights ? JSON.parse(values.weights) as Partial<Weights> : undefined;
+const challengerProfile = weightOverrides ? withWeights(challengerStrategy.profile, weightOverrides) : challengerStrategy.profile;
+const SCENARIOS = values.scenarios!.split(',').map(id => ALL_SCENARIOS.find(s => s.id === id)!);
+assert.ok(SCENARIOS.every(Boolean), 'scenarios must be from A, B, C, D');
 const playerCounts = values.players!.split(',').map(Number);
 const seats = values.seats!.split(',').map(Number);
 assert.ok(playerCounts.every(n => [2, 3, 4].includes(n)), 'players must be 2, 3 or 4');
@@ -90,7 +99,7 @@ function countByStar(difficulties: number[]): Record<string, number> {
 
 function runJob(numPlayers: number, scenario: typeof SCENARIOS[number], file: string) {
   const balanced = createProfileBot(BALANCED);
-  const challenger = challengerStrategy.createBot(challengerStrategy.profile);
+  const challenger = challengerStrategy.createBot(challengerProfile);
   const lines: string[] = [];
   for (let i = 0; i < games; i++) {
     // The same seed per player count across options and arms: deals, events and Balanced tie-breaks are paired.
@@ -141,7 +150,7 @@ async function main() {
     startedAt: new Date(started).toISOString(), finishedAt: new Date().toISOString(), seconds: (Date.now() - started) / 1000,
     seedPrefix: values.seed, seeds: `${values.seed}-<players>p-<0..${games - 1}>`, gamesPerSeedSet: games,
     playerCounts, challengerSeats: seats, scenarios: SCENARIOS, totalGames: records.length, failures: 0,
-    challenger: { strategy: values.challenger, label: challengerStrategy.label, profile: challengerStrategy.profile },
+    challenger: { strategy: values.challenger, label: challengerStrategy.label, weightOverrides, profile: challengerProfile },
     baseline: { strategy: 'balanced', profile: BALANCED },
     method: 'Authoritative headless reducer; bots see only their own player view. Each seed is played all-Balanced and once per challenger seat with Balanced in every other seat; seats are 1-based. Ties split wins.' }, null, 2));
   console.info(`${records.length} games saved to ${out}`);
