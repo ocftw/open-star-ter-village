@@ -102,7 +102,7 @@ td.num { font-family: var(--mono); }
 
   <section>
     <header><span class="eyebrow">72 scenarios</span><h2>Scenario heat map</h2>
-      <p class="note">Rows: starter rotation × extra rounds. Columns: tree preset × completion reward. Each cell pools every bot seating in the run. Strongest and weakest seat compare each seat's average win rate over all games in the cell (ties split the win). Hover a cell for its numbers.</p></header>
+      <p class="note">Rows: starter rotation × extra rounds. Columns: tree preset × completion reward. Each cell pools every bot seating in the run. Seat spread is the strongest seat's win rate minus the weakest seat's, each averaged over all games in the cell (ties split the win); S4 › S1 names the two seats. pp means percentage points, the plain difference between two percentages: 31% − 14% = 17 pp. Hover a cell for its numbers.</p></header>
     <div class="panel"><div class="legend" id="heat-legend"></div><div class="scroll" id="heat"></div></div>
   </section>
 
@@ -175,20 +175,21 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;',
 const STRATS = { N: 'Novice', A: 'Advance' };
 const present = Object.keys(STRATS).filter(k => A.scenarios.some(s => s.seatGames[k] > 0));
 const mixed = present.length > 1;
-// The seat with the highest or lowest win rate; its value is the gap from a fair share (1 ÷ players),
-// so pooled player counts stay comparable. A single player count also names the seat.
-function seatExtreme(list, pick) {
+// Strongest minus weakest seat, each seat's win rate averaged over the games first. Pooled player
+// counts average their spreads; a single player count also names both seats.
+const ppAbs = v => (v * 100).toFixed(1) + ' pp';
+function seatSpread(list) {
   const per = A.manifest.playerCounts.filter(n => list.some(s => s.n === n)).map(n => {
     const l = list.filter(s => s.n === n), wins = Array.from({ length: n }, (_, i) => mean(l.map(s => s.seatWin[i])));
-    const win = pick(...wins);
-    return { seat: wins.indexOf(win) + 1, win, edge: win - 1 / n };
+    const hi = Math.max(...wins), lo = Math.min(...wins);
+    return { hi, lo, hiSeat: wins.indexOf(hi) + 1, loSeat: wins.indexOf(lo) + 1 };
   });
-  const v = mean(per.map(p => p.edge));
-  return { v, text: per.length === 1 ? `S${per[0].seat} · ${pct(per[0].win)}` : pp(v) };
+  const v = mean(per.map(p => p.hi - p.lo)), one = per.length === 1 ? per[0] : null;
+  return { v, text: ppAbs(v), sub: one ? `S${one.hiSeat} › S${one.loSeat}` : '',
+    detail: one ? `strongest S${one.hiSeat} ${pct(one.hi)}, weakest S${one.loSeat} ${pct(one.lo)}` : '' };
 }
 const METRICS = [
-  { id: 'strongest', label: 'Strongest seat (seat · win rate)', fmt: pp, div: true, agg: list => seatExtreme(list, Math.max) },
-  { id: 'weakest', label: 'Weakest seat (seat · win rate)', fmt: pp, div: true, agg: list => seatExtreme(list, Math.min) },
+  { id: 'spread', label: 'Seat spread (strongest − weakest win rate)', fmt: ppAbs, agg: seatSpread },
   { id: 'top', label: 'Winning score', fmt: v => f(v, 1), get: s => s.topScore },
   { id: 'margin', label: 'Winning margin (1st − 2nd)', fmt: v => f(v, 2), get: s => s.margin },
   { id: 'ties', label: 'Tie rate', fmt: v => pct(v), get: s => s.tieRate },
@@ -202,13 +203,15 @@ const METRICS = [
   { id: 'g5', label: 'Government 5 points used per game', fmt: v => f(v, 2), get: s => s.government5[1] },
 ];
 const M = Object.fromEntries(METRICS.map(m => [m.id, m]));
-const state = { n: A.manifest.playerCounts.includes(4) ? 4 : 'all', metric: 'strongest', preset: 'all', reward: 'all' };
+const state = { n: A.manifest.playerCounts.includes(4) ? 4 : 'all', metric: 'spread', preset: 'all', reward: 'all' };
 const counts = A.manifest.playerCounts;
 
 // Pool scenario rows of the selected player counts: every row has the same game count, so pooling is a mean.
 const rows = (filter = () => true) => A.scenarios.filter(s => (state.n === 'all' || s.n === state.n) && filter(s));
-const metricMean = (m, list) => m.agg ? m.agg(list).v : mean(list.map(m.get));
-const metricText = (m, list) => m.agg ? m.agg(list).text : m.fmt(metricMean(m, list));
+// Spread is taken per scenario, then averaged, so cells, main effects and the table agree.
+const metricMean = (m, list) => mean(list.map(m.agg ? s => m.agg([s]).v : m.get));
+const metricText = (m, list) => m.fmt(metricMean(m, list));
+const metricAgg = (m, list) => ({ ...(m.agg && list.length === 1 ? m.agg(list) : { sub: '', detail: '' }), text: metricText(m, list) });
 
 // ---------- tooltip ----------
 const tip = document.getElementById('tip');
@@ -252,7 +255,7 @@ function findings() {
   const seatsOf = (list, n) => Array.from({ length: n }, (_, i) => pct(mean(list.map(s => s.seatWin[i])))).join(' / ');
   const label = s => `${ROT_SHORT[s.options.starterRotation]} · +${s.options.extraRounds} rounds · ${PRESET[s.options.treePreset]} · ${s.rewards === 'fixed' ? 'fixed' : 'by stars'}`;
   for (const n of [...counts].sort((a, b) => b - a)) {
-    const ends = l => `strongest ${seatExtreme(l, Math.max).text}, weakest ${seatExtreme(l, Math.min).text}`;
+    const ends = l => { const a = seatSpread(l); return `spread ${a.text}: ${a.detail}`; };
     const rot = ROTS.map(r => { const l = at(n, s => s.options.starterRotation === r); return `${ROT_SHORT[r]} ${seatsOf(l, n)}`; });
     const ex = [0, 1, 2].map(x => `+${x}: ${ends(at(n, s => s.options.extraRounds === x))}`);
     const spread = s => Math.max(...s.seatWin) - Math.min(...s.seatWin);
@@ -286,16 +289,25 @@ function controls() {
 }
 
 // ---------- heat map ----------
+// Expected spread if every seat were equally strong: the range of n seat win rates with binomial noise.
+function chanceNote() {
+  const RANGE = { 2: 1.596, 3: 1.693, 4: 2.059 };
+  const parts = counts.filter(n => state.n === 'all' || n === state.n).map(n => {
+    const g = A.scenarios.find(s => s.n === n).games, p = 1 / n;
+    return `${n}p ${ppAbs(RANGE[n] * Math.sqrt(p * (1 - p) / g))}`;
+  });
+  return `<span>chance alone ≈ ${parts.join(', ')}</span>`;
+}
 function renderHeat() {
   const m = M[state.metric];
   const rowKeys = ROTS.flatMap(r => [0, 1, 2].map(x => [r, x]));
   const colKeys = PRESETS.flatMap(p => REWARDS.map(w => [p, w]));
   const cells = rowKeys.map(([r, x]) => colKeys.map(([p, w]) => {
     const list = rows(s => s.options.starterRotation === r && s.options.extraRounds === x && s.options.treePreset === p && s.rewards === w);
-    return { r, x, p, w, v: metricMean(m, list), text: metricText(m, list), list };
+    return { r, x, p, w, v: metricMean(m, list), ...metricAgg(m, list), list };
   }));
   const scale = scaleFor(m, cells.flat().map(c => c.v));
-  document.getElementById('heat-legend').innerHTML = `<b style="color:var(--fg)">${esc(m.label)}</b> ${scale.legend}${m.agg ? '<span>color = seat win rate − fair share</span>' : ''} <span class="pill">${state.n === 'all' ? 'all player counts' : state.n + ' players'}</span>`;
+  document.getElementById('heat-legend').innerHTML = `<b style="color:var(--fg)">${esc(m.label)}</b> ${scale.legend}${m.id === 'spread' ? chanceNote() : ''} <span class="pill">${state.n === 'all' ? 'all player counts' : state.n + ' players'}</span>`;
   const cw = 92, ch = 34, left = 150, top = 52, gap = 2;
   const W = left + colKeys.length * cw + 4, H = top + rowKeys.length * ch + 8 + 2 * 6;
   let svg = `<svg viewBox="0 0 ${W} ${H}" width="${W}" role="img" aria-label="${esc(m.label)} heat map">`;
@@ -306,7 +318,7 @@ function renderHeat() {
     svg += `<text x="${left - 10}" y="${y + ch / 2 + 4}" text-anchor="end">${x === 0 ? `<tspan class="strong" style="fill:var(--fg)">${ROT_SHORT[r]}</tspan> ` : ''}+${x} rounds</text>`;
     cells[i].forEach((c, j) => {
       const fill = scale.color(c.v);
-      svg += `<g data-i="${i}" data-j="${j}"><rect x="${left + j * cw + gap / 2}" y="${y + gap / 2}" width="${cw - gap}" height="${ch - gap}" rx="3" fill="${fill}"/><text class="${inkFor(fill)}" x="${left + j * cw + cw / 2}" y="${y + ch / 2 + 4}" text-anchor="middle">${c.text}</text></g>`;
+      svg += `<g data-i="${i}" data-j="${j}"><rect x="${left + j * cw + gap / 2}" y="${y + gap / 2}" width="${cw - gap}" height="${ch - gap}" rx="3" fill="${fill}"/>${c.sub ? `<text class="${inkFor(fill)}" x="${left + j * cw + cw / 2}" y="${y + 14}" text-anchor="middle" style="font-weight:600">${c.text}</text><text class="${inkFor(fill)}" x="${left + j * cw + cw / 2}" y="${y + 26}" text-anchor="middle" style="font-size:9.5px">${c.sub}</text>` : `<text class="${inkFor(fill)}" x="${left + j * cw + cw / 2}" y="${y + ch / 2 + 4}" text-anchor="middle">${c.text}</text>`}</g>`;
     });
   });
   svg += '</svg>';
@@ -314,7 +326,7 @@ function renderHeat() {
   host.querySelectorAll('g[data-i]').forEach(g => {
     const c = cells[g.dataset.i][g.dataset.j];
     const seatWin = counts.filter(n => state.n === 'all' || n === state.n).map(n => { const l = c.list.filter(s => s.n === n); return `${n}p seats ${Array.from({ length: n }, (_, k) => pct(mean(l.map(s => s.seatWin[k])), 0)).join(' ')}`; });
-    bindTip(g, `<b>${ROT[c.r]} · +${c.x} rounds</b><br>${PRESET[c.p]} · ${REWARD[c.w]}<br>${esc(m.label)}: <b>${c.text}</b><br>${seatWin.join('<br>')}<br>winning score ${f(mean(c.list.map(s => s.topScore)), 1)} · grown ${f(mean(c.list.map(s => s.grown)), 2)}`);
+    bindTip(g, `<b>${ROT[c.r]} · +${c.x} rounds</b><br>${PRESET[c.p]} · ${REWARD[c.w]}<br>${esc(m.label)}: <b>${c.text}</b>${c.detail ? `<br>${c.detail}` : ''}<br>${seatWin.join('<br>')}<br>winning score ${f(mean(c.list.map(s => s.topScore)), 1)} · grown ${f(mean(c.list.map(s => s.grown)), 2)}`);
   });
 }
 
@@ -496,12 +508,12 @@ function renderBreakdown() {
 }
 
 // ---------- all table ----------
-let sortKey = 'strongest', sortDir = -1;
+let sortKey = 'spread', sortDir = -1;
 function renderTable() {
   const cols = [
     { id: 'name', label: 'Scenario', get: s => s.id, fmt: (v, s) => `${ROT_SHORT[s.options.starterRotation]} · +${s.options.extraRounds} · ${PRESET[s.options.treePreset]} · ${s.rewards === 'fixed' ? 'fixed' : 'stars'}` },
     { id: 'n', label: 'P', get: s => s.n, fmt: v => v },
-    ...['strongest', 'weakest', 'top', 'margin', 'grown', 'tier5', 'completed', 'rate', 'adv'].map(id => ({ id, label: M[id].label.split(' (')[0], get: s => metricMean(M[id], [s]), fmt: (v, s) => metricText(M[id], [s]) })),
+    ...['spread', 'top', 'margin', 'grown', 'tier5', 'completed', 'rate', 'adv'].map(id => ({ id, label: M[id].label.split(' (')[0], get: s => metricMean(M[id], [s]), fmt: (v, s) => { const a = metricAgg(M[id], [s]); return a.detail ? `${a.text} <span style="color:var(--muted)">(${a.detail})</span>` : a.text; } })),
   ];
   const list = rows().slice().sort((a, b) => { const c = cols.find(c => c.id === sortKey); const x = c.get(a), y = c.get(b); return (x > y ? 1 : x < y ? -1 : 0) * sortDir; });
   document.getElementById('all-table').innerHTML = `<table><thead><tr>${cols.map(c => `<th class="sortable" data-k="${c.id}" aria-sort="${c.id === sortKey ? (sortDir > 0 ? 'ascending' : 'descending') : 'none'}">${esc(c.label)}${c.id === sortKey ? (sortDir > 0 ? ' ▲' : ' ▼') : ''}</th>`).join('')}</tr></thead><tbody>${list.map(s => `<tr>${cols.map((c, i) => `<td class="${i ? 'num' : ''}">${c.fmt(c.get(s), s)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
