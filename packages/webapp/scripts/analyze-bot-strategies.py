@@ -57,7 +57,7 @@ def seat_metrics(record, seat):
 
 
 cells = []
-for (count, scenario, seat) in sorted((k for k in games if k[2] is not None), key=lambda k: (k[0], k[1], k[2])):
+for (count, scenario, seat) in sorted(k for k in games if k[2] is not None):
     baseline = games[(count, scenario, None)]
     trial = games[(count, scenario, seat)]
     seeds = sorted(trial)
@@ -65,35 +65,38 @@ for (count, scenario, seat) in sorted((k for k in games if k[2] is not None), ke
     # Pairing check: the same seed reveals the same events in both arms.
     assert all(trial[s]['events'] == baseline[s]['events'] for s in seeds)
     assert all(trial[s]['players'][seat - 1]['profile'] == challenger for s in seeds)
-    challenger_share = [share(trial[s], seat) for s in seeds]
-    baseline_share = [share(baseline[s], seat) for s in seeds]
-    win = interval(challenger_share)
-    metric_names = list(seat_metrics(trial[seeds[0]], seat))
-    challenger_metrics = {m: st.mean(seat_metrics(trial[s], seat)[m] for s in seeds) for m in metric_names}
-    baseline_metrics = {m: st.mean(seat_metrics(baseline[s], seat)[m] for s in seeds) for m in metric_names}
-    paired = {m: interval([seat_metrics(trial[s], seat)[m] - seat_metrics(baseline[s], seat)[m] for s in seeds])
+
+    def delta(value):
+        # Paired within-seed difference: challenger arm minus all-Balanced.
+        return interval([value(trial[s]) - value(baseline[s]) for s in seeds])
+
+    win = interval([share(trial[s], seat) for s in seeds])
+    trial_metrics = [seat_metrics(trial[s], seat) for s in seeds]
+    baseline_metrics = [seat_metrics(baseline[s], seat) for s in seeds]
+    challenger_means = {m: st.mean(row[m] for row in trial_metrics) for m in trial_metrics[0]}
+    baseline_means = {m: st.mean(row[m] for row in baseline_metrics) for m in baseline_metrics[0]}
+    paired = {m: interval([t[m] - b[m] for t, b in zip(trial_metrics, baseline_metrics)])
               for m in ['score', 'cubePoints', 'treePoints', 'opened', 'completed', 'finished', 'advancedDraws']}
-    others = []
-    for other in range(1, count + 1):
-        if other == seat:
-            continue
-        others.append({'seat': other,
-                       'winShareChange': interval([share(trial[s], other) - share(baseline[s], other) for s in seeds]),
-                       'scoreChange': interval([trial[s]['scores'][str(other - 1)] - baseline[s]['scores'][str(other - 1)] for s in seeds]),
-                       'treePointsChange': interval([trial[s]['players'][other - 1]['treePoints'] - baseline[s]['players'][other - 1]['treePoints'] for s in seeds])})
+    others = [{'seat': other,
+               'winShareChange': delta(lambda r: share(r, other)),
+               'scoreChange': delta(lambda r: r['scores'][str(other - 1)]),
+               'treePointsChange': delta(lambda r: r['players'][other - 1]['treePoints'])}
+              for other in range(1, count + 1) if other != seat]
     cells.append({'numPlayers': count, 'scenario': scenario, 'seat': seat, 'games': len(seeds),
                   'uniform': 1 / count,
                   'challengerWinShare': win,
-                  'balancedWinShare': interval(baseline_share),
-                  'pairedWinShareChange': interval([c - b for c, b in zip(challenger_share, baseline_share)]),
+                  'balancedWinShare': interval([share(baseline[s], seat) for s in seeds]),
+                  'pairedWinShareChange': delta(lambda r: share(r, seat)),
                   'aboveUniform': win['low'] > 1 / count,
                   'tiedGames': sum(len(trial[s]['winners']) > 1 for s in seeds),
-                  'challenger': challenger_metrics, 'balanced': baseline_metrics, 'pairedChange': paired,
+                  'challenger': challenger_means, 'balanced': baseline_means, 'pairedChange': paired,
                   'otherSeats': others,
                   'msPerGame': {'challengerArm': st.mean(trial[s]['ms'] for s in seeds),
                                 'balancedArm': st.mean(baseline[s]['ms'] for s in seeds)}})
 
-success = all(c['aboveUniform'] for c in cells if c['scenario'] == 'A')
+# The task's pass rule: every scenario A cell above uniform; None when A was not run.
+scenario_a = [c['aboveUniform'] for c in cells if c['scenario'] == 'A']
+success = all(scenario_a) if scenario_a else None
 report = {'manifest': manifest, 'successScenarioA': success,
           'method': 'Each seed is played all-Balanced and with the challenger in one seat; Balanced plays every other seat. '
                     'Win shares split ties. Approximate 95% game-level normal intervals; paired intervals use within-seed '

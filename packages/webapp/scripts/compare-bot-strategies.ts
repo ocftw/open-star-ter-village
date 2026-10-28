@@ -17,7 +17,7 @@ import { createProfileBot } from '@/game/bots/profileBot';
 import { BALANCED, PROFILES, withWeights, type Weights } from '@/game/bots/profiles';
 import { runGame } from '@/game/bots/runner';
 import type { Bot } from '@/game/bots/types';
-import type { StandardExperiments } from '@/game/standard/config';
+import { EXPERIMENT_SCENARIOS } from '@/game/standard/config';
 import { REWARDS } from '@/game/standard/tree';
 
 const { values } = parseArgs({ options: {
@@ -35,19 +35,13 @@ const { values } = parseArgs({ options: {
   job: { type: 'string' },
 } });
 
-const ALL_SCENARIOS: { id: string; experiments: StandardExperiments }[] = [
-  { id: 'A', experiments: { government5: 'existing', completionRewards: 'fixed' } },
-  { id: 'B', experiments: { government5: 'any', completionRewards: 'fixed' } },
-  { id: 'C', experiments: { government5: 'existing', completionRewards: 'difficulty' } },
-  { id: 'D', experiments: { government5: 'any', completionRewards: 'difficulty' } },
-];
 const games = Number(values.games);
 assert.ok(Number.isInteger(games) && games > 0, 'games must be a positive integer');
 assert.ok(Object.prototype.hasOwnProperty.call(PROFILES, values.challenger!), `challenger must be a profile: ${Object.keys(PROFILES).join(', ')}`);
 assert.ok(values.challenger !== 'balanced' || values.weights, 'an unchanged Balanced challenger would only replay the baseline');
 const weightOverrides = values.weights ? JSON.parse(values.weights) as Partial<Weights> : undefined;
 const challengerProfile = weightOverrides ? withWeights(PROFILES[values.challenger!], weightOverrides) : PROFILES[values.challenger!];
-const SCENARIOS = values.scenarios!.split(',').map(id => ALL_SCENARIOS.find(s => s.id === id)!);
+const SCENARIOS = values.scenarios!.split(',').map(id => EXPERIMENT_SCENARIOS.find(s => s.id === id)!);
 assert.ok(SCENARIOS.every(Boolean), 'scenarios must be from A, B, C, D');
 const playerCounts = values.players!.split(',').map(Number);
 const seats = values.seats!.split(',').map(Number);
@@ -68,18 +62,21 @@ function playGame(numPlayers: number, scenario: typeof SCENARIOS[number], seed: 
   assert.equal(s.round, 9 - numPlayers);
   assert.equal(s.choices.length, 0);
   assert.ok(Object.values(G.players).every(p => p.token.workers >= 0));
+  const projects = Object.values(telemetry.projects);
+  const grows = s.log.filter(l => l.kind === 'grow');
   const players = Object.keys(G.table.scoreBoard).map(id => {
-    const opened = Object.values(telemetry.projects).filter(p => p.initiator === id);
+    const opened = projects.filter(p => p.initiator === id);
+    const grown = grows.filter(l => l.playerId === id);
     return {
       seat: Number(id) + 1,
-      profile: String(Number(id) + 1) === String(challengerSeat) ? values.challenger : 'balanced',
+      profile: Number(id) + 1 === challengerSeat ? values.challenger : 'balanced',
       score: G.table.scoreBoard[id],
       openedByStar: countByStar(opened.map(p => p.difficulty)),
       completedByStar: countByStar(opened.filter(p => p.finisher !== undefined).map(p => p.difficulty)),
-      finishedByStar: countByStar(Object.values(telemetry.projects).filter(p => p.finisher === id).map(p => p.difficulty)),
-      cubePoints: Object.values(telemetry.projects).reduce((sum, p) => sum + (p.contributions?.[id] ?? 0), 0),
-      treePoints: s.log.filter(l => l.kind === 'grow' && l.playerId === id).reduce((sum, l) => sum + REWARDS[Number(l.target!.split('-')[1]) - 1], 0),
-      grown: s.log.filter(l => l.kind === 'grow' && l.playerId === id).length,
+      finishedByStar: countByStar(projects.filter(p => p.finisher === id).map(p => p.difficulty)),
+      cubePoints: projects.reduce((sum, p) => sum + (p.contributions?.[id] ?? 0), 0),
+      treePoints: grown.reduce((sum, l) => sum + REWARDS[Number(l.target!.split('-')[1]) - 1], 0),
+      grown: grown.length,
       advancedDraws: telemetry.advancedDraws[id] ?? 0,
       refills: run.moves.filter(m => m.playerID === id && m.move === 'removeAndRefillJobs').length,
     };
@@ -137,7 +134,8 @@ async function main() {
       done();
     });
   });
-  const queue = [...jobs];
+  // Longest jobs (most players) first, so the last ones to finish are short.
+  const queue = [...jobs].sort((a, b) => b.n - a.n);
   await Promise.all(Array.from({ length: Math.max(1, Number(values.jobs)) }, async () => {
     for (let job = queue.shift(); job; job = queue.shift()) await runChild(job);
   }));

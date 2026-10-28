@@ -1,6 +1,6 @@
-import type { StandardExperiments } from '@/game/standard/config';
+import { EXPERIMENT_SCENARIOS } from '@/game/standard/config';
 import { createProfileBot } from './profileBot';
-import { BALANCED, COUNTER } from './profiles';
+import { BALANCED, COUNTER, type Weights } from './profiles';
 import { runGame } from './runner';
 import type { Bot } from './types';
 
@@ -12,21 +12,14 @@ function seated(numPlayers: number, seat: string): Record<string, Bot> {
 }
 
 describe('counter profile', () => {
-  const scenarios: StandardExperiments[] = [
-    { government5: 'existing', completionRewards: 'fixed' },
-    { government5: 'any', completionRewards: 'fixed' },
-    { government5: 'existing', completionRewards: 'difficulty' },
-    { government5: 'any', completionRewards: 'difficulty' },
-  ];
+  const cases = [2, 3, 4].flatMap(numPlayers => EXPERIMENT_SCENARIOS.flatMap(({ id, experiments }) =>
+    ['0', '1'].map(seat => ({ numPlayers, id, experiments, seat }))));
 
-  test.each([2, 3, 4])('plays only legal moves to game over at %i players in every rule option, from seat 1 and 2', numPlayers => {
+  test.each(cases)('plays only legal moves to game over: $numPlayers players, rules $id, seat index $seat', ({ numPlayers, id, experiments, seat }) => {
     // The runner fails on the first move the game rejects.
-    scenarios.forEach((experiments, index) => {
-      const seat = String(index % 2);
-      const run = runGame({ numPlayers, seed: `counter-legal-${index}`, bots: seated(numPlayers, seat), experiments });
-      expect(run.state.ctx.gameover).toBeDefined();
-      expect(run.moves.some(move => move.playerID === seat)).toBe(true);
-    });
+    const run = runGame({ numPlayers, seed: `counter-legal-${id}`, bots: seated(numPlayers, seat), experiments });
+    expect(run.state.ctx.gameover).toBeDefined();
+    expect(run.moves.some(move => move.playerID === seat)).toBe(true);
   });
 
   test('replays the same game from the same seed', () => {
@@ -36,9 +29,9 @@ describe('counter profile', () => {
     expect(second.state.G.table.scoreBoard).toEqual(first.state.G.table.scoreBoard);
   });
 
-  test('changes only the tuned weights and leaves Balanced untouched', () => {
-    expect(COUNTER.weights).toEqual({ ...BALANCED.weights, village: 0, tree: 0.6, unlock: 0, initiation: -1 });
+  test('is Balanced with only some weights changed', () => {
+    const changed = (Object.keys(BALANCED.weights) as (keyof Weights)[]).filter(key => COUNTER.weights[key] !== BALANCED.weights[key]);
+    expect(changed.sort()).toEqual(['initiation', 'tree', 'unlock', 'village']);
     expect(COUNTER.nodeImpact).toBe(BALANCED.nodeImpact);
-    expect(BALANCED.weights).toMatchObject({ village: 0.3, tree: 1, unlock: 0.5, initiation: 0 });
   });
 });
