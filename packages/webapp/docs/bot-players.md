@@ -3,8 +3,8 @@
 Bots play complete 星源樹測試版 v1 games headless, so a rule change can be tested
 over hundreds of seeded games in seconds instead of 60–90 minute human sessions.
 Two strategies ship: **Balanced**, the reference that plays every seat in batch
-runs, and **Counter**, a Balanced variant tuned to beat Balanced from the early
-seats.
+runs, and **Counter**, a Balanced variant tuned to beat Balanced when it acts
+early.
 
 ## Run a batch
 
@@ -73,20 +73,25 @@ The `nodeImpact` values are initial guesses. Recalibrate them from batch data
 
 ### Counter
 
-Balanced acts in a fixed order (seat 1 first, every round), so later seats
-finish the projects earlier seats set up and win far more often. Counter is
-the `COUNTER` profile: Balanced's scoring with four weights changed.
+Every round is played in the same seat order (seat 1 first), because the start
+player does not rotate yet (a known bug, see the
+[rule-option report](evidence/standard-experiments/balance-300/README.md)). With
+Balanced in every seat, later seats finish the projects earlier seats set up
+and win far more often. Counter is the `COUNTER` profile: Balanced's scoring
+with four weights changed.
 
 | Weight | Balanced | Counter | Effect |
 | --- | ---: | ---: | --- |
-| `village` | 0.3 | 0 | No value for what the tree or village progress gives other players |
+| `village` | 0.3 | 0 | No value for what tree abilities give other players (a village completion still counts half) |
 | `unlock` | 0.5 | 0 | No value for higher tree tiers a growth makes reachable |
 | `tree` | 1 | 0.6 | Tree nodes are worth less, so actions go to projects |
-| `initiation` | 0 | −1 | Opening a project costs 1 point, so it opens fewer and completes its own |
+| `initiation` | 0 | −1 | Opening a project costs 1 point, so actions go to completing projects |
 
 In paired trials it uses the actions it saves on the tree to complete its own
-projects (including more 2★ ones) and to be the finisher more often. Ablations
-show that the tree weights and the opening cost each fail alone. See
+projects (its own 2★ completion rate roughly doubles) and to be the finisher
+more often. Ablations show that the tree weights and the opening cost each
+fail alone. In rooms a bot never takes seat 1, which is the host's, so the
+evidence also covers seats 3 and 4. See
 [the Counter evidence](evidence/bot-strategies/counter-1000/README.md).
 
 ### Compare a profile with Balanced

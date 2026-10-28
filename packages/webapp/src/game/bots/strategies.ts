@@ -21,7 +21,7 @@ export const BOT_STRATEGIES: Record<string, BotStrategy> = {
   counter: {
     id: 'counter',
     label: '反制型 Counter',
-    description: '少開專案、少投資共享的星源樹，專心完成自己的專案，專為先手座位設計。',
+    description: '少投資共享的星源樹、提高開案門檻，把行動用來完成自己的專案，搶在後手之前收尾。',
     names: ['阿制', '反手', '截截', '先鋒', '小盾', '守守'],
     profile: COUNTER,
   },

@@ -80,11 +80,11 @@ export const BALANCED: Profile = {
 };
 
 /**
- * Counter: Balanced's scoring tuned to win from the early seats, where
- * Balanced loses to the players after it. It ignores help to other players
- * and the tree tiers a growth unlocks, weights the shared tree at 0.6, and
- * pays 1 point to open a project, so it opens fewer and spends its actions
- * completing its own before later seats can.
+ * Counter: Balanced's scoring tuned to beat Balanced, above all from the early
+ * seats where Balanced loses to the players after it. It gives no value to
+ * what tree abilities give other players or to the tiers a growth unlocks,
+ * weights the shared tree at 0.6, and pays 1 point to open a project, so its
+ * actions go to completing its own projects before later seats can.
  */
 export const COUNTER: Profile = {
   ...withWeights(BALANCED, { village: 0, tree: 0.6, unlock: 0, initiation: -1 }),
