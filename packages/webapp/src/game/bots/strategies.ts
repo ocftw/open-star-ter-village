@@ -1,4 +1,4 @@
-import { BALANCED, type Profile } from './profiles';
+import { BALANCED, COUNTER, type Profile } from './profiles';
 
 /** A bot strategy players can seat in a room. Add new strategies here. */
 export interface BotStrategy {
@@ -17,6 +17,13 @@ export const BOT_STRATEGIES: Record<string, BotStrategy> = {
     description: '每一步選擇預期得分最高的行動，兼顧專案與星源樹。',
     names: ['阿衡', '天平', '均均', '中和', '小秤', '平平'],
     profile: BALANCED,
+  },
+  counter: {
+    id: 'counter',
+    label: '反制型 Counter',
+    description: '少開專案、少投資共享的星源樹，專心完成自己的專案，專為先手座位設計。',
+    names: ['阿制', '反手', '截截', '先鋒', '小盾', '守守'],
+    profile: COUNTER,
   },
 };
 
