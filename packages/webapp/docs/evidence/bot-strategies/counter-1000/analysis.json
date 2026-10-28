@@ -1,0 +1,3569 @@
+{
+  "manifest": {
+    "build": "c5a987edcd1586406cc3e67cc849e7d834c7a5c9",
+    "uncommittedChanges": false,
+    "startedAt": "2026-10-28T02:08:13.821Z",
+    "finishedAt": "2026-10-28T02:16:41.895Z",
+    "seconds": 508.074,
+    "seedPrefix": "bot-strategies-v1",
+    "seeds": "bot-strategies-v1-<players>p-<0..999>",
+    "gamesPerSeedSet": 1000,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "challengerSeats": [
+      1,
+      2
+    ],
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "totalGames": 36000,
+    "failures": 0,
+    "challenger": {
+      "strategy": "counter",
+      "label": "反制型 Counter",
+      "profile": {
+        "name": "counter",
+        "weights": {
+          "points": 1,
+          "baseCompletionChance": 0.25,
+          "village": 0,
+          "villageCompletion": 1,
+          "tree": 0.6,
+          "unlock": 0,
+          "pointsPerAP": 1,
+          "apCost": 0.3,
+          "overtime": 0.1,
+          "workerToken": 0.2,
+          "presence": 0.5,
+          "initiation": -1,
+          "advancedDraw": -0.5,
+          "marketLoss": 0.2
+        },
+        "nodeImpact": {
+          "source-1": 0.2,
+          "source-2": 0.3,
+          "source-3": 0.4,
+          "source-4": 0.4,
+          "source-5": 0.6,
+          "data-1": 0.2,
+          "data-2": 0.5,
+          "data-3": 1,
+          "data-4": 0.3,
+          "data-5": 0.3,
+          "government-1": 0.1,
+          "government-2": 0.1,
+          "government-3": 0.2,
+          "government-4": 0.5,
+          "government-5": 0.5
+        }
+      }
+    },
+    "baseline": {
+      "strategy": "balanced",
+      "profile": {
+        "name": "balanced",
+        "weights": {
+          "points": 1,
+          "baseCompletionChance": 0.25,
+          "village": 0.3,
+          "villageCompletion": 1,
+          "tree": 1,
+          "unlock": 0.5,
+          "pointsPerAP": 1,
+          "apCost": 0.3,
+          "overtime": 0.1,
+          "workerToken": 0.2,
+          "presence": 0.5,
+          "initiation": 0,
+          "advancedDraw": -0.5,
+          "marketLoss": 0.2
+        },
+        "nodeImpact": {
+          "source-1": 0.2,
+          "source-2": 0.3,
+          "source-3": 0.4,
+          "source-4": 0.4,
+          "source-5": 0.6,
+          "data-1": 0.2,
+          "data-2": 0.5,
+          "data-3": 1,
+          "data-4": 0.3,
+          "data-5": 0.3,
+          "government-1": 0.1,
+          "government-2": 0.1,
+          "government-3": 0.2,
+          "government-4": 0.5,
+          "government-5": 0.5
+        }
+      }
+    },
+    "method": "Authoritative headless reducer; bots see only their own player view. Each seed is played all-Balanced and once per challenger seat with Balanced in every other seat; seats are 1-based. Ties split wins."
+  },
+  "successScenarioA": true,
+  "method": "Each seed is played all-Balanced and with the challenger in one seat; Balanced plays every other seat. Win shares split ties. Approximate 95% game-level normal intervals; paired intervals use within-seed differences against Balanced in the same seat and seed. Exploratory bot-versus-bot simulation, not a human population estimate.",
+  "cells": [
+    {
+      "numPlayers": 2,
+      "scenario": "A",
+      "seat": 1,
+      "games": 1000,
+      "uniform": 0.5,
+      "challengerWinShare": {
+        "mean": 0.774,
+        "low": 0.7487788662121615,
+        "high": 0.7992211337878385
+      },
+      "balancedWinShare": {
+        "mean": 0.345,
+        "low": 0.31608188258988834,
+        "high": 0.3739181174101116
+      },
+      "pairedWinShareChange": {
+        "mean": 0.429,
+        "low": 0.39166683662241103,
+        "high": 0.46633316337758896
+      },
+      "aboveUniform": true,
+      "tiedGames": 38,
+      "challenger": {
+        "score": 54.571,
+        "cubePoints": 27.121,
+        "treePoints": 2.05,
+        "grown": 1.438,
+        "advancedDraws": 0,
+        "refills": 0.432,
+        "opened1": 2.795,
+        "completed1": 2.178,
+        "finished1": 2.434,
+        "opened2": 1.302,
+        "completed2": 0.546,
+        "finished2": 0.532,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 4.097,
+        "completed": 2.724,
+        "finished": 2.966
+      },
+      "balanced": {
+        "score": 46.368,
+        "cubePoints": 17.006,
+        "treePoints": 5.909,
+        "grown": 4.263,
+        "advancedDraws": 0,
+        "refills": 0.915,
+        "opened1": 3.203,
+        "completed1": 1.836,
+        "finished1": 1.802,
+        "opened2": 1.365,
+        "completed2": 0.148,
+        "finished2": 0.148,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 4.568,
+        "completed": 1.984,
+        "finished": 1.95
+      },
+      "pairedChange": {
+        "score": {
+          "mean": 8.203,
+          "low": 7.621270654736883,
+          "high": 8.784729345263116
+        },
+        "cubePoints": {
+          "mean": 10.115,
+          "low": 9.5102344327472,
+          "high": 10.7197655672528
+        },
+        "treePoints": {
+          "mean": -3.859,
+          "low": -4.043673928517834,
+          "high": -3.674326071482166
+        },
+        "opened": {
+          "mean": -0.471,
+          "low": -0.5410789895100495,
+          "high": -0.40092101048995044
+        },
+        "completed": {
+          "mean": 0.74,
+          "low": 0.6763251331433736,
+          "high": 0.8036748668566264
+        },
+        "finished": {
+          "mean": 1.016,
+          "low": 0.9291909469767745,
+          "high": 1.1028090530232255
+        },
+        "advancedDraws": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "otherSeats": [
+        {
+          "seat": 2,
+          "winShareChange": {
+            "mean": -0.429,
+            "low": -0.46633316337758896,
+            "high": -0.39166683662241103
+          },
+          "scoreChange": {
+            "mean": -1.825,
+            "low": -2.4189635630446413,
+            "high": -1.2310364369553586
+          },
+          "treePointsChange": {
+            "mean": 4.734,
+            "low": 4.48706696097634,
+            "high": 4.98093303902366
+          }
+        }
+      ],
+      "msPerGame": {
+        "challengerArm": 43.6878,
+        "balancedArm": 43.2201
+      }
+    },
+    {
+      "numPlayers": 2,
+      "scenario": "A",
+      "seat": 2,
+      "games": 1000,
+      "uniform": 0.5,
+      "challengerWinShare": {
+        "mean": 0.889,
+        "low": 0.870430050387531,
+        "high": 0.9075699496124691
+      },
+      "balancedWinShare": {
+        "mean": 0.655,
+        "low": 0.6260818825898884,
+        "high": 0.6839181174101117
+      },
+      "pairedWinShareChange": {
+        "mean": 0.234,
+        "low": 0.20188334139954886,
+        "high": 0.26611665860045114
+      },
+      "aboveUniform": true,
+      "tiedGames": 36,
+      "challenger": {
+        "score": 58.012,
+        "cubePoints": 29.746,
+        "treePoints": 2.13,
+        "grown": 1.205,
+        "advancedDraws": 0,
+        "refills": 0.495,
+        "opened1": 2.743,
+        "completed1": 2.079,
+        "finished1": 2.748,
+        "opened2": 1.241,
+        "completed2": 0.512,
+        "finished2": 0.631,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 3.984,
+        "completed": 2.591,
+        "finished": 3.379
+      },
+      "balanced": {
+        "score": 50.194,
+        "cubePoints": 19.362,
+        "treePoints": 4.741,
+        "grown": 2.972,
+        "advancedDraws": 0,
+        "refills": 0.321,
+        "opened1": 3.428,
+        "completed1": 2.008,
+        "finished1": 2.042,
+        "opened2": 1.597,
+        "completed2": 0.203,
+        "finished2": 0.203,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 5.025,
+        "completed": 2.211,
+        "finished": 2.245
+      },
+      "pairedChange": {
+        "score": {
+          "mean": 7.818,
+          "low": 7.216360958411216,
+          "high": 8.419639041588784
+        },
+        "cubePoints": {
+          "mean": 10.384,
+          "low": 9.766390997627962,
+          "high": 11.001609002372039
+        },
+        "treePoints": {
+          "mean": -2.611,
+          "low": -2.8312000242310225,
+          "high": -2.390799975768978
+        },
+        "opened": {
+          "mean": -1.041,
+          "low": -1.1095859577221852,
+          "high": -0.9724140422778147
+        },
+        "completed": {
+          "mean": 0.38,
+          "low": 0.31825047716645527,
+          "high": 0.44174952283354474
+        },
+        "finished": {
+          "mean": 1.134,
+          "low": 1.0427782519379851,
+          "high": 1.2252217480620147
+        },
+        "advancedDraws": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "otherSeats": [
+        {
+          "seat": 1,
+          "winShareChange": {
+            "mean": -0.234,
+            "low": -0.26611665860045114,
+            "high": -0.20188334139954886
+          },
+          "scoreChange": {
+            "mean": 1.509,
+            "low": 1.0037458671432304,
+            "high": 2.0142541328567694
+          },
+          "treePointsChange": {
+            "mean": 2.953,
+            "low": 2.752956813766555,
+            "high": 3.1530431862334445
+          }
+        }
+      ],
+      "msPerGame": {
+        "challengerArm": 44.0504,
+        "balancedArm": 43.2201
+      }
+    },
+    {
+      "numPlayers": 2,
+      "scenario": "B",
+      "seat": 1,
+      "games": 1000,
+      "uniform": 0.5,
+      "challengerWinShare": {
+        "mean": 0.7735,
+        "low": 0.7482389713673527,
+        "high": 0.7987610286326472
+      },
+      "balancedWinShare": {
+        "mean": 0.345,
+        "low": 0.31608188258988834,
+        "high": 0.3739181174101116
+      },
+      "pairedWinShareChange": {
+        "mean": 0.4285,
+        "low": 0.3911576321601045,
+        "high": 0.46584236783989547
+      },
+      "aboveUniform": true,
+      "tiedGames": 37,
+      "challenger": {
+        "score": 54.572,
+        "cubePoints": 27.121,
+        "treePoints": 2.05,
+        "grown": 1.438,
+        "advancedDraws": 0,
+        "refills": 0.432,
+        "opened1": 2.795,
+        "completed1": 2.178,
+        "finished1": 2.434,
+        "opened2": 1.302,
+        "completed2": 0.546,
+        "finished2": 0.532,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 4.097,
+        "completed": 2.724,
+        "finished": 2.966
+      },
+      "balanced": {
+        "score": 46.368,
+        "cubePoints": 17.006,
+        "treePoints": 5.909,
+        "grown": 4.263,
+        "advancedDraws": 0,
+        "refills": 0.915,
+        "opened1": 3.203,
+        "completed1": 1.836,
+        "finished1": 1.802,
+        "opened2": 1.365,
+        "completed2": 0.148,
+        "finished2": 0.148,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 4.568,
+        "completed": 1.984,
+        "finished": 1.95
+      },
+      "pairedChange": {
+        "score": {
+          "mean": 8.204,
+          "low": 7.622103465715906,
+          "high": 8.785896534284095
+        },
+        "cubePoints": {
+          "mean": 10.115,
+          "low": 9.5102344327472,
+          "high": 10.7197655672528
+        },
+        "treePoints": {
+          "mean": -3.859,
+          "low": -4.043673928517834,
+          "high": -3.674326071482166
+        },
+        "opened": {
+          "mean": -0.471,
+          "low": -0.5410789895100495,
+          "high": -0.40092101048995044
+        },
+        "completed": {
+          "mean": 0.74,
+          "low": 0.6763251331433736,
+          "high": 0.8036748668566264
+        },
+        "finished": {
+          "mean": 1.016,
+          "low": 0.9291909469767745,
+          "high": 1.1028090530232255
+        },
+        "advancedDraws": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "otherSeats": [
+        {
+          "seat": 2,
+          "winShareChange": {
+            "mean": -0.4285,
+            "low": -0.46584236783989547,
+            "high": -0.3911576321601045
+          },
+          "scoreChange": {
+            "mean": -1.819,
+            "low": -2.4136360353369843,
+            "high": -1.2243639646630158
+          },
+          "treePointsChange": {
+            "mean": 4.734,
+            "low": 4.48706696097634,
+            "high": 4.98093303902366
+          }
+        }
+      ],
+      "msPerGame": {
+        "challengerArm": 44.1598,
+        "balancedArm": 42.9994
+      }
+    },
+    {
+      "numPlayers": 2,
+      "scenario": "B",
+      "seat": 2,
+      "games": 1000,
+      "uniform": 0.5,
+      "challengerWinShare": {
+        "mean": 0.8885,
+        "low": 0.869915690366415,
+        "high": 0.9070843096335849
+      },
+      "balancedWinShare": {
+        "mean": 0.655,
+        "low": 0.6260818825898884,
+        "high": 0.6839181174101117
+      },
+      "pairedWinShareChange": {
+        "mean": 0.2335,
+        "low": 0.20141426140162122,
+        "high": 0.2655857385983788
+      },
+      "aboveUniform": true,
+      "tiedGames": 37,
+      "challenger": {
+        "score": 58.037,
+        "cubePoints": 29.758,
+        "treePoints": 2.13,
+        "grown": 1.205,
+        "advancedDraws": 0,
+        "refills": 0.495,
+        "opened1": 2.743,
+        "completed1": 2.08,
+        "finished1": 2.749,
+        "opened2": 1.241,
+        "completed2": 0.512,
+        "finished2": 0.631,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 3.984,
+        "completed": 2.592,
+        "finished": 3.38
+      },
+      "balanced": {
+        "score": 50.194,
+        "cubePoints": 19.362,
+        "treePoints": 4.741,
+        "grown": 2.972,
+        "advancedDraws": 0,
+        "refills": 0.321,
+        "opened1": 3.428,
+        "completed1": 2.008,
+        "finished1": 2.042,
+        "opened2": 1.597,
+        "completed2": 0.203,
+        "finished2": 0.203,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 5.025,
+        "completed": 2.211,
+        "finished": 2.245
+      },
+      "pairedChange": {
+        "score": {
+          "mean": 7.843,
+          "low": 7.238957884838054,
+          "high": 8.447042115161945
+        },
+        "cubePoints": {
+          "mean": 10.396,
+          "low": 9.777872455483221,
+          "high": 11.01412754451678
+        },
+        "treePoints": {
+          "mean": -2.611,
+          "low": -2.8312000242310225,
+          "high": -2.390799975768978
+        },
+        "opened": {
+          "mean": -1.041,
+          "low": -1.1095859577221852,
+          "high": -0.9724140422778147
+        },
+        "completed": {
+          "mean": 0.381,
+          "low": 0.31918080228516443,
+          "high": 0.4428191977148356
+        },
+        "finished": {
+          "mean": 1.135,
+          "low": 1.0437207096595587,
+          "high": 1.2262792903404414
+        },
+        "advancedDraws": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "otherSeats": [
+        {
+          "seat": 1,
+          "winShareChange": {
+            "mean": -0.2335,
+            "low": -0.2655857385983788,
+            "high": -0.20141426140162122
+          },
+          "scoreChange": {
+            "mean": 1.52,
+            "low": 1.0141537985115416,
+            "high": 2.0258462014884584
+          },
+          "treePointsChange": {
+            "mean": 2.953,
+            "low": 2.752956813766555,
+            "high": 3.1530431862334445
+          }
+        }
+      ],
+      "msPerGame": {
+        "challengerArm": 44.2592,
+        "balancedArm": 42.9994
+      }
+    },
+    {
+      "numPlayers": 2,
+      "scenario": "C",
+      "seat": 1,
+      "games": 1000,
+      "uniform": 0.5,
+      "challengerWinShare": {
+        "mean": 0.834,
+        "low": 0.8114326018445297,
+        "high": 0.8565673981554702
+      },
+      "balancedWinShare": {
+        "mean": 0.367,
+        "low": 0.33769643862228615,
+        "high": 0.39630356137771383
+      },
+      "pairedWinShareChange": {
+        "mean": 0.467,
+        "low": 0.43103331255266253,
+        "high": 0.5029666874473375
+      },
+      "aboveUniform": true,
+      "tiedGames": 24,
+      "challenger": {
+        "score": 51.054,
+        "cubePoints": 29.519,
+        "treePoints": 1.563,
+        "grown": 1.188,
+        "advancedDraws": 0,
+        "refills": 0.355,
+        "opened1": 0.985,
+        "completed1": 0.73,
+        "finished1": 0.901,
+        "opened2": 2.267,
+        "completed2": 1.333,
+        "finished2": 1.454,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 3.252,
+        "completed": 2.063,
+        "finished": 2.355
+      },
+      "balanced": {
+        "score": 40.732,
+        "cubePoints": 16.746,
+        "treePoints": 4.621,
+        "grown": 3.569,
+        "advancedDraws": 0,
+        "refills": 0.863,
+        "opened1": 1.195,
+        "completed1": 0.559,
+        "finished1": 0.575,
+        "opened2": 2.804,
+        "completed2": 0.776,
+        "finished2": 0.698,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 3.999,
+        "completed": 1.335,
+        "finished": 1.273
+      },
+      "pairedChange": {
+        "score": {
+          "mean": 10.322,
+          "low": 9.762864836491092,
+          "high": 10.881135163508906
+        },
+        "cubePoints": {
+          "mean": 12.773,
+          "low": 12.085797369030514,
+          "high": 13.460202630969485
+        },
+        "treePoints": {
+          "mean": -3.058,
+          "low": -3.2079146521153463,
+          "high": -2.9080853478846533
+        },
+        "opened": {
+          "mean": -0.747,
+          "low": -0.8185943837926308,
+          "high": -0.6754056162073692
+        },
+        "completed": {
+          "mean": 0.728,
+          "low": 0.6702930255778454,
+          "high": 0.7857069744221545
+        },
+        "finished": {
+          "mean": 1.082,
+          "low": 1.0038255184969178,
+          "high": 1.1601744815030823
+        },
+        "advancedDraws": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "otherSeats": [
+        {
+          "seat": 2,
+          "winShareChange": {
+            "mean": -0.467,
+            "low": -0.5029666874473375,
+            "high": -0.43103331255266253
+          },
+          "scoreChange": {
+            "mean": -1.113,
+            "low": -1.6629330569023952,
+            "high": -0.5630669430976047
+          },
+          "treePointsChange": {
+            "mean": 4.26,
+            "low": 4.071561478433341,
+            "high": 4.448438521566659
+          }
+        }
+      ],
+      "msPerGame": {
+        "challengerArm": 41.3524,
+        "balancedArm": 40.3206
+      }
+    },
+    {
+      "numPlayers": 2,
+      "scenario": "C",
+      "seat": 2,
+      "games": 1000,
+      "uniform": 0.5,
+      "challengerWinShare": {
+        "mean": 0.923,
+        "low": 0.9072426165673458,
+        "high": 0.9387573834326542
+      },
+      "balancedWinShare": {
+        "mean": 0.633,
+        "low": 0.6036964386222862,
+        "high": 0.6623035613777138
+      },
+      "pairedWinShareChange": {
+        "mean": 0.29,
+        "low": 0.2579639005040536,
+        "high": 0.32203609949594636
+      },
+      "aboveUniform": true,
+      "tiedGames": 26,
+      "challenger": {
+        "score": 53.567,
+        "cubePoints": 32.533,
+        "treePoints": 1.26,
+        "grown": 0.836,
+        "advancedDraws": 0,
+        "refills": 0.454,
+        "opened1": 0.779,
+        "completed1": 0.571,
+        "finished1": 0.927,
+        "opened2": 2.079,
+        "completed2": 1.254,
+        "finished2": 1.756,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 2.858,
+        "completed": 1.825,
+        "finished": 2.683
+      },
+      "balanced": {
+        "score": 44.069,
+        "cubePoints": 19.358,
+        "treePoints": 3.299,
+        "grown": 2.314,
+        "advancedDraws": 0,
+        "refills": 0.203,
+        "opened1": 1.408,
+        "completed1": 0.68,
+        "finished1": 0.664,
+        "opened2": 2.998,
+        "completed2": 0.861,
+        "finished2": 0.939,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 4.406,
+        "completed": 1.541,
+        "finished": 1.603
+      },
+      "pairedChange": {
+        "score": {
+          "mean": 9.498,
+          "low": 8.929488358150806,
+          "high": 10.066511641849193
+        },
+        "cubePoints": {
+          "mean": 13.175,
+          "low": 12.471661933043217,
+          "high": 13.878338066956784
+        },
+        "treePoints": {
+          "mean": -2.039,
+          "low": -2.1954027539356296,
+          "high": -1.8825972460643705
+        },
+        "opened": {
+          "mean": -1.548,
+          "low": -1.6151804887603798,
+          "high": -1.4808195112396203
+        },
+        "completed": {
+          "mean": 0.284,
+          "low": 0.2306801863013369,
+          "high": 0.33731981369866304
+        },
+        "finished": {
+          "mean": 1.08,
+          "low": 0.9967210079340327,
+          "high": 1.1632789920659674
+        },
+        "advancedDraws": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "otherSeats": [
+        {
+          "seat": 1,
+          "winShareChange": {
+            "mean": -0.29,
+            "low": -0.32203609949594636,
+            "high": -0.2579639005040536
+          },
+          "scoreChange": {
+            "mean": 0.784,
+            "low": 0.31073606503035966,
+            "high": 1.2572639349696404
+          },
+          "treePointsChange": {
+            "mean": 2.231,
+            "low": 2.0632315940384314,
+            "high": 2.3987684059615684
+          }
+        }
+      ],
+      "msPerGame": {
+        "challengerArm": 41.3789,
+        "balancedArm": 40.3206
+      }
+    },
+    {
+      "numPlayers": 2,
+      "scenario": "D",
+      "seat": 1,
+      "games": 1000,
+      "uniform": 0.5,
+      "challengerWinShare": {
+        "mean": 0.834,
+        "low": 0.8114326018445297,
+        "high": 0.8565673981554702
+      },
+      "balancedWinShare": {
+        "mean": 0.367,
+        "low": 0.33769643862228615,
+        "high": 0.39630356137771383
+      },
+      "pairedWinShareChange": {
+        "mean": 0.467,
+        "low": 0.43103331255266253,
+        "high": 0.5029666874473375
+      },
+      "aboveUniform": true,
+      "tiedGames": 24,
+      "challenger": {
+        "score": 51.054,
+        "cubePoints": 29.519,
+        "treePoints": 1.563,
+        "grown": 1.188,
+        "advancedDraws": 0,
+        "refills": 0.355,
+        "opened1": 0.985,
+        "completed1": 0.73,
+        "finished1": 0.901,
+        "opened2": 2.267,
+        "completed2": 1.333,
+        "finished2": 1.454,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 3.252,
+        "completed": 2.063,
+        "finished": 2.355
+      },
+      "balanced": {
+        "score": 40.732,
+        "cubePoints": 16.746,
+        "treePoints": 4.621,
+        "grown": 3.569,
+        "advancedDraws": 0,
+        "refills": 0.863,
+        "opened1": 1.195,
+        "completed1": 0.559,
+        "finished1": 0.575,
+        "opened2": 2.804,
+        "completed2": 0.776,
+        "finished2": 0.698,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 3.999,
+        "completed": 1.335,
+        "finished": 1.273
+      },
+      "pairedChange": {
+        "score": {
+          "mean": 10.322,
+          "low": 9.762864836491092,
+          "high": 10.881135163508906
+        },
+        "cubePoints": {
+          "mean": 12.773,
+          "low": 12.085797369030514,
+          "high": 13.460202630969485
+        },
+        "treePoints": {
+          "mean": -3.058,
+          "low": -3.2079146521153463,
+          "high": -2.9080853478846533
+        },
+        "opened": {
+          "mean": -0.747,
+          "low": -0.8185943837926308,
+          "high": -0.6754056162073692
+        },
+        "completed": {
+          "mean": 0.728,
+          "low": 0.6702930255778454,
+          "high": 0.7857069744221545
+        },
+        "finished": {
+          "mean": 1.082,
+          "low": 1.0038255184969178,
+          "high": 1.1601744815030823
+        },
+        "advancedDraws": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "otherSeats": [
+        {
+          "seat": 2,
+          "winShareChange": {
+            "mean": -0.467,
+            "low": -0.5029666874473375,
+            "high": -0.43103331255266253
+          },
+          "scoreChange": {
+            "mean": -1.113,
+            "low": -1.6629330569023952,
+            "high": -0.5630669430976047
+          },
+          "treePointsChange": {
+            "mean": 4.26,
+            "low": 4.071561478433341,
+            "high": 4.448438521566659
+          }
+        }
+      ],
+      "msPerGame": {
+        "challengerArm": 41.5263,
+        "balancedArm": 40.2951
+      }
+    },
+    {
+      "numPlayers": 2,
+      "scenario": "D",
+      "seat": 2,
+      "games": 1000,
+      "uniform": 0.5,
+      "challengerWinShare": {
+        "mean": 0.923,
+        "low": 0.9072426165673458,
+        "high": 0.9387573834326542
+      },
+      "balancedWinShare": {
+        "mean": 0.633,
+        "low": 0.6036964386222862,
+        "high": 0.6623035613777138
+      },
+      "pairedWinShareChange": {
+        "mean": 0.29,
+        "low": 0.2579639005040536,
+        "high": 0.32203609949594636
+      },
+      "aboveUniform": true,
+      "tiedGames": 26,
+      "challenger": {
+        "score": 53.567,
+        "cubePoints": 32.533,
+        "treePoints": 1.26,
+        "grown": 0.836,
+        "advancedDraws": 0,
+        "refills": 0.454,
+        "opened1": 0.779,
+        "completed1": 0.571,
+        "finished1": 0.927,
+        "opened2": 2.079,
+        "completed2": 1.254,
+        "finished2": 1.756,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 2.858,
+        "completed": 1.825,
+        "finished": 2.683
+      },
+      "balanced": {
+        "score": 44.069,
+        "cubePoints": 19.358,
+        "treePoints": 3.299,
+        "grown": 2.314,
+        "advancedDraws": 0,
+        "refills": 0.203,
+        "opened1": 1.408,
+        "completed1": 0.68,
+        "finished1": 0.664,
+        "opened2": 2.998,
+        "completed2": 0.861,
+        "finished2": 0.939,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 4.406,
+        "completed": 1.541,
+        "finished": 1.603
+      },
+      "pairedChange": {
+        "score": {
+          "mean": 9.498,
+          "low": 8.929488358150806,
+          "high": 10.066511641849193
+        },
+        "cubePoints": {
+          "mean": 13.175,
+          "low": 12.471661933043217,
+          "high": 13.878338066956784
+        },
+        "treePoints": {
+          "mean": -2.039,
+          "low": -2.1954027539356296,
+          "high": -1.8825972460643705
+        },
+        "opened": {
+          "mean": -1.548,
+          "low": -1.6151804887603798,
+          "high": -1.4808195112396203
+        },
+        "completed": {
+          "mean": 0.284,
+          "low": 0.2306801863013369,
+          "high": 0.33731981369866304
+        },
+        "finished": {
+          "mean": 1.08,
+          "low": 0.9967210079340327,
+          "high": 1.1632789920659674
+        },
+        "advancedDraws": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "otherSeats": [
+        {
+          "seat": 1,
+          "winShareChange": {
+            "mean": -0.29,
+            "low": -0.32203609949594636,
+            "high": -0.2579639005040536
+          },
+          "scoreChange": {
+            "mean": 0.784,
+            "low": 0.31073606503035966,
+            "high": 1.2572639349696404
+          },
+          "treePointsChange": {
+            "mean": 2.231,
+            "low": 2.0632315940384314,
+            "high": 2.3987684059615684
+          }
+        }
+      ],
+      "msPerGame": {
+        "challengerArm": 41.6505,
+        "balancedArm": 40.2951
+      }
+    },
+    {
+      "numPlayers": 3,
+      "scenario": "A",
+      "seat": 1,
+      "games": 1000,
+      "uniform": 0.3333333333333333,
+      "challengerWinShare": {
+        "mean": 0.47333333333333333,
+        "low": 0.4432470475708405,
+        "high": 0.5034196190958262
+      },
+      "balancedWinShare": {
+        "mean": 0.1995,
+        "low": 0.1755008019265275,
+        "high": 0.22349919807347252
+      },
+      "pairedWinShareChange": {
+        "mean": 0.2738333333333333,
+        "low": 0.2350229852621449,
+        "high": 0.3126436814045217
+      },
+      "aboveUniform": true,
+      "tiedGames": 72,
+      "challenger": {
+        "score": 50.422,
+        "cubePoints": 26.067,
+        "treePoints": 2.486,
+        "grown": 1.202,
+        "advancedDraws": 0,
+        "refills": 0.455,
+        "opened1": 2.454,
+        "completed1": 1.947,
+        "finished1": 2.399,
+        "opened2": 1.046,
+        "completed2": 0.504,
+        "finished2": 0.511,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 3.5,
+        "completed": 2.451,
+        "finished": 2.91
+      },
+      "balanced": {
+        "score": 45.301,
+        "cubePoints": 19.344,
+        "treePoints": 6.005,
+        "grown": 3.736,
+        "advancedDraws": 0,
+        "refills": 0.995,
+        "opened1": 2.538,
+        "completed1": 1.842,
+        "finished1": 1.923,
+        "opened2": 0.959,
+        "completed2": 0.226,
+        "finished2": 0.189,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 3.497,
+        "completed": 2.068,
+        "finished": 2.112
+      },
+      "pairedChange": {
+        "score": {
+          "mean": 5.121,
+          "low": 4.617047287246142,
+          "high": 5.624952712753859
+        },
+        "cubePoints": {
+          "mean": 6.723,
+          "low": 6.202878977672811,
+          "high": 7.2431210223271885
+        },
+        "treePoints": {
+          "mean": -3.519,
+          "low": -3.800254703606867,
+          "high": -3.2377452963931335
+        },
+        "opened": {
+          "mean": 0.003,
+          "low": -0.07392781317806474,
+          "high": 0.07992781317806474
+        },
+        "completed": {
+          "mean": 0.383,
+          "low": 0.3221060835065745,
+          "high": 0.4438939164934255
+        },
+        "finished": {
+          "mean": 0.798,
+          "low": 0.7054567886575128,
+          "high": 0.8905432113424873
+        },
+        "advancedDraws": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "otherSeats": [
+        {
+          "seat": 2,
+          "winShareChange": {
+            "mean": -0.16966666666666666,
+            "low": -0.20734323097847554,
+            "high": -0.13199010235485778
+          },
+          "scoreChange": {
+            "mean": -1.777,
+            "low": -2.3237318887903085,
+            "high": -1.2302681112096914
+          },
+          "treePointsChange": {
+            "mean": 4.075,
+            "low": 3.719872021137825,
+            "high": 4.430127978862176
+          }
+        },
+        {
+          "seat": 3,
+          "winShareChange": {
+            "mean": -0.10416666666666667,
+            "low": -0.1439538956055498,
+            "high": -0.06437943772778354
+          },
+          "scoreChange": {
+            "mean": -0.425,
+            "low": -1.0082364318857149,
+            "high": 0.15823643188571496
+          },
+          "treePointsChange": {
+            "mean": -0.309,
+            "low": -0.6805848906006736,
+            "high": 0.06258489060067363
+          }
+        }
+      ],
+      "msPerGame": {
+        "challengerArm": 57.8142,
+        "balancedArm": 55.927
+      }
+    },
+    {
+      "numPlayers": 3,
+      "scenario": "A",
+      "seat": 2,
+      "games": 1000,
+      "uniform": 0.3333333333333333,
+      "challengerWinShare": {
+        "mean": 0.5968333333333333,
+        "low": 0.5671490680409533,
+        "high": 0.6265175986257133
+      },
+      "balancedWinShare": {
+        "mean": 0.377,
+        "low": 0.34770343802347914,
+        "high": 0.40629656197652086
+      },
+      "pairedWinShareChange": {
+        "mean": 0.21983333333333333,
+        "low": 0.1779957114677956,
+        "high": 0.261670955198871
+      },
+      "aboveUniform": true,
+      "tiedGames": 50,
+      "challenger": {
+        "score": 52.131,
+        "cubePoints": 26.615,
+        "treePoints": 3.019,
+        "grown": 1.16,
+        "advancedDraws": 0,
+        "refills": 0.531,
+        "opened1": 2.405,
+        "completed1": 1.834,
+        "finished1": 2.693,
+        "opened2": 1.012,
+        "completed2": 0.387,
+        "finished2": 0.486,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 3.417,
+        "completed": 2.221,
+        "finished": 3.179
+      },
+      "balanced": {
+        "score": 48.139,
+        "cubePoints": 20.061,
+        "treePoints": 5.792,
+        "grown": 3.001,
+        "advancedDraws": 0,
+        "refills": 0.448,
+        "opened1": 2.799,
+        "completed1": 1.968,
+        "finished1": 1.978,
+        "opened2": 1.276,
+        "completed2": 0.275,
+        "finished2": 0.259,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 4.075,
+        "completed": 2.243,
+        "finished": 2.237
+      },
+      "pairedChange": {
+        "score": {
+          "mean": 3.992,
+          "low": 3.4639414541777525,
+          "high": 4.5200585458222475
+        },
+        "cubePoints": {
+          "mean": 6.554,
+          "low": 5.993817836128598,
+          "high": 7.114182163871402
+        },
+        "treePoints": {
+          "mean": -2.773,
+          "low": -3.101172582282626,
+          "high": -2.444827417717374
+        },
+        "opened": {
+          "mean": -0.658,
+          "low": -0.7321287934969588,
+          "high": -0.5838712065030413
+        },
+        "completed": {
+          "mean": -0.022,
+          "low": -0.08204193652676234,
+          "high": 0.038041936526762334
+        },
+        "finished": {
+          "mean": 0.942,
+          "low": 0.8450445004423117,
+          "high": 1.0389554995576882
+        },
+        "advancedDraws": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "otherSeats": [
+        {
+          "seat": 1,
+          "winShareChange": {
+            "mean": -0.09366666666666666,
+            "low": -0.12389773142875937,
+            "high": -0.06343560190457395
+          },
+          "scoreChange": {
+            "mean": -0.657,
+            "low": -1.138344428797575,
+            "high": -0.1756555712024251
+          },
+          "treePointsChange": {
+            "mean": 0.28,
+            "low": -0.031732237217735326,
+            "high": 0.5917322372177354
+          }
+        },
+        {
+          "seat": 3,
+          "winShareChange": {
+            "mean": -0.12616666666666668,
+            "low": -0.16610338493301843,
+            "high": -0.08622994840031492
+          },
+          "scoreChange": {
+            "mean": -0.322,
+            "low": -0.8771874486633684,
+            "high": 0.23318744866336844
+          },
+          "treePointsChange": {
+            "mean": 2.945,
+            "low": 2.556990656088918,
+            "high": 3.3330093439110815
+          }
+        }
+      ],
+      "msPerGame": {
+        "challengerArm": 58.3061,
+        "balancedArm": 55.927
+      }
+    },
+    {
+      "numPlayers": 3,
+      "scenario": "B",
+      "seat": 1,
+      "games": 1000,
+      "uniform": 0.3333333333333333,
+      "challengerWinShare": {
+        "mean": 0.4375,
+        "low": 0.40765257391050796,
+        "high": 0.46734742608949204
+      },
+      "balancedWinShare": {
+        "mean": 0.18683333333333332,
+        "low": 0.16346973121498265,
+        "high": 0.210196935451684
+      },
+      "pairedWinShareChange": {
+        "mean": 0.25066666666666665,
+        "low": 0.21278891613225293,
+        "high": 0.28854441720108037
+      },
+      "aboveUniform": true,
+      "tiedGames": 69,
+      "challenger": {
+        "score": 51.393,
+        "cubePoints": 26.884,
+        "treePoints": 2.486,
+        "grown": 1.202,
+        "advancedDraws": 0,
+        "refills": 0.455,
+        "opened1": 2.455,
+        "completed1": 2.01,
+        "finished1": 2.447,
+        "opened2": 1.047,
+        "completed2": 0.529,
+        "finished2": 0.519,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 3.502,
+        "completed": 2.539,
+        "finished": 2.966
+      },
+      "balanced": {
+        "score": 46.212,
+        "cubePoints": 20.067,
+        "treePoints": 6.005,
+        "grown": 3.736,
+        "advancedDraws": 0,
+        "refills": 0.995,
+        "opened1": 2.538,
+        "completed1": 1.912,
+        "finished1": 1.969,
+        "opened2": 0.958,
+        "completed2": 0.242,
+        "finished2": 0.204,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 3.496,
+        "completed": 2.154,
+        "finished": 2.173
+      },
+      "pairedChange": {
+        "score": {
+          "mean": 5.181,
+          "low": 4.563242538214862,
+          "high": 5.798757461785138
+        },
+        "cubePoints": {
+          "mean": 6.817,
+          "low": 6.24288337542141,
+          "high": 7.39111662457859
+        },
+        "treePoints": {
+          "mean": -3.519,
+          "low": -3.800254703606867,
+          "high": -3.2377452963931335
+        },
+        "opened": {
+          "mean": 0.006,
+          "low": -0.07105200281480006,
+          "high": 0.08305200281480007
+        },
+        "completed": {
+          "mean": 0.385,
+          "low": 0.3179031600093201,
+          "high": 0.4520968399906799
+        },
+        "finished": {
+          "mean": 0.793,
+          "low": 0.6972514455749268,
+          "high": 0.8887485544250733
+        },
+        "advancedDraws": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "otherSeats": [
+        {
+          "seat": 2,
+          "winShareChange": {
+            "mean": -0.16133333333333333,
+            "low": -0.19937006707095917,
+            "high": -0.12329659959570748
+          },
+          "scoreChange": {
+            "mean": -1.624,
+            "low": -2.319460101148514,
+            "high": -0.9285398988514866
+          },
+          "treePointsChange": {
+            "mean": 4.076,
+            "low": 3.720824116152385,
+            "high": 4.431175883847614
+          }
+        },
+        {
+          "seat": 3,
+          "winShareChange": {
+            "mean": -0.08933333333333333,
+            "low": -0.13013625302173443,
+            "high": -0.04853041364493224
+          },
+          "scoreChange": {
+            "mean": -0.341,
+            "low": -1.1150957286747238,
+            "high": 0.43309572867472373
+          },
+          "treePointsChange": {
+            "mean": -0.31,
+            "low": -0.681586861963103,
+            "high": 0.061586861963103035
+          }
+        }
+      ],
+      "msPerGame": {
+        "challengerArm": 60.1992,
+        "balancedArm": 58.1421
+      }
+    },
+    {
+      "numPlayers": 3,
+      "scenario": "B",
+      "seat": 2,
+      "games": 1000,
+      "uniform": 0.3333333333333333,
+      "challengerWinShare": {
+        "mean": 0.5643333333333334,
+        "low": 0.5343918844980454,
+        "high": 0.5942747821686213
+      },
+      "balancedWinShare": {
+        "mean": 0.37983333333333336,
+        "low": 0.35038076968288645,
+        "high": 0.40928589698378026
+      },
+      "pairedWinShareChange": {
+        "mean": 0.1845,
+        "low": 0.14272074096907283,
+        "high": 0.22627925903092716
+      },
+      "aboveUniform": true,
+      "tiedGames": 55,
+      "challenger": {
+        "score": 53.243,
+        "cubePoints": 27.45,
+        "treePoints": 3.019,
+        "grown": 1.16,
+        "advancedDraws": 0,
+        "refills": 0.527,
+        "opened1": 2.409,
+        "completed1": 1.894,
+        "finished1": 2.761,
+        "opened2": 1.015,
+        "completed2": 0.406,
+        "finished2": 0.505,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 3.424,
+        "completed": 2.3,
+        "finished": 3.266
+      },
+      "balanced": {
+        "score": 49.59,
+        "cubePoints": 21.182,
+        "treePoints": 5.792,
+        "grown": 3.001,
+        "advancedDraws": 0,
+        "refills": 0.448,
+        "opened1": 2.798,
+        "completed1": 2.058,
+        "finished1": 2.059,
+        "opened2": 1.281,
+        "completed2": 0.305,
+        "finished2": 0.279,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 4.079,
+        "completed": 2.363,
+        "finished": 2.338
+      },
+      "pairedChange": {
+        "score": {
+          "mean": 3.653,
+          "low": 3.0029162465492703,
+          "high": 4.30308375345073
+        },
+        "cubePoints": {
+          "mean": 6.268,
+          "low": 5.644338882886737,
+          "high": 6.891661117113262
+        },
+        "treePoints": {
+          "mean": -2.773,
+          "low": -3.101172582282626,
+          "high": -2.444827417717374
+        },
+        "opened": {
+          "mean": -0.655,
+          "low": -0.7296699059085008,
+          "high": -0.5803300940914993
+        },
+        "completed": {
+          "mean": -0.063,
+          "low": -0.12935504824311078,
+          "high": 0.0033550482431107947
+        },
+        "finished": {
+          "mean": 0.928,
+          "low": 0.826582639563378,
+          "high": 1.0294173604366221
+        },
+        "advancedDraws": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "otherSeats": [
+        {
+          "seat": 1,
+          "winShareChange": {
+            "mean": -0.0775,
+            "low": -0.10723699886596005,
+            "high": -0.047763001134039945
+          },
+          "scoreChange": {
+            "mean": -0.45,
+            "low": -1.0342414174807069,
+            "high": 0.1342414174807069
+          },
+          "treePointsChange": {
+            "mean": 0.28,
+            "low": -0.031732237217735326,
+            "high": 0.5917322372177354
+          }
+        },
+        {
+          "seat": 3,
+          "winShareChange": {
+            "mean": -0.107,
+            "low": -0.1473754604112415,
+            "high": -0.0666245395887585
+          },
+          "scoreChange": {
+            "mean": -0.175,
+            "low": -0.9287540224974231,
+            "high": 0.5787540224974232
+          },
+          "treePointsChange": {
+            "mean": 2.944,
+            "low": 2.5560358052649357,
+            "high": 3.331964194735064
+          }
+        }
+      ],
+      "msPerGame": {
+        "challengerArm": 60.8442,
+        "balancedArm": 58.1421
+      }
+    },
+    {
+      "numPlayers": 3,
+      "scenario": "C",
+      "seat": 1,
+      "games": 1000,
+      "uniform": 0.3333333333333333,
+      "challengerWinShare": {
+        "mean": 0.6285,
+        "low": 0.5992340746117966,
+        "high": 0.6577659253882033
+      },
+      "balancedWinShare": {
+        "mean": 0.219,
+        "low": 0.19420569132217846,
+        "high": 0.24379430867782154
+      },
+      "pairedWinShareChange": {
+        "mean": 0.4095,
+        "low": 0.37325912369233977,
+        "high": 0.4457408763076602
+      },
+      "aboveUniform": true,
+      "tiedGames": 52,
+      "challenger": {
+        "score": 46.275,
+        "cubePoints": 28.904,
+        "treePoints": 1.25,
+        "grown": 0.841,
+        "advancedDraws": 0,
+        "refills": 0.446,
+        "opened1": 0.72,
+        "completed1": 0.581,
+        "finished1": 0.751,
+        "opened2": 1.758,
+        "completed2": 1.235,
+        "finished2": 1.492,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 2.478,
+        "completed": 1.816,
+        "finished": 2.243
+      },
+      "balanced": {
+        "score": 38.499,
+        "cubePoints": 18.537,
+        "treePoints": 4.233,
+        "grown": 3.131,
+        "advancedDraws": 0,
+        "refills": 0.975,
+        "opened1": 0.889,
+        "completed1": 0.463,
+        "finished1": 0.483,
+        "opened2": 2.194,
+        "completed2": 0.905,
+        "finished2": 0.797,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 3.083,
+        "completed": 1.368,
+        "finished": 1.28
+      },
+      "pairedChange": {
+        "score": {
+          "mean": 7.776,
+          "low": 7.287312184311416,
+          "high": 8.264687815688584
+        },
+        "cubePoints": {
+          "mean": 10.367,
+          "low": 9.748526897592287,
+          "high": 10.985473102407715
+        },
+        "treePoints": {
+          "mean": -2.983,
+          "low": -3.14428351159219,
+          "high": -2.82171648840781
+        },
+        "opened": {
+          "mean": -0.605,
+          "low": -0.6727867413035582,
+          "high": -0.5372132586964418
+        },
+        "completed": {
+          "mean": 0.448,
+          "low": 0.3933288054364525,
+          "high": 0.5026711945635475
+        },
+        "finished": {
+          "mean": 0.963,
+          "low": 0.8788018890417126,
+          "high": 1.0471981109582873
+        },
+        "advancedDraws": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "otherSeats": [
+        {
+          "seat": 2,
+          "winShareChange": {
+            "mean": -0.2645,
+            "low": -0.29880007975243145,
+            "high": -0.23019992024756858
+          },
+          "scoreChange": {
+            "mean": -2.039,
+            "low": -2.56358653394206,
+            "high": -1.5144134660579405
+          },
+          "treePointsChange": {
+            "mean": 3.934,
+            "low": 3.701401504501998,
+            "high": 4.166598495498002
+          }
+        },
+        {
+          "seat": 3,
+          "winShareChange": {
+            "mean": -0.145,
+            "low": -0.18237687831732022,
+            "high": -0.10762312168267976
+          },
+          "scoreChange": {
+            "mean": 0.993,
+            "low": 0.4689140910959443,
+            "high": 1.5170859089040558
+          },
+          "treePointsChange": {
+            "mean": 0.165,
+            "low": -0.09203919988828749,
+            "high": 0.42203919988828753
+          }
+        }
+      ],
+      "msPerGame": {
+        "challengerArm": 55.3501,
+        "balancedArm": 53.0519
+      }
+    },
+    {
+      "numPlayers": 3,
+      "scenario": "C",
+      "seat": 2,
+      "games": 1000,
+      "uniform": 0.3333333333333333,
+      "challengerWinShare": {
+        "mean": 0.733,
+        "low": 0.7064575431805531,
+        "high": 0.7595424568194469
+      },
+      "balancedWinShare": {
+        "mean": 0.3855,
+        "low": 0.35621861825211687,
+        "high": 0.41478138174788315
+      },
+      "pairedWinShareChange": {
+        "mean": 0.3475,
+        "low": 0.3092996219623678,
+        "high": 0.38570037803763213
+      },
+      "aboveUniform": true,
+      "tiedGames": 54,
+      "challenger": {
+        "score": 47.34,
+        "cubePoints": 29.761,
+        "treePoints": 1.152,
+        "grown": 0.675,
+        "advancedDraws": 0,
+        "refills": 0.463,
+        "opened1": 0.639,
+        "completed1": 0.476,
+        "finished1": 0.817,
+        "opened2": 1.72,
+        "completed2": 1.103,
+        "finished2": 1.595,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 2.359,
+        "completed": 1.579,
+        "finished": 2.412
+      },
+      "balanced": {
+        "score": 41.31,
+        "cubePoints": 20.511,
+        "treePoints": 3.402,
+        "grown": 2.217,
+        "advancedDraws": 0,
+        "refills": 0.277,
+        "opened1": 1.007,
+        "completed1": 0.574,
+        "finished1": 0.556,
+        "opened2": 2.45,
+        "completed2": 0.981,
+        "finished2": 1.019,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 3.457,
+        "completed": 1.555,
+        "finished": 1.575
+      },
+      "pairedChange": {
+        "score": {
+          "mean": 6.03,
+          "low": 5.535036813867181,
+          "high": 6.52496318613282
+        },
+        "cubePoints": {
+          "mean": 9.25,
+          "low": 8.628094495256331,
+          "high": 9.871905504743669
+        },
+        "treePoints": {
+          "mean": -2.25,
+          "low": -2.4265231485541494,
+          "high": -2.0734768514458506
+        },
+        "opened": {
+          "mean": -1.098,
+          "low": -1.1622159541098578,
+          "high": -1.0337840458901424
+        },
+        "completed": {
+          "mean": 0.024,
+          "low": -0.02666012495250243,
+          "high": 0.07466012495250243
+        },
+        "finished": {
+          "mean": 0.837,
+          "low": 0.755333515573928,
+          "high": 0.9186664844260719
+        },
+        "advancedDraws": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "otherSeats": [
+        {
+          "seat": 1,
+          "winShareChange": {
+            "mean": -0.122,
+            "low": -0.15110418950528343,
+            "high": -0.09289581049471657
+          },
+          "scoreChange": {
+            "mean": 0.157,
+            "low": -0.2717808653818302,
+            "high": 0.5857808653818302
+          },
+          "treePointsChange": {
+            "mean": 0.416,
+            "low": 0.22586981107569498,
+            "high": 0.6061301889243049
+          }
+        },
+        {
+          "seat": 3,
+          "winShareChange": {
+            "mean": -0.2255,
+            "low": -0.2609997658750209,
+            "high": -0.19000023412497913
+          },
+          "scoreChange": {
+            "mean": 0.008,
+            "low": -0.48301967631316345,
+            "high": 0.49901967631316346
+          },
+          "treePointsChange": {
+            "mean": 2.966,
+            "low": 2.7043417494613293,
+            "high": 3.227658250538671
+          }
+        }
+      ],
+      "msPerGame": {
+        "challengerArm": 55.2215,
+        "balancedArm": 53.0519
+      }
+    },
+    {
+      "numPlayers": 3,
+      "scenario": "D",
+      "seat": 1,
+      "games": 1000,
+      "uniform": 0.3333333333333333,
+      "challengerWinShare": {
+        "mean": 0.6255,
+        "low": 0.5961840570581295,
+        "high": 0.6548159429418704
+      },
+      "balancedWinShare": {
+        "mean": 0.219,
+        "low": 0.19420569132217846,
+        "high": 0.24379430867782154
+      },
+      "pairedWinShareChange": {
+        "mean": 0.4065,
+        "low": 0.37007665962367664,
+        "high": 0.4429233403763233
+      },
+      "aboveUniform": true,
+      "tiedGames": 52,
+      "challenger": {
+        "score": 46.308,
+        "cubePoints": 28.935,
+        "treePoints": 1.25,
+        "grown": 0.841,
+        "advancedDraws": 0,
+        "refills": 0.446,
+        "opened1": 0.72,
+        "completed1": 0.584,
+        "finished1": 0.751,
+        "opened2": 1.758,
+        "completed2": 1.236,
+        "finished2": 1.492,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 2.478,
+        "completed": 1.82,
+        "finished": 2.243
+      },
+      "balanced": {
+        "score": 38.499,
+        "cubePoints": 18.537,
+        "treePoints": 4.233,
+        "grown": 3.131,
+        "advancedDraws": 0,
+        "refills": 0.975,
+        "opened1": 0.889,
+        "completed1": 0.463,
+        "finished1": 0.483,
+        "opened2": 2.194,
+        "completed2": 0.905,
+        "finished2": 0.797,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 3.083,
+        "completed": 1.368,
+        "finished": 1.28
+      },
+      "pairedChange": {
+        "score": {
+          "mean": 7.809,
+          "low": 7.3186833578221915,
+          "high": 8.299316642177809
+        },
+        "cubePoints": {
+          "mean": 10.398,
+          "low": 9.779746768936356,
+          "high": 11.016253231063644
+        },
+        "treePoints": {
+          "mean": -2.983,
+          "low": -3.14428351159219,
+          "high": -2.82171648840781
+        },
+        "opened": {
+          "mean": -0.605,
+          "low": -0.6727867413035582,
+          "high": -0.5372132586964418
+        },
+        "completed": {
+          "mean": 0.452,
+          "low": 0.39717428656958065,
+          "high": 0.5068257134304194
+        },
+        "finished": {
+          "mean": 0.963,
+          "low": 0.8788018890417126,
+          "high": 1.0471981109582873
+        },
+        "advancedDraws": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "otherSeats": [
+        {
+          "seat": 2,
+          "winShareChange": {
+            "mean": -0.2635,
+            "low": -0.2979414924161352,
+            "high": -0.2290585075838648
+          },
+          "scoreChange": {
+            "mean": -1.991,
+            "low": -2.525338249709206,
+            "high": -1.4566617502907944
+          },
+          "treePointsChange": {
+            "mean": 3.934,
+            "low": 3.701401504501998,
+            "high": 4.166598495498002
+          }
+        },
+        {
+          "seat": 3,
+          "winShareChange": {
+            "mean": -0.143,
+            "low": -0.18048351483133468,
+            "high": -0.10551648516866531
+          },
+          "scoreChange": {
+            "mean": 1.087,
+            "low": 0.5439583944536865,
+            "high": 1.6300416055463134
+          },
+          "treePointsChange": {
+            "mean": 0.165,
+            "low": -0.09203919988828749,
+            "high": 0.42203919988828753
+          }
+        }
+      ],
+      "msPerGame": {
+        "challengerArm": 56.6177,
+        "balancedArm": 54.8277
+      }
+    },
+    {
+      "numPlayers": 3,
+      "scenario": "D",
+      "seat": 2,
+      "games": 1000,
+      "uniform": 0.3333333333333333,
+      "challengerWinShare": {
+        "mean": 0.733,
+        "low": 0.7064575431805531,
+        "high": 0.7595424568194469
+      },
+      "balancedWinShare": {
+        "mean": 0.385,
+        "low": 0.35570973891464697,
+        "high": 0.41429026108535305
+      },
+      "pairedWinShareChange": {
+        "mean": 0.348,
+        "low": 0.30977938179722597,
+        "high": 0.386220618202774
+      },
+      "aboveUniform": true,
+      "tiedGames": 54,
+      "challenger": {
+        "score": 47.365,
+        "cubePoints": 29.778,
+        "treePoints": 1.152,
+        "grown": 0.675,
+        "advancedDraws": 0,
+        "refills": 0.463,
+        "opened1": 0.639,
+        "completed1": 0.477,
+        "finished1": 0.82,
+        "opened2": 1.72,
+        "completed2": 1.103,
+        "finished2": 1.595,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 2.359,
+        "completed": 1.58,
+        "finished": 2.415
+      },
+      "balanced": {
+        "score": 41.324,
+        "cubePoints": 20.516,
+        "treePoints": 3.402,
+        "grown": 2.217,
+        "advancedDraws": 0,
+        "refills": 0.277,
+        "opened1": 1.007,
+        "completed1": 0.575,
+        "finished1": 0.556,
+        "opened2": 2.45,
+        "completed2": 0.981,
+        "finished2": 1.019,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 3.457,
+        "completed": 1.556,
+        "finished": 1.575
+      },
+      "pairedChange": {
+        "score": {
+          "mean": 6.041,
+          "low": 5.541627349116265,
+          "high": 6.540372650883736
+        },
+        "cubePoints": {
+          "mean": 9.262,
+          "low": 8.638008550783699,
+          "high": 9.885991449216302
+        },
+        "treePoints": {
+          "mean": -2.25,
+          "low": -2.4265231485541494,
+          "high": -2.0734768514458506
+        },
+        "opened": {
+          "mean": -1.098,
+          "low": -1.1622159541098578,
+          "high": -1.0337840458901424
+        },
+        "completed": {
+          "mean": 0.024,
+          "low": -0.02681170609911101,
+          "high": 0.074811706099111
+        },
+        "finished": {
+          "mean": 0.84,
+          "low": 0.7581931097105208,
+          "high": 0.9218068902894792
+        },
+        "advancedDraws": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "otherSeats": [
+        {
+          "seat": 1,
+          "winShareChange": {
+            "mean": -0.122,
+            "low": -0.15110418950528343,
+            "high": -0.09289581049471657
+          },
+          "scoreChange": {
+            "mean": 0.166,
+            "low": -0.26346230842513674,
+            "high": 0.5954623084251367
+          },
+          "treePointsChange": {
+            "mean": 0.416,
+            "low": 0.22586981107569498,
+            "high": 0.6061301889243049
+          }
+        },
+        {
+          "seat": 3,
+          "winShareChange": {
+            "mean": -0.226,
+            "low": -0.2615281476841776,
+            "high": -0.19047185231582242
+          },
+          "scoreChange": {
+            "mean": -0.001,
+            "low": -0.49632003314071493,
+            "high": 0.49432003314071493
+          },
+          "treePointsChange": {
+            "mean": 2.966,
+            "low": 2.7043417494613293,
+            "high": 3.227658250538671
+          }
+        }
+      ],
+      "msPerGame": {
+        "challengerArm": 56.8086,
+        "balancedArm": 54.8277
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "A",
+      "seat": 1,
+      "games": 1000,
+      "uniform": 0.25,
+      "challengerWinShare": {
+        "mean": 0.30633333333333335,
+        "low": 0.2784558760136557,
+        "high": 0.334210790653011
+      },
+      "balancedWinShare": {
+        "mean": 0.11083333333333334,
+        "low": 0.09206789338963485,
+        "high": 0.12959877327703184
+      },
+      "pairedWinShareChange": {
+        "mean": 0.1955,
+        "low": 0.16253598263157237,
+        "high": 0.22846401736842764
+      },
+      "aboveUniform": true,
+      "tiedGames": 76,
+      "challenger": {
+        "score": 42.094,
+        "cubePoints": 21.469,
+        "treePoints": 2.253,
+        "grown": 0.819,
+        "advancedDraws": 0,
+        "refills": 0.409,
+        "opened1": 2.105,
+        "completed1": 1.706,
+        "finished1": 1.966,
+        "opened2": 0.89,
+        "completed2": 0.427,
+        "finished2": 0.339,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 2.995,
+        "completed": 2.133,
+        "finished": 2.305
+      },
+      "balanced": {
+        "score": 38.583,
+        "cubePoints": 16.209,
+        "treePoints": 5.643,
+        "grown": 3.296,
+        "advancedDraws": 0,
+        "refills": 0.968,
+        "opened1": 2.12,
+        "completed1": 1.585,
+        "finished1": 1.594,
+        "opened2": 0.792,
+        "completed2": 0.192,
+        "finished2": 0.208,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 2.912,
+        "completed": 1.777,
+        "finished": 1.802
+      },
+      "pairedChange": {
+        "score": {
+          "mean": 3.511,
+          "low": 3.029893181083917,
+          "high": 3.992106818916083
+        },
+        "cubePoints": {
+          "mean": 5.26,
+          "low": 4.787479866222467,
+          "high": 5.732520133777532
+        },
+        "treePoints": {
+          "mean": -3.39,
+          "low": -3.6793832211789317,
+          "high": -3.1006167788210686
+        },
+        "opened": {
+          "mean": 0.083,
+          "low": 0.008378105079704073,
+          "high": 0.15762189492029594
+        },
+        "completed": {
+          "mean": 0.356,
+          "low": 0.29401230782660903,
+          "high": 0.41798769217339093
+        },
+        "finished": {
+          "mean": 0.503,
+          "low": 0.4112749171852828,
+          "high": 0.5947250828147171
+        },
+        "advancedDraws": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "otherSeats": [
+        {
+          "seat": 2,
+          "winShareChange": {
+            "mean": -0.0685,
+            "low": -0.10191619413626136,
+            "high": -0.035083805863738646
+          },
+          "scoreChange": {
+            "mean": -1.283,
+            "low": -1.771762904200298,
+            "high": -0.7942370957997018
+          },
+          "treePointsChange": {
+            "mean": 2.381,
+            "low": 2.0209017820049917,
+            "high": 2.741098217995008
+          }
+        },
+        {
+          "seat": 3,
+          "winShareChange": {
+            "mean": -0.0645,
+            "low": -0.10050591943161738,
+            "high": -0.02849408056838263
+          },
+          "scoreChange": {
+            "mean": -0.929,
+            "low": -1.4476020665603035,
+            "high": -0.41039793343969655
+          },
+          "treePointsChange": {
+            "mean": 0.23,
+            "low": -0.12825284409826307,
+            "high": 0.5882528440982631
+          }
+        },
+        {
+          "seat": 4,
+          "winShareChange": {
+            "mean": -0.0625,
+            "low": -0.10246669442297802,
+            "high": -0.022533305577021975
+          },
+          "scoreChange": {
+            "mean": -1.006,
+            "low": -1.5710786813303228,
+            "high": -0.4409213186696771
+          },
+          "treePointsChange": {
+            "mean": 0.674,
+            "low": 0.36197109246661585,
+            "high": 0.9860289075333842
+          }
+        }
+      ],
+      "msPerGame": {
+        "challengerArm": 64.5117,
+        "balancedArm": 63.1862
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "A",
+      "seat": 2,
+      "games": 1000,
+      "uniform": 0.25,
+      "challengerWinShare": {
+        "mean": 0.4055,
+        "low": 0.3759129193672404,
+        "high": 0.43508708063275964
+      },
+      "balancedWinShare": {
+        "mean": 0.222,
+        "low": 0.19711458929882797,
+        "high": 0.24688541070117204
+      },
+      "pairedWinShareChange": {
+        "mean": 0.1835,
+        "low": 0.1462552420679938,
+        "high": 0.22074475793200618
+      },
+      "aboveUniform": true,
+      "tiedGames": 80,
+      "challenger": {
+        "score": 43.696,
+        "cubePoints": 22.117,
+        "treePoints": 2.953,
+        "grown": 0.986,
+        "advancedDraws": 0,
+        "refills": 0.428,
+        "opened1": 2.126,
+        "completed1": 1.64,
+        "finished1": 2.082,
+        "opened2": 0.885,
+        "completed2": 0.355,
+        "finished2": 0.361,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 3.011,
+        "completed": 1.995,
+        "finished": 2.443
+      },
+      "balanced": {
+        "score": 41,
+        "cubePoints": 16.453,
+        "treePoints": 5.787,
+        "grown": 2.898,
+        "advancedDraws": 0,
+        "refills": 0.305,
+        "opened1": 2.514,
+        "completed1": 1.78,
+        "finished1": 1.427,
+        "opened2": 1.107,
+        "completed2": 0.305,
+        "finished2": 0.221,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 3.621,
+        "completed": 2.085,
+        "finished": 1.648
+      },
+      "pairedChange": {
+        "score": {
+          "mean": 2.696,
+          "low": 2.2127172950591065,
+          "high": 3.179282704940894
+        },
+        "cubePoints": {
+          "mean": 5.664,
+          "low": 5.132135169564734,
+          "high": 6.195864830435266
+        },
+        "treePoints": {
+          "mean": -2.834,
+          "low": -3.1569935111134115,
+          "high": -2.5110064888865886
+        },
+        "opened": {
+          "mean": -0.61,
+          "low": -0.6812419603488599,
+          "high": -0.5387580396511401
+        },
+        "completed": {
+          "mean": -0.09,
+          "low": -0.14999016694774278,
+          "high": -0.03000983305225722
+        },
+        "finished": {
+          "mean": 0.795,
+          "low": 0.7034220978421815,
+          "high": 0.8865779021578186
+        },
+        "advancedDraws": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "otherSeats": [
+        {
+          "seat": 1,
+          "winShareChange": {
+            "mean": -0.031,
+            "low": -0.055104035299415384,
+            "high": -0.006895964700584616
+          },
+          "scoreChange": {
+            "mean": -0.385,
+            "low": -0.8148933546235568,
+            "high": 0.044893354623556814
+          },
+          "treePointsChange": {
+            "mean": 0.021,
+            "low": -0.29151429357256176,
+            "high": 0.3335142935725618
+          }
+        },
+        {
+          "seat": 3,
+          "winShareChange": {
+            "mean": -0.05566666666666667,
+            "low": -0.09208438340544928,
+            "high": -0.01924894992788407
+          },
+          "scoreChange": {
+            "mean": -0.568,
+            "low": -1.0861770903446843,
+            "high": -0.04982290965531544
+          },
+          "treePointsChange": {
+            "mean": 2.224,
+            "low": 1.8676805158011343,
+            "high": 2.580319484198866
+          }
+        },
+        {
+          "seat": 4,
+          "winShareChange": {
+            "mean": -0.09683333333333333,
+            "low": -0.13562425699067704,
+            "high": -0.05804240967598961
+          },
+          "scoreChange": {
+            "mean": -1.118,
+            "low": -1.6578693950279921,
+            "high": -0.5781306049720081
+          },
+          "treePointsChange": {
+            "mean": 0.533,
+            "low": 0.2302964986026037,
+            "high": 0.8357035013973964
+          }
+        }
+      ],
+      "msPerGame": {
+        "challengerArm": 64.4442,
+        "balancedArm": 63.1862
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "B",
+      "seat": 1,
+      "games": 1000,
+      "uniform": 0.25,
+      "challengerWinShare": {
+        "mean": 0.23466666666666666,
+        "low": 0.20904995970412316,
+        "high": 0.26028337362921017
+      },
+      "balancedWinShare": {
+        "mean": 0.11166666666666666,
+        "low": 0.0927472478854538,
+        "high": 0.13058608544787953
+      },
+      "pairedWinShareChange": {
+        "mean": 0.123,
+        "low": 0.09199585119719454,
+        "high": 0.15400414880280544
+      },
+      "aboveUniform": false,
+      "tiedGames": 69,
+      "challenger": {
+        "score": 44.138,
+        "cubePoints": 23.319,
+        "treePoints": 2.253,
+        "grown": 0.819,
+        "advancedDraws": 0,
+        "refills": 0.409,
+        "opened1": 2.105,
+        "completed1": 1.828,
+        "finished1": 2.045,
+        "opened2": 0.892,
+        "completed2": 0.487,
+        "finished2": 0.366,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 2.997,
+        "completed": 2.315,
+        "finished": 2.411
+      },
+      "balanced": {
+        "score": 41.028,
+        "cubePoints": 18.237,
+        "treePoints": 5.643,
+        "grown": 3.296,
+        "advancedDraws": 0,
+        "refills": 0.968,
+        "opened1": 2.122,
+        "completed1": 1.753,
+        "finished1": 1.718,
+        "opened2": 0.794,
+        "completed2": 0.26,
+        "finished2": 0.233,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 2.916,
+        "completed": 2.013,
+        "finished": 1.951
+      },
+      "pairedChange": {
+        "score": {
+          "mean": 3.11,
+          "low": 2.4681210618602303,
+          "high": 3.7518789381397695
+        },
+        "cubePoints": {
+          "mean": 5.082,
+          "low": 4.5131256631341365,
+          "high": 5.650874336865863
+        },
+        "treePoints": {
+          "mean": -3.39,
+          "low": -3.6793832211789317,
+          "high": -3.1006167788210686
+        },
+        "opened": {
+          "mean": 0.081,
+          "low": 0.006266676256519249,
+          "high": 0.15573332374348076
+        },
+        "completed": {
+          "mean": 0.302,
+          "low": 0.23226102039852817,
+          "high": 0.37173897960147184
+        },
+        "finished": {
+          "mean": 0.46,
+          "low": 0.3629302661616076,
+          "high": 0.5570697338383924
+        },
+        "advancedDraws": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "otherSeats": [
+        {
+          "seat": 2,
+          "winShareChange": {
+            "mean": -0.0715,
+            "low": -0.10508975944018975,
+            "high": -0.037910240559810245
+          },
+          "scoreChange": {
+            "mean": -2.137,
+            "low": -2.85053125019128,
+            "high": -1.4234687498087202
+          },
+          "treePointsChange": {
+            "mean": 2.381,
+            "low": 2.0209017820049917,
+            "high": 2.741098217995008
+          }
+        },
+        {
+          "seat": 3,
+          "winShareChange": {
+            "mean": -0.056666666666666664,
+            "low": -0.09440940472102449,
+            "high": -0.018923928612308828
+          },
+          "scoreChange": {
+            "mean": -1.228,
+            "low": -2.0322264701683306,
+            "high": -0.4237735298316696
+          },
+          "treePointsChange": {
+            "mean": 0.228,
+            "low": -0.13016114687222283,
+            "high": 0.5861611468722229
+          }
+        },
+        {
+          "seat": 4,
+          "winShareChange": {
+            "mean": 0.005166666666666667,
+            "low": -0.03251891619795057,
+            "high": 0.0428522495312839
+          },
+          "scoreChange": {
+            "mean": -0.453,
+            "low": -1.2856555233976072,
+            "high": 0.37965552339760716
+          },
+          "treePointsChange": {
+            "mean": 0.676,
+            "low": 0.3639261147475035,
+            "high": 0.9880738852524966
+          }
+        }
+      ],
+      "msPerGame": {
+        "challengerArm": 70.3727,
+        "balancedArm": 69.3252
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "B",
+      "seat": 2,
+      "games": 1000,
+      "uniform": 0.25,
+      "challengerWinShare": {
+        "mean": 0.35833333333333334,
+        "low": 0.3291790466401181,
+        "high": 0.3874876200265486
+      },
+      "balancedWinShare": {
+        "mean": 0.2425,
+        "low": 0.21664993742095248,
+        "high": 0.2683500625790475
+      },
+      "pairedWinShareChange": {
+        "mean": 0.11583333333333333,
+        "low": 0.07709402411951315,
+        "high": 0.15457264254715353
+      },
+      "aboveUniform": true,
+      "tiedGames": 59,
+      "challenger": {
+        "score": 46.14,
+        "cubePoints": 24.134,
+        "treePoints": 2.953,
+        "grown": 0.986,
+        "advancedDraws": 0,
+        "refills": 0.427,
+        "opened1": 2.13,
+        "completed1": 1.771,
+        "finished1": 2.221,
+        "opened2": 0.898,
+        "completed2": 0.415,
+        "finished2": 0.392,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 3.028,
+        "completed": 2.186,
+        "finished": 2.613
+      },
+      "balanced": {
+        "score": 44.858,
+        "cubePoints": 19.425,
+        "treePoints": 5.787,
+        "grown": 2.898,
+        "advancedDraws": 0,
+        "refills": 0.305,
+        "opened1": 2.518,
+        "completed1": 2.013,
+        "finished1": 1.653,
+        "opened2": 1.133,
+        "completed2": 0.401,
+        "finished2": 0.269,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 3.651,
+        "completed": 2.414,
+        "finished": 1.922
+      },
+      "pairedChange": {
+        "score": {
+          "mean": 1.282,
+          "low": 0.5799147662020984,
+          "high": 1.9840852337979018
+        },
+        "cubePoints": {
+          "mean": 4.709,
+          "low": 4.06775513418398,
+          "high": 5.350244865816019
+        },
+        "treePoints": {
+          "mean": -2.834,
+          "low": -3.1569935111134115,
+          "high": -2.5110064888865886
+        },
+        "opened": {
+          "mean": -0.623,
+          "low": -0.6957632306569986,
+          "high": -0.5502367693430014
+        },
+        "completed": {
+          "mean": -0.228,
+          "low": -0.29705243398781456,
+          "high": -0.15894756601218546
+        },
+        "finished": {
+          "mean": 0.691,
+          "low": 0.5888892013779887,
+          "high": 0.7931107986220112
+        },
+        "advancedDraws": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "otherSeats": [
+        {
+          "seat": 1,
+          "winShareChange": {
+            "mean": -0.0275,
+            "low": -0.05177705991221322,
+            "high": -0.0032229400877867784
+          },
+          "scoreChange": {
+            "mean": -0.726,
+            "low": -1.3184614790707783,
+            "high": -0.1335385209292218
+          },
+          "treePointsChange": {
+            "mean": 0.023,
+            "low": -0.2894768367025713,
+            "high": 0.33547683670257133
+          }
+        },
+        {
+          "seat": 3,
+          "winShareChange": {
+            "mean": -0.053,
+            "low": -0.09175709078120678,
+            "high": -0.01424290921879321
+          },
+          "scoreChange": {
+            "mean": -0.361,
+            "low": -1.1562318131972429,
+            "high": 0.434231813197243
+          },
+          "treePointsChange": {
+            "mean": 2.222,
+            "low": 1.8656325389937742,
+            "high": 2.5783674610062257
+          }
+        },
+        {
+          "seat": 4,
+          "winShareChange": {
+            "mean": -0.035333333333333335,
+            "low": -0.07420350262326103,
+            "high": 0.0035368359565943544
+          },
+          "scoreChange": {
+            "mean": -0.676,
+            "low": -1.4582203845033792,
+            "high": 0.106220384503379
+          },
+          "treePointsChange": {
+            "mean": 0.533,
+            "low": 0.2302964986026037,
+            "high": 0.8357035013973964
+          }
+        }
+      ],
+      "msPerGame": {
+        "challengerArm": 70.3701,
+        "balancedArm": 69.3252
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "C",
+      "seat": 1,
+      "games": 1000,
+      "uniform": 0.25,
+      "challengerWinShare": {
+        "mean": 0.3973333333333333,
+        "low": 0.36811126546443285,
+        "high": 0.4265554012022338
+      },
+      "balancedWinShare": {
+        "mean": 0.09383333333333334,
+        "low": 0.07652698256385809,
+        "high": 0.11113968410280858
+      },
+      "pairedWinShareChange": {
+        "mean": 0.3035,
+        "low": 0.27042294665269717,
+        "high": 0.3365770533473028
+      },
+      "aboveUniform": true,
+      "tiedGames": 95,
+      "challenger": {
+        "score": 38.381,
+        "cubePoints": 23.63,
+        "treePoints": 1.03,
+        "grown": 0.602,
+        "advancedDraws": 0,
+        "refills": 0.408,
+        "opened1": 0.654,
+        "completed1": 0.54,
+        "finished1": 0.718,
+        "opened2": 1.59,
+        "completed2": 1.055,
+        "finished2": 1.128,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 2.244,
+        "completed": 1.595,
+        "finished": 1.846
+      },
+      "balanced": {
+        "score": 33.051,
+        "cubePoints": 15.932,
+        "treePoints": 4.626,
+        "grown": 3.254,
+        "advancedDraws": 0,
+        "refills": 0.952,
+        "opened1": 0.607,
+        "completed1": 0.373,
+        "finished1": 0.422,
+        "opened2": 1.697,
+        "completed2": 0.788,
+        "finished2": 0.757,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 2.304,
+        "completed": 1.161,
+        "finished": 1.179
+      },
+      "pairedChange": {
+        "score": {
+          "mean": 5.33,
+          "low": 4.914765155384126,
+          "high": 5.745234844615874
+        },
+        "cubePoints": {
+          "mean": 7.698,
+          "low": 7.146947337370751,
+          "high": 8.24905266262925
+        },
+        "treePoints": {
+          "mean": -3.596,
+          "low": -3.77483110417494,
+          "high": -3.41716889582506
+        },
+        "opened": {
+          "mean": -0.06,
+          "low": -0.12950712267402903,
+          "high": 0.009507122674029048
+        },
+        "completed": {
+          "mean": 0.434,
+          "low": 0.3797401250338441,
+          "high": 0.4882598749661559
+        },
+        "finished": {
+          "mean": 0.667,
+          "low": 0.5860504783371184,
+          "high": 0.7479495216628816
+        },
+        "advancedDraws": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "otherSeats": [
+        {
+          "seat": 2,
+          "winShareChange": {
+            "mean": -0.063,
+            "low": -0.09316909866019124,
+            "high": -0.03283090133980876
+          },
+          "scoreChange": {
+            "mean": -1.258,
+            "low": -1.6930798348637417,
+            "high": -0.8229201651362584
+          },
+          "treePointsChange": {
+            "mean": 3.176,
+            "low": 2.9307405767114307,
+            "high": 3.4212594232885696
+          }
+        },
+        {
+          "seat": 3,
+          "winShareChange": {
+            "mean": -0.04533333333333334,
+            "low": -0.07965767116040864,
+            "high": -0.011008995506258022
+          },
+          "scoreChange": {
+            "mean": -0.003,
+            "low": -0.4632625500001748,
+            "high": 0.4572625500001748
+          },
+          "treePointsChange": {
+            "mean": 0.223,
+            "low": -0.037955039851382294,
+            "high": 0.48395503985138233
+          }
+        },
+        {
+          "seat": 4,
+          "winShareChange": {
+            "mean": -0.19516666666666665,
+            "low": -0.2345727098609689,
+            "high": -0.1557606234723644
+          },
+          "scoreChange": {
+            "mean": -1.4,
+            "low": -1.8660039754605373,
+            "high": -0.9339960245394625
+          },
+          "treePointsChange": {
+            "mean": 0.545,
+            "low": 0.2330804769919559,
+            "high": 0.8569195230080442
+          }
+        }
+      ],
+      "msPerGame": {
+        "challengerArm": 59.4399,
+        "balancedArm": 58.3116
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "C",
+      "seat": 2,
+      "games": 1000,
+      "uniform": 0.25,
+      "challengerWinShare": {
+        "mean": 0.5039166666666667,
+        "low": 0.4740579292116417,
+        "high": 0.5337754041216917
+      },
+      "balancedWinShare": {
+        "mean": 0.176,
+        "low": 0.1533266395965854,
+        "high": 0.19867336040341457
+      },
+      "pairedWinShareChange": {
+        "mean": 0.3279166666666667,
+        "low": 0.29131354192707415,
+        "high": 0.36451979140625923
+      },
+      "aboveUniform": true,
+      "tiedGames": 102,
+      "challenger": {
+        "score": 39.228,
+        "cubePoints": 24.525,
+        "treePoints": 0.912,
+        "grown": 0.453,
+        "advancedDraws": 0,
+        "refills": 0.434,
+        "opened1": 0.587,
+        "completed1": 0.475,
+        "finished1": 0.684,
+        "opened2": 1.48,
+        "completed2": 0.964,
+        "finished2": 1.269,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 2.067,
+        "completed": 1.439,
+        "finished": 1.953
+      },
+      "balanced": {
+        "score": 35.212,
+        "cubePoints": 16.915,
+        "treePoints": 3.23,
+        "grown": 2.057,
+        "advancedDraws": 0,
+        "refills": 0.273,
+        "opened1": 0.907,
+        "completed1": 0.632,
+        "finished1": 0.428,
+        "opened2": 2.188,
+        "completed2": 0.945,
+        "finished2": 0.717,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 3.095,
+        "completed": 1.577,
+        "finished": 1.145
+      },
+      "pairedChange": {
+        "score": {
+          "mean": 4.016,
+          "low": 3.607992742988797,
+          "high": 4.424007257011203
+        },
+        "cubePoints": {
+          "mean": 7.61,
+          "low": 7.080211311796513,
+          "high": 8.139788688203488
+        },
+        "treePoints": {
+          "mean": -2.318,
+          "low": -2.5082710212235666,
+          "high": -2.1277289787764335
+        },
+        "opened": {
+          "mean": -1.028,
+          "low": -1.0945340186172274,
+          "high": -0.9614659813827726
+        },
+        "completed": {
+          "mean": -0.138,
+          "low": -0.1915217935014198,
+          "high": -0.08447820649858022
+        },
+        "finished": {
+          "mean": 0.808,
+          "low": 0.7262228220441601,
+          "high": 0.88977717795584
+        },
+        "advancedDraws": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "otherSeats": [
+        {
+          "seat": 1,
+          "winShareChange": {
+            "mean": -0.02025,
+            "low": -0.04263324763726939,
+            "high": 0.0021332476372693913
+          },
+          "scoreChange": {
+            "mean": 0.158,
+            "low": -0.22068597169398999,
+            "high": 0.53668597169399
+          },
+          "treePointsChange": {
+            "mean": -0.309,
+            "low": -0.5178338808536882,
+            "high": -0.10016611914631185
+          }
+        },
+        {
+          "seat": 3,
+          "winShareChange": {
+            "mean": -0.07891666666666666,
+            "low": -0.11201646022994532,
+            "high": -0.04581687310338801
+          },
+          "scoreChange": {
+            "mean": -1.183,
+            "low": -1.6224070212931194,
+            "high": -0.7435929787068807
+          },
+          "treePointsChange": {
+            "mean": 2.356,
+            "low": 2.079296430110562,
+            "high": 2.6327035698894377
+          }
+        },
+        {
+          "seat": 4,
+          "winShareChange": {
+            "mean": -0.22875,
+            "low": -0.2674072198679657,
+            "high": -0.19009278013203434
+          },
+          "scoreChange": {
+            "mean": -1.999,
+            "low": -2.4486895537754902,
+            "high": -1.54931044622451
+          },
+          "treePointsChange": {
+            "mean": 0.229,
+            "low": -0.07071395343022704,
+            "high": 0.5287139534302271
+          }
+        }
+      ],
+      "msPerGame": {
+        "challengerArm": 59.8854,
+        "balancedArm": 58.3116
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "D",
+      "seat": 1,
+      "games": 1000,
+      "uniform": 0.25,
+      "challengerWinShare": {
+        "mean": 0.3883333333333333,
+        "low": 0.3592054375813182,
+        "high": 0.41746122908534844
+      },
+      "balancedWinShare": {
+        "mean": 0.09433333333333334,
+        "low": 0.07695426615410916,
+        "high": 0.11171240051255751
+      },
+      "pairedWinShareChange": {
+        "mean": 0.294,
+        "low": 0.2611313325106684,
+        "high": 0.3268686674893316
+      },
+      "aboveUniform": true,
+      "tiedGames": 90,
+      "challenger": {
+        "score": 38.48,
+        "cubePoints": 23.722,
+        "treePoints": 1.03,
+        "grown": 0.602,
+        "advancedDraws": 0,
+        "refills": 0.408,
+        "opened1": 0.654,
+        "completed1": 0.543,
+        "finished1": 0.722,
+        "opened2": 1.59,
+        "completed2": 1.059,
+        "finished2": 1.129,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 2.244,
+        "completed": 1.602,
+        "finished": 1.851
+      },
+      "balanced": {
+        "score": 33.117,
+        "cubePoints": 15.985,
+        "treePoints": 4.626,
+        "grown": 3.254,
+        "advancedDraws": 0,
+        "refills": 0.952,
+        "opened1": 0.607,
+        "completed1": 0.375,
+        "finished1": 0.424,
+        "opened2": 1.697,
+        "completed2": 0.791,
+        "finished2": 0.758,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 2.304,
+        "completed": 1.166,
+        "finished": 1.182
+      },
+      "pairedChange": {
+        "score": {
+          "mean": 5.363,
+          "low": 4.938704711931772,
+          "high": 5.787295288068229
+        },
+        "cubePoints": {
+          "mean": 7.737,
+          "low": 7.180755538236079,
+          "high": 8.293244461763921
+        },
+        "treePoints": {
+          "mean": -3.596,
+          "low": -3.77483110417494,
+          "high": -3.41716889582506
+        },
+        "opened": {
+          "mean": -0.06,
+          "low": -0.12950712267402903,
+          "high": 0.009507122674029048
+        },
+        "completed": {
+          "mean": 0.436,
+          "low": 0.3813074277445908,
+          "high": 0.4906925722554092
+        },
+        "finished": {
+          "mean": 0.669,
+          "low": 0.5878292290641167,
+          "high": 0.7501707709358834
+        },
+        "advancedDraws": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "otherSeats": [
+        {
+          "seat": 2,
+          "winShareChange": {
+            "mean": -0.0645,
+            "low": -0.0944489876481463,
+            "high": -0.0345510123518537
+          },
+          "scoreChange": {
+            "mean": -1.189,
+            "low": -1.6429122306699553,
+            "high": -0.7350877693300448
+          },
+          "treePointsChange": {
+            "mean": 3.176,
+            "low": 2.9307405767114307,
+            "high": 3.4212594232885696
+          }
+        },
+        {
+          "seat": 3,
+          "winShareChange": {
+            "mean": -0.04033333333333333,
+            "low": -0.07534691482249957,
+            "high": -0.005319751844167095
+          },
+          "scoreChange": {
+            "mean": 0.042,
+            "low": -0.4550916922989549,
+            "high": 0.5390916922989549
+          },
+          "treePointsChange": {
+            "mean": 0.223,
+            "low": -0.037955039851382294,
+            "high": 0.48395503985138233
+          }
+        },
+        {
+          "seat": 4,
+          "winShareChange": {
+            "mean": -0.18916666666666668,
+            "low": -0.2287093798209946,
+            "high": -0.14962395351233876
+          },
+          "scoreChange": {
+            "mean": -1.284,
+            "low": -1.7917723994644197,
+            "high": -0.7762276005355805
+          },
+          "treePointsChange": {
+            "mean": 0.545,
+            "low": 0.2330804769919559,
+            "high": 0.8569195230080442
+          }
+        }
+      ],
+      "msPerGame": {
+        "challengerArm": 61.3554,
+        "balancedArm": 58.8957
+      }
+    },
+    {
+      "numPlayers": 4,
+      "scenario": "D",
+      "seat": 2,
+      "games": 1000,
+      "uniform": 0.25,
+      "challengerWinShare": {
+        "mean": 0.49341666666666667,
+        "low": 0.46357583544732206,
+        "high": 0.5232574978860113
+      },
+      "balancedWinShare": {
+        "mean": 0.175,
+        "low": 0.15238174034975013,
+        "high": 0.19761825965024984
+      },
+      "pairedWinShareChange": {
+        "mean": 0.3184166666666667,
+        "low": 0.2818193115964917,
+        "high": 0.35501402173684166
+      },
+      "aboveUniform": true,
+      "tiedGames": 105,
+      "challenger": {
+        "score": 39.317,
+        "cubePoints": 24.603,
+        "treePoints": 0.912,
+        "grown": 0.453,
+        "advancedDraws": 0,
+        "refills": 0.434,
+        "opened1": 0.587,
+        "completed1": 0.477,
+        "finished1": 0.688,
+        "opened2": 1.48,
+        "completed2": 0.965,
+        "finished2": 1.272,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 2.067,
+        "completed": 1.442,
+        "finished": 1.96
+      },
+      "balanced": {
+        "score": 35.338,
+        "cubePoints": 17.03,
+        "treePoints": 3.23,
+        "grown": 2.057,
+        "advancedDraws": 0,
+        "refills": 0.273,
+        "opened1": 0.907,
+        "completed1": 0.638,
+        "finished1": 0.432,
+        "opened2": 2.188,
+        "completed2": 0.953,
+        "finished2": 0.717,
+        "openedadvanced": 0,
+        "completedadvanced": 0,
+        "finishedadvanced": 0,
+        "opened": 3.095,
+        "completed": 1.591,
+        "finished": 1.149
+      },
+      "pairedChange": {
+        "score": {
+          "mean": 3.979,
+          "low": 3.5542367493985494,
+          "high": 4.40376325060145
+        },
+        "cubePoints": {
+          "mean": 7.573,
+          "low": 7.037146354115652,
+          "high": 8.108853645884349
+        },
+        "treePoints": {
+          "mean": -2.318,
+          "low": -2.5082710212235666,
+          "high": -2.1277289787764335
+        },
+        "opened": {
+          "mean": -1.028,
+          "low": -1.0945340186172274,
+          "high": -0.9614659813827726
+        },
+        "completed": {
+          "mean": -0.149,
+          "low": -0.20294554955099495,
+          "high": -0.09505445044900504
+        },
+        "finished": {
+          "mean": 0.811,
+          "low": 0.7287038676263764,
+          "high": 0.8932961323736237
+        },
+        "advancedDraws": {
+          "mean": 0,
+          "low": 0.0,
+          "high": 0.0
+        }
+      },
+      "otherSeats": [
+        {
+          "seat": 1,
+          "winShareChange": {
+            "mean": -0.02375,
+            "low": -0.04601232170731705,
+            "high": -0.00148767829268295
+          },
+          "scoreChange": {
+            "mean": 0.182,
+            "low": -0.2066376511624316,
+            "high": 0.5706376511624316
+          },
+          "treePointsChange": {
+            "mean": -0.309,
+            "low": -0.5178338808536882,
+            "high": -0.10016611914631185
+          }
+        },
+        {
+          "seat": 3,
+          "winShareChange": {
+            "mean": -0.07541666666666667,
+            "low": -0.10870702601267462,
+            "high": -0.04212630732065873
+          },
+          "scoreChange": {
+            "mean": -1.181,
+            "low": -1.6478623431276862,
+            "high": -0.714137656872314
+          },
+          "treePointsChange": {
+            "mean": 2.356,
+            "low": 2.079296430110562,
+            "high": 2.6327035698894377
+          }
+        },
+        {
+          "seat": 4,
+          "winShareChange": {
+            "mean": -0.21925,
+            "low": -0.25813068399998484,
+            "high": -0.18036931600001518
+          },
+          "scoreChange": {
+            "mean": -1.908,
+            "low": -2.396482054880628,
+            "high": -1.419517945119372
+          },
+          "treePointsChange": {
+            "mean": 0.229,
+            "low": -0.07071395343022704,
+            "high": 0.5287139534302271
+          }
+        }
+      ],
+      "msPerGame": {
+        "challengerArm": 61.5262,
+        "balancedArm": 58.8957
+      }
+    }
+  ]
+}

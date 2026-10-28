@@ -1,0 +1,113 @@
+{
+  "build": "0232671366879556566eb92292523166b23b9380",
+  "uncommittedChanges": false,
+  "startedAt": "2026-10-28T02:17:51.940Z",
+  "finishedAt": "2026-10-28T02:22:01.576Z",
+  "seconds": 249.636,
+  "seedPrefix": "bot-strategies-v1",
+  "seeds": "bot-strategies-v1-<players>p-<0..499>",
+  "gamesPerSeedSet": 500,
+  "playerCounts": [
+    2,
+    3,
+    4
+  ],
+  "challengerSeats": [
+    1,
+    2
+  ],
+  "scenarios": [
+    {
+      "id": "A",
+      "experiments": {
+        "government5": "existing",
+        "completionRewards": "fixed"
+      }
+    }
+  ],
+  "totalGames": 4500,
+  "failures": 0,
+  "challenger": {
+    "strategy": "counter",
+    "label": "反制型 Counter",
+    "weightOverrides": {
+      "initiation": 0
+    },
+    "profile": {
+      "name": "counter",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0,
+        "villageCompletion": 1,
+        "tree": 0.6,
+        "unlock": 0,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    }
+  },
+  "baseline": {
+    "strategy": "balanced",
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    }
+  },
+  "method": "Authoritative headless reducer; bots see only their own player view. Each seed is played all-Balanced and once per challenger seat with Balanced in every other seat; seats are 1-based. Ties split wins."
+}
