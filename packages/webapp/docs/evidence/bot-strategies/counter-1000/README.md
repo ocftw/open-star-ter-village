@@ -174,6 +174,29 @@ pnpm exec tsx scripts/compare-bot-strategies.ts --challenger counter --games 500
 
 **試過但刪除的想法：** 曾加入「收尾暴露」懲罰：如果某一步讓其他玩家能在自己下次行動前完成專案，就扣掉收尾獎勵。這需要自訂機器人程式。同種子配對比較顯示，它在 3,000 組種子上的勝率差為 **−0.2 個百分點**（95% 區間 −1.6～+1.2），沒有效果，所以刪除，只保留權重檔。該版本程式與原始資料保存在 [`exp/counter-exposure`](https://github.com/ocftw/open-star-ter-village/tree/43ce8a84/packages/webapp/docs/evidence/bot-strategies/counter-1000) 分支，不會合併。
 
+## 在遊戲房間中使用
+
+反制型已登記在 `BOT_STRATEGIES`，房主可以在等待室選擇它。
+
+- **測試環境：** 2026-10-28，checkout `5eaef4d6`，Chromium（Playwright）1280×900。
+  - 遊戲伺服器：`NODE_ENV=production`、`PORT=3291`、`BOT_MOVE_DELAY_MS=300`。
+  - 網頁：Next dev，port 3290。
+  - 房間：三人 Standard 房，房主 Ben 坐第 0 位。
+
+1. 空位旁的策略選單列出 `平衡型 Balanced` 與 `反制型 Counter`。
+   ![策略選單](waiting-room-picker.png)
+2. 第 1 位選反制型後加入電腦，第 2 位用預設的平衡型。
+   - 座位顯示 `阿制 · SEAT 1 · BOT · 🤖 反制型 Counter` 與 `阿衡 · SEAT 2 · BOT · 🤖 平衡型 Balanced`。
+   - Lobby API 回傳 `data.bot.strategy` 分別是 `counter` 與 `balanced`，沒有任何座位帶 `credentials`。
+   ![反制型入座](waiting-room-counter.png)
+3. 開始遊戲並結束第 1 回合。
+   - 遊戲伺服器記錄 `bot <id>:1 (counter) started` 與 `bot <id>:2 (balanced) started`。
+   - 兩個電腦在 1.8 秒內走完第 1 輪：阿制發起 OPass 並投入 4 點。
+   - 遊戲中名字顯示 `阿制 🤖`。
+   ![反制型行動後的牌桌](board-after-counter-turn.png)
+
+自動測試 `src/botSeats.test.ts` 也會用伺服器端的反制型電腦，和測試用房主跑完整場兩人遊戲。
+
 ## 限制
 
 - **只對 Balanced 有效的證據。** 反制型的權重是針對 Balanced 的弱點調出來的：Balanced 願意投資讓後手受益的星源樹、開案過多、2★ 停滯。這不代表它面對真人或其他策略也會贏，也不是遊戲平衡的推論。
