@@ -1,4 +1,5 @@
 import { completionReward } from './config';
+import { publicProjects, recordHistory, scoreWithHistory } from './history';
 import type { FnContext } from 'boardgame.io';
 import { INVALID_MOVE } from 'boardgame.io/core';
 import type { GameState, ClientGameState } from '../store/store';
@@ -6,7 +7,6 @@ import type { Choice, ChoiceKind, NodeId } from './state';
 import { growthReason, hasNode, REWARDS } from './tree';
 import { ProjectBoardMutator, ProjectBoardSelector } from '../store/slice/projectBoard';
 import ProjectSlotSlice, { ProjectSlotSelector, ProjectSlotMutator } from '../store/slice/projectSlot/projectSlot';
-import { ScoreBoardMutator } from '../store/slice/scoreBoard';
 import { PlayersMutator } from '../store/slice/players';
 import { ActionSlotsMutator } from '../store/slice/actionSlots';
 import type { GameMove } from '../core/type';
@@ -19,7 +19,7 @@ export function enqueue(G: GameState, kind: ChoiceKind, playerId: string, projec
   trackQueued(G, kind, budget);
 }
 export function log(G: GameState, kind: string, playerId?: string, target?: string) {
-  G.standard!.log.push({ round: G.standard!.round, kind, playerId, target });
+  recordHistory(G, { kind, playerId, target });
 }
 export function fillMarket(G: GameState) {
   const deck = G.decks.jobs;
@@ -54,7 +54,7 @@ export const growTree: GameMove<(node: NodeId, overtime?: boolean) => void> = ({
   if (overtime) G.players[playerID].token.overtime--;
   s.growthUsed = true;
   s.grown.push(node);
-  ScoreBoardMutator.add(G.table.scoreBoard, playerID, REWARDS[Number(node.split('-')[1]) - 1]);
+  scoreWithHistory(G, playerID, REWARDS[Number(node.split('-')[1]) - 1], `星源樹成長 ${node}`);
   if (node === 'data-3') Object.values(G.players).forEach(p => p.token.actions++);
   syncTreeRules(G);
   if (node === 'source-1') fillMarket(G);
@@ -112,6 +112,10 @@ export const resolveStandardChoice: GameMove<(id: number, target: ChoiceTarget |
   const c = s?.choices[0];
   if (!s || !c || c.id !== id || c.playerId !== playerID) return INVALID_MOVE;
   if (target !== null && (!target || !choiceOptions(G, c).some(o => sameTarget(o.target, target)))) return INVALID_MOVE;
+  // Only public descriptions enter shared history. A discarded hand card's
+  // identity is private, even after it returns to the bottom of its deck.
+  const publicTarget = target && c.kind !== 'discard'
+    ? choiceOptions(G, c).find(option => sameTarget(option.target, target))?.label : undefined;
   if (c.kind === 'draw' && target === null) return INVALID_MOVE;
   if (target) {
     if (c.kind === 'discard') {
@@ -144,7 +148,9 @@ export const resolveStandardChoice: GameMove<(id: number, target: ChoiceTarget |
         ProjectSlotMutator.pushWorker(slot, target.jobName!, target.worker!, 1);
       }
     }
-    log(G, c.kind, playerID, JSON.stringify(target));
+    recordHistory(G, { kind: c.kind, playerId: playerID, target: publicTarget,
+      ...(target.projectId ? { projects: publicProjects(G).filter(project => project.id === target.projectId) } : {}),
+    });
   } else log(G, `${c.kind}:skip`, playerID);
   trackResolved(G, c, !target);
   // A fresh ID for each point prevents duplicate submissions spending twice.
@@ -161,15 +167,17 @@ function settleStandard(G: GameState) {
   for (const slot of completed) {
     if (s.completedProjectIds.includes(slot.card!.id)) continue;
     const ownerContribution = ProjectSlotSelector.getPlayerContribution(slot, slot.owner);
+    const snapshot = publicProjects(G).find(project => project.id === slot.card!.id)!;
     const engineer = slot.contributions.some(c => c.jobName === '工程師');
     for (const cube of slot.contributions) {
-      ScoreBoardMutator.add(G.table.scoreBoard, cube.worker, cube.value);
+      scoreWithHistory(G, cube.worker, cube.value, '結案貢獻', snapshot);
       PlayersMutator.addWorkerTokens(G.players, cube.worker, 1);
     }
     const ownerReward = completionReward(s.experiments, slot.card!.difficulty, G.rules.settlement.projectOwnerVictoryPoints);
     const finisherReward = completionReward(s.experiments, slot.card!.difficulty, G.rules.settlement.lastContributorVictoryPoints);
-    ScoreBoardMutator.add(G.table.scoreBoard, slot.owner, ownerReward + (G.rules.event?.extraOwnerVictoryPoints ?? 0));
-    ScoreBoardMutator.add(G.table.scoreBoard, slot.lastContributor, finisherReward);
+    scoreWithHistory(G, slot.owner, ownerReward, '發起獎勵', snapshot);
+    scoreWithHistory(G, slot.owner, G.rules.event?.extraOwnerVictoryPoints ?? 0, '年度結算發起獎勵', snapshot);
+    scoreWithHistory(G, slot.lastContributor, finisherReward, '結案獎勵', snapshot);
     PlayersMutator.addWorkerTokens(G.players, slot.owner, slot.ownerToken);
     s.completedProjectIds.push(slot.card!.id);
     s.completedComplexity = (s.completedComplexity ?? 0) + slot.card!.difficulty;
@@ -200,6 +208,10 @@ export function beginStandardEvent(G: GameState) {
   if (G.table.eventSlot?.function_name === 'add_two_worker_slots') {
     G.table.fourFreedomsPendingDiscards = G.table.jobSlots.slice(-2).map(card => card.id);
   }
+  recordHistory(G, { kind: 'eventEffect', target: G.table.eventSlot?.description,
+    projects: publicProjects(G), market: G.table.jobSlots.map(card => card.name),
+    actionPoints: Object.fromEntries(Object.entries(G.players).map(([id, player]) => [id, player.token.actions])),
+  });
 }
 export function advanceStandard(context: FnContext<GameState>) {
   const { G, ctx, events } = context;

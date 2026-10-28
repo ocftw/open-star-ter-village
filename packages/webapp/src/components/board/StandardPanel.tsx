@@ -10,6 +10,7 @@ import type { NodeId } from '@/game/standard/state';
 import { buildStandardExport, treeOutcome } from '@/game/standard/export';
 import { StickerButton } from '../design';
 import DebugTelemetryPanel, { useDebugMode } from './DebugTelemetryPanel';
+import StandardHistory from './StandardHistory';
 
 const branchLabels = ['開源', '資料', '政府'];
 export default function StandardPanel({ gameContext }: { gameContext: GameContext }) {
@@ -83,6 +84,7 @@ export default function StandardPanel({ gameContext }: { gameContext: GameContex
       </div>}
     </div>}
     {ctx.gameover && <p>集體成果：{outcome}</p>}
+    <StandardHistory entries={s.log} playerName={id => getPlayerName(matchData, id)} />
     <StickerButton variant="ghost" size="sm" onClick={exportSummary}>匯出公開測試摘要</StickerButton>
     {debug && <DebugTelemetryPanel gameContext={gameContext} />}
   </section>;

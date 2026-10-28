@@ -6,7 +6,18 @@ export type Branch = 'source' | 'data' | 'government';
 export type NodeId = `${Branch}-${1 | 2 | 3 | 4 | 5}`;
 export type ChoiceKind = 'extraRecruit' | 'digitalMinister' | 'government4' | 'source4' | 'government5' | 'discard' | 'draw';
 export interface Choice { id: number; kind: ChoiceKind; playerId: string; projectId?: string; budget: number }
-export interface PublicLog { round: number; kind: string; playerId?: string; target?: string }
+export interface PublicLog {
+  /** Legacy records have no sequence; their array position remains stable. */
+  sequence?: number;
+  round: number;
+  kind: string;
+  playerId?: string;
+  target?: string;
+  scoreDelta?: number;
+  projects?: import('./history').PublicProjectSnapshot[];
+  market?: string[];
+  actionPoints?: Record<string, number>;
+}
 export interface StandardState {
   version: 'tree-poc-v1';
   experiments?: StandardExperiments;

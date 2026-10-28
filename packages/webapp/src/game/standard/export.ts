@@ -1,5 +1,6 @@
 import { LEGACY_EXPERIMENTS } from './config';
 import { DEFAULT_STANDARD_OPTIONS } from './options';
+import { publicHistory } from './history';
 import type { Ctx } from 'boardgame.io';
 import type { ClientGameState, GameState } from '../store/store';
 import type { StandardTelemetry } from './telemetry';
@@ -23,7 +24,7 @@ export function buildStandardExport(G: GameState | ClientGameState, ctx: Ctx, { 
     ruleset: s.version, experiments: { ...(s.experiments ?? LEGACY_EXPERIMENTS) }, build, players: ctx.numPlayers, rounds: s.round,
     standardOptions: { ...(s.options ?? DEFAULT_STANDARD_OPTIONS) }, completedComplexity: s.completedComplexity ?? 0,
     completedProjectIds: s.completedProjectIds, grown: s.grown, remainingHearts, scores: G.table.scoreBoard,
-    outcome: treeOutcome(remainingHearts), finished: Boolean(ctx.gameover), log: s.log, exportedAt: new Date(now).toISOString(),
+    outcome: treeOutcome(remainingHearts), finished: Boolean(ctx.gameover), log: publicHistory(s.log), exportedAt: new Date(now).toISOString(),
     durationSeconds: Math.floor(((s.finishedAt ?? now) - s.startedAt) / 1000),
     ...(telemetry ? { telemetry } : {}),
   };

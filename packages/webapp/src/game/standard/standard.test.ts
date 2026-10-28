@@ -33,6 +33,19 @@ function project(G: GameState, id: string, owner = '0', value = 1, requirement =
 }
 
 describe('Standard room contract', () => {
+  test('discard history never publishes private card identities and stale choices add no log', () => {
+    const G = state();
+    const card = G.players['0'].hand.projects[0];
+    enqueue(G, 'discard', '0');
+    const choice = G.standard!.choices[0];
+    const target = { projectId: '', cardId: card.id };
+    resolveStandardChoice(context(G), choice.id, target);
+    const history = JSON.stringify(G.standard!.log);
+    expect(history).not.toContain(card.id);
+    expect(history).not.toContain(card.name);
+    expect(resolveStandardChoice(context(G), choice.id, target)).toBe(INVALID_MOVE);
+    expect(JSON.stringify(G.standard!.log)).toBe(history);
+  });
   test.each([2, 3, 4])('allows %i Standard players with correct baseline and event count', n => {
     expect(roomSetupError({ ruleset: 'tree-poc-v1' }, n)).toBeUndefined();
     const G = fixture(n).getState()!.G;

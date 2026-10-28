@@ -1,7 +1,7 @@
 import { GameHookHandler } from "@/game/core/type";
 import { ProjectBoardSelector } from "@/game/store/slice/projectBoard";
 import { ProjectSlotSelector } from "@/game/store/slice/projectSlot/projectSlot";
-import { ScoreBoardMutator } from "@/game/store/slice/scoreBoard";
+import { publicProjects, scoreWithHistory } from '@/game/standard/history';
 
 /**
  * Scores VP from unfinished projects at game end.
@@ -11,19 +11,13 @@ export const scoreUnfinishedProjects: GameHookHandler = ({ G }) => {
   const unfinishedSlots = ProjectBoardSelector.getUnfinished(G.table.projectBoard);
   if (unfinishedSlots.length === 0) return;
 
-  // Remainders cannot transfer between projects.
-  const pointsByPlayer: Record<string, number> = {};
+  const snapshots = publicProjects(G);
   for (const slot of unfinishedSlots) {
     const contributors = ProjectSlotSelector.getContributors(slot);
     for (const playerId of contributors) {
       const pts = ProjectSlotSelector.getPlayerContribution(slot, playerId);
-      pointsByPlayer[playerId] = (pointsByPlayer[playerId] ?? 0) + Math.floor(pts / 2);
+      scoreWithHistory(G, playerId, Math.floor(pts / 2), '未結案專案貢獻折半', snapshots.find(project => project.id === slot.card!.id));
     }
   }
 
-  for (const [playerId, vp] of Object.entries(pointsByPlayer)) {
-    if (vp > 0) {
-      ScoreBoardMutator.add(G.table.scoreBoard, playerId, vp);
-    }
-  }
 };

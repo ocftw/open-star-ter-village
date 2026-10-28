@@ -1,7 +1,7 @@
 import { PlayersSelector } from "@/game/store/slice/players";
 import { GameHookHandler } from "../type";
 import { RuleSelector } from "@/game/store/slice/rule";
-import { ScoreBoardMutator } from "@/game/store/slice/scoreBoard";
+import { scoreWithHistory } from '@/game/standard/history';
 
 export const scoreLeftoverActionTokens: GameHookHandler = ({ G, ctx }) => {
   const victoryPointsPerActionToken = RuleSelector.getSettlementLeftoverActionTokensVictoryPoints(G.rules);
@@ -12,5 +12,5 @@ export const scoreLeftoverActionTokens: GameHookHandler = ({ G, ctx }) => {
   const currentPlayer = ctx.currentPlayer;
   const leftoverActionTokens = PlayersSelector.getNumActionTokens(G.players, currentPlayer);
   const victoryPoints = leftoverActionTokens * victoryPointsPerActionToken;
-  ScoreBoardMutator.add(G.table.scoreBoard, currentPlayer, victoryPoints);
+  scoreWithHistory(G, currentPlayer, victoryPoints, '最終回合剩餘行動點');
 }

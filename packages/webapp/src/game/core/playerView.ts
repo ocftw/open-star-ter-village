@@ -1,6 +1,7 @@
 import { Ctx, PlayerID } from "boardgame.io";
 import { ClientGameState, GameState } from "../store/store";
 import { ClientPlayers } from "../store/slice/players";
+import { publicHistory } from '../standard/history';
 
 export const playerView = ({ G, playerID }: { G: GameState; ctx: Ctx; playerID: PlayerID | null }): ClientGameState => {
   const { decks, players, ...view } = G;
@@ -17,7 +18,10 @@ export const playerView = ({ G, playerID }: { G: GameState; ctx: Ctx; playerID: 
 
   // Telemetry is balance data for bots and debug mode only; players never receive it.
   const standard = view.standard && { ...view.standard };
-  if (standard) delete standard.telemetry;
+  if (standard) {
+    delete standard.telemetry;
+    standard.log = publicHistory(standard.log);
+  }
 
   return {
     ...view,
