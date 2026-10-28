@@ -36,17 +36,20 @@ const { values } = parseArgs({ options: {
 } });
 
 const games = Number(values.games);
+const jobCount = Number(values.jobs);
+assert.ok(Number.isInteger(jobCount) && jobCount > 0, 'jobs must be a positive integer');
 assert.ok(Number.isInteger(games) && games > 0, 'games must be a positive integer');
 assert.ok(Object.prototype.hasOwnProperty.call(PROFILES, values.challenger!), `challenger must be a profile: ${Object.keys(PROFILES).join(', ')}`);
 assert.ok(values.challenger !== 'balanced' || values.weights, 'an unchanged Balanced challenger would only replay the baseline');
 const weightOverrides = values.weights ? JSON.parse(values.weights) as Partial<Weights> : undefined;
 const challengerProfile = weightOverrides ? withWeights(PROFILES[values.challenger!], weightOverrides) : PROFILES[values.challenger!];
 const SCENARIOS = values.scenarios!.split(',').map(id => EXPERIMENT_SCENARIOS.find(s => s.id === id)!);
-assert.ok(SCENARIOS.every(Boolean), 'scenarios must be from A, B, C, D');
+assert.ok(SCENARIOS.every(Boolean) && new Set(SCENARIOS).size === SCENARIOS.length, 'scenarios must be distinct, from A, B, C, D');
 const playerCounts = values.players!.split(',').map(Number);
 const seats = values.seats!.split(',').map(Number);
 assert.ok(playerCounts.every(n => [2, 3, 4].includes(n)), 'players must be 2, 3 or 4');
 assert.ok(seats.every(seat => Number.isInteger(seat) && seat >= 1 && seat <= Math.min(...playerCounts)), 'seats are 1-based and must exist at every player count');
+assert.ok(new Set(seats).size === seats.length && new Set(playerCounts).size === playerCounts.length, 'seats and players must not repeat');
 
 /** One game's record: arm `balanced` is the all-Balanced baseline; seats are 1-based. */
 function playGame(numPlayers: number, scenario: typeof SCENARIOS[number], seed: string, challengerSeat: number | null, bots: Record<string, Bot>) {
@@ -128,7 +131,7 @@ async function main() {
   // Each job is a child process; seeding makes the result independent of the job count.
   const runChild = (job: typeof jobs[number]) => new Promise<void>((done, fail) => {
     const args = [...process.execArgv, process.argv[1], ...process.argv.slice(2), '--job', `${job.n}:${job.scenario.id}:${job.file}`];
-    spawn(process.execPath, args, { stdio: 'inherit' }).on('exit', code => {
+    spawn(process.execPath, args, { stdio: 'inherit' }).on('error', fail).on('exit', code => {
       if (code !== 0) return fail(new Error(`${job.n}p ${job.scenario.id} failed (exit ${code}); no evidence written`));
       console.info(`${job.n}p ${job.scenario.id}: ${games} seeds × ${1 + seats.length} arms (${((Date.now() - started) / 1000).toFixed(1)}s)`);
       done();
@@ -136,7 +139,7 @@ async function main() {
   });
   // Longest jobs (most players) first, so the last ones to finish are short.
   const queue = [...jobs].sort((a, b) => b.n - a.n);
-  await Promise.all(Array.from({ length: Math.max(1, Number(values.jobs)) }, async () => {
+  await Promise.all(Array.from({ length: jobCount }, async () => {
     for (let job = queue.shift(); job; job = queue.shift()) await runChild(job);
   }));
   const records = jobs.flatMap(job => readFileSync(job.file, 'utf8').trim().split('\n'));
