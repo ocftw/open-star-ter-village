@@ -16,6 +16,8 @@ from pathlib import Path
 NODES = [f'{b}{t}' for b in 'sdg' for t in range(1, 6)]
 NODE_INDEX = {node: i for i, node in enumerate(NODES)}
 MAX_ROUNDS = 10
+# Runs from before the rename wrote Balanced/Counter as B/C.
+LEGACY_SEATS = str.maketrans('BC', 'NA')
 
 
 def new_cell(n):
@@ -23,12 +25,12 @@ def new_cell(n):
         'games': 0, 'failures': 0, 'ties': 0, 'margin': 0, 'top': 0, 'rounds': 0, 'moves': 0,
         'win': [0.0] * n, 'score': [0] * n, 'score2': [0] * n,
         'grownHist': [0] * 11, 'tierHist': [0] * 6, 'node': [0] * 15, 'nodeRound': [0] * 15,
-        'nodeBy': {'B': [0] * 15, 'C': [0] * 15}, 'growRound': [0] * MAX_ROUNDS, 'tp': 0,
+        'nodeBy': {'N': [0] * 15, 'A': [0] * 15}, 'growRound': [0] * MAX_ROUNDS, 'tp': 0,
         'played': [0] * 5, 'completed': [0] * 5, 'completedRound': [0] * 5,
-        'playedBy': {'B': [0] * 5, 'C': [0] * 5}, 'completedBy': {'B': [0] * 5, 'C': [0] * 5},
-        'finishedBy': {'B': [0] * 5, 'C': [0] * 5},
-        'breakdown': {'B': defaultdict(int), 'C': defaultdict(int)}, 'residual': 0,
-        'advancedDraws': {'B': 0, 'C': 0}, 'g5': [0, 0], 'f20': [0] * n, 'f20n': [0] * n,
+        'playedBy': {'N': [0] * 5, 'A': [0] * 5}, 'completedBy': {'N': [0] * 5, 'A': [0] * 5},
+        'finishedBy': {'N': [0] * 5, 'A': [0] * 5},
+        'breakdown': {'N': defaultdict(int), 'A': defaultdict(int)}, 'residual': 0,
+        'advancedDraws': {'N': 0, 'A': 0}, 'g5': [0, 0], 'f20': [0] * n, 'f20n': [0] * n,
     }
 
 
@@ -44,7 +46,7 @@ def read_file(path):
     with gzip.open(path, 'rt') as f:
         for line in f:
             g = json.loads(line)
-            n, combo = g['n'], g['c']
+            n, combo = g['n'], g['c'].translate(LEGACY_SEATS)
             key = (scenario, n, combo)
             cell = cells.setdefault(key, new_cell(n))
             pb = per_batch.setdefault(key, {'games': 0, 'win': [0.0] * n})
@@ -144,7 +146,7 @@ def main():
 
     cells = {}
     batch_wins = defaultdict(dict)  # (scenario, n) -> batch -> seat win shares pooled over combos
-    batch_strategy = defaultdict(dict)  # (scenario, n) -> batch -> [C wins, C seats, B wins, B seats] in mixed tables
+    batch_strategy = defaultdict(dict)  # (scenario, n) -> batch -> [A wins, A seats, N wins, N seats] in mixed tables
     with ProcessPoolExecutor(args.workers) as pool:
         for batch, part, per_batch in pool.map(read_file, files, chunksize=4):
             for key, cell in part.items():
@@ -155,11 +157,11 @@ def main():
                 slot = batch_wins[(scenario, n)].setdefault(batch, [[0.0] * n, 0])
                 slot[0] = [a + b for a, b in zip(slot[0], pb['win'])]
                 slot[1] += pb['games']
-                if 'B' in combo and 'C' in combo:
+                if 'N' in combo and 'A' in combo:
                     st = batch_strategy[(scenario, n)].setdefault(batch, [0.0, 0, 0.0, 0])
                     for seat, k in enumerate(combo):
-                        st[0 if k == 'C' else 2] += pb['win'][seat]
-                        st[1 if k == 'C' else 3] += pb['games']
+                        st[0 if k == 'A' else 2] += pb['win'][seat]
+                        st[1 if k == 'A' else 3] += pb['games']
 
     scenarios = manifest['scenarios']
     out = {'manifest': manifest, 'batchesUsed': complete, 'nodes': NODES, 'scenarios': [], 'combos': []}
@@ -180,13 +182,14 @@ def main():
             for seat in range(n):
                 _, sd = mean_sd([v[0][seat] / v[1] for v in per_batch.values()])
                 seat_se.append(sd / math.sqrt(len(per_batch)))
-            strategy = batch_strategy[(scenario, n)]
-            c_rates = [v[0] / v[1] for v in strategy.values()]
-            b_rates = [v[2] / v[3] for v in strategy.values()]
-            c_adv = [a - b for a, b in zip(c_rates, b_rates)]
-            c_adv_m, c_adv_sd = mean_sd(c_adv)
-            seats_by = {k: sum(combo.count(k) for (s, nn, combo), c in cells.items() if s == scenario and nn == n) for k in 'BC'}
-            games_by = {k: sum(c['games'] * combo.count(k) for (s, nn, combo), c in cells.items() if s == scenario and nn == n) for k in 'BC'}
+            # Advance minus Novice per-player win rate, only where a table seats both.
+            strategy = batch_strategy.get((scenario, n), {})
+            a_rates = [v[0] / v[1] for v in strategy.values()]
+            n_rates = [v[2] / v[3] for v in strategy.values()]
+            a_adv = [a - b for a, b in zip(a_rates, n_rates)]
+            a_adv_m, a_adv_sd = mean_sd(a_adv) if a_adv else (None, None)
+            games_by = {k: sum(c['games'] * combo.count(k) for (s, nn, combo), c in cells.items() if s == scenario and nn == n) for k in 'NA'}
+            per = lambda k, x: x / games_by[k] if games_by[k] else None
             out['scenarios'].append({
                 'index': scenario, 'id': scenarios[scenario]['id'], 'n': n, 'games': g, 'failures': total['failures'],
                 'options': scenarios[scenario]['standardOptions'], 'rewards': scenarios[scenario]['experiments']['completionRewards'],
@@ -195,26 +198,25 @@ def main():
                 'scoreSD': math.sqrt(max(0, sum(total['score2']) / (g * n) - (sum(total['score']) / (g * n)) ** 2)),
                 'meanScore': sum(total['score']) / (g * n), 'topScore': total['top'] / g, 'margin': total['margin'] / g,
                 'tieRate': total['ties'] / g, 'rounds': total['rounds'] / g, 'moves': total['moves'] / g,
-                'counterAdvantage': c_adv_m, 'counterAdvantageSE': c_adv_sd / math.sqrt(len(c_adv)),
-                'counterWinMixed': sum(c_rates) / len(c_rates), 'balancedWinMixed': sum(b_rates) / len(b_rates),
+                'advanceAdvantage': a_adv_m, 'advanceAdvantageSE': a_adv_sd / math.sqrt(len(a_adv)) if a_adv else None,
+                'seatGames': games_by,
                 'grown': sum(i * h for i, h in enumerate(total['grownHist'])) / g,
                 'grownHist': [h / g for h in total['grownHist']], 'tierHist': [h / g for h in total['tierHist']],
                 'nodeRate': [x / g for x in total['node']],
                 'nodeRound': [r / x if x else None for r, x in zip(total['nodeRound'], total['node'])],
-                'nodeByStrategy': {k: [x / games_by[k] for x in v] for k, v in total['nodeBy'].items()},
+                'nodeByStrategy': {k: [per(k, x) for x in v] for k, v in total['nodeBy'].items() if games_by[k]},
                 'growRound': [x / g for x in total['growRound']], 'treeProgress': total['tp'] / g,
                 'played': [x / g for x in total['played']], 'completed': [x / g for x in total['completed']],
                 'completedRound': [r / x if x else None for r, x in zip(total['completedRound'], total['completed'])],
-                'playedBy': {k: [x / games_by[k] for x in v] for k, v in total['playedBy'].items()},
-                'completedBy': {k: [x / games_by[k] for x in v] for k, v in total['completedBy'].items()},
-                'finishedBy': {k: [x / games_by[k] for x in v] for k, v in total['finishedBy'].items()},
-                'breakdown': {k: {cat: x / games_by[k] for cat, x in v.items()} for k, v in total['breakdown'].items()},
+                'playedBy': {k: [per(k, x) for x in v] for k, v in total['playedBy'].items() if games_by[k]},
+                'completedBy': {k: [per(k, x) for x in v] for k, v in total['completedBy'].items() if games_by[k]},
+                'finishedBy': {k: [per(k, x) for x in v] for k, v in total['finishedBy'].items() if games_by[k]},
+                'breakdown': {k: {cat: per(k, x) for cat, x in v.items()} for k, v in total['breakdown'].items() if games_by[k]},
                 'breakdownResidual': total['residual'] / g,
-                'advancedDraws': {k: total['advancedDraws'][k] / games_by[k] for k in 'BC'},
+                'advancedDraws': {k: per(k, total['advancedDraws'][k]) for k in 'NA' if games_by[k]},
                 'government5': [x / g for x in total['g5']],
                 'firstOver20Round': [r / m if m else None for r, m in zip(total['f20'], total['f20n'])],
                 'firstOver20Rate': [m / g for m in total['f20n']],
-                'seatAssignments': seats_by,
             })
     target = args.run / 'analysis.json'
     target.write_text(json.dumps(out, ensure_ascii=False, separators=(',', ':')))

@@ -11,7 +11,7 @@
   --accent: #1c5cab; --accent-soft: #e3eefb;
   --seq-0: #eef4fc; --seq-1: #cde2fb; --seq-2: #9ec5f4; --seq-3: #6da7ec; --seq-4: #3987e5; --seq-5: #256abf; --seq-6: #184f95; --seq-7: #0d366b;
   --div-neg: #2a78d6; --div-pos: #e34948; --div-mid: #f0efec;
-  --s-b: #2a78d6; --s-c: #eb6834; --star1: #86b6ef; --star2: #3987e5; --star3: #1c5cab; --star4: #0d366b;
+  --s-n: #2a78d6; --s-a: #eb6834; --star1: #86b6ef; --star2: #3987e5; --star3: #1c5cab; --star4: #0d366b;
   --display: 'Bricolage Grotesque', 'PingFang TC', 'Noto Sans TC', system-ui, sans-serif;
   --body: 'Atkinson Hyperlegible', 'PingFang TC', 'Noto Sans TC', system-ui, sans-serif;
   --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
@@ -21,14 +21,14 @@
   --accent: #86b6ef; --accent-soft: #1d2b3b;
   --seq-0: #1b2633; --seq-1: #184f95; --seq-2: #1c5cab; --seq-3: #256abf; --seq-4: #3987e5; --seq-5: #6da7ec; --seq-6: #9ec5f4; --seq-7: #cde2fb;
   --div-neg: #3987e5; --div-pos: #e66767; --div-mid: #383835;
-  --s-b: #3987e5; --s-c: #d95926; --star1: #184f95; --star2: #256abf; --star3: #5598e7; --star4: #9ec5f4;
+  --s-n: #3987e5; --s-a: #d95926; --star1: #184f95; --star2: #256abf; --star3: #5598e7; --star4: #9ec5f4;
   color-scheme: dark; } }
 :root[data-theme="dark"] {
   --bg: #11161c; --panel: #182029; --fg: #e8edf2; --muted: #a3b0bd; --faint: #6f7d8b; --rule: #2a3542;
   --accent: #86b6ef; --accent-soft: #1d2b3b;
   --seq-0: #1b2633; --seq-1: #184f95; --seq-2: #1c5cab; --seq-3: #256abf; --seq-4: #3987e5; --seq-5: #6da7ec; --seq-6: #9ec5f4; --seq-7: #cde2fb;
   --div-neg: #3987e5; --div-pos: #e66767; --div-mid: #383835;
-  --s-b: #3987e5; --s-c: #d95926; --star1: #184f95; --star2: #256abf; --star3: #5598e7; --star4: #9ec5f4;
+  --s-n: #3987e5; --s-a: #d95926; --star1: #184f95; --star2: #256abf; --star3: #5598e7; --star4: #9ec5f4;
   color-scheme: dark; }
 * { box-sizing: border-box; }
 body { background: var(--bg); color: var(--fg); font: 15px/1.55 var(--body); }
@@ -84,7 +84,7 @@ td.num { font-family: var(--mono); }
 
 <div class="wrap">
   <header class="top">
-    <span class="eyebrow">Standard Mode · 星源樹測試版 v1 · PR #457</span>
+    <span class="eyebrow">Standard Mode · 星源樹測試版 v1 · PR #457 · Advance bots</span>
     <h1>Star Tree Balance Sweep</h1>
     <p class="lede" id="lede"></p>
     <div class="facts" id="facts"></div>
@@ -102,7 +102,7 @@ td.num { font-family: var(--mono); }
 
   <section>
     <header><span class="eyebrow">72 scenarios</span><h2>Scenario heat map</h2>
-      <p class="note">Rows: starter rotation × extra rounds. Columns: tree preset × completion reward. Each cell pools every seat assignment of the two bots. Hover a cell for its numbers.</p></header>
+      <p class="note">Rows: starter rotation × extra rounds. Columns: tree preset × completion reward. Each cell pools every bot seating in the run. Hover a cell for its numbers.</p></header>
     <div class="panel"><div class="legend" id="heat-legend"></div><div class="scroll" id="heat"></div></div>
   </section>
 
@@ -118,9 +118,9 @@ td.num { font-family: var(--mono); }
     <div class="grid2" id="seats"></div>
   </section>
 
-  <section>
-    <header><span class="eyebrow">Bot strategies</span><h2>Balanced vs Counter</h2>
-      <p class="note">B = Balanced (平衡型), C = Counter (反制型). Seat order is written seat 1 first. Per-player win rate counts only tables that seat both strategies.</p></header>
+  <section id="strategy-sec">
+    <header><span class="eyebrow">Bot strategies</span><h2>Novice vs Advance</h2>
+      <p class="note">N = Novice (新手型), A = Advance (進階型). Seat order is written seat 1 first. Per-player win rate counts only tables that seat both strategies.</p></header>
     <div class="grid2"><div class="panel" id="strategy-chart"></div><div class="panel scroll" id="combo-table"></div></div>
   </section>
 
@@ -143,7 +143,7 @@ td.num { font-family: var(--mono); }
 
   <section>
     <header><span class="eyebrow">Scoring</span><h2>Where points come from</h2>
-      <p class="note">Average points per player by source, split by strategy. Every point in every game is accounted for.</p></header>
+      <p class="note">Average points per player by source. Every point in every game is accounted for.</p></header>
     <div class="panel scroll" id="breakdown"></div>
   </section>
 
@@ -177,11 +177,14 @@ const pp = (v, d = 1) => (v >= 0 ? '+' : '−') + Math.abs(v * 100).toFixed(d) +
 const f = (v, d = 2) => v == null || Number.isNaN(v) ? '–' : v.toFixed(d);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
+const STRATS = { N: 'Novice', A: 'Advance' };
+const present = Object.keys(STRATS).filter(k => A.scenarios.some(s => s.seatGames[k] > 0));
+const mixed = present.length > 1;
 const METRICS = [
   { id: 'seat1', label: 'Seat 1 edge (win − fair share)', fmt: pp, div: true, get: s => s.seatWin[0] - 1 / s.n },
   { id: 'lastSeat', label: 'Last seat edge (win − fair share)', fmt: pp, div: true, get: s => s.seatWin[s.n - 1] - 1 / s.n },
   { id: 'imbalance', label: 'Seat imbalance (largest gap from fair)', fmt: v => pct(v), get: s => s.seatImbalance },
-  { id: 'counter', label: 'Counter advantage (per-player win, C − B)', fmt: pp, div: true, get: s => s.counterAdvantage },
+  { id: 'advance', label: 'Advance edge over Novice (per-player win, A − N)', fmt: pp, div: true, get: s => s.advanceAdvantage, mixedOnly: true },
   { id: 'top', label: 'Winning score', fmt: v => f(v, 1), get: s => s.topScore },
   { id: 'margin', label: 'Winning margin (1st − 2nd)', fmt: v => f(v, 2), get: s => s.margin },
   { id: 'ties', label: 'Tie rate', fmt: v => pct(v), get: s => s.tieRate },
@@ -194,8 +197,9 @@ const METRICS = [
   { id: 'adv', label: '3★–4★ projects played per game', fmt: v => f(v, 3), get: s => s.played[3] + s.played[4] },
   { id: 'g5', label: 'Government 5 points used per game', fmt: v => f(v, 2), get: s => s.government5[1] },
 ];
+if (!mixed) METRICS.splice(METRICS.findIndex(m => m.mixedOnly), 1);
 const M = Object.fromEntries(METRICS.map(m => [m.id, m]));
-const state = { n: 'all', metric: 'seat1', preset: 'all', reward: 'all' };
+const state = { n: A.manifest.playerCounts.includes(4) ? 4 : 'all', metric: 'seat1', preset: 'all', reward: 'all' };
 const counts = A.manifest.playerCounts;
 
 // Pool scenario rows of the selected player counts: every row has the same game count, so pooling is a mean.
@@ -229,33 +233,36 @@ function scaleFor(m, values) {
 function header() {
   const games = sum(A.scenarios.map(s => s.games)), fails = sum(A.scenarios.map(s => s.failures));
   const b = A.batchesUsed.length, runs = A.manifest.runsPerBatch;
-  document.getElementById('lede').textContent = `Every room option in the Standard POC (3 starter rotations × 3 extra-round settings × 4 tree presets × 2 completion rewards) played by every seat assignment of the two bot strategies: 4 tables at 2 players, 8 at 3, 16 at 4. Each of ${b} seed batches plays ${runs} deals per player count, and every deal is replayed under all 72 scenarios and all seat assignments, so comparisons are paired.`;
+  const tables = mixed ? 'every seat assignment of the Novice and Advance bots (4 tables at 2 players, 8 at 3, 16 at 4)' : 'the Advance bot (進階型) in every seat';
+  document.getElementById('lede').textContent = `Every room option in the Standard POC (3 starter rotations × 3 extra-round settings × 4 tree presets × 2 completion rewards = 72 scenarios), played by ${tables}. Each of ${b} seed batches deals ${runs} games per player count, and every deal is replayed under all 72 scenarios, so scenario comparisons are paired.`;
   document.getElementById('facts').innerHTML = [
     ['games', games.toLocaleString('en')], ['failed', fails.toLocaleString('en')], ['seed batches', `${b} / ${A.manifest.batches}`],
-    ['deals per batch', `${runs} × ${counts.length} player counts`], ['build', A.manifest.build.slice(0, 8)], ['Government 5', 'any (current rule)'],
+    ['deals per batch', `${runs} × ${counts.length} player counts`], ['bots', present.map(k => STRATS[k]).join(' + ')], ['build', A.manifest.build.slice(0, 8)], ['Government 5', 'any (current rule)'],
   ].map(([k, v]) => `<span>${k} <b>${esc(v)}</b></span>`).join('');
 }
 
 // ---------- findings (computed) ----------
 function findings() {
   const items = [];
-  const by = (n, key, val) => A.scenarios.filter(s => s.n === n && (key ? (key === 'reward' ? s.rewards === val : s.options[key] === val) : true));
-  for (const n of counts) {
-    const parts = ROTS.map(r => `${ROT_SHORT[r]} ${pp(mean(by(n, 'starterRotation', r).map(M.seat1.get)))}`);
-    const none = by(n, 'starterRotation', 'none'), seats = Array.from({ length: n }, (_, i) => mean(none.map(s => s.seatWin[i])));
-    items.push(`<b>${n} players:</b> without rotation the seat win rates are ${seats.map(v => pct(v)).join(' / ')} (fair ${pct(1 / n)}). Seat 1 edge by rotation: ${parts.join(', ')}.`);
+  const at = (n, test = () => true) => A.scenarios.filter(s => s.n === n && test(s));
+  const seatsOf = (list, n) => Array.from({ length: n }, (_, i) => pct(mean(list.map(s => s.seatWin[i])))).join(' / ');
+  const label = s => `${ROT_SHORT[s.options.starterRotation]} · +${s.options.extraRounds} rounds · ${PRESET[s.options.treePreset]} · ${s.rewards === 'fixed' ? 'fixed' : 'by stars'}`;
+  for (const n of [...counts].sort((a, b) => b - a)) {
+    const rot = ROTS.map(r => { const l = at(n, s => s.options.starterRotation === r); return `${ROT_SHORT[r]} ${seatsOf(l, n)} (largest gap ${pct(mean(l.map(s => s.seatImbalance)))})`; });
+    const ex = [0, 1, 2].map(x => `+${x} ${pp(mean(at(n, s => s.options.extraRounds === x).map(M.seat1.get)))}`);
+    const ranked = at(n).slice().sort((a, b) => a.seatImbalance - b.seatImbalance);
+    items.push(`<b>${n} players, seat win rates (fair ${pct(1 / n)}):</b> ${rot.join('; ')}. Seat 1 edge by extra rounds: ${ex.join(', ')}. Most even scenario: ${label(ranked[0])}, largest gap ${pct(ranked[0].seatImbalance)}. Least even: ${label(ranked[ranked.length - 1])}, ${pct(ranked[ranked.length - 1].seatImbalance)}.`);
   }
-  const adv = counts.map(n => `${n}p ${pp(mean(by(n).map(s => s.counterAdvantage)))}`);
-  const advRange = counts.map(n => { const v = by(n).map(s => s.counterAdvantage); return `${pp(Math.min(...v))} to ${pp(Math.max(...v))}`; });
-  items.push(`<b>Counter vs Balanced:</b> per-player win-rate edge for Counter in mixed tables is ${adv.join(', ')} (scenario range ${advRange.join('; ')}).`);
-  const presetGrow = PRESETS.map(p => `${PRESET[p]} ${f(mean(A.scenarios.filter(s => s.options.treePreset === p).map(s => s.grown)), 2)} grown, tier 5 in ${pct(mean(A.scenarios.filter(s => s.options.treePreset === p).map(s => s.tierHist[5])))}`);
-  items.push(`<b>Star tree:</b> ${presetGrow.join('; ')} (all player counts).`);
-  const stars = [1, 2, 3, 4].map(k => { const pl = mean(A.scenarios.map(s => s.played[k])), co = mean(A.scenarios.map(s => s.completed[k])); return `${k}★ ${f(pl, 2)} played / ${f(co, 2)} done (${pl ? pct(co / pl, 0) : '–'})`; });
-  items.push(`<b>Projects per game:</b> ${stars.join(', ')}.`);
-  const rw = REWARDS.map(r => `${REWARD[r]}: ${f(mean(A.scenarios.filter(s => s.rewards === r).map(s => sum(s.completed))), 2)} completed, winning score ${f(mean(A.scenarios.filter(s => s.rewards === r).map(s => s.topScore)), 1)}, margin ${f(mean(A.scenarios.filter(s => s.rewards === r).map(s => s.margin)), 2)}`);
-  items.push(`<b>Completion reward:</b> ${rw.join('; ')}.`);
-  const ex = [0, 1, 2].map(x => `+${x}: winning score ${f(mean(A.scenarios.filter(s => s.options.extraRounds === x).map(s => s.topScore)), 1)}, ${f(mean(A.scenarios.filter(s => s.options.extraRounds === x).map(s => s.grown)), 2)} grown`);
-  items.push(`<b>Extra rounds:</b> ${ex.join('; ')}.`);
+  const tree = PRESETS.map(p => `${PRESET[p]} ${counts.map(n => { const l = at(n, s => s.options.treePreset === p); return `${n}p ${f(mean(l.map(s => s.grown)), 1)}/${pct(mean(l.map(s => s.tierHist[5])), 0)}`; }).join(' ')}`);
+  items.push(`<b>Star tree, abilities grown / games reaching tier 5:</b> ${tree.join('; ')}.`);
+  const stars = counts.map(n => `${n}p ${[1, 2, 3, 4].map(k => { const l = at(n), pl = mean(l.map(s => s.played[k])), co = mean(l.map(s => s.completed[k])); return `${k}★ ${f(pl, 2)}/${f(co, 2)}`; }).join(' ')}`);
+  items.push(`<b>Projects per game, played/completed by stars:</b> ${stars.join('; ')}.`);
+  const rw = REWARDS.map(r => { const l = A.scenarios.filter(s => s.rewards === r); return `${REWARD[r]}: ${f(mean(l.map(s => sum(s.completed))), 2)} completed, winning score ${f(mean(l.map(s => s.topScore)), 1)}, margin ${f(mean(l.map(s => s.margin)), 2)}`; });
+  items.push(`<b>Completion reward (all player counts):</b> ${rw.join('; ')}.`);
+  if (mixed) {
+    const adv = counts.map(n => `${n}p ${pp(mean(at(n).map(s => s.advanceAdvantage)))}`);
+    items.push(`<b>Advance vs Novice:</b> per-player win-rate edge for Advance in mixed tables is ${adv.join(', ')}.`);
+  }
   document.getElementById('findings').innerHTML = items.map(i => `<li>${i}</li>`).join('');
 }
 
@@ -380,28 +387,30 @@ function renderSeats() {
 
 // ---------- strategies ----------
 function renderStrategy() {
+  document.getElementById('strategy-sec').hidden = !mixed;
+  if (!mixed) return;
   const ns = counts.filter(n => state.n === 'all' || n === state.n);
-  // Per-player win rate by strategy, grouped by how many Counter bots sit at the table.
+  // Per-player win rate by strategy, grouped by how many Advance bots sit at the table.
   const groups = ns.flatMap(n => Array.from({ length: n + 1 }, (_, c) => c).map(c => {
-    const combos = A.combos.filter(x => x.n === n && [...x.combo].filter(k => k === 'C').length === c);
+    const combos = A.combos.filter(x => x.n === n && [...x.combo].filter(k => k === 'A').length === c);
     const rate = k => { const seats = combos.flatMap(x => [...x.combo].map((s, i) => s === k ? x.winRate[i] : null)).filter(v => v !== null); return seats.length ? mean(seats) : null; };
-    return { n, c, B: rate('B'), C: rate('C') };
+    return { n, c, N: rate('N'), A: rate('A') };
   }));
   const W = 460, left = 84, right = 16, rh = 22, top = 10, H = top + groups.length * rh + ns.length * 8 + 30;
-  const hi = Math.max(...groups.flatMap(g => [g.B ?? 0, g.C ?? 0])) * 1.1;
+  const hi = Math.max(...groups.flatMap(g => [g.N ?? 0, g.A ?? 0])) * 1.1;
   const x = v => left + v / hi * (W - left - right);
   let s = `<svg viewBox="0 0 ${W} ${H}" width="${W}">`, yy = top;
   [0, 0.2, 0.4, 0.6, 0.8].filter(t => t < hi).forEach(t => { s += `<line x1="${x(t)}" x2="${x(t)}" y1="${top}" y2="${H - 24}" stroke="var(--rule)"/><text x="${x(t)}" y="${H - 8}" text-anchor="middle">${pct(t, 0)}</text>`; });
   let lastN = null;
   groups.forEach(g => {
     if (lastN !== null && g.n !== lastN) yy += 8; lastN = g.n;
-    s += `<text x="${left - 8}" y="${yy + 14}" text-anchor="end">${g.n}p ${g.c}C</text>`;
+    s += `<text x="${left - 8}" y="${yy + 14}" text-anchor="end">${g.n}p ${g.c}A</text>`;
     s += `<line x1="${x(1 / g.n)}" x2="${x(1 / g.n)}" y1="${yy + 2}" y2="${yy + rh - 2}" stroke="var(--fg)" stroke-dasharray="2 2"/>`;
-    for (const k of ['B', 'C']) if (g[k] !== null) s += `<circle cx="${x(g[k])}" cy="${yy + rh / 2}" r="5.5" fill="var(--s-${k.toLowerCase()})" stroke="var(--panel)" stroke-width="2"><title>${g.n}p, ${g.c} Counter: ${k} ${pct(g[k])}</title></circle>`;
+    for (const k of ['N', 'A']) if (g[k] !== null) s += `<circle cx="${x(g[k])}" cy="${yy + rh / 2}" r="5.5" fill="var(--s-${k.toLowerCase()})" stroke="var(--panel)" stroke-width="2"><title>${g.n}p, ${g.c} Advance: ${STRATS[k]} ${pct(g[k])}</title></circle>`;
     yy += rh;
   });
   s += '</svg>';
-  document.getElementById('strategy-chart').innerHTML = `<h3>Per-player win rate by number of Counter bots</h3><div class="legend"><span><span class="sw" style="background:var(--s-b)"></span>Balanced seat</span><span><span class="sw" style="background:var(--s-c)"></span>Counter seat</span><span>dashed tick = fair share</span></div><div class="scroll">${s}</div>`;
+  document.getElementById('strategy-chart').innerHTML = `<h3>Per-player win rate by number of Advance bots</h3><div class="legend"><span><span class="sw" style="background:var(--s-n)"></span>Novice seat</span><span><span class="sw" style="background:var(--s-a)"></span>Advance seat</span><span>dashed tick = fair share</span></div><div class="scroll">${s}</div>`;
   const list = A.combos.filter(x => ns.includes(x.n));
   const table = ns.map(n => {
     const combos = [...new Set(list.filter(x => x.n === n).map(x => x.combo))];
@@ -421,7 +430,7 @@ function renderTree() {
   const list = treeRows();
   const rate = NODES.map((_, i) => mean(list.map(s => s.nodeRate[i])));
   const round = NODES.map((_, i) => mean(list.map(s => s.nodeRound[i]).filter(v => v != null)));
-  const byB = NODES.map((_, i) => mean(list.map(s => s.nodeByStrategy.B[i]))), byC = NODES.map((_, i) => mean(list.map(s => s.nodeByStrategy.C[i])));
+  const byStrategy = Object.fromEntries(present.map(k => [k, NODES.map((_, i) => mean(list.map(s => s.nodeByStrategy[k][i])))]));
   const cw = 130, ch = 50, left = 30, top = 28, W = left + 3 * cw + 8, H = top + 5 * ch + 8;
   let s = `<svg viewBox="0 0 ${W} ${H}" width="${W}" role="img" aria-label="Tree growth heat map">`;
   ['s', 'd', 'g'].forEach((b, j) => { s += `<text class="strong" x="${left + j * cw + cw / 2}" y="16" text-anchor="middle">${BRANCH[b]}</text>`; });
@@ -439,7 +448,7 @@ function renderTree() {
   const label = `${state.preset === 'all' ? 'All presets' : PRESET[state.preset]} · ${state.reward === 'all' ? 'both rewards' : REWARD[state.reward]} · ${state.n === 'all' ? 'all player counts' : state.n + ' players'}`;
   const th = document.getElementById('tree-heat');
   th.innerHTML = `<h3>Ability growth rate</h3><div class="legend"><span>0%</span><span class="ramp" style="background:linear-gradient(90deg,${seqColor(0)},${seqColor(.5)},${seqColor(1)})"></span><span>100% of games</span><span class="pill">${esc(label)}</span></div><div class="scroll">${s}</div>`;
-  th.querySelectorAll('g[data-k]').forEach(g => { const i = +g.dataset.k; bindTip(g, `<b>${NODES[i]} ${NODE_NAMES[NODES[i]]}</b><br>grown in ${pct(rate[i])} of games<br>mean round ${f(round[i], 2)}<br>grown by a Balanced seat ${f(byB[i], 3)} / Counter seat ${f(byC[i], 3)} per seat-game`); });
+  th.querySelectorAll('g[data-k]').forEach(g => { const i = +g.dataset.k; bindTip(g, `<b>${NODES[i]} ${NODE_NAMES[NODES[i]]}</b><br>grown in ${pct(rate[i])} of games<br>mean round ${f(round[i], 2)}${mixed ? `<br>grown per seat-game: ${present.map(k => `${STRATS[k]} ${f(byStrategy[k][i], 3)}`).join(' / ')}` : ''}`); });
 
   // Cumulative abilities grown by end of round, one line per preset.
   const ns = state.n === 'all' ? counts : [state.n];
@@ -501,21 +510,23 @@ function renderProjects() {
   document.getElementById('proj-chart').innerHTML = `<h3>Played (pale) and completed (solid) per game</h3><div class="legend">${colors.map((c, k) => `<span><span class="sw" style="background:${c}"></span>${k + 1}★</span>`).join('')}</div><div class="scroll">${s}</div>`;
   const ns = state.n === 'all' ? counts : [state.n];
   const tbl = ns.map(n => { const l = A.scenarios.filter(s => s.n === n); return [1, 2, 3, 4].map(k => { const pl = mean(l.map(s => s.played[k])), co = mean(l.map(s => s.completed[k])), rd = mean(l.map(s => s.completedRound[k]).filter(v => v != null));
-    const byB = mean(l.map(s => s.playedBy.B[k])), byC = mean(l.map(s => s.playedBy.C[k]));
-    return `<tr><td>${k === 1 ? `<b>${n}p</b> ` : ''}${k}★</td><td class="num">${f(pl, 3)}</td><td class="num">${f(co, 3)}</td><td class="num">${pl ? pct(co / pl, 0) : '–'}</td><td class="num">${f(rd, 2)}</td><td class="num">${f(byB, 3)} / ${f(byC, 3)}</td></tr>`; }).join(''); }).join('');
-  document.getElementById('proj-table').innerHTML = `<h3>By difficulty and player count</h3><table><thead><tr><th>Stars</th><th>Played</th><th>Done</th><th>Rate</th><th>Done round</th><th>Opened per B / C seat</th></tr></thead><tbody>${tbl}</tbody></table>`;
+    const by = mixed ? `<td class="num">${present.map(x => f(mean(l.map(s => s.playedBy[x][k])), 3)).join(' / ')}</td>` : '';
+    return `<tr><td>${k === 1 ? `<b>${n}p</b> ` : ''}${k}★</td><td class="num">${f(pl, 3)}</td><td class="num">${f(co, 3)}</td><td class="num">${pl ? pct(co / pl, 0) : '–'}</td><td class="num">${f(rd, 2)}</td>${by}</tr>`; }).join(''); }).join('');
+  document.getElementById('proj-table').innerHTML = `<h3>By difficulty and player count</h3><table><thead><tr><th>Stars</th><th>Played</th><th>Done</th><th>Rate</th><th>Done round</th>${mixed ? `<th>Opened per ${present.join(' / ')} seat</th>` : ''}</tr></thead><tbody>${tbl}</tbody></table>`;
 }
 
 // ---------- breakdown ----------
 const CAT = { '結案貢獻': 'Contribution on completion 結案貢獻', '未結案專案貢獻折半': 'Unfinished projects, half 未結案折半', '行動獎勵': 'Action rewards 行動獎勵', 'tree': 'Tree growth 星源樹成長', '發起獎勵': 'Initiation reward 發起獎勵', '結案獎勵': 'Finisher reward 結案獎勵', '年度結算發起獎勵': 'Yearly initiation 年度結算發起', '最終回合剩餘行動點': 'Leftover AP 剩餘行動點' };
 function renderBreakdown() {
   const list = rows();
-  const cats = [...new Set(list.flatMap(s => [...Object.keys(s.breakdown.B), ...Object.keys(s.breakdown.C)]))];
+  const cats = [...new Set(list.flatMap(s => present.flatMap(k => Object.keys(s.breakdown[k]))))];
   const val = (k, c) => mean(list.map(s => s.breakdown[k][c] ?? 0));
-  cats.sort((a, b) => val('B', b) + val('C', b) - val('B', a) - val('C', a));
-  const body = cats.map(c => `<tr><td>${esc(CAT[c] ?? c)}</td><td class="num">${f(val('B', c), 2)}</td><td class="num">${f(val('C', c), 2)}</td><td class="num">${(val('C', c) - val('B', c) >= 0 ? '+' : '−') + Math.abs(val('C', c) - val('B', c)).toFixed(2)}</td></tr>`).join('');
-  const tot = k => sum(cats.map(c => val(k, c)));
-  document.getElementById('breakdown').innerHTML = `<table><thead><tr><th>Source</th><th>Balanced</th><th>Counter</th><th>C − B</th></tr></thead><tbody>${body}<tr><td><b>Total</b></td><td class="num"><b>${f(tot('B'), 2)}</b></td><td class="num"><b>${f(tot('C'), 2)}</b></td><td class="num"><b>${(tot('C') - tot('B') >= 0 ? '+' : '−') + Math.abs(tot('C') - tot('B')).toFixed(2)}</b></td></tr></tbody></table>`;
+  const all = c => sum(present.map(k => val(k, c)));
+  cats.sort((a, b) => all(b) - all(a));
+  const signed = v => (v >= 0 ? '+' : '−') + Math.abs(v).toFixed(2);
+  const row = (label, v, strong) => `<tr><td>${strong ? `<b>${label}</b>` : label}</td>${present.map(k => `<td class="num">${strong ? '<b>' : ''}${f(v(k), 2)}${strong ? '</b>' : ''}</td>`).join('')}${mixed ? `<td class="num">${signed(v('A') - v('N'))}</td>` : ''}<td class="num">${strong ? '' : pct(v(present[0]) / sum(cats.map(c => val(present[0], c))), 0)}</td></tr>`;
+  const body = cats.map(c => row(esc(CAT[c] ?? c), k => val(k, c))).join('');
+  document.getElementById('breakdown').innerHTML = `<table><thead><tr><th>Source</th>${present.map(k => `<th>${STRATS[k]}</th>`).join('')}${mixed ? '<th>A − N</th>' : ''}<th>Share</th></tr></thead><tbody>${body}${row('Total', k => sum(cats.map(c => val(k, c))), true)}</tbody></table>`;
 }
 
 // ---------- all table ----------
@@ -524,7 +535,7 @@ function renderTable() {
   const cols = [
     { id: 'name', label: 'Scenario', get: s => s.id, fmt: (v, s) => `${ROT_SHORT[s.options.starterRotation]} · +${s.options.extraRounds} · ${PRESET[s.options.treePreset]} · ${s.rewards === 'fixed' ? 'fixed' : 'stars'}` },
     { id: 'n', label: 'P', get: s => s.n, fmt: v => v },
-    ...['seat1', 'imbalance', 'counter', 'top', 'margin', 'grown', 'tier5', 'completed', 'rate', 'adv'].map(id => ({ id, label: M[id].label.split(' (')[0], get: M[id].get, fmt: M[id].fmt })),
+    ...['seat1', 'imbalance', ...(mixed ? ['advance'] : []), 'top', 'margin', 'grown', 'tier5', 'completed', 'rate', 'adv'].map(id => ({ id, label: M[id].label.split(' (')[0], get: M[id].get, fmt: M[id].fmt })),
   ];
   const list = rows().slice().sort((a, b) => { const c = cols.find(c => c.id === sortKey); const x = c.get(a), y = c.get(b); return (x > y ? 1 : x < y ? -1 : 0) * sortDir; });
   document.getElementById('all-table').innerHTML = `<table><thead><tr>${cols.map(c => `<th class="sortable" data-k="${c.id}" aria-sort="${c.id === sortKey ? (sortDir > 0 ? 'ascending' : 'descending') : 'none'}">${esc(c.label)}${c.id === sortKey ? (sortDir > 0 ? ' ▲' : ' ▼') : ''}</th>`).join('')}</tr></thead><tbody>${list.map(s => `<tr>${cols.map((c, i) => `<td class="${i ? 'num' : ''}">${c.fmt(c.get(s), s)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
