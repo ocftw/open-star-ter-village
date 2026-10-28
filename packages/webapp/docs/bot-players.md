@@ -2,7 +2,9 @@
 
 Bots play complete 星源樹測試版 v1 games headless, so a rule change can be tested
 over hundreds of seeded games in seconds instead of 60–90 minute human sessions.
-Milestone 1 ships one strategy, **Balanced**, playing every seat.
+Two strategies ship: **Balanced**, the reference that plays every seat in batch
+runs, and **Counter**, a Balanced variant tuned to beat Balanced from the early
+seats.
 
 ## Run a batch
 
@@ -11,6 +13,7 @@ From the repository root:
 ```sh
 pnpm webapp bots                                # 100 games each at 2, 3 and 4 players
 pnpm webapp bots --players 4 --games 20 --seed trial
+pnpm webapp bots --profile counter              # every seat plays Counter
 pnpm webapp bots --weights '{"advancedDraw":1}' # override profile weights as JSON
 pnpm webapp bots --no-move-log --out /tmp/run   # skip move logs, choose the output folder
 ```
@@ -68,6 +71,39 @@ the bot runner) are `src/botSeats.ts` and `src/botRunner.ts`.
 The `nodeImpact` values are initial guesses. Recalibrate them from batch data
 (points per AP, node growth rate, ability trigger counts) and rerun.
 
+### Counter
+
+Balanced acts in a fixed order (seat 1 first, every round), so later seats
+finish the projects earlier seats set up and win far more often. Counter is
+the `COUNTER` profile: Balanced's scoring with four weights changed.
+
+| Weight | Balanced | Counter | Effect |
+| --- | ---: | ---: | --- |
+| `village` | 0.3 | 0 | No value for what the tree or village progress gives other players |
+| `unlock` | 0.5 | 0 | No value for higher tree tiers a growth makes reachable |
+| `tree` | 1 | 0.6 | Tree nodes are worth less, so actions go to projects |
+| `initiation` | 0 | −1 | Opening a project costs 1 point, so it opens fewer and completes its own |
+
+In paired trials it uses the actions it saves on the tree to complete its own
+projects (including more 2★ ones) and to be the finisher more often. Ablations
+show that the tree weights and the opening cost each fail alone. See
+[the Counter evidence](evidence/bot-strategies/counter-1000/README.md).
+
+### Compare a profile with Balanced
+
+```sh
+cd packages/webapp
+pnpm exec tsx scripts/compare-bot-strategies.ts --challenger counter --games 300 --out /tmp/counter
+python3 scripts/analyze-bot-strategies.py /tmp/counter
+```
+
+Each seed is played all-Balanced and again with the challenger in seat 1, then
+seat 2 (`--seats`), at 2/3/4 players across the four Standard rule options
+(`--scenarios`), using every CPU (`--jobs`). `--weights` overrides the
+challenger's weights for ablations. The analysis reports the challenger's win
+share (ties split) with a 95% interval, the paired change against Balanced in
+the same seat and seed, and which score sources moved.
+
 ## Bots in game rooms
 
 In a Standard room, the host can seat bots before starting:
@@ -118,13 +154,14 @@ How it works on the server:
 
 ### Adding a strategy
 
-1. Add a weight profile in `src/game/bots/profiles.ts`.
-2. Register it in `BOT_STRATEGIES` (`src/game/bots/strategies.ts`) with an `id`,
-   a `label`, a short `description` and a list of seat names, at least three
-   so a full room never repeats one.
+1. Add a weight profile in `src/game/bots/profiles.ts` and to `PROFILES`.
+2. Register it in `BOT_STRATEGIES` (`src/game/bots/strategies.ts`) under the
+   same key, with an `id`, a `label`, a short `description` and a list of seat
+   names: at least three, so a full room never repeats one, and none used by
+   another strategy.
 
-The waiting room then offers it automatically, and the CLI accepts it with
-`--profile <id>` once it is also added to `PROFILES`.
+The waiting room then offers it in the strategy picker, and the CLI accepts it
+with `--profile <id>`.
 
 ## Telemetry
 
@@ -159,6 +196,9 @@ Fly app: `flyctl secrets set --app open-star-ter-village-tree-poc DEBUG_TELEMETR
 `src/game/bots/*.test.ts` checks that every enumerated action is accepted across
 seeded games, that 2/3/4 Balanced and random bots finish in 9 − n rounds, that a
 seed replays identically, and that rejected moves and stuck games fail loudly.
+`counter.test.ts` plays Counter from seats 1 and 2 to game over at every player
+count and rule option and replays it from a seed; `strategies.test.ts` checks
+every registry entry.
 `src/game/standard/telemetry.test.ts` checks the telemetry never reaches a
 player view.
 
@@ -166,5 +206,7 @@ player view.
 
 Bots measure reachability, pacing and degenerate strategies. They do not measure
 clarity, fun or UI problems. With one strategy in every seat, results describe
-how Balanced plays, not how humans or other strategies would. Advanced
+how Balanced plays, not how humans or other strategies would. Counter is tuned
+against Balanced only; its win rates say nothing about how it fares against
+humans. Advanced
 projects in particular need a strategy that wants them (milestone 2).
