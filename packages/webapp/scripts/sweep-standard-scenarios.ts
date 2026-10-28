@@ -98,7 +98,7 @@ function runJob(out: string, batch: number, scenarioIndex: number) {
     const seed = `${values.seed}-b${batch}-${n}p-r${r}`;
     for (const combo of combos(n)) {
       try {
-        lines.push(JSON.stringify(playGame(scenario, n, combo, seed, Object.fromEntries([...combo].map((k, seat) => [String(seat), bots[k as 'B' | 'C']])))));
+        lines.push(JSON.stringify(playGame(scenario, n, combo, seed, Object.fromEntries(combo.split('').map((k, seat) => [String(seat), bots[k as 'B' | 'C']])))));
       } catch (error) {
         failures++;
         lines.push(JSON.stringify({ n, c: combo, seed, err: String((error as Error).message) }));
