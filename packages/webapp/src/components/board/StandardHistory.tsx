@@ -18,7 +18,7 @@ export default function StandardHistory({ entries, playerName }: { entries: Publ
         第 {entry.round} 輪 · {entry.playerId !== undefined ? `${playerName(entry.playerId)} · ` : ''}
         {labels[entry.kind.replace(':skip', '')] ?? entry.kind}{entry.kind.endsWith(':skip') ? '（略過）' : ''}
         {entry.scoreDelta !== undefined ? ` ${entry.scoreDelta >= 0 ? '+' : ''}${entry.scoreDelta}` : ''}
-        {entry.target ? `：${entry.target}` : ''}
+        {entry.target ? `：${entry.target.replace(/\b(source|data|government)-([1-5])\b/g, (_, branch: string, tier: string) => `${({source:'開源',data:'資料',government:'政府'} as Record<string,string>)[branch]} ${tier}`)}` : ''}
         {entry.projects?.map(project => <div key={project.id}>{project.name}：{project.contributions.map(cube => `${playerName(cube.worker)}／${cube.jobName} ${cube.value}`).join('、')}</div>)}
         {entry.market && <div>人力區：{entry.market.join('、')}</div>}
         {entry.actionPoints && <div>行動點：{Object.entries(entry.actionPoints).map(([id, points]) => `${playerName(id)} ${points}`).join('、')}</div>}

@@ -70,7 +70,7 @@ export default function StandardPanel({ gameContext }: { gameContext: GameContex
       </div>
     </div>
     {selected && <div aria-live="polite">
-      <p>{selected}：{reason ?? (active ? '可成長，花費 1 AP' : '等待你的行動回合')}</p>
+      <p>{branchLabels[BRANCHES.indexOf(selected.split('-')[0] as typeof BRANCHES[number])]} {selected.split('-')[1]}：{reason ?? (active ? '可成長，花費 1 AP' : '等待你的行動回合')}</p>
       <label><input type="checkbox" checked={overtime} onChange={e => setOvertime(e.target.checked)} />使用加班</label>{' '}
       <StickerButton disabled={!active || !!reason} onClick={() => { moveApi.growTree(selected, overtime); setSelected(null); setOvertime(false); }}>確認成長 · 1 AP</StickerButton>
     </div>}
