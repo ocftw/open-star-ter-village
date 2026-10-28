@@ -89,6 +89,8 @@ for (const count of [2,3,4]) test(`Socket.IO ${count}-player game completes, syn
 test('Standard board renders and survives a browser refresh', async ({ page }) => {
   test.skip(process.env.STANDARD_NETWORK_ONLY === '1', 'Network-only verification');
   const { matchID } = await lobby.createMatch(name,{numPlayers:2,setupData:{ruleset:'tree-poc-v1',forcedFirstEvent:'digital_minister'}});
+  expect((await lobby.getMatch(name, matchID)).setupData.standardOptions).toEqual({ starterRotation: 'none', extraRounds: 0, treePreset: 'count-00246' });
+  expect((await lobby.getMatch(name, matchID)).setupData.experiments).toEqual({ government5: 'any', completionRewards: 'fixed' });
   for (let i=0;i<2;i++) {
     const joined=await lobby.joinMatch(name,matchID,{playerID:String(i),playerName:`UI ${i+1}`});
     if(i===0) {

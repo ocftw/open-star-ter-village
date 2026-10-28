@@ -7,6 +7,7 @@ import { DEBUG_TELEMETRY_PATH, debugTelemetryHandler } from "./debugTelemetry";
 import { ADD_BOT_PATH, REMOVE_BOT_PATH, addBotHandler, removeBotHandler } from "./botSeats";
 import { socketPresence, startBotRunner } from "./botRunner";
 import { registerLobbyUpdates } from "./server/lobbyUpdates";
+import type { GameState } from './game/store/store';
 
 const packageVersion = packageJson.version;
 const gameName = 'OpenStarTerVillage';
@@ -43,6 +44,17 @@ async function serve() {
     ],
   });
 
+  // Persist normalized defaults as well as explicitly selected options, so
+  // metadata, waiting rooms and rematches agree with authoritative setup.
+  const createMatch = server.db.createMatch.bind(server.db);
+  server.db.createMatch = (id, options) => {
+    const standard = (options.initialState.G as GameState).standard;
+    if (!standard) return createMatch(id, options);
+    return createMatch(id, { ...options, metadata: { ...options.metadata, setupData: {
+      ...options.metadata.setupData,
+      ruleset: standard.version, experiments: standard.experiments, standardOptions: standard.options,
+    } } });
+  };
   registerLobbyUpdates(server);
 
   // boardgame.io's playAgain read-check-create-write is not atomic. Serialize
