@@ -79,7 +79,18 @@ export const BALANCED: Profile = {
   nodeImpact: DEFAULT_NODE_IMPACT,
 };
 
-export const PROFILES: Record<string, Profile> = { balanced: BALANCED };
+/**
+ * Counter's weights (used with the finish-exposure check in `counterBot.ts`):
+ * Balanced without valuing help to others or the tree tiers a growth unlocks,
+ * less weight on the shared tree, and a cost on opening a project, so it opens
+ * fewer and spends its actions finishing its own before later seats do.
+ */
+export const COUNTER: Profile = {
+  ...withWeights(BALANCED, { village: 0, tree: 0.6, unlock: 0, initiation: -1 }),
+  name: 'counter',
+};
+
+export const PROFILES: Record<string, Profile> = { balanced: BALANCED, counter: COUNTER };
 
 /** A profile with some weights overridden, e.g. from CLI JSON. */
 export function withWeights(profile: Profile, overrides: Partial<Weights>): Profile {
