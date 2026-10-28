@@ -1,0 +1,5042 @@
+[
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:10:04.151Z",
+    "finishedAt": "2026-10-28T00:11:45.032Z",
+    "seconds": 100.881,
+    "seedPrefix": "standard-factorial-batch-1",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 1,
+    "rawSha256": "4557ce15bc710b9382943c5abc88944d55506aaa8680fd509b5a7dd0690a6911"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:10:04.148Z",
+    "finishedAt": "2026-10-28T00:11:46.034Z",
+    "seconds": 101.886,
+    "seedPrefix": "standard-factorial-batch-2",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 2,
+    "rawSha256": "646f54d853dd9b8c2b2000e4e9a19adfca919a171549a3a3b570de0faed85b94"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:10:04.173Z",
+    "finishedAt": "2026-10-28T00:11:46.728Z",
+    "seconds": 102.555,
+    "seedPrefix": "standard-factorial-batch-3",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 3,
+    "rawSha256": "ff5e43b474bc040e5fd94955431c7d66f836d1dc86e9bc27c88eb3b8a880af8f"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:10:04.151Z",
+    "finishedAt": "2026-10-28T00:11:45.909Z",
+    "seconds": 101.758,
+    "seedPrefix": "standard-factorial-batch-4",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 4,
+    "rawSha256": "802970203df360426eac8745480fcc2272e14a6de039c7f49530b9c535a844ad"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:10:04.152Z",
+    "finishedAt": "2026-10-28T00:11:45.720Z",
+    "seconds": 101.568,
+    "seedPrefix": "standard-factorial-batch-5",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 5,
+    "rawSha256": "cad0b773b9d84449b584d1dad50b9d6c2d94591c2f47d090318a44da49aff200"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:10:04.148Z",
+    "finishedAt": "2026-10-28T00:11:45.968Z",
+    "seconds": 101.82,
+    "seedPrefix": "standard-factorial-batch-6",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 6,
+    "rawSha256": "c059dba22b044d26449b9d2fed40f6c9e7e98989a04b4b1e47e5b668361b8e36"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:11:48.125Z",
+    "finishedAt": "2026-10-28T00:13:46.995Z",
+    "seconds": 118.87,
+    "seedPrefix": "standard-factorial-batch-7",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 7,
+    "rawSha256": "47de1a9bc0af53ca1347edbaa4372cbcae6bbefccf2de0f9c9c148e094901d08"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:11:48.764Z",
+    "finishedAt": "2026-10-28T00:13:46.615Z",
+    "seconds": 117.851,
+    "seedPrefix": "standard-factorial-batch-8",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 8,
+    "rawSha256": "ba7d985deaf1448093af259f7940566ae1a276ac65161bf54c9344bb7e12a862"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:11:49.006Z",
+    "finishedAt": "2026-10-28T00:13:47.572Z",
+    "seconds": 118.566,
+    "seedPrefix": "standard-factorial-batch-9",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 9,
+    "rawSha256": "7acbb76c18df8942c946bc12e49986fe6ba4b01e9a89c9dabbf9472b1b70a2c8"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:11:49.107Z",
+    "finishedAt": "2026-10-28T00:13:46.185Z",
+    "seconds": 117.078,
+    "seedPrefix": "standard-factorial-batch-10",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 10,
+    "rawSha256": "77992733c8a3c87d1c27840abe2781fde4fa67ed430ba4e2e5890fb22eee4cf0"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:11:49.123Z",
+    "finishedAt": "2026-10-28T00:13:47.958Z",
+    "seconds": 118.835,
+    "seedPrefix": "standard-factorial-batch-11",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 11,
+    "rawSha256": "d85980ad3a2fe31dcfba56896ccfbd43e47e729d11013a29ad9dc883b3da362b"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:11:49.828Z",
+    "finishedAt": "2026-10-28T00:13:47.967Z",
+    "seconds": 118.139,
+    "seedPrefix": "standard-factorial-batch-12",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 12,
+    "rawSha256": "46bb04c56ac7468663c3e793de51d442bf89882291dd9e128956871f5956dfbf"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:13:49.727Z",
+    "finishedAt": "2026-10-28T00:16:06.236Z",
+    "seconds": 136.509,
+    "seedPrefix": "standard-factorial-batch-13",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 13,
+    "rawSha256": "665cf180c1a26f6c7def816480a87d3e6bd3445ae4c750504ba80a6686dab3e3"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:13:50.166Z",
+    "finishedAt": "2026-10-28T00:16:05.885Z",
+    "seconds": 135.719,
+    "seedPrefix": "standard-factorial-batch-14",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 14,
+    "rawSha256": "a5533b2f4f01387e7c326ce6202d4cba9fbb567b5a0a1130e6a0b40d8412a633"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:13:50.550Z",
+    "finishedAt": "2026-10-28T00:16:07.542Z",
+    "seconds": 136.992,
+    "seedPrefix": "standard-factorial-batch-15",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 15,
+    "rawSha256": "6be35a6c44c4e4efc48852b2b2c8a0682494eaf2fe13bbb30c87520910bad195"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:13:51.198Z",
+    "finishedAt": "2026-10-28T00:16:07.103Z",
+    "seconds": 135.905,
+    "seedPrefix": "standard-factorial-batch-16",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 16,
+    "rawSha256": "446f82675b7c2ed56cc70bf1e3ac41c7ad0abc58bc2302a62f3e1fe7375edd3f"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:13:51.542Z",
+    "finishedAt": "2026-10-28T00:16:09.362Z",
+    "seconds": 137.82,
+    "seedPrefix": "standard-factorial-batch-17",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 17,
+    "rawSha256": "97074edb3ec0061f783da5eae9d8f84ee9ae930eaa45cd9e7a059b617cdb1439"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:13:51.564Z",
+    "finishedAt": "2026-10-28T00:16:08.547Z",
+    "seconds": 136.983,
+    "seedPrefix": "standard-factorial-batch-18",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 18,
+    "rawSha256": "ea703af250ab9907414b497a99e09a51d7ca5a6e2ad87f97d9172552dcb764df"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:16:09.707Z",
+    "finishedAt": "2026-10-28T00:18:30.369Z",
+    "seconds": 140.662,
+    "seedPrefix": "standard-factorial-batch-19",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 19,
+    "rawSha256": "1a9437eed36670a7ec9a05ba43b22bbb48ce3524c0854d4f96ee9e46ca5df8ec"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:16:09.978Z",
+    "finishedAt": "2026-10-28T00:18:30.846Z",
+    "seconds": 140.868,
+    "seedPrefix": "standard-factorial-batch-20",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 20,
+    "rawSha256": "527672c2aaa6e9969f77f33a043e0c63853bf18b42662d2f756e8f6726677ccc"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:16:10.826Z",
+    "finishedAt": "2026-10-28T00:18:31.761Z",
+    "seconds": 140.935,
+    "seedPrefix": "standard-factorial-batch-21",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 21,
+    "rawSha256": "9ecf8375dc2849c60627ffb6985def499ab86b538116de4f8b5ab353bd960d42"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:16:11.309Z",
+    "finishedAt": "2026-10-28T00:18:31.652Z",
+    "seconds": 140.343,
+    "seedPrefix": "standard-factorial-batch-22",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 22,
+    "rawSha256": "a78912366129435b3811be45e36ce10ee2e00f05adea9b61191fee9d6361c275"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:16:12.396Z",
+    "finishedAt": "2026-10-28T00:18:32.780Z",
+    "seconds": 140.384,
+    "seedPrefix": "standard-factorial-batch-23",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 23,
+    "rawSha256": "009a9c6395900ea6da5c11ff9590791ca024061d115a8820454b11c67bc6320a"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:16:13.142Z",
+    "finishedAt": "2026-10-28T00:18:33.341Z",
+    "seconds": 140.199,
+    "seedPrefix": "standard-factorial-batch-24",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 24,
+    "rawSha256": "aa1bcd4ee4fdd703858035253a4cee12849d2cbf9542fa1c0de1b9f4d9f09ec5"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:18:34.335Z",
+    "finishedAt": "2026-10-28T00:20:57.157Z",
+    "seconds": 142.822,
+    "seedPrefix": "standard-factorial-batch-25",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 25,
+    "rawSha256": "1fa10cd680dad1489eec343c3c95e8c3c33fc8c221ee113e76dada911e7009f0"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:18:34.854Z",
+    "finishedAt": "2026-10-28T00:20:57.690Z",
+    "seconds": 142.836,
+    "seedPrefix": "standard-factorial-batch-26",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 26,
+    "rawSha256": "4d67492a0630ea3ac63e48cd204531dcc3c0e2049683b4a94f4170d9b0db3b2e"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:18:35.861Z",
+    "finishedAt": "2026-10-28T00:20:59.809Z",
+    "seconds": 143.948,
+    "seedPrefix": "standard-factorial-batch-27",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 27,
+    "rawSha256": "202a84563c75abc99d3f7be370351c264f5ab7d4da549146927c1bb06631f7ef"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:18:35.973Z",
+    "finishedAt": "2026-10-28T00:20:57.993Z",
+    "seconds": 142.02,
+    "seedPrefix": "standard-factorial-batch-28",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 28,
+    "rawSha256": "3042644e823153b16c7c4f01ccdaa8b231038a197f3ffb05849c8e77b064f33d"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:18:37.036Z",
+    "finishedAt": "2026-10-28T00:21:00.083Z",
+    "seconds": 143.047,
+    "seedPrefix": "standard-factorial-batch-29",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 29,
+    "rawSha256": "bc78430b7412624b830fc2782207d4767ad9308737f9a23e5e1cc71d231acf11"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:18:37.630Z",
+    "finishedAt": "2026-10-28T00:21:01.006Z",
+    "seconds": 143.376,
+    "seedPrefix": "standard-factorial-batch-30",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 30,
+    "rawSha256": "da8b2cadfe10bd9c60a99a4b0ed27f7df4584aeae3c100ae0552c6392b249b0e"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:21:01.103Z",
+    "finishedAt": "2026-10-28T00:23:39.430Z",
+    "seconds": 158.327,
+    "seedPrefix": "standard-factorial-batch-31",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 31,
+    "rawSha256": "7ba468844a05691f7cf909c7ee41bea2ff33e18f2b9e189cff64c03715bcbc67"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:21:01.557Z",
+    "finishedAt": "2026-10-28T00:23:38.869Z",
+    "seconds": 157.312,
+    "seedPrefix": "standard-factorial-batch-32",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 32,
+    "rawSha256": "4ec151675d8d42a88a49cd3e9c7cf7f16f62703eca014290de529aa93c2a2df6"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:21:01.914Z",
+    "finishedAt": "2026-10-28T00:23:40.535Z",
+    "seconds": 158.621,
+    "seedPrefix": "standard-factorial-batch-33",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 33,
+    "rawSha256": "00b8c664840e00ca74806d3fe71edf2123b4d6a7abc5dd9b17e5183aadc36ffe"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:21:03.818Z",
+    "finishedAt": "2026-10-28T00:23:40.933Z",
+    "seconds": 157.115,
+    "seedPrefix": "standard-factorial-batch-34",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 34,
+    "rawSha256": "042cc106f95407aaa8aec19d462a18793037acdce7c826b8b793d15fc1a57f55"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:21:04.069Z",
+    "finishedAt": "2026-10-28T00:23:40.963Z",
+    "seconds": 156.894,
+    "seedPrefix": "standard-factorial-batch-35",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 35,
+    "rawSha256": "e9beef44e5dad79b07e8d9424f98a80f9067e3fac223dfb4ed3980a901510a8a"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:21:05.240Z",
+    "finishedAt": "2026-10-28T00:23:42.631Z",
+    "seconds": 157.391,
+    "seedPrefix": "standard-factorial-batch-36",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 36,
+    "rawSha256": "27b5fd9949c193b4ea5cbd11aa7caf77d46fff695370645b4057a55343163b67"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:23:43.303Z",
+    "finishedAt": "2026-10-28T00:26:15.312Z",
+    "seconds": 152.009,
+    "seedPrefix": "standard-factorial-batch-37",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 37,
+    "rawSha256": "9f07d62549a46ed83277de028141ecf8cf67d06a374953becdf6cb3a73fd148b"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:23:43.731Z",
+    "finishedAt": "2026-10-28T00:26:16.169Z",
+    "seconds": 152.438,
+    "seedPrefix": "standard-factorial-batch-38",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 38,
+    "rawSha256": "1cb8579ceb0851339ece1823c4afdc0661a427dc621f49186db99f8999d5beca"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:23:44.799Z",
+    "finishedAt": "2026-10-28T00:26:16.013Z",
+    "seconds": 151.214,
+    "seedPrefix": "standard-factorial-batch-39",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 39,
+    "rawSha256": "85bec534d279232c8cb626683c2f3a5403a2454910cab22f80e37c78d37be1cd"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:23:45.177Z",
+    "finishedAt": "2026-10-28T00:26:16.090Z",
+    "seconds": 150.913,
+    "seedPrefix": "standard-factorial-batch-40",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 40,
+    "rawSha256": "b7d70dfa1e373248024c62df37e831309f7a4f88830dd8351bc45f6d44e0c4e4"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:23:45.200Z",
+    "finishedAt": "2026-10-28T00:26:16.858Z",
+    "seconds": 151.658,
+    "seedPrefix": "standard-factorial-batch-41",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 41,
+    "rawSha256": "6c729882456adcc58cc22fc7cb6a824ad4a10cea08c508f2f385f45eaa4c2b9a"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:23:46.733Z",
+    "finishedAt": "2026-10-28T00:26:17.812Z",
+    "seconds": 151.079,
+    "seedPrefix": "standard-factorial-batch-42",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 42,
+    "rawSha256": "343b0c3e8a715527888ec81f6ac8abd4c23f8e7f66d6a5e59dee1539e8e2532e"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:26:19.323Z",
+    "finishedAt": "2026-10-28T00:28:55.711Z",
+    "seconds": 156.388,
+    "seedPrefix": "standard-factorial-batch-43",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 43,
+    "rawSha256": "7148812d1837409ea1dec9431689f053d1ca9de96b6e1ccadca11d9e3dfe4a3b"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:26:19.959Z",
+    "finishedAt": "2026-10-28T00:28:56.624Z",
+    "seconds": 156.665,
+    "seedPrefix": "standard-factorial-batch-44",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 44,
+    "rawSha256": "e199b89cb9363c1288a7c993b3996158ddb672cb5b72cfaba449c3e02cea69b0"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:26:20.012Z",
+    "finishedAt": "2026-10-28T00:28:57.141Z",
+    "seconds": 157.129,
+    "seedPrefix": "standard-factorial-batch-45",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 45,
+    "rawSha256": "cf79645a737f5f18faa24fbed2a53e7fd245529983358f5cc780c06788236a20"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:26:20.088Z",
+    "finishedAt": "2026-10-28T00:28:55.916Z",
+    "seconds": 155.828,
+    "seedPrefix": "standard-factorial-batch-46",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 46,
+    "rawSha256": "d6b932ac40f5506b1be8e64b110d2e9fb20eb70c080175a4d2c059dbeb0d860e"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:26:20.772Z",
+    "finishedAt": "2026-10-28T00:28:58.691Z",
+    "seconds": 157.919,
+    "seedPrefix": "standard-factorial-batch-47",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 47,
+    "rawSha256": "5ac481e54a560f0668e81dab6d24eb67b4482b02b5f2cb6836d3318ca7f306f0"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:26:21.734Z",
+    "finishedAt": "2026-10-28T00:28:57.360Z",
+    "seconds": 155.626,
+    "seedPrefix": "standard-factorial-batch-48",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 48,
+    "rawSha256": "570c0aecacf83050f57b45fa4a51bde28230ae12ad778cce64086233db441656"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:28:59.993Z",
+    "finishedAt": "2026-10-28T00:32:02.216Z",
+    "seconds": 182.223,
+    "seedPrefix": "standard-factorial-batch-49",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 49,
+    "rawSha256": "ddf47b1ca8d8bc6bbb5e60c6b1459723c5ed920aac228d3d340319592be4f068"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:29:00.091Z",
+    "finishedAt": "2026-10-28T00:32:02.241Z",
+    "seconds": 182.15,
+    "seedPrefix": "standard-factorial-batch-50",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 50,
+    "rawSha256": "b7457a737558fbc5abe159e88b8c58350a2d51173bcb3ac926eded29f8c359b0"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:29:00.872Z",
+    "finishedAt": "2026-10-28T00:32:04.138Z",
+    "seconds": 183.266,
+    "seedPrefix": "standard-factorial-batch-51",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 51,
+    "rawSha256": "d206645ba1547b9d2267861300a75336d7436a968d21814f650535cc6a8c521c"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:29:01.326Z",
+    "finishedAt": "2026-10-28T00:32:04.101Z",
+    "seconds": 182.775,
+    "seedPrefix": "standard-factorial-batch-52",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 52,
+    "rawSha256": "5c95bca88fca66751dc34302f0e4ede61b6b4825789c18b3a33fb2f1ebde18a6"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:29:01.533Z",
+    "finishedAt": "2026-10-28T00:32:04.199Z",
+    "seconds": 182.666,
+    "seedPrefix": "standard-factorial-batch-53",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 53,
+    "rawSha256": "46debebcdeafb75cd978e9c3c0661a0e25f032a17ec821f7b4e445e6dc3ab5f7"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:29:02.837Z",
+    "finishedAt": "2026-10-28T00:32:06.561Z",
+    "seconds": 183.724,
+    "seedPrefix": "standard-factorial-batch-54",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 54,
+    "rawSha256": "5ab21ce17777872d2adc363784b6e243c86b4007f26ba760381cf749cca3d2e9"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:32:06.909Z",
+    "finishedAt": "2026-10-28T00:35:09.957Z",
+    "seconds": 183.048,
+    "seedPrefix": "standard-factorial-batch-55",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 55,
+    "rawSha256": "fb658cf6ac634fe514578e5b2f4e54531218f5689ec3b94840746c0a5e029eac"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:32:06.909Z",
+    "finishedAt": "2026-10-28T00:35:08.601Z",
+    "seconds": 181.692,
+    "seedPrefix": "standard-factorial-batch-56",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 56,
+    "rawSha256": "06782dad6241f3f680f9c8b382ad3b9c61038139466289d965a53369f27cc4b2"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:32:08.657Z",
+    "finishedAt": "2026-10-28T00:35:10.458Z",
+    "seconds": 181.801,
+    "seedPrefix": "standard-factorial-batch-57",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 57,
+    "rawSha256": "15b8900544c0ecd1a970972c8cc6e3f178da4da408dc54e1cd0ffa98db904902"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:32:08.641Z",
+    "finishedAt": "2026-10-28T00:35:10.716Z",
+    "seconds": 182.075,
+    "seedPrefix": "standard-factorial-batch-58",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 58,
+    "rawSha256": "98a5599402f282dcecbcf9673a4b7505b1dd01997d0238d4af6b9c93f769c9f6"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:32:08.846Z",
+    "finishedAt": "2026-10-28T00:35:10.494Z",
+    "seconds": 181.648,
+    "seedPrefix": "standard-factorial-batch-59",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 59,
+    "rawSha256": "3d23bc3f2ea1fca6ff0367e39d73e598fb0302a7d64d1500f810a5949aacfe7d"
+  },
+  {
+    "build": "b6a0f3acac10d39b23e598a237ae8e87dc8c3aee",
+    "startedAt": "2026-10-28T00:32:11.657Z",
+    "finishedAt": "2026-10-28T00:35:14.318Z",
+    "seconds": 182.661,
+    "seedPrefix": "standard-factorial-batch-60",
+    "gamesPerScenarioPerPlayerCount": 300,
+    "playerCounts": [
+      2,
+      3,
+      4
+    ],
+    "totalGames": 3600,
+    "failures": 0,
+    "scenarios": [
+      {
+        "id": "A",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "B",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "fixed"
+        }
+      },
+      {
+        "id": "C",
+        "experiments": {
+          "government5": "existing",
+          "completionRewards": "difficulty"
+        }
+      },
+      {
+        "id": "D",
+        "experiments": {
+          "government5": "any",
+          "completionRewards": "difficulty"
+        }
+      }
+    ],
+    "profile": {
+      "name": "balanced",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "nodeImpact": {
+        "source-1": 0.2,
+        "source-2": 0.3,
+        "source-3": 0.4,
+        "source-4": 0.4,
+        "source-5": 0.6,
+        "data-1": 0.2,
+        "data-2": 0.5,
+        "data-3": 1,
+        "data-4": 0.3,
+        "data-5": 0.3,
+        "government-1": 0.1,
+        "government-2": 0.1,
+        "government-3": 0.2,
+        "government-4": 0.5,
+        "government-5": 0.5
+      }
+    },
+    "method": "Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.",
+    "batch": 60,
+    "rawSha256": "57b39c92f23a09f5b568e695dcbe8927a90417aa5bb5fe2d59a1ba3e7cec4835"
+  }
+]
