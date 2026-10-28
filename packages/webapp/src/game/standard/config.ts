@@ -5,8 +5,9 @@ export interface StandardExperiments {
   government5: 'existing' | 'any';
   completionRewards: 'fixed' | 'difficulty';
 }
-export const DEFAULT_EXPERIMENTS: StandardExperiments = {government5:'existing', completionRewards:'fixed'};
-/** The four rule-option combinations bot trials compare; A is the default rules. */
+export const DEFAULT_EXPERIMENTS: StandardExperiments = {government5:'any', completionRewards:'fixed'};
+export const LEGACY_EXPERIMENTS: StandardExperiments = {government5:'existing', completionRewards:'fixed'};
+/** Historical A/B/C/D meanings are immutable; new room comparisons use explicit settings. */
 export const EXPERIMENT_SCENARIOS: { id: 'A' | 'B' | 'C' | 'D'; experiments: StandardExperiments }[] = [
   { id: 'A', experiments: { government5: 'existing', completionRewards: 'fixed' } },
   { id: 'B', experiments: { government5: 'any', completionRewards: 'fixed' } },
@@ -14,7 +15,7 @@ export const EXPERIMENT_SCENARIOS: { id: 'A' | 'B' | 'C' | 'D'; experiments: Sta
   { id: 'D', experiments: { government5: 'any', completionRewards: 'difficulty' } },
 ];
 export function experimentLabel(value?: StandardExperiments): string {
-  const e = value ?? DEFAULT_EXPERIMENTS;
+  const e = value ?? LEGACY_EXPERIMENTS;
   return `政府 5：${e.government5 === 'any' ? '不限既有方塊' : '僅既有方塊'} · 結案獎勵：${e.completionRewards === 'difficulty' ? '發起／結案各依星數 +1～+4' : '發起／結案各 +2'}`;
 }
 export function government5Description(value?: StandardExperiments): string {
@@ -28,6 +29,8 @@ export function completionReward(value: StandardExperiments | undefined, difficu
 }
 export type Ruleset = 'simple' | 'tree-poc-v1';
 export function roomSetupError(data: unknown, count: number, enabled = STANDARD_RULES_ENABLED): string | undefined {
+  if (data !== undefined && (!data || typeof data !== 'object' || Array.isArray(data))) return 'Invalid room setup';
+  if (data && Object.keys(data).some(key => !['ruleset', 'experiments', 'standardOptions', 'forcedFirstEvent'].includes(key))) return 'Unknown room setup option';
   const ruleset = (data as { ruleset?: unknown } | undefined)?.ruleset === undefined ? 'simple' : (data as { ruleset: unknown }).ruleset;
   if (ruleset !== 'simple' && ruleset !== 'tree-poc-v1') return 'Unknown ruleset';
   if (ruleset === 'tree-poc-v1' && !enabled) return 'Standard Mode is disabled';
@@ -39,6 +42,7 @@ export function roomSetupError(data: unknown, count: number, enabled = STANDARD_
     if (ruleset !== 'tree-poc-v1') return 'Experiments require Standard Mode';
     if (!experiments || typeof experiments !== 'object' || Array.isArray(experiments)) return 'Invalid experiments';
     const e = experiments as Record<string, unknown>;
+    if (e.government5 === 'existing') return 'Existing-only Government 5 is retired for new rooms';
     if (Object.keys(e).some(key => key !== 'government5' && key !== 'completionRewards') ||
         !['existing','any'].includes(e.government5 as string) ||
         !['fixed','difficulty'].includes(e.completionRewards as string)) return 'Invalid experiments';

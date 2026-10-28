@@ -15,11 +15,11 @@ for (const government5 of ['existing', 'any'] as const) {
   for (const completionRewards of ['fixed', 'difficulty'] as const) {
     const experiments = { government5, completionRewards };
     for (const numPlayers of [2, 3, 4]) {
-      const run = runGame({ numPlayers, seed: `experiment-${numPlayers}`, bots: createProfileBot(BALANCED), experiments });
+      const run = runGame({ numPlayers, seed: `experiment-${numPlayers}`, bots: createProfileBot(BALANCED), experiments, legacyExperiments: true });
       assert.ok(run.state.ctx.gameover);
       games.push({ ...buildStandardExport(run.state.G, run.state.ctx, { build: 'local-experiments', now: run.state.G.standard!.finishedAt }), moves: run.moves.length });
     }
-    const state = structuredClone(initialState(2, 'experiment-target', experiments));
+    const state = structuredClone(initialState(2, 'experiment-target', experiments, undefined, undefined, true));
     const G = state.G;
     G.standard!.choices = [];
     G.standard!.phase = 'settlement';

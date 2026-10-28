@@ -45,7 +45,7 @@ test.each([2, 3, 4])('%i bots finish all four experiment combinations', numPlaye
   for (const government5 of ['existing', 'any'] as const) {
     for (const completionRewards of ['fixed', 'difficulty'] as const) {
       const experiments = { government5, completionRewards };
-      const run = runGame({ numPlayers, seed: `experiment-${numPlayers}`, bots: balanced, experiments });
+      const run = runGame({ numPlayers, seed: `experiment-${numPlayers}`, bots: balanced, experiments, legacyExperiments: true });
       expect(run.state.ctx.gameover).toBeDefined();
       expect(run.state.G.standard!.experiments).toEqual(experiments);
       expect(Object.values(run.state.G.players).every(p => p.token.workers >= 0)).toBe(true);

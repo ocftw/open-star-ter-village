@@ -17,7 +17,7 @@ describe('counter profile', () => {
 
   test.each(cases)('plays only legal moves to game over: $numPlayers players, rules $id, seat index $seat', ({ numPlayers, id, experiments, seat }) => {
     // The runner fails on the first move the game rejects.
-    const run = runGame({ numPlayers, seed: `counter-legal-${id}`, bots: seated(numPlayers, seat), experiments });
+    const run = runGame({ numPlayers, seed: `counter-legal-${id}`, bots: seated(numPlayers, seat), experiments, legacyExperiments: true });
     expect(run.state.ctx.gameover).toBeDefined();
     expect(run.moves.some(move => move.playerID === seat)).toBe(true);
   });

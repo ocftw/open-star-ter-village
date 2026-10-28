@@ -1,4 +1,4 @@
-import { DEFAULT_EXPERIMENTS } from './config';
+import { LEGACY_EXPERIMENTS } from './config';
 import { DEFAULT_STANDARD_OPTIONS } from './options';
 import type { Ctx } from 'boardgame.io';
 import type { ClientGameState, GameState } from '../store/store';
@@ -20,7 +20,7 @@ export function buildStandardExport(G: GameState | ClientGameState, ctx: Ctx, { 
   const s = G.standard!;
   const remainingHearts = 10 - s.grown.length;
   return {
-    ruleset: s.version, experiments: { ...(s.experiments ?? DEFAULT_EXPERIMENTS) }, build, players: ctx.numPlayers, rounds: s.round,
+    ruleset: s.version, experiments: { ...(s.experiments ?? LEGACY_EXPERIMENTS) }, build, players: ctx.numPlayers, rounds: s.round,
     standardOptions: { ...(s.options ?? DEFAULT_STANDARD_OPTIONS) }, completedComplexity: s.completedComplexity ?? 0,
     completedProjectIds: s.completedProjectIds, grown: s.grown, remainingHearts, scores: G.table.scoreBoard,
     outcome: treeOutcome(remainingHearts), finished: Boolean(ctx.gameover), log: s.log, exportedAt: new Date(now).toISOString(),

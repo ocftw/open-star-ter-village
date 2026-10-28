@@ -54,7 +54,7 @@ assert.ok(new Set(seats).size === seats.length && new Set(playerCounts).size ===
 /** One game's record: arm `balanced` is the all-Balanced baseline; seats are 1-based. */
 function playGame(numPlayers: number, scenario: typeof SCENARIOS[number], seed: string, challengerSeat: number | null, bots: Record<string, Bot>) {
   const started = performance.now();
-  const run = runGame({ numPlayers, seed, bots, experiments: scenario.experiments });
+  const run = runGame({ numPlayers, seed, bots, experiments: scenario.experiments, legacyExperiments: true });
   const ms = performance.now() - started;
   const { G, ctx } = run.state;
   const s = G.standard!;

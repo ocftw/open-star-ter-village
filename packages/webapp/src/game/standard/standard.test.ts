@@ -377,6 +377,7 @@ describe('complete Standard event deck', () => {
 
 test('Government 5 only offers own existing cubes with capacity; does not create new cubes', () => {
   const G=state(); const p=project(G,'other','1',1,4,'工程師','1');
+  G.standard!.experiments = { government5: 'existing', completionRewards: 'fixed' };
   enqueue(G,'government5','0','done',3);
   const choice=G.standard!.choices[0];
   expect(choiceOptions(G,choice)).toEqual([]);
@@ -400,7 +401,7 @@ test('liver choice can skip, survives serialized state restoration, and resets n
 
 
 describe('per-match experiments', () => {
-  test.each(['existing','any'] as const)('persists %s with either reward option', government5 => {
+  test.each(['any'] as const)('persists %s with either reward option', government5 => {
     for (const completionRewards of ['fixed','difficulty'] as const) {
       const experiments={government5,completionRewards};
       expect(roomSetupError({ruleset:'tree-poc-v1',experiments},2)).toBeUndefined();
@@ -409,7 +410,8 @@ describe('per-match experiments', () => {
     }
   });
   test('rejects forged experiments and keeps omitted flags at the original rules', () => {
-    expect(state().standard!.experiments).toEqual({government5:'existing',completionRewards:'fixed'});
+    expect(state().standard!.experiments).toEqual({government5:'any',completionRewards:'fixed'});
+    expect(roomSetupError({ruleset:'tree-poc-v1',experiments:{government5:'existing',completionRewards:'fixed'}},2)).toMatch(/retired/);
     for (const experiments of [null, [], {government5:'everyone',completionRewards:'fixed'}, {government5:'existing',completionRewards:'random'}, {government5:'any',completionRewards:'fixed',extra:true}]) {
       expect(roomSetupError({ruleset:'tree-poc-v1',experiments},2)).toBeDefined();
     }

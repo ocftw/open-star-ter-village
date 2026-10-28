@@ -73,7 +73,7 @@ describe('Standard telemetry', () => {
   test('the player export keeps its fields and includes telemetry only when asked', () => {
     const playerExport = buildStandardExport(playerView({ G, ctx: run.state.ctx, playerID: '0' }), run.state.ctx, { build: 'test', now: 0 });
     expect(Object.keys(playerExport)).toEqual(['ruleset', 'experiments', 'build', 'players', 'rounds', 'standardOptions', 'completedComplexity', 'completedProjectIds', 'grown', 'remainingHearts', 'scores', 'outcome', 'finished', 'log', 'exportedAt', 'durationSeconds']);
-    expect(playerExport.experiments).toEqual({ government5: 'existing', completionRewards: 'fixed' });
+    expect(playerExport.experiments).toEqual({ government5: 'any', completionRewards: 'fixed' });
     expect(buildStandardExport(G, run.state.ctx, { build: 'test', telemetry }).telemetry).toBe(telemetry);
   });
 });

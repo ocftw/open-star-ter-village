@@ -29,7 +29,7 @@ for (const numPlayers of [2, 3, 4]) {
     for (let i = 0; i < games; i++) {
       const seed = `${values.seed}-${numPlayers}p-${i}`;
       try {
-        const run = runGame({ numPlayers, seed, bots: bot, experiments: scenario.experiments });
+        const run = runGame({ numPlayers, seed, bots: bot, experiments: scenario.experiments, legacyExperiments: true });
         const { G, ctx } = run.state;
         const s = G.standard!;
         const telemetry = s.telemetry!;

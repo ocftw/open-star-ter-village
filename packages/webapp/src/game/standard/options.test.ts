@@ -1,6 +1,12 @@
 import { DEFAULT_STANDARD_OPTIONS, normalizeStandardOptions, standardRoundCount, TREE_PRESETS } from './options';
+import { roomSetupError } from './config';
 
 describe('Standard room options', () => {
+  test('server rejects options on Simplified and unknown setup keys', () => {
+    expect(roomSetupError({ ruleset: 'simple', standardOptions: {} }, 3)).toBeDefined();
+    expect(roomSetupError({ ruleset: 'tree-poc-v1', typo: true }, 3)).toBeDefined();
+    expect(roomSetupError({ ruleset: 'tree-poc-v1', standardOptions: { extraRounds: 0.5 } }, 3)).toBeDefined();
+  });
   test('defaults are copied and omitted fields retain defaults', () => {
     const value = normalizeStandardOptions(undefined);
     expect(value).toEqual(DEFAULT_STANDARD_OPTIONS);
