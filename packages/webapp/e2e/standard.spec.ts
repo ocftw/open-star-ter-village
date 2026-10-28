@@ -27,8 +27,9 @@ test('lobby offers Standard with only 2/3/4 seats and rejects forged room reques
 
 for (const count of [2,3,4]) test(`Socket.IO ${count}-player game completes, synchronizes and reconnects`, async () => {
   test.setTimeout(120_000);
-  const experiments = { government5: count === 2 ? 'existing' : 'any', completionRewards: count === 3 ? 'fixed' : 'difficulty' };
-  const { matchID } = await lobby.createMatch(name,{ numPlayers:count, setupData:{ruleset:'tree-poc-v1',forcedFirstEvent:'digital_minister',experiments} });
+  const experiments = { government5: 'any', completionRewards: count === 3 ? 'fixed' : 'difficulty' };
+  const standardOptions = { starterRotation: count === 2 ? 'none' : count === 3 ? 'clockwise' : 'counterclockwise', extraRounds: 1, treePreset: 'cc-013610' };
+  const { matchID } = await lobby.createMatch(name,{ numPlayers:count, setupData:{ruleset:'tree-poc-v1',forcedFirstEvent:'digital_minister',experiments,standardOptions} });
   const seats=await Promise.all(Array.from({length:count},async(_,i)=> {
     const joined=await lobby.joinMatch(name,matchID,{playerID:String(i),playerName:`Test ${i+1}`});
     return {id:String(i),credential:joined.playerCredentials};
@@ -69,23 +70,25 @@ for (const count of [2,3,4]) test(`Socket.IO ${count}-player game completes, syn
       await expect.poll(()=>clients.every(c=>c.getState()?._stateID===newId)).toBe(true);
       const boards=clients.map(c=>JSON.stringify(c.getState()!.G.table));
       expect(new Set(boards).size).toBe(1);
+      expect(new Set(clients.map(c => JSON.stringify(c.getState()!.G.standard!.log))).size).toBe(1);
       for(let i=0;i<count;i++) {
         expect(clients[i].getState()!.G).not.toHaveProperty('decks');
         expect(clients[i].getState()!.G.players[String((i+1)%count)]).not.toHaveProperty('hand');
       }
     }
     expect(steps).toBeLessThan(250);
-    expect(clients[0].getState()!.G.standard!.round).toBe(9-count);
+    expect(clients[0].getState()!.G.standard!.round).toBe(10-count);
     expect(clients[0].getState()!.G.standard!.experiments).toEqual(experiments);
-    const { nextMatchID } = await lobby.playAgain(name, matchID, { playerID: '0', credentials: seats[0].credential, setupData: { ruleset: 'tree-poc-v1', experiments: clients[0].getState()!.G.standard!.experiments } });
+    const { nextMatchID } = await lobby.playAgain(name, matchID, { playerID: '0', credentials: seats[0].credential, setupData: { ruleset: 'tree-poc-v1', experiments: clients[0].getState()!.G.standard!.experiments, standardOptions } });
     expect((await lobby.getMatch(name, nextMatchID)).setupData.experiments).toEqual(experiments);
+    expect((await lobby.getMatch(name, nextMatchID)).setupData.standardOptions).toEqual(standardOptions);
   } finally { clients.forEach(c=>c.stop());  }
 });
 
 
 test('Standard board renders and survives a browser refresh', async ({ page }) => {
   test.skip(process.env.STANDARD_NETWORK_ONLY === '1', 'Network-only verification');
-  const { matchID } = await lobby.createMatch(name,{numPlayers:2,setupData:{ruleset:'tree-poc-v1'}});
+  const { matchID } = await lobby.createMatch(name,{numPlayers:2,setupData:{ruleset:'tree-poc-v1',forcedFirstEvent:'digital_minister'}});
   for (let i=0;i<2;i++) {
     const joined=await lobby.joinMatch(name,matchID,{playerID:String(i),playerName:`UI ${i+1}`});
     if(i===0) {
@@ -98,10 +101,13 @@ test('Standard board renders and survives a browser refresh', async ({ page }) =
   await page.getByTestId('tree-source-1').click();
   await page.getByRole('button',{name:'確認成長 · 1 AP'}).click();
   await expect(page.getByTestId('tree-source-1')).toContainText('已成長');
+  await page.getByText(/公開遊戲歷程（/).click();
+  await expect(page.getByRole('list', { name: '公開遊戲歷程' })).toContainText('星源樹成長');
   await page.reload();
   await expect(page.getByTestId('tree-source-1')).toContainText('已成長');
   await expect(page.getByTestId('player-status-UI 1')).toHaveAttribute('data-actions','2');
   await page.setViewportSize({width:390,height:844});
+  await page.getByText(/公開遊戲歷程（/).click();
   await page.screenshot({path:'test-results/standard-mobile.png',fullPage:true});
   await page.setViewportSize({width:1440,height:1000});
   await page.screenshot({path:'test-results/standard-desktop.png',fullPage:true});
@@ -109,14 +115,45 @@ test('Standard board renders and survives a browser refresh', async ({ page }) =
   await expect(page.getByRole('heading',{name:'標準模式 · 星源樹測試版 v1'})).toBeVisible();
 });
 
+test('two browser seats see identical public history after a move and reconnect', async ({ browser }) => {
+  const { matchID } = await lobby.createMatch(name, { numPlayers: 2, setupData: { ruleset: 'tree-poc-v1', forcedFirstEvent: 'digital_minister' } });
+  const baseURL = test.info().project.use.baseURL;
+  const contexts = await Promise.all([browser.newContext({ baseURL }), browser.newContext({ baseURL, viewport: { width: 390, height: 844 } })]);
+  try {
+    const pages = [];
+    for (let i = 0; i < 2; i++) {
+      const joined = await lobby.joinMatch(name, matchID, { playerID: String(i), playerName: `歷程玩家 ${i + 1}` });
+      if (i === 0) await lobby.updatePlayer(name, matchID, { playerID: '0', credentials: joined.playerCredentials, data: { started: true } });
+      await contexts[i].addInitScript(data => localStorage.setItem(`open-star-ter-village.match-credentials.${data.matchID}`, JSON.stringify(data)), { matchID, playerID: String(i), credential: joined.playerCredentials, playerName: `歷程玩家 ${i + 1}` });
+      pages.push(await contexts[i].newPage());
+    }
+    for (const page of pages) {
+      await page.goto(`/game/${matchID}`);
+      await expect(page.getByText(/公開遊戲歷程（/)).toBeVisible();
+      await page.getByText(/公開遊戲歷程（/).click();
+    }
+    await pages[0].getByTestId('tree-source-1').click();
+    await pages[0].getByRole('button', { name: '確認成長 · 1 AP' }).click();
+    for (const page of pages) await expect(page.getByRole('list', { name: '公開遊戲歷程' })).toContainText('星源樹成長');
+    expect(await pages[0].getByRole('list', { name: '公開遊戲歷程' }).innerText()).toBe(await pages[1].getByRole('list', { name: '公開遊戲歷程' }).innerText());
+    await pages[1].reload();
+    await pages[1].getByText(/公開遊戲歷程（/).click();
+    await expect(pages[1].getByRole('list', { name: '公開遊戲歷程' })).toContainText('星源樹成長');
+    await pages[0].screenshot({ path: 'test-results/history-desktop.png', fullPage: true });
+    await pages[1].screenshot({ path: 'test-results/history-mobile.png', fullPage: true });
+  } finally { await Promise.all(contexts.map(context => context.close())); }
+});
+
 
 test('room experiments persist from creation through waiting room, board, refresh and export', async ({ page, request }) => {
   await page.goto('/lobby');
   await page.getByPlaceholder('你的暱稱').fill('實驗房主');
   await page.getByLabel('遊戲規則', { exact: true }).selectOption('tree-poc-v1');
-  await expect(page.getByLabel('政府 5 分配範圍')).toHaveValue('existing');
+  await expect(page.getByLabel('政府 5 分配範圍')).toHaveCount(0);
   await expect(page.getByLabel('發起／結案獎勵')).toHaveValue('fixed');
-  await page.getByLabel('政府 5 分配範圍').selectOption('any');
+  await page.getByRole('radio', { name: '逆時針', exact: true }).check();
+  await page.getByRole('radio', { name: '+2 輪', exact: true }).check();
+  await page.getByRole('radio', { name: '結案複雜度 CC 0／1／3／6／10', exact: true }).check();
   await expect(page.getByLabel('發起／結案獎勵')).toHaveValue('fixed');
   await page.getByLabel('發起／結案獎勵').selectOption('difficulty');
   await page.getByTestId('create-room-card').getByRole('button', { name: '2', exact: true }).click();
@@ -146,11 +183,14 @@ test('room experiments persist from creation through waiting room, board, refres
   for await (const chunk of stream!) chunks.push(chunk);
   const summary = JSON.parse(Buffer.concat(chunks).toString());
   expect(summary.experiments).toEqual(experiments);
+  expect(summary.standardOptions).toEqual({ starterRotation: 'counterclockwise', extraRounds: 2, treePreset: 'cc-013610' });
   expect(summary).not.toHaveProperty('telemetry');
   expect(summary).not.toHaveProperty('decks');
   await download.saveAs('test-results/experiments-export.json');
   for (const setupData of [
     { ruleset: 'tree-poc-v1', experiments: { ...experiments, government5: 'everyone' } },
+    { ruleset: 'tree-poc-v1', experiments: { ...experiments, government5: 'existing' } },
+    { ruleset: 'tree-poc-v1', standardOptions: { extraRounds: 0.5 } },
     { ruleset: 'simple', experiments },
   ]) {
     const response = await request.post(`${server}/games/${name}/create`, { data: { numPlayers: 3, setupData } });
