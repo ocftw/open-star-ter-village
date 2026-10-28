@@ -25,6 +25,7 @@ export interface GameSpec {
   stepLimit?: number;
   experiments?: StandardExperiments;
   standardOptions?: StandardOptions;
+  forcedFirstEvent?: string;
 }
 
 export interface GameRun {
@@ -51,8 +52,8 @@ export function activePlayer(ctx: Ctx): PlayerID {
   return ctx.activePlayers ? Object.keys(ctx.activePlayers)[0] : ctx.currentPlayer;
 }
 
-export function initialState(numPlayers: number, seed: string, experiments?: StandardExperiments, standardOptions?: StandardOptions): State<GameState> {
-  return InitializeGame({ game: botGame(seed), numPlayers, setupData: { ruleset: 'tree-poc-v1', experiments, standardOptions } }) as State<GameState>;
+export function initialState(numPlayers: number, seed: string, experiments?: StandardExperiments, standardOptions?: StandardOptions, forcedFirstEvent?: string): State<GameState> {
+  return InitializeGame({ game: botGame(seed), numPlayers, setupData: { ruleset: 'tree-poc-v1', experiments, standardOptions, forcedFirstEvent } }) as State<GameState>;
 }
 
 export function gameReducer(seed: string) {
@@ -66,9 +67,9 @@ export function gameReducer(seed: string) {
  * Each bot sees only its own player view. A move the game rejects fails the
  * run immediately instead of being retried.
  */
-export function runGame({ numPlayers, seed, bots, stepLimit = 2000, experiments, standardOptions }: GameSpec): GameRun {
+export function runGame({ numPlayers, seed, bots, stepLimit = 2000, experiments, standardOptions, forcedFirstEvent }: GameSpec): GameRun {
   const reduce = gameReducer(seed);
-  let state = initialState(numPlayers, seed, experiments, standardOptions);
+  let state = initialState(numPlayers, seed, experiments, standardOptions, forcedFirstEvent);
   const seatRandom: Record<PlayerID, () => number> = {};
   const moves: MoveRecord[] = [];
 
