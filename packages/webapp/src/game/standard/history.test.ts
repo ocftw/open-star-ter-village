@@ -1,12 +1,12 @@
 import { runGame } from '../bots/runner';
 import { createProfileBot } from '../bots/profileBot';
-import { BALANCED } from '../bots/profiles';
+import { NOVICE } from '../bots/profiles';
 import { playerView } from '../core/playerView';
 import { publicHistory } from './history';
 import { normalizeStandardOptions } from './options';
 
 test.each([2, 3, 4])('public history reconciles every final score and is shared by all %i players', numPlayers => {
-  const run = runGame({ numPlayers, seed: 'public-history-v1', bots: createProfileBot(BALANCED),
+  const run = runGame({ numPlayers, seed: 'public-history-v1', bots: createProfileBot(NOVICE),
     standardOptions: normalizeStandardOptions({ starterRotation: 'clockwise', extraRounds: 2, treePreset: 'cc-00246' }),
   });
   const { G, ctx } = run.state;

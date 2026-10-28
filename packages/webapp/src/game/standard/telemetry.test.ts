@@ -1,13 +1,13 @@
 import { playerView } from '../core/playerView';
 import { createProfileBot } from '../bots/profileBot';
-import { BALANCED } from '../bots/profiles';
+import { NOVICE } from '../bots/profiles';
 import { initialState, runGame } from '../bots/runner';
 import type { GameState } from '../store/store';
 import { enqueue, resolveStandardChoice } from './engine';
 import { buildStandardExport } from './export';
 import type { FnContext } from 'boardgame.io';
 
-const run = runGame({ numPlayers: 3, seed: 'telemetry', bots: createProfileBot(BALANCED) });
+const run = runGame({ numPlayers: 3, seed: 'telemetry', bots: createProfileBot(NOVICE) });
 const G = run.state.G;
 const telemetry = G.standard!.telemetry!;
 

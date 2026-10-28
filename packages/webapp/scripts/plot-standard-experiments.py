@@ -37,7 +37,7 @@ for ax, count in zip(axes, [2, 3, 4]):
     ax.grid(axis='y', alpha=.15)
     ax.set_axisbelow(True)
     ax.legend(ncol=count + 1, loc='upper left', frameon=False, fontsize=9)
-fig.suptitle(f'Standard rule options: seat win shares\n{total_games:,} completed games · identical Balanced bots · paired seeds', fontsize=15, fontweight='bold')
+fig.suptitle(f'Standard rule options: seat win shares\n{total_games:,} completed games · identical Novice bots · paired seeds', fontsize=15, fontweight='bold')
 fig.supxlabel('Ties split wins. ' + ('Black: 95% CI across batch means; grey: 90% range of 300-game batches.' if aggregate else 'Bars show approximate 95% intervals. Actual turn order stayed fixed each round.'), fontsize=10)
 fig.savefig(root / 'seat-win-rates.png', dpi=170)
 fig.savefig(root / 'seat-win-rates.svg')

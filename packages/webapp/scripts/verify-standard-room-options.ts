@@ -6,7 +6,7 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { runGame } from '../src/game/bots/runner';
 import { createProfileBot } from '../src/game/bots/profileBot';
-import { BALANCED } from '../src/game/bots/profiles';
+import { NOVICE } from '../src/game/bots/profiles';
 import { normalizeStandardOptions, TREE_PRESETS } from '../src/game/standard/options';
 import { treeProgress } from '../src/game/standard/tree';
 
@@ -15,7 +15,7 @@ if (!out) throw new Error('Pass an output JSON path');
 const build = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
 const dirty = Boolean(execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8' }).trim());
 const results = [];
-const bots = createProfileBot(BALANCED);
+const bots = createProfileBot(NOVICE);
 for (const numPlayers of [2, 3, 4]) for (const starterRotation of ['none', 'clockwise', 'counterclockwise']) {
   for (const extraRounds of [0, 1, 2]) for (const treePreset of Object.keys(TREE_PRESETS)) {
     const standardOptions = normalizeStandardOptions({ starterRotation, extraRounds, treePreset });

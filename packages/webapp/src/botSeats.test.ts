@@ -6,7 +6,7 @@ import game from './game';
 import { ADD_BOT_PATH, REMOVE_BOT_PATH, addBotHandler, removeBotHandler } from './botSeats';
 import { socketPresence, startBotRunner } from './botRunner';
 import { createProfileBot } from './game/bots/profileBot';
-import { BALANCED } from './game/bots/profiles';
+import { NOVICE } from './game/bots/profiles';
 import { activePlayer } from './game/bots/runner';
 import { seededRandom } from './game/bots/random';
 import { BOT_STRATEGIES } from './game/bots/strategies';
@@ -42,21 +42,21 @@ const post = (path: string, body: unknown) =>
 describe('bot seat endpoints', () => {
   test('the host seats a named bot whose credential stays on the server', async () => {
     const { matchID, credentials } = await room(3, 'tree-poc-v1');
-    const response = await post(`/games/${gameName}/${matchID}/bots`, { playerID: '0', credentials, seat: 2, strategy: 'balanced' });
+    const response = await post(`/games/${gameName}/${matchID}/bots`, { playerID: '0', credentials, seat: 2, strategy: 'novice' });
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ seat: 2, name: BOT_STRATEGIES.balanced.names[0], strategy: 'balanced' });
+    expect(await response.json()).toEqual({ seat: 2, name: BOT_STRATEGIES.novice.names[0], strategy: 'novice' });
     const second = await (await post(`/games/${gameName}/${matchID}/bots`, { playerID: '0', credentials, seat: 1 })).json();
-    expect(second.name).toBe(BOT_STRATEGIES.balanced.names[1]);
+    expect(second.name).toBe(BOT_STRATEGIES.novice.names[1]);
 
     const match = await lobby.getMatch(gameName, matchID);
-    expect(match.players[2]).toMatchObject({ name: BOT_STRATEGIES.balanced.names[0], data: { bot: { strategy: 'balanced' } } });
+    expect(match.players[2]).toMatchObject({ name: BOT_STRATEGIES.novice.names[0], data: { bot: { strategy: 'novice' } } });
     expect(match.players[2]).not.toHaveProperty('credentials');
   });
 
-  test('the host can seat a counter bot under its own names', async () => {
+  test('the host can seat a advance bot under its own names', async () => {
     const { matchID, credentials } = await room(2, 'tree-poc-v1');
-    const response = await post(`/games/${gameName}/${matchID}/bots`, { playerID: '0', credentials, seat: 1, strategy: 'counter' });
-    expect(await response.json()).toEqual({ seat: 1, name: BOT_STRATEGIES.counter.names[0], strategy: 'counter' });
+    const response = await post(`/games/${gameName}/${matchID}/bots`, { playerID: '0', credentials, seat: 1, strategy: 'advance' });
+    expect(await response.json()).toEqual({ seat: 1, name: BOT_STRATEGIES.advance.names[0], strategy: 'advance' });
   });
 
   test.each([
@@ -214,7 +214,7 @@ describe('bot runner', () => {
 
   test('ignores a player seat that only claims to be a bot', async () => {
     const { matchID, credentials } = await room(2, 'tree-poc-v1');
-    await lobby.joinMatch(gameName, matchID, { playerID: '1', playerName: 'Sneaky', data: { bot: { strategy: 'balanced' } } });
+    await lobby.joinMatch(gameName, matchID, { playerID: '1', playerName: 'Sneaky', data: { bot: { strategy: 'novice' } } });
     expect((await post(`/games/${gameName}/${matchID}/bots/1/remove`, { playerID: '0', credentials })).status).toBe(409);
     await lobby.updatePlayer(gameName, matchID, { playerID: '0', credentials, data: { started: true } });
     const host = await connect(matchID, '0', credentials);
@@ -236,7 +236,7 @@ describe('bot runner', () => {
 
     const runner = startBotRunner({ db: server.db, game, serverURL: url, isPlayerConnected: socketPresence(server.transport), pollMs: 50, moveDelayMs: 0, log: () => {} });
     const host = await connect(matchID, '0', credentials);
-    const hostBot = createProfileBot(BALANCED);
+    const hostBot = createProfileBot(NOVICE);
     const random = seededRandom(matchID);
     const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
     let botMoves = 0;

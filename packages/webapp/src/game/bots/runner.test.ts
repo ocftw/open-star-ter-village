@@ -1,15 +1,15 @@
 import { createProfileBot } from './profileBot';
-import { BALANCED } from './profiles';
+import { NOVICE } from './profiles';
 import { randomBot } from './randomBot';
 import { BotGameError, runGame } from './runner';
 import type { Bot } from './types';
 
-const balanced = createProfileBot(BALANCED);
+const novice = createProfileBot(NOVICE);
 
 describe('bot game runner', () => {
-  test.each([2, 3, 4])('%i Balanced bots finish a full game in 9 − n rounds', numPlayers => {
+  test.each([2, 3, 4])('%i Novice bots finish a full game in 9 − n rounds', numPlayers => {
     for (const seed of ['smoke-a', 'smoke-b']) {
-      const run = runGame({ numPlayers, seed: `${seed}-${numPlayers}`, bots: balanced });
+      const run = runGame({ numPlayers, seed: `${seed}-${numPlayers}`, bots: novice });
       expect(run.state.ctx.gameover).toBeDefined();
       expect(run.state.G.standard!.round).toBe(9 - numPlayers);
       expect(run.state.G.standard!.choices).toEqual([]);
@@ -22,8 +22,8 @@ describe('bot game runner', () => {
   });
 
   test('the same seed replays the identical move log', () => {
-    const first = runGame({ numPlayers: 3, seed: 'replay', bots: balanced });
-    const second = runGame({ numPlayers: 3, seed: 'replay', bots: balanced });
+    const first = runGame({ numPlayers: 3, seed: 'replay', bots: novice });
+    const second = runGame({ numPlayers: 3, seed: 'replay', bots: novice });
     expect(second.moves).toEqual(first.moves);
     expect(second.state.G.table.scoreBoard).toEqual(first.state.G.table.scoreBoard);
   });
@@ -36,7 +36,7 @@ describe('bot game runner', () => {
   });
 
   test('a game that does not end within the step limit fails', () => {
-    expect(() => runGame({ numPlayers: 2, seed: 'limit', bots: balanced, stepLimit: 5 })).toThrow(/did not end within 5 moves/);
+    expect(() => runGame({ numPlayers: 2, seed: 'limit', bots: novice, stepLimit: 5 })).toThrow(/did not end within 5 moves/);
   });
 });
 
@@ -45,7 +45,7 @@ test.each([2, 3, 4])('%i bots finish all four experiment combinations', numPlaye
   for (const government5 of ['existing', 'any'] as const) {
     for (const completionRewards of ['fixed', 'difficulty'] as const) {
       const experiments = { government5, completionRewards };
-      const run = runGame({ numPlayers, seed: `experiment-${numPlayers}`, bots: balanced, experiments, legacyExperiments: true });
+      const run = runGame({ numPlayers, seed: `experiment-${numPlayers}`, bots: novice, experiments, legacyExperiments: true });
       expect(run.state.ctx.gameover).toBeDefined();
       expect(run.state.G.standard!.experiments).toEqual(experiments);
       expect(Object.values(run.state.G.players).every(p => p.token.workers >= 0)).toBe(true);

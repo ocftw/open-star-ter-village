@@ -5,9 +5,13 @@ export interface BotSeatData {
   bot: { strategy: string };
 }
 
+/** Ids before Balanced/Counter became Novice/Advance; seats saved under them keep playing. */
+const RENAMED_STRATEGIES: Record<string, string> = { balanced: 'novice', counter: 'advance' };
+
 /** The strategy of a seat if it holds a bot, from its lobby metadata `data`. */
 export function getBotStrategy(data: unknown): BotStrategy | undefined {
-  const strategy = (data as Partial<BotSeatData> | null | undefined)?.bot?.strategy;
+  const saved = (data as Partial<BotSeatData> | null | undefined)?.bot?.strategy;
+  const strategy = typeof saved === 'string' && Object.prototype.hasOwnProperty.call(RENAMED_STRATEGIES, saved) ? RENAMED_STRATEGIES[saved] : saved;
   return isBotStrategy(strategy) ? BOT_STRATEGIES[strategy] : undefined;
 }
 

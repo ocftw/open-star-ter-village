@@ -1,8 +1,8 @@
 /**
  * Batch bot games for Standard mode.
  *
- *   pnpm webapp bots --players 2,3,4 --games 100 --profile balanced
- *   pnpm webapp bots --profile counter
+ *   pnpm webapp bots --players 2,3,4 --games 100 --profile novice
+ *   pnpm webapp bots --profile advance
  *
  * Writes per-game exports (with telemetry), move logs and a summary to
  * bot-runs/<timestamp>/ and prints the summary table.
@@ -23,7 +23,7 @@ const { values } = parseArgs({
     players: { type: 'string', default: '2,3,4' },
     games: { type: 'string', default: '100' },
     seed: { type: 'string', default: 'bots' },
-    profile: { type: 'string', default: 'balanced' },
+    profile: { type: 'string', default: 'novice' },
     weights: { type: 'string' },
     out: { type: 'string' },
     'no-move-log': { type: 'boolean', default: false },

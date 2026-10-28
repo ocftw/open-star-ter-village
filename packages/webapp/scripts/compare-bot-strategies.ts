@@ -1,10 +1,10 @@
 /**
- * Paired trials of a challenger profile against Balanced. Every seed is played
- * all-Balanced and again with the challenger in one early seat, across all
+ * Paired trials of a challenger profile against Novice. Every seed is played
+ * all-Novice and again with the challenger in one early seat, across all
  * four Standard rule options. Writes compact replayable evidence.
  *
- *   pnpm webapp exec tsx scripts/compare-bot-strategies.ts --challenger counter --games 300
- *   pnpm webapp exec tsx scripts/compare-bot-strategies.ts --challenger counter --scenarios A --weights '{"initiation":0}'
+ *   pnpm webapp exec tsx scripts/compare-bot-strategies.ts --challenger advance --games 300
+ *   pnpm webapp exec tsx scripts/compare-bot-strategies.ts --challenger advance --scenarios A --weights '{"initiation":0}'
  */
 import assert from 'node:assert/strict';
 import { execFileSync, spawn } from 'node:child_process';
@@ -14,20 +14,20 @@ import { join, resolve } from 'node:path';
 import { parseArgs } from 'node:util';
 import { gzipSync } from 'node:zlib';
 import { createProfileBot } from '@/game/bots/profileBot';
-import { BALANCED, PROFILES, withWeights, type Weights } from '@/game/bots/profiles';
+import { NOVICE, PROFILES, withWeights, type Weights } from '@/game/bots/profiles';
 import { runGame } from '@/game/bots/runner';
 import type { Bot } from '@/game/bots/types';
 import { EXPERIMENT_SCENARIOS } from '@/game/standard/config';
 import { REWARDS } from '@/game/standard/tree';
 
 const { values } = parseArgs({ options: {
-  challenger: { type: 'string', default: 'counter' },
+  challenger: { type: 'string', default: 'advance' },
   games: { type: 'string', default: '300' },
   seed: { type: 'string', default: 'bot-strategies-v1' },
   players: { type: 'string', default: '2,3,4' },
   seats: { type: 'string', default: '1,2' },
   scenarios: { type: 'string', default: 'A,B,C,D' },
-  // Ablations: override the challenger profile's weights as JSON (then `balanced` may be the challenger).
+  // Ablations: override the challenger profile's weights as JSON (then `novice` may be the challenger).
   weights: { type: 'string' },
   jobs: { type: 'string', default: String(availableParallelism()) },
   out: { type: 'string', default: 'bot-runs/bot-strategies' },
@@ -40,7 +40,7 @@ const jobCount = Number(values.jobs);
 assert.ok(Number.isInteger(jobCount) && jobCount > 0, 'jobs must be a positive integer');
 assert.ok(Number.isInteger(games) && games > 0, 'games must be a positive integer');
 assert.ok(Object.prototype.hasOwnProperty.call(PROFILES, values.challenger!), `challenger must be a profile: ${Object.keys(PROFILES).join(', ')}`);
-assert.ok(values.challenger !== 'balanced' || values.weights, 'an unchanged Balanced challenger would only replay the baseline');
+assert.ok(values.challenger !== 'novice' || values.weights, 'an unchanged Novice challenger would only replay the baseline');
 const weightOverrides = values.weights ? JSON.parse(values.weights) as Partial<Weights> : undefined;
 const challengerProfile = weightOverrides ? withWeights(PROFILES[values.challenger!], weightOverrides) : PROFILES[values.challenger!];
 const SCENARIOS = values.scenarios!.split(',').map(id => EXPERIMENT_SCENARIOS.find(s => s.id === id)!);
@@ -51,7 +51,7 @@ assert.ok(playerCounts.every(n => [2, 3, 4].includes(n)), 'players must be 2, 3 
 assert.ok(seats.every(seat => Number.isInteger(seat) && seat >= 1 && seat <= Math.min(...playerCounts)), 'seats are 1-based and must exist at every player count');
 assert.ok(new Set(seats).size === seats.length && new Set(playerCounts).size === playerCounts.length, 'seats and players must not repeat');
 
-/** One game's record: arm `balanced` is the all-Balanced baseline; seats are 1-based. */
+/** One game's record: arm `novice` is the all-Novice baseline; seats are 1-based. */
 function playGame(numPlayers: number, scenario: typeof SCENARIOS[number], seed: string, challengerSeat: number | null, bots: Record<string, Bot>) {
   const started = performance.now();
   const run = runGame({ numPlayers, seed, bots, experiments: scenario.experiments, legacyExperiments: true });
@@ -72,7 +72,7 @@ function playGame(numPlayers: number, scenario: typeof SCENARIOS[number], seed: 
     const grown = grows.filter(l => l.playerId === id);
     return {
       seat: Number(id) + 1,
-      profile: Number(id) + 1 === challengerSeat ? values.challenger : 'balanced',
+      profile: Number(id) + 1 === challengerSeat ? values.challenger : 'novice',
       score: G.table.scoreBoard[id],
       openedByStar: countByStar(opened.map(p => p.difficulty)),
       completedByStar: countByStar(opened.filter(p => p.finisher !== undefined).map(p => p.difficulty)),
@@ -84,7 +84,7 @@ function playGame(numPlayers: number, scenario: typeof SCENARIOS[number], seed: 
       refills: run.moves.filter(m => m.playerID === id && m.move === 'removeAndRefillJobs').length,
     };
   });
-  return { scenario: scenario.id, numPlayers, seed, arm: challengerSeat === null ? 'balanced' : values.challenger, challengerSeat,
+  return { scenario: scenario.id, numPlayers, seed, arm: challengerSeat === null ? 'novice' : values.challenger, challengerSeat,
     scores: G.table.scoreBoard, winners, moves: run.moves.length, ms: Math.round(ms * 10) / 10,
     events: s.log.filter(l => l.kind === 'event').map(l => l.target), players };
 }
@@ -96,14 +96,14 @@ function countByStar(difficulties: number[]): Record<string, number> {
 }
 
 function runJob(numPlayers: number, scenario: typeof SCENARIOS[number], file: string) {
-  const balanced = createProfileBot(BALANCED);
+  const novice = createProfileBot(NOVICE);
   const challenger = createProfileBot(challengerProfile);
   const lines: string[] = [];
   for (let i = 0; i < games; i++) {
-    // The same seed per player count across options and arms: deals, events and Balanced tie-breaks are paired.
+    // The same seed per player count across options and arms: deals, events and Novice tie-breaks are paired.
     const seed = `${values.seed}-${numPlayers}p-${i}`;
     for (const challengerSeat of [null, ...seats]) {
-      const bots = Object.fromEntries(Array.from({ length: numPlayers }, (_, seat) => [String(seat), seat + 1 === challengerSeat ? challenger : balanced]));
+      const bots = Object.fromEntries(Array.from({ length: numPlayers }, (_, seat) => [String(seat), seat + 1 === challengerSeat ? challenger : novice]));
       lines.push(JSON.stringify(playGame(numPlayers, scenario, seed, challengerSeat, bots)));
     }
   }
@@ -150,7 +150,7 @@ async function main() {
     seedPrefix: values.seed, seeds: `${values.seed}-<players>p-<0..${games - 1}>`, gamesPerSeedSet: games,
     playerCounts, challengerSeats: seats, scenarios: SCENARIOS, totalGames: records.length, failures: 0,
     challenger: { profile: values.challenger, weightOverrides, weights: challengerProfile },
-    baseline: { profile: 'balanced', weights: BALANCED },
-    method: 'Authoritative headless reducer; bots see only their own player view. Each seed is played all-Balanced and once per challenger seat with Balanced in every other seat; seats are 1-based. Ties split wins.' }, null, 2));
+    baseline: { profile: 'novice', weights: NOVICE },
+    method: 'Authoritative headless reducer; bots see only their own player view. Each seed is played all-Novice and once per challenger seat with Novice in every other seat; seats are 1-based. Ties split wins.' }, null, 2));
   console.info(`${records.length} games saved to ${out}`);
 }

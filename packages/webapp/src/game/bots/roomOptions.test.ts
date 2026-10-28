@@ -1,9 +1,9 @@
 import { runGame } from './runner';
 import { createProfileBot } from './profileBot';
-import { BALANCED } from './profiles';
+import { NOVICE } from './profiles';
 import { normalizeStandardOptions, TREE_PRESETS } from '../standard/options';
 
-const bot = createProfileBot(BALANCED);
+const bot = createProfileBot(NOVICE);
 const cases = [2, 3, 4].flatMap(numPlayers => ['none', 'clockwise', 'counterclockwise'].flatMap(starterRotation =>
   [0, 1, 2].flatMap(extraRounds => Object.keys(TREE_PRESETS).map(treePreset => ({
     numPlayers, standardOptions: normalizeStandardOptions({ starterRotation, extraRounds, treePreset }),
