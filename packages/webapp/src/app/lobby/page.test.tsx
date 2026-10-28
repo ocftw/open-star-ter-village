@@ -25,16 +25,21 @@ test('disabled switch hides Standard and retains Simplified player choices', asy
   } finally { (jest.requireMock('@/game/standard/config') as { STANDARD_RULES_ENABLED:boolean }).STANDARD_RULES_ENABLED=true; }
 });
 
-test('Standard experiment selectors default to current rules and can vary independently', async () => {
+test('Standard exposes room options, fixed Government 5 text and independent rewards', async () => {
   render(<LobbyPage/>);
   await waitFor(()=>expect(screen.queryByText('載入中… Loading matches…')).toBeNull());
   expect(screen.queryByLabelText('政府 5 分配範圍')).toBeNull();
   fireEvent.change(screen.getByLabelText('遊戲規則'),{target:{value:'tree-poc-v1'}});
-  const government=screen.getByLabelText('政府 5 分配範圍') as HTMLSelectElement;
+  expect(screen.queryByLabelText('政府 5 分配範圍')).toBeNull();
   const rewards=screen.getByLabelText('發起／結案獎勵') as HTMLSelectElement;
-  expect(government.value).toBe('existing'); expect(rewards.value).toBe('fixed');
+  expect(rewards.value).toBe('fixed');
+  expect((screen.getByRole('radio', { name: '不輪替' }) as HTMLInputElement).checked).toBe(true);
+  expect(screen.getByText(/共 6 輪/)).toBeTruthy();
+  fireEvent.click(screen.getByRole('button', { name: '4' }));
+  fireEvent.click(screen.getByRole('radio', { name: '+2 輪' }));
+  fireEvent.click(screen.getByRole('radio', { name: '逆時針' }));
+  fireEvent.click(screen.getByRole('radio', { name: '結案複雜度 CC 0／1／3／6／10' }));
+  expect(screen.getByText(/共 7 輪.*先手逆時針.*0／1／3／6／10/)).toBeTruthy();
   fireEvent.change(rewards,{target:{value:'difficulty'}});
-  expect(government.value).toBe('existing'); expect(rewards.value).toBe('difficulty');
-  fireEvent.change(government,{target:{value:'any'}});
-  expect(government.value).toBe('any'); expect(rewards.value).toBe('difficulty');
+  expect(rewards.value).toBe('difficulty');
 });

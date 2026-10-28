@@ -1,9 +1,10 @@
 'use client';
 import { experimentLabel, government5Description } from '@/game/standard/config';
+import { standardOptionsLabel } from '@/game/standard/options';
 import React from 'react';
 import type { GameContext } from '../GameContextHelpers';
 import { getPlayerName } from '../playerNameMap';
-import { BRANCHES, NODES, NODE_LABELS, THRESHOLDS, REWARDS, predecessors, growthReason } from '@/game/standard/tree';
+import { BRANCHES, NODES, NODE_LABELS, treeProgress, REWARDS, predecessors, growthReason } from '@/game/standard/tree';
 import { choiceOptions, ChoiceTarget } from '@/game/standard/engine';
 import type { NodeId } from '@/game/standard/state';
 import { buildStandardExport, treeOutcome } from '@/game/standard/export';
@@ -19,6 +20,8 @@ export default function StandardPanel({ gameContext }: { gameContext: GameContex
   const s = G.standard;
   if (!s) return null;
   const choice = s.choices[0];
+  const progress = treeProgress(G);
+  const progressLabel = progress.metric === 'cc' ? '結案複雜度 CC' : '結案數';
   const active = playerID === ctx.currentPlayer && !ctx.gameover && !choice && s.phase === 'action';
   const moveApi = moves as unknown as { growTree: (id: NodeId, overtime: boolean) => void; resolveStandardChoice: (id: number, target: ChoiceTarget | null) => void };
   const reason = selected && playerID ? growthReason(G, selected, playerID, overtime) : undefined;
@@ -32,10 +35,11 @@ export default function StandardPanel({ gameContext }: { gameContext: GameContex
   return <section className="paper-card" style={{ padding: 16, margin: 12 }} aria-label="星源樹測試版 v1">
     <h2>標準模式 · 星源樹測試版 v1</h2>
     <p>{experimentLabel(s.experiments)}</p>
-    <p>全村結案 {s.completedProjectIds.length} · 愛心剩餘 {remaining} · 第 {s.round} 輪 · {playerID !== null ? `行動點 ${G.players[playerID].token.actions}` : '觀戰'}</p>
+    <p>{standardOptionsLabel(s.options)}</p>
+    <p>全村{progressLabel} {progress.value} · 愛心剩餘 {remaining} · 第 {s.round} 輪 · {playerID !== null ? `行動點 ${G.players[playerID].token.actions}` : '觀戰'}</p>
     {s.nextEvent && <p>下一事件：{s.nextEvent.name} — {s.nextEvent.description}</p>}
     <details><summary>測試規則與能力連線</summary>
-      <p>2–4 人；專案類型不影響規則。每層最多 2 顆；成長花 1 AP。同一分支可向上成長，跨分支須依箭頭方向。第 3／4／5 層需要全村結案 {THRESHOLDS.slice(2).join("／")} 個專案。每種行動一回合一次，加班可重複一次 1 AP 行動。</p>
+      <p>2–4 人；專案類型不影響規則。每層最多 2 顆；成長花 1 AP。同一分支可向上成長，跨分支須依箭頭方向。第 1～5 層需要全村{progressLabel} {progress.thresholds.join("／")}。每種行動一回合一次，加班可重複一次 1 AP 行動。</p>
       <p>數位政委：每個專案的發起人可選任一玩家的 1 個方塊前進 1 格。推進完成時，方塊擁有者獲結案獎勵。政府 5：{government5Description(s.experiments)}</p>
       <p>影響力超過 20 可抽進階卡；結案專案不回牌堆。重新整理可恢復座位；伺服器重啟會失去本局。</p>
     </details>
@@ -57,7 +61,7 @@ export default function StandardPanel({ gameContext }: { gameContext: GameContex
             const locked = playerID !== null ? growthReason(G, node, playerID, overtime) : '觀戰';
             return <div key={node} style={{ height: 100, padding: '13px 5px', position: 'relative' }}>
               <button type="button" data-testid={`tree-${node}`} aria-pressed={selected === node} onClick={() => setSelected(node)} style={{ width: '100%', height: '100%', background: grown ? 'var(--teal-soft)' : 'var(--paper)', border: selected === node ? '3px solid var(--orange)' : '1px solid var(--ink)', borderRadius: 8, fontSize: 12 }}>
-                {branchLabels[index]} {tier} · {grown ? '♥ 已成長' : !locked && active ? '可成長' : '鎖定'}<br/>{NODE_LABELS[branch][tier - 1]}<br/>結案 ≥{THRESHOLDS[tier - 1]} · +{REWARDS[tier - 1]} 影響力
+                {branchLabels[index]} {tier} · {grown ? '♥ 已成長' : !locked && active ? '可成長' : '鎖定'}<br/>{NODE_LABELS[branch][tier - 1]}<br/>{progressLabel} ≥{progress.thresholds[tier - 1]} · +{REWARDS[tier - 1]} 影響力
               </button>
             </div>;
           }))}

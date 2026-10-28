@@ -136,8 +136,8 @@ export async function getMatch(matchID: string): Promise<LobbyMatch> {
   return lobbyClient.getMatch(GAME_NAME, matchID);
 }
 
-export async function createRoom(playerName: string, numPlayers: number, ruleset: Ruleset = 'simple', experiments?: StandardExperiments): Promise<MatchCredentials> {
-  const { matchID } = await lobbyClient.createMatch(GAME_NAME, { numPlayers, ...(ruleset === 'simple' ? {} : { setupData: { ruleset, ...(experiments ? {experiments} : {}) } }) });
+export async function createRoom(playerName: string, numPlayers: number, ruleset: Ruleset = 'simple', experiments?: StandardExperiments, standardOptions?: import('@/game/standard/options').StandardOptions): Promise<MatchCredentials> {
+  const { matchID } = await lobbyClient.createMatch(GAME_NAME, { numPlayers, ...(ruleset === 'simple' ? {} : { setupData: { ruleset, ...(experiments ? {experiments} : {}), ...(standardOptions ? { standardOptions } : {}) } }) });
   try {
     return await joinRoom(matchID, playerName, '0');
   } catch (error) {
