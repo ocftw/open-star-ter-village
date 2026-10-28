@@ -9,7 +9,8 @@ bots/
 ├── novice/                新手型 Novice, profile NOVICE
 │   └── baseline-100/      Milestone 1: 100 games per player count, Novice in every seat
 └── advance/               進階型 Advance, profile ADVANCE
-    └── vs-novice-1000/    36,000 paired games: Advance in seat 1 or 2, Novice elsewhere
+    ├── vs-novice-1000/    36,000 paired games: Advance in seat 1 or 2, Novice elsewhere
+    └── sweep72/           648,000 games, Advance in every seat, all 72 room-option scenarios
 ```
 
 Each profile folder has a README that describes the profile and lists its

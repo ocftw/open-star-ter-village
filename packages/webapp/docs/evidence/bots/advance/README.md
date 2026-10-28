@@ -14,3 +14,4 @@ the saved actions to complete its own projects before later seats can.
 | Run | What it shows |
 | --- | --- |
 | [vs-novice-1000](vs-novice-1000/README.md) | 36,000 paired games: Advance in seat 1 or 2 against Novice, ablations, later seats, room check |
+| [sweep72](sweep72/README.md) | 648,000 games, Advance in every seat, across all 72 room-option scenarios: seat balance, star tree, projects by stars |
