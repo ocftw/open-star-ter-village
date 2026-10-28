@@ -20,13 +20,13 @@ export const OpenStarTerVillage: Game<GameState, Record<string, unknown>, GameSe
   maxPlayers: 6,
   setup: setup,
   validateSetupData: (data, numPlayers) => roomSetupError(data, numPlayers),
+  phases: { round: {
+    start: true, next: 'round',
+    endIf: ({ G, ctx }) => G.standard?.phase === 'ready' && ctx.playOrderPos === ctx.numPlayers - 1,
+  } },
   turn: {
-    /**
-     * Use CUSTOM_FROM so boardgame.io re-reads G.playOrder at the start of
-     * each turn. This lets passStartPlayerToken rotate the starting player by
-     * mutating G.playOrder (which is safe) rather than ctx.playOrder (which
-     * is read-only in hooks and would be silently ignored).
-     */
+    // CUSTOM_FROM is read at phase entry. Standard ends the phase each round
+    // so the engine adopts the next round's order without mutating ctx.
     order: TurnOrder.CUSTOM_FROM('playOrder'),
     onBegin: (context) => {
       const { G, ctx } = context;
