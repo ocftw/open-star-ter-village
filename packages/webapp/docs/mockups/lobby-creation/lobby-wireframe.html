@@ -1,0 +1,121 @@
+<div class="viz-dotted-background" style="padding:18px 8px 24px">
+<section id="village-lobby-preview" lang="zh-Hant" aria-label="建立標準房間互動預覽">
+  <header><span class="village-mark" aria-hidden="true">★</span><strong>開源星手村</strong><span class="village-badge">POC · 介面預覽</span></header>
+  <form>
+    <div class="village-title"><h2>建立標準房間</h2><span class="village-badge">星源樹測試版 v1</span></div>
+    <p class="village-muted">邀請朋友，選擇這一局的規則。</p>
+    <label class="village-name">你的名字<input name="host" autocomplete="off" maxlength="20" value="Ben" required></label>
+    <fieldset><legend>玩家人數</legend><div class="village-segments village-player-options">
+      <label><input type="radio" name="players" value="2"><span>2 人</span></label>
+      <label><input type="radio" name="players" value="3" checked><span>3 人</span></label>
+      <label><input type="radio" name="players" value="4"><span>4 人</span></label>
+    </div></fieldset>
+    <h3>本局測試規則</h3><p class="village-muted">各項可獨立搭配；所有玩家使用相同設定。</p>
+    <fieldset><legend>起始玩家輪替</legend><div class="village-segments">
+      <label><input type="radio" name="rotation" value="none" checked><span>不輪替</span></label>
+      <label><input type="radio" name="rotation" value="clockwise"><span>順時針</span></label>
+      <label><input type="radio" name="rotation" value="counterclockwise"><span>逆時針</span></label>
+    </div><p class="village-help">只改變每輪起始玩家，輪內順序不變。</p></fieldset>
+    <fieldset><legend>額外遊戲輪數</legend><div class="village-segments">
+      <label><input type="radio" name="extra" value="0" checked><span>不增加</span></label>
+      <label><input type="radio" name="extra" value="1"><span>＋1 輪</span></label>
+      <label><input type="radio" name="extra" value="2"><span>＋2 輪</span></label>
+    </div><p class="village-help" data-rounds>本局共 6 輪，含最後一輪。</p></fieldset>
+    <fieldset><legend>星源樹解鎖門檻</legend><div class="village-presets">
+      <label><input type="radio" name="tree" value="count246" checked><span><strong>已完成專案數</strong><small>目前規則</small></span><b>0 / 0 / 2 / 4 / 6</b></label>
+      <label><input type="radio" name="tree" value="cc246"><span><strong>已完成複雜度 #CC</strong></span><b>0 / 0 / 2 / 4 / 6</b></label>
+      <label><input type="radio" name="tree" value="cc369"><span><strong>已完成複雜度 #CC</strong></span><b>0 / 0 / 3 / 6 / 9</b></label>
+      <label><input type="radio" name="tree" value="cc13610"><span><strong>已完成複雜度 #CC</strong></span><b>0 / 1 / 3 / 6 / 10</b></label>
+    </div><p class="village-help">依序對應第 1–5 層。#CC 為全村已結案專案的複雜度總和。</p></fieldset>
+    <fieldset><legend>發起／結案獎勵</legend><div class="village-rewards">
+      <label><input type="radio" name="reward" value="fixed" checked><span><strong>固定各 ＋2</strong><small>發起人 ＋2、結案者 ＋2。</small></span></label>
+      <label><input type="radio" name="reward" value="difficulty"><span><strong>依星數各 ＋1～＋4</strong><small>例如 3 星專案，各得 ＋3。</small></span></label>
+    </div><p class="village-help">貢獻得分不變；會計年度結算的額外 ＋2 另計。</p></fieldset>
+    <aside><strong>政府 5 · 固定規則</strong><p>可新增自己的方塊，每個新方塊消耗 1 個庫存人力；增加既有方塊貢獻不另消耗。不花人力卡或 AP。</p></aside>
+    <footer><h3>本局設定</h3><p class="village-summary" aria-live="polite"></p><p class="village-help">開局後固定 · 再來一局沿用 · 匯出資料會記錄設定</p></footer>
+    <button type="button" class="village-create">建立 3 人房間 →</button>
+    <p class="village-help village-demo">互動預覽，不會建立實際房間。</p>
+    <div class="village-result" role="status" hidden></div>
+  </form>
+</section>
+</div>
+<style>
+#village-lobby-preview{--v-paper:light-dark(#fffaf3,#292622);--v-ink:light-dark(#302c28,#f6eee4);--v-soft:light-dark(#70685f,#c6bdb2);--v-field:light-dark(#ffffff,#35312c);--v-selected:light-dark(#f1e9de,#443d34);--v-orange:#ff6925;max-width:710px;margin:0 auto;background:var(--v-paper);color:var(--v-ink);border:2px solid var(--v-ink);border-radius:24px;box-shadow:0 6px 0 var(--v-ink);font-family:Arial,"Noto Sans TC","PingFang TC",sans-serif;font-size:15px;line-height:1.55;overflow:hidden}
+#village-lobby-preview *{box-sizing:border-box}
+#village-lobby-preview header{display:flex;align-items:center;flex-wrap:wrap;gap:12px;padding:22px 28px;border-bottom:1px solid var(--v-ink)}
+#village-lobby-preview header strong{font-size:18px}
+#village-lobby-preview .village-mark{display:grid;place-items:center;width:44px;height:44px;background:var(--v-orange);color:#302c28;border:2px solid #302c28;border-radius:12px;font-size:25px}
+#village-lobby-preview .village-badge{background:var(--v-selected);padding:5px 12px;border-radius:24px;font-size:12px;white-space:nowrap}
+#village-lobby-preview form{padding:28px}
+#village-lobby-preview h2{font-size:26px;line-height:1.3;margin:0;font-weight:700}
+#village-lobby-preview h3{font-size:18px;margin:26px 0 5px;font-weight:700}
+#village-lobby-preview .village-title{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+#village-lobby-preview p{margin:8px 0}
+#village-lobby-preview .village-muted{color:var(--v-soft);margin-bottom:22px}
+#village-lobby-preview .village-name{display:block;font-weight:600}
+#village-lobby-preview input[name=host]{display:block;width:100%;margin-top:8px;border:1.5px solid var(--v-ink);border-radius:12px;background:var(--v-field);color:var(--v-ink);padding:12px 14px;font:inherit;font-size:16px}
+#village-lobby-preview fieldset{border:0;padding:0;margin:22px 0;min-width:0}
+#village-lobby-preview legend{padding:0;margin-bottom:10px;font-size:16px;font-weight:700}
+#village-lobby-preview .village-segments{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+#village-lobby-preview .village-player-options{max-width:300px}
+#village-lobby-preview .village-segments label{position:relative;display:block}
+#village-lobby-preview .village-segments input{position:absolute;opacity:0;width:100%;height:100%;inset:0;margin:0}
+#village-lobby-preview .village-segments span{display:block;text-align:center;border:1.5px solid var(--v-ink);border-radius:12px;background:var(--v-field);padding:11px 5px}
+#village-lobby-preview .village-segments input:checked+span{background:var(--v-ink);color:var(--v-paper)}
+#village-lobby-preview input:focus-visible{outline:3px solid var(--v-orange);outline-offset:3px}
+#village-lobby-preview .village-segments input:focus-visible+span{outline:3px solid var(--v-orange);outline-offset:3px}
+#village-lobby-preview .village-help{font-size:12px;color:var(--v-soft);margin-top:8px}
+#village-lobby-preview .village-presets{display:grid;gap:8px}
+#village-lobby-preview .village-presets label{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1.5px solid var(--v-ink);border-radius:12px;background:var(--v-field)}
+#village-lobby-preview .village-presets label:has(input:checked),#village-lobby-preview .village-rewards label:has(input:checked){background:var(--v-selected);box-shadow:inset 0 0 0 1px var(--v-ink)}
+#village-lobby-preview input[type=radio]{accent-color:var(--v-ink)}
+#village-lobby-preview .village-presets input,#village-lobby-preview .village-rewards input{flex:none;width:16px;height:16px;margin:0}
+#village-lobby-preview .village-presets span{flex:1}
+#village-lobby-preview .village-presets strong{font-weight:500}
+#village-lobby-preview .village-presets small{display:inline-block;margin-left:8px;color:var(--v-soft);font-size:11px}
+#village-lobby-preview .village-presets b{font-weight:500;font-size:14px;white-space:nowrap;font-variant-numeric:tabular-nums}
+#village-lobby-preview .village-rewards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+#village-lobby-preview .village-rewards label{display:flex;align-items:flex-start;gap:10px;padding:16px;border:1.5px solid var(--v-ink);border-radius:14px;background:var(--v-field)}
+#village-lobby-preview .village-rewards input{margin-top:4px}
+#village-lobby-preview .village-rewards small{display:block;font-size:12px;color:var(--v-soft);margin-top:5px}
+#village-lobby-preview aside{padding:14px 16px;background:var(--v-selected);border-radius:12px;font-size:13px}
+#village-lobby-preview aside p{margin-bottom:0}
+#village-lobby-preview footer{margin-top:22px;padding-top:2px;border-top:1px dashed var(--v-ink)}
+#village-lobby-preview footer h3{margin-top:18px}
+#village-lobby-preview .village-summary{font-size:14px}
+#village-lobby-preview .village-create{display:block;width:100%;margin-top:22px;padding:13px;border:2px solid #302c28;border-radius:13px;background:var(--v-orange);color:#302c28;box-shadow:0 4px 0 #302c28;font:inherit;font-size:17px;font-weight:700}
+#village-lobby-preview .village-create:active{transform:translateY(2px);box-shadow:0 2px 0 #302c28}
+#village-lobby-preview .village-demo{text-align:center;margin-top:14px}
+#village-lobby-preview .village-result{padding:12px;border:1px solid var(--v-ink);border-radius:10px;margin-top:12px}
+@media(max-width:480px){#village-lobby-preview header{padding:18px}#village-lobby-preview form{padding:20px 18px}#village-lobby-preview h2{font-size:23px}#village-lobby-preview .village-presets label{flex-wrap:wrap}#village-lobby-preview .village-presets b{width:100%;padding-left:26px}#village-lobby-preview .village-presets small{display:block;margin-left:0}#village-lobby-preview .village-rewards{grid-template-columns:1fr}#village-lobby-preview .village-segments{gap:7px}}
+</style>
+<script>
+(()=>{
+const root=document.getElementById('village-lobby-preview');
+const form=root.querySelector('form');
+const defaults={host:'Ben',players:'3',rotation:'none',extra:'0',tree:'count246',reward:'fixed'};
+const trees={count246:'專案數 0/0/2/4/6',cc246:'#CC 0/0/2/4/6',cc369:'#CC 0/0/3/6/9',cc13610:'#CC 0/1/3/6/10'};
+const rotations={none:'不輪替',clockwise:'順時針',counterclockwise:'逆時針'};
+const state={...defaults};
+function apply(saved){
+  const candidate=saved?.modelContent?.settings;
+  if(candidate){for(const key of Object.keys(defaults)){if(key==='host'&&typeof candidate[key]==='string')state[key]=candidate[key].slice(0,20);else if([...form.querySelectorAll('input')].some(el=>el.name===key&&el.value===String(candidate[key])))state[key]=String(candidate[key]);}}
+  for(const el of form.querySelectorAll('input')){if(el.type==='radio')el.checked=el.value===state[el.name];else el.value=state.host;}
+  render();
+}
+function render(){
+ const rounds=9-Number(state.players)+Number(state.extra);
+ root.querySelector('[data-rounds]').textContent=`本局共 ${rounds} 輪，含最後一輪。`;
+ root.querySelector('.village-summary').textContent=`${state.players} 人 · ${rounds} 輪 · ${rotations[state.rotation]} · ${trees[state.tree]} · 獎勵：${state.reward==='fixed'?'各 ＋2':'各依星數 ＋1～＋4'}`;
+ root.querySelector('.village-create').textContent=`建立 ${state.players} 人房間 →`;
+}
+form.addEventListener('input',event=>{
+ const el=event.target;if(!Object.hasOwn(defaults,el.name))return;
+ state[el.name]=el.value;root.querySelector('.village-result').hidden=true;render();
+ if(window.openai?.setWidgetState)window.openai.setWidgetState({modelContent:{settings:{...state}},privateContent:null}).catch(()=>{});
+});
+root.querySelector('.village-create').addEventListener('click',event=>{event.preventDefault();const result=root.querySelector('.village-result');result.hidden=false;result.textContent=state.host.trim()?`預覽：${state.host.trim()} 的 ${state.players} 人房間已準備好。以上設定將在實際建立時套用。`:'請輸入你的名字。';});
+window.addEventListener('openai:set_globals',event=>{if(event.detail?.globals?.widgetState)apply(event.detail.globals.widgetState);});
+apply(window.openai?.widgetState);
+})();
+</script>
