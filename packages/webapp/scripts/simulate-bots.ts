@@ -10,6 +10,8 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { parseArgs } from 'node:util';
+import { execFileSync } from 'node:child_process';
+import { normalizeStandardOptions } from '@/game/standard/options';
 import { buildStandardExport } from '@/game/standard/export';
 import { createProfileBot } from '@/game/bots/profileBot';
 import { PROFILES, withWeights, type Weights } from '@/game/bots/profiles';
@@ -25,6 +27,10 @@ const { values } = parseArgs({
     weights: { type: 'string' },
     out: { type: 'string' },
     'no-move-log': { type: 'boolean', default: false },
+    rotation: { type: 'string', default: 'none' },
+    'extra-rounds': { type: 'string', default: '0' },
+    'tree-preset': { type: 'string', default: 'count-00246' },
+    rewards: { type: 'string', default: 'fixed' },
   },
 });
 
@@ -34,6 +40,11 @@ const profile = values.weights ? withWeights(base, JSON.parse(values.weights) as
 const bot = createProfileBot(profile);
 const playerCounts = values.players!.split(',').map(Number);
 const games = Number(values.games);
+if (!Number.isInteger(games) || games < 1 || playerCounts.some(count => ![2, 3, 4].includes(count))) throw new Error('Require positive integer games and 2–4 players');
+if (!['fixed', 'difficulty'].includes(values.rewards!)) throw new Error('Invalid rewards');
+const standardOptions = normalizeStandardOptions({ starterRotation: values.rotation, extraRounds: Number(values['extra-rounds']), treePreset: values['tree-preset'] });
+const experiments = { government5: 'any' as const, completionRewards: values.rewards as 'fixed' | 'difficulty' };
+const build = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
 const outDir = resolve(values.out ?? join('bot-runs', new Date().toISOString().replace(/[:.]/g, '-')));
 mkdirSync(join(outDir, 'games'), { recursive: true });
 if (!values['no-move-log']) mkdirSync(join(outDir, 'moves'), { recursive: true });
@@ -45,9 +56,9 @@ for (const numPlayers of playerCounts) {
   for (let i = 0; i < games; i++) {
     const seed = `${values.seed}-${numPlayers}p-${i}`;
     try {
-      const run = runGame({ numPlayers, seed, bots: bot });
+      const run = runGame({ numPlayers, seed, bots: bot, standardOptions, experiments });
       runs.push(run);
-      const summary = buildStandardExport(run.state.G, run.state.ctx, { build: 'bots', telemetry: run.state.G.standard!.telemetry });
+      const summary = buildStandardExport(run.state.G, run.state.ctx, { build, telemetry: run.state.G.standard!.telemetry });
       writeFileSync(join(outDir, 'games', `${seed}.json`), JSON.stringify({ seed, profile: profile.name, ...summary }, null, 2));
       if (!values['no-move-log']) writeFileSync(join(outDir, 'moves', `${seed}.jsonl`), run.moves.map(m => JSON.stringify(m)).join('\n') + '\n');
     } catch (error) {
@@ -59,7 +70,7 @@ for (const numPlayers of playerCounts) {
 const seconds = (Date.now() - started) / 1000;
 
 const summaries = summarize(runs);
-writeFileSync(join(outDir, 'summary.json'), JSON.stringify({ profile, playerCounts, gamesPerCount: games, seconds, failures, summaries }, null, 2));
+writeFileSync(join(outDir, 'summary.json'), JSON.stringify({ build, standardOptions, experiments, profile, playerCounts, gamesPerCount: games, seconds, failures, summaries }, null, 2));
 writeFileSync(join(outDir, 'summary.csv'), summaryCsv(summaries));
 if (failures.length) writeFileSync(join(outDir, 'failures.json'), JSON.stringify(failures, null, 2));
 
