@@ -4,7 +4,7 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import type { FnContext } from 'boardgame.io';
 import { initialState, runGame } from '../src/game/bots/runner';
 import { createProfileBot } from '../src/game/bots/profileBot';
-import { BALANCED } from '../src/game/bots/profiles';
+import { NOVICE } from '../src/game/bots/profiles';
 import { advanceStandard, choiceOptions, enqueue, resolveStandardChoice } from '../src/game/standard/engine';
 import { buildStandardExport } from '../src/game/standard/export';
 import type { GameState } from '../src/game/store/store';
@@ -15,7 +15,7 @@ for (const government5 of ['existing', 'any'] as const) {
   for (const completionRewards of ['fixed', 'difficulty'] as const) {
     const experiments = { government5, completionRewards };
     for (const numPlayers of [2, 3, 4]) {
-      const run = runGame({ numPlayers, seed: `experiment-${numPlayers}`, bots: createProfileBot(BALANCED), experiments, legacyExperiments: true });
+      const run = runGame({ numPlayers, seed: `experiment-${numPlayers}`, bots: createProfileBot(NOVICE), experiments, legacyExperiments: true });
       assert.ok(run.state.ctx.gameover);
       games.push({ ...buildStandardExport(run.state.G, run.state.ctx, { build: 'local-experiments', now: run.state.G.standard!.finishedAt }), moves: run.moves.length });
     }

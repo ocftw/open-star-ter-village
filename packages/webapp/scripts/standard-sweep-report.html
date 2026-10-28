@@ -1,0 +1,531 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Star Tree Balance Sweep</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a lab notebook. One sticky control strip (player count, metric) drives every figure below it. */
+:root {
+  --bg: #f6f8fa; --panel: #ffffff; --fg: #14202b; --muted: #556270; --faint: #8794a1; --rule: #dde3ea;
+  --accent: #1c5cab; --accent-soft: #e3eefb;
+  --seq-0: #eef4fc; --seq-1: #cde2fb; --seq-2: #9ec5f4; --seq-3: #6da7ec; --seq-4: #3987e5; --seq-5: #256abf; --seq-6: #184f95; --seq-7: #0d366b;
+  --div-neg: #2a78d6; --div-pos: #e34948; --div-mid: #f0efec;
+  --star1: #86b6ef; --star2: #3987e5; --star3: #1c5cab; --star4: #0d366b;
+  --display: 'Bricolage Grotesque', 'PingFang TC', 'Noto Sans TC', system-ui, sans-serif;
+  --body: 'Atkinson Hyperlegible', 'PingFang TC', 'Noto Sans TC', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11161c; --panel: #182029; --fg: #e8edf2; --muted: #a3b0bd; --faint: #6f7d8b; --rule: #2a3542;
+  --accent: #86b6ef; --accent-soft: #1d2b3b;
+  --seq-0: #1b2633; --seq-1: #184f95; --seq-2: #1c5cab; --seq-3: #256abf; --seq-4: #3987e5; --seq-5: #6da7ec; --seq-6: #9ec5f4; --seq-7: #cde2fb;
+  --div-neg: #3987e5; --div-pos: #e66767; --div-mid: #383835;
+  --star1: #184f95; --star2: #256abf; --star3: #5598e7; --star4: #9ec5f4;
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #11161c; --panel: #182029; --fg: #e8edf2; --muted: #a3b0bd; --faint: #6f7d8b; --rule: #2a3542;
+  --accent: #86b6ef; --accent-soft: #1d2b3b;
+  --seq-0: #1b2633; --seq-1: #184f95; --seq-2: #1c5cab; --seq-3: #256abf; --seq-4: #3987e5; --seq-5: #6da7ec; --seq-6: #9ec5f4; --seq-7: #cde2fb;
+  --div-neg: #3987e5; --div-pos: #e66767; --div-mid: #383835;
+  --star1: #184f95; --star2: #256abf; --star3: #5598e7; --star4: #9ec5f4;
+  color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font: 15px/1.55 var(--body); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--panel); }
+.wrap { max-width: 1180px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 64px; }
+header.top { padding-block: 40px 20px; display: grid; gap: 10px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; line-height: 1.15; }
+h1 { font-size: clamp(28px, 4vw, 40px); font-weight: 700; letter-spacing: -0.01em; }
+h2 { font-size: 22px; font-weight: 700; }
+h3 { font-size: 15px; font-weight: 700; }
+p { margin: 0; max-width: 72ch; }
+.lede { color: var(--muted); font-size: 16px; }
+.eyebrow { font: 600 11px/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+.facts { display: flex; flex-wrap: wrap; gap: 8px 24px; font: 13px var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.facts b { color: var(--fg); font-weight: 600; }
+.controls { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--panel); border-bottom: 1px solid var(--rule); margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding: 10px max(16px, env(safe-area-inset-left, 0px)); display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; }
+.seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; }
+.seg button { font: 600 13px var(--mono); background: transparent; color: var(--muted); border: 0; padding: 6px 12px; cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--rule); }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--panel); }
+.seg button:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+label.ctl { display: inline-flex; gap: 8px; align-items: center; font: 12px var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+select { font: 14px var(--body); color: var(--fg); background: var(--panel); border: 1px solid var(--rule); border-radius: 6px; padding: 5px 8px; max-width: 100%; }
+section { display: grid; gap: 14px; padding-block: 36px 0; }
+section > header { display: grid; gap: 6px; }
+.note { color: var(--muted); font-size: 13.5px; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr)); gap: 20px; }
+.grid2 > * { min-width: 0; }
+.panel { background: var(--panel); border: 1px solid var(--rule); border-radius: 8px; padding: 16px; display: grid; gap: 10px; min-width: 0; align-content: start; }
+.scroll { overflow-x: auto; }
+svg { display: block; max-width: 100%; height: auto; }
+#heat svg { max-width: none; }
+svg text { font-family: var(--mono); fill: var(--muted); font-size: 11px; }
+svg text.strong { fill: var(--fg); font-weight: 600; }
+svg text.on-dark { fill: #ffffff; }
+svg text.on-light { fill: #14202b; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; font-variant-numeric: tabular-nums; }
+th, td { padding: 6px 8px; text-align: right; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+th { font: 600 11px var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; cursor: default; }
+th.sortable { cursor: pointer; }
+td.num { font-family: var(--mono); }
+.findings { display: grid; gap: 10px; padding: 0; margin: 0; list-style: none; }
+.findings li { padding-left: 14px; border-left: 3px solid var(--accent-soft); max-width: 80ch; }
+.findings b { font-weight: 700; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; font: 12px var(--mono); color: var(--muted); }
+.sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -2px; margin-right: 6px; }
+.ramp { display: inline-block; width: 140px; height: 10px; border-radius: 3px; vertical-align: middle; }
+#tip { position: fixed; pointer-events: none; z-index: 20; background: var(--fg); color: var(--bg); font: 12px/1.45 var(--mono); padding: 8px 10px; border-radius: 6px; max-width: 300px; opacity: 0; transition: opacity .08s; }
+@media (prefers-reduced-motion: reduce) { #tip { transition: none; } }
+.pill { display: inline-block; font: 600 11px var(--mono); padding: 2px 7px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <span class="eyebrow">Standard Mode · 星源樹測試版 v1 · PR #457 · Advance bots</span>
+    <h1>Star Tree Balance Sweep</h1>
+    <p class="lede" id="lede"></p>
+    <div class="facts" id="facts"></div>
+  </header>
+
+  <div class="controls" role="toolbar" aria-label="Figure controls">
+    <label class="ctl">Players <span class="seg" id="ctl-n"></span></label>
+    <label class="ctl" for="ctl-metric">Heat map metric <select id="ctl-metric"></select></label>
+  </div>
+
+  <section id="findings-sec">
+    <header><span class="eyebrow">Summary</span><h2>What the sweep shows</h2></header>
+    <ul class="findings" id="findings"></ul>
+  </section>
+
+  <section>
+    <header><span class="eyebrow">72 scenarios</span><h2>Scenario heat map</h2>
+      <p class="note">Rows: starter rotation × extra rounds. Columns: tree preset × completion reward. Each cell pools every bot seating in the run. Seat spread is the strongest seat's win rate minus the weakest seat's, each averaged over all games in the cell (ties split the win); S4 › S1 names the two seats. Seat deviation adds up every seat's distance from a fair share (1 ÷ players). pp means percentage points, the plain difference between two percentages: 31% − 14% = 17 pp. Hover a cell for its numbers.</p></header>
+    <div class="panel"><div class="legend" id="heat-legend"></div><div class="scroll" id="heat"></div></div>
+  </section>
+
+  <section>
+    <header><span class="eyebrow">Main effects</span><h2>Which option moves the metric</h2>
+      <p class="note">Each level averages the scenarios that use it, so every other option is balanced across levels. Shown for the selected player count and heat map metric.</p></header>
+    <div class="grid2" id="effects"></div>
+  </section>
+
+  <section>
+    <header><span class="eyebrow">Seat order</span><h2>Win rate by seat</h2>
+      <p class="note">Ties split the win. The dashed line is a fair share (1 ÷ players). Whiskers are ±2 standard errors across the seed batches.</p></header>
+    <div class="grid2" id="seats"></div>
+  </section>
+
+
+  <section>
+    <header><span class="eyebrow">星源樹</span><h2>Star tree progress</h2>
+      <p class="note">Share of games in which each ability was grown. Branches across, tiers up. Pick a preset to compare unlock thresholds.</p></header>
+    <div class="controls" style="position: static; border: 1px solid var(--rule); border-radius: 8px; margin: 0;">
+      <label class="ctl" for="ctl-preset">Preset <select id="ctl-preset"></select></label>
+      <label class="ctl" for="ctl-reward">Reward <select id="ctl-reward"></select></label>
+    </div>
+    <div class="grid2"><div class="panel" id="tree-heat"></div><div class="panel" id="tree-curve"></div></div>
+    <div class="grid2"><div class="panel" id="tree-tier"></div><div class="panel scroll" id="tree-table"></div></div>
+  </section>
+
+  <section>
+    <header><span class="eyebrow">Projects</span><h2>Projects played and completed by difficulty</h2>
+      <p class="note">Per game, all players together. Stars are the project's printed difficulty.</p></header>
+    <div class="grid2"><div class="panel" id="proj-chart"></div><div class="panel scroll" id="proj-table"></div></div>
+  </section>
+
+  <section>
+    <header><span class="eyebrow">Scoring</span><h2>Where points come from</h2>
+      <p class="note">Average points per player by source. Every point in every game is accounted for.</p></header>
+    <div class="panel scroll" id="breakdown"></div>
+  </section>
+
+  <section>
+    <header><span class="eyebrow">Table view</span><h2>All 72 scenarios</h2><p class="note">Click a column to sort.</p></header>
+    <div class="panel scroll" id="all-table"></div>
+  </section>
+</div>
+<div id="tip" role="tooltip"></div>
+
+<script id="data" type="application/json">/*DATA*/</script>
+<script>
+const A = JSON.parse(document.getElementById('data').textContent);
+const NODES = A.nodes;
+const NODE_NAMES = {
+  s1: '人力區 6→8', s2: '協助貢獻 4→5', s3: '工程師發起 1→3', s4: '結案推進工程師', s5: '發起 2→1 AP',
+  d1: '手牌 2→3', d2: '招募貢獻 1→2', d3: '行動點 3→4', d4: '發起人貢獻 3→4', d5: '任一人力卡發起',
+  g1: '棄 1 再補', g2: '預覽事件', g3: '專案空間 6→8', g4: '發起後免費招募', g5: '結案貢獻一半分配',
+};
+const BRANCH = { s: 'Source 開源', d: 'Data 資料', g: 'Government 政府' };
+const ROT = { none: 'No rotation', clockwise: 'Clockwise', counterclockwise: 'Counter-clockwise' };
+const ROT_SHORT = { none: 'None', clockwise: 'CW', counterclockwise: 'CCW' };
+const PRESET = { 'count-00246': 'Count 0/0/2/4/6', 'cc-00246': 'CC 0/0/2/4/6', 'cc-00369': 'CC 0/0/3/6/9', 'cc-013610': 'CC 0/1/3/6/10' };
+const REWARD = { fixed: 'Fixed +2/+2', difficulty: 'By stars +1–4' };
+const PRESETS = Object.keys(PRESET), ROTS = Object.keys(ROT), REWARDS = Object.keys(REWARD);
+const css = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+const sum = a => a.reduce((x, y) => x + y, 0);
+const mean = a => a.length ? sum(a) / a.length : NaN;
+const pct = (v, d = 1) => (v * 100).toFixed(d) + '%';
+const pp = (v, d = 1) => (v >= 0 ? '+' : '−') + Math.abs(v * 100).toFixed(d) + ' pp';
+const f = (v, d = 2) => v == null || Number.isNaN(v) ? '–' : v.toFixed(d);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+const STRATS = { N: 'Novice', A: 'Advance' };
+const present = Object.keys(STRATS).filter(k => A.scenarios.some(s => s.seatGames[k] > 0));
+const mixed = present.length > 1;
+// Strongest minus weakest seat, each seat's win rate averaged over the games first. Pooled player
+// counts average their spreads; a single player count also names both seats.
+const ppAbs = v => (v * 100).toFixed(1) + ' pp';
+// Standard deviation of one seat's win rate over g games if every seat were equally strong.
+const binomSD = (n, g) => Math.sqrt((1 / n) * (1 - 1 / n) / g);
+function seatSpread(list) {
+  const per = A.manifest.playerCounts.filter(n => list.some(s => s.n === n)).map(n => {
+    const l = list.filter(s => s.n === n), wins = Array.from({ length: n }, (_, i) => mean(l.map(s => s.seatWin[i])));
+    const hi = Math.max(...wins), lo = Math.min(...wins);
+    return { hi, lo, hiSeat: wins.indexOf(hi) + 1, loSeat: wins.indexOf(lo) + 1 };
+  });
+  const v = mean(per.map(p => p.hi - p.lo)), one = per.length === 1 ? per[0] : null;
+  return { v, text: ppAbs(v), sub: one ? `S${one.hiSeat} › S${one.loSeat}` : '',
+    detail: one ? `strongest S${one.hiSeat} ${pct(one.hi)}, weakest S${one.loSeat} ${pct(one.lo)}` : '' };
+}
+const METRICS = [
+  { id: 'spread', label: 'Seat spread (strongest − weakest win rate)', fmt: ppAbs, agg: seatSpread,
+    chance: (n, g) => ({ 2: 1.596, 3: 1.693, 4: 2.059 })[n] * binomSD(n, g) },
+  { id: 'absdev', label: 'Seat deviation Σ|win − fair|', fmt: ppAbs, get: s => sum(s.seatWin.map(w => Math.abs(w - 1 / s.n))),
+    chance: (n, g) => n * binomSD(n, g) * Math.sqrt(2 / Math.PI) },
+  { id: 'top', label: 'Winning score', fmt: v => f(v, 1), get: s => s.topScore },
+  { id: 'margin', label: 'Winning margin (1st − 2nd)', fmt: v => f(v, 2), get: s => s.margin },
+  { id: 'ties', label: 'Tie rate', fmt: v => pct(v), get: s => s.tieRate },
+  { id: 'grown', label: 'Tree abilities grown per game', fmt: v => f(v, 2), get: s => s.grown },
+  { id: 'tier5', label: 'Games reaching tier 5', fmt: v => pct(v), get: s => s.tierHist[5] },
+  { id: 'tier4', label: 'Games reaching tier 4+', fmt: v => pct(v), get: s => s.tierHist[4] + s.tierHist[5] },
+  { id: 'played', label: 'Projects played per game', fmt: v => f(v, 2), get: s => sum(s.played) },
+  { id: 'completed', label: 'Projects completed per game', fmt: v => f(v, 2), get: s => sum(s.completed) },
+  { id: 'rate', label: 'Completion rate', fmt: v => pct(v), get: s => sum(s.completed) / sum(s.played) },
+  { id: 'adv', label: '3★–4★ projects played per game', fmt: v => f(v, 3), get: s => s.played[3] + s.played[4] },
+  { id: 'g5', label: 'Government 5 points used per game', fmt: v => f(v, 2), get: s => s.government5[1] },
+];
+const M = Object.fromEntries(METRICS.map(m => [m.id, m]));
+const state = { n: A.manifest.playerCounts.includes(4) ? 4 : 'all', metric: 'spread', preset: 'all', reward: 'all' };
+const counts = A.manifest.playerCounts;
+
+// Pool scenario rows of the selected player counts: every row has the same game count, so pooling is a mean.
+const rows = (filter = () => true) => A.scenarios.filter(s => (state.n === 'all' || s.n === state.n) && filter(s));
+// Spread is taken per scenario, then averaged, so cells, main effects and the table agree.
+const metricMean = (m, list) => mean(list.map(m.agg ? s => m.agg([s]).v : m.get));
+const metricText = (m, list) => m.fmt(metricMean(m, list));
+const metricAgg = (m, list) => ({ ...(m.agg && list.length === 1 ? m.agg(list) : { sub: '', detail: '' }), text: metricText(m, list) });
+
+// ---------- tooltip ----------
+const tip = document.getElementById('tip');
+function bindTip(el, html) {
+  el.addEventListener('mousemove', e => { tip.innerHTML = html; tip.style.opacity = 1;
+    const x = Math.min(e.clientX + 14, innerWidth - tip.offsetWidth - 8), y = Math.min(e.clientY + 14, innerHeight - tip.offsetHeight - 8);
+    tip.style.left = x + 'px'; tip.style.top = y + 'px'; });
+  el.addEventListener('mouseleave', () => { tip.style.opacity = 0; });
+}
+
+// ---------- color ----------
+const SEQ = Array.from({ length: 8 }, (_, i) => `--seq-${i}`);
+function hexToRgb(h) { h = h.replace('#', ''); return [0, 2, 4].map(i => parseInt(h.slice(i, i + 2), 16)); }
+function mix(a, b, t) { const x = hexToRgb(a), y = hexToRgb(b); return '#' + x.map((v, i) => Math.round(v + (y[i] - v) * t).toString(16).padStart(2, '0')).join(''); }
+function seqColor(t) { t = Math.max(0, Math.min(1, t)); const stops = SEQ.map(css); const p = t * (stops.length - 1), i = Math.min(stops.length - 2, Math.floor(p)); return mix(stops[i], stops[i + 1], p - i); }
+function divColor(t) { t = Math.max(-1, Math.min(1, t)); return t < 0 ? mix(css('--div-mid'), css('--div-neg'), -t) : mix(css('--div-mid'), css('--div-pos'), t); }
+function lum(hex) { const [r, g, b] = hexToRgb(hex).map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; }); return 0.2126 * r + 0.7152 * g + 0.0722 * b; }
+const inkFor = fill => lum(fill) > 0.36 ? 'on-light' : 'on-dark';
+function scaleFor(m, values) {
+  if (m.div) { const ext = Math.max(...values.map(Math.abs)) || 1; return { color: v => divColor(v / ext), legend: `<span>${m.fmt(-ext)}</span><span class="ramp" style="background:linear-gradient(90deg,${divColor(-1)},${divColor(0)},${divColor(1)})"></span><span>${m.fmt(ext)}</span>` }; }
+  const lo = Math.min(...values), hi = Math.max(...values), span = hi - lo || 1;
+  return { color: v => seqColor((v - lo) / span), legend: `<span>${m.fmt(lo)}</span><span class="ramp" style="background:linear-gradient(90deg,${seqColor(0)},${seqColor(0.5)},${seqColor(1)})"></span><span>${m.fmt(hi)}</span>` };
+}
+
+// ---------- header ----------
+function header() {
+  const games = sum(A.scenarios.map(s => s.games)), fails = sum(A.scenarios.map(s => s.failures));
+  const b = A.batchesUsed.length, runs = A.manifest.runsPerBatch;
+  const tables = mixed ? 'every seat assignment of the Novice and Advance bots (4 tables at 2 players, 8 at 3, 16 at 4)' : 'the Advance bot (進階型) in every seat';
+  document.getElementById('lede').textContent = `Every room option in the Standard POC (3 starter rotations × 3 extra-round settings × 4 tree presets × 2 completion rewards = 72 scenarios), played by ${tables}. Each of ${b} seed batches deals ${runs} games per player count, and every deal is replayed under all 72 scenarios, so scenario comparisons are paired.`;
+  document.getElementById('facts').innerHTML = [
+    ['games', games.toLocaleString('en')], ['failed', fails.toLocaleString('en')], ['seed batches', `${b} / ${A.manifest.batches}`],
+    ['deals per batch', `${runs} × ${counts.length} player counts`], ['bots', present.map(k => STRATS[k]).join(' + ')], ['build', A.manifest.build.slice(0, 8)], ['Government 5', 'any (current rule)'],
+  ].map(([k, v]) => `<span>${k} <b>${esc(v)}</b></span>`).join('');
+}
+
+// ---------- findings (computed) ----------
+function findings() {
+  const items = [];
+  const at = (n, test = () => true) => A.scenarios.filter(s => s.n === n && test(s));
+  const seatsOf = (list, n) => Array.from({ length: n }, (_, i) => pct(mean(list.map(s => s.seatWin[i])))).join(' / ');
+  const label = s => `${ROT_SHORT[s.options.starterRotation]} · +${s.options.extraRounds} rounds · ${PRESET[s.options.treePreset]} · ${s.rewards === 'fixed' ? 'fixed' : 'by stars'}`;
+  for (const n of [...counts].sort((a, b) => b - a)) {
+    const ends = l => { const a = seatSpread(l); return `spread ${a.text}: ${a.detail}`; };
+    const rot = ROTS.map(r => { const l = at(n, s => s.options.starterRotation === r); return `${ROT_SHORT[r]} ${seatsOf(l, n)}`; });
+    const ex = [0, 1, 2].map(x => `+${x}: ${ends(at(n, s => s.options.extraRounds === x))}`);
+    const spread = s => Math.max(...s.seatWin) - Math.min(...s.seatWin);
+    const ranked = at(n).slice().sort((a, b) => spread(a) - spread(b));
+    const first = ranked[0], last = ranked[ranked.length - 1];
+    items.push(`<b>${n} players, seat win rates (fair ${pct(1 / n)}):</b> ${rot.join('; ')}. By extra rounds, ${ex.join('; ')}. Most even scenario: ${label(first)} (${ends([first])}). Least even: ${label(last)} (${ends([last])}).`);
+  }
+  const tree = PRESETS.map(p => `${PRESET[p]} ${counts.map(n => { const l = at(n, s => s.options.treePreset === p); return `${n}p ${f(mean(l.map(s => s.grown)), 1)}/${pct(mean(l.map(s => s.tierHist[5])), 0)}`; }).join(' ')}`);
+  items.push(`<b>Star tree, abilities grown / games reaching tier 5:</b> ${tree.join('; ')}.`);
+  const stars = counts.map(n => `${n}p ${[1, 2, 3, 4].map(k => { const l = at(n), pl = mean(l.map(s => s.played[k])), co = mean(l.map(s => s.completed[k])); return `${k}★ ${f(pl, 2)}/${f(co, 2)}`; }).join(' ')}`);
+  items.push(`<b>Projects per game, played/completed by stars:</b> ${stars.join('; ')}.`);
+  const rw = REWARDS.map(r => { const l = A.scenarios.filter(s => s.rewards === r); return `${REWARD[r]}: ${f(mean(l.map(s => sum(s.completed))), 2)} completed, winning score ${f(mean(l.map(s => s.topScore)), 1)}, margin ${f(mean(l.map(s => s.margin)), 2)}`; });
+  items.push(`<b>Completion reward (all player counts):</b> ${rw.join('; ')}.`);
+  document.getElementById('findings').innerHTML = items.map(i => `<li>${i}</li>`).join('');
+}
+
+// ---------- controls ----------
+function controls() {
+  const seg = document.getElementById('ctl-n');
+  seg.innerHTML = ['all', ...counts].map(v => `<button type="button" data-v="${v}" aria-pressed="${state.n === v}">${v === 'all' ? 'All' : v + 'p'}</button>`).join('');
+  seg.onclick = e => { const b = e.target.closest('button'); if (!b) return; state.n = b.dataset.v === 'all' ? 'all' : Number(b.dataset.v); render(); };
+  const sel = document.getElementById('ctl-metric');
+  sel.innerHTML = METRICS.map(m => `<option value="${m.id}">${esc(m.label)}</option>`).join('');
+  sel.value = state.metric; sel.onchange = () => { state.metric = sel.value; render(); };
+  const ps = document.getElementById('ctl-preset');
+  ps.innerHTML = `<option value="all">All presets</option>` + PRESETS.map(p => `<option value="${p}">${PRESET[p]}</option>`).join('');
+  ps.onchange = () => { state.preset = ps.value; renderTree(); };
+  const rs = document.getElementById('ctl-reward');
+  rs.innerHTML = `<option value="all">Both rewards</option>` + REWARDS.map(r => `<option value="${r}">${REWARD[r]}</option>`).join('');
+  rs.onchange = () => { state.reward = rs.value; renderTree(); };
+}
+
+// ---------- heat map ----------
+// The value a seat metric would show if every seat were equally strong, from binomial noise alone.
+function chanceNote(m) {
+  const parts = counts.filter(n => state.n === 'all' || n === state.n).map(n => `${n}p ${m.fmt(m.chance(n, A.scenarios.find(s => s.n === n).games))}`);
+  return `<span>chance alone ≈ ${parts.join(', ')}</span>`;
+}
+function renderHeat() {
+  const m = M[state.metric];
+  const rowKeys = ROTS.flatMap(r => [0, 1, 2].map(x => [r, x]));
+  const colKeys = PRESETS.flatMap(p => REWARDS.map(w => [p, w]));
+  const cells = rowKeys.map(([r, x]) => colKeys.map(([p, w]) => {
+    const list = rows(s => s.options.starterRotation === r && s.options.extraRounds === x && s.options.treePreset === p && s.rewards === w);
+    return { r, x, p, w, v: metricMean(m, list), ...metricAgg(m, list), list };
+  }));
+  const scale = scaleFor(m, cells.flat().map(c => c.v));
+  document.getElementById('heat-legend').innerHTML = `<b style="color:var(--fg)">${esc(m.label)}</b> ${scale.legend}${m.chance ? chanceNote(m) : ''} <span class="pill">${state.n === 'all' ? 'all player counts' : state.n + ' players'}</span>`;
+  const cw = 92, ch = 34, left = 150, top = 52, gap = 2;
+  const W = left + colKeys.length * cw + 4, H = top + rowKeys.length * ch + 8 + 2 * 6;
+  let svg = `<svg viewBox="0 0 ${W} ${H}" width="${W}" role="img" aria-label="${esc(m.label)} heat map">`;
+  PRESETS.forEach((p, i) => { svg += `<text class="strong" x="${left + i * 2 * cw + cw}" y="16" text-anchor="middle">${PRESET[p]}</text>`; });
+  colKeys.forEach(([, w], j) => { svg += `<text x="${left + j * cw + cw / 2}" y="${top - 10}" text-anchor="middle">${w === 'fixed' ? 'fixed' : 'by stars'}</text>`; });
+  rowKeys.forEach(([r, x], i) => {
+    const y = top + i * ch + Math.floor(i / 3) * 6;
+    svg += `<text x="${left - 10}" y="${y + ch / 2 + 4}" text-anchor="end">${x === 0 ? `<tspan class="strong" style="fill:var(--fg)">${ROT_SHORT[r]}</tspan> ` : ''}+${x} rounds</text>`;
+    cells[i].forEach((c, j) => {
+      const fill = scale.color(c.v);
+      svg += `<g data-i="${i}" data-j="${j}"><rect x="${left + j * cw + gap / 2}" y="${y + gap / 2}" width="${cw - gap}" height="${ch - gap}" rx="3" fill="${fill}"/>${c.sub ? `<text class="${inkFor(fill)}" x="${left + j * cw + cw / 2}" y="${y + 14}" text-anchor="middle" style="font-weight:600">${c.text}</text><text class="${inkFor(fill)}" x="${left + j * cw + cw / 2}" y="${y + 26}" text-anchor="middle" style="font-size:9.5px">${c.sub}</text>` : `<text class="${inkFor(fill)}" x="${left + j * cw + cw / 2}" y="${y + ch / 2 + 4}" text-anchor="middle">${c.text}</text>`}</g>`;
+    });
+  });
+  svg += '</svg>';
+  const host = document.getElementById('heat'); host.innerHTML = svg;
+  host.querySelectorAll('g[data-i]').forEach(g => {
+    const c = cells[g.dataset.i][g.dataset.j];
+    const seatWin = counts.filter(n => state.n === 'all' || n === state.n).map(n => { const l = c.list.filter(s => s.n === n); return `${n}p seats ${Array.from({ length: n }, (_, k) => pct(mean(l.map(s => s.seatWin[k])), 0)).join(' ')}`; });
+    bindTip(g, `<b>${ROT[c.r]} · +${c.x} rounds</b><br>${PRESET[c.p]} · ${REWARD[c.w]}<br>${esc(m.label)}: <b>${c.text}</b>${c.detail ? `<br>${c.detail}` : ''}<br>${seatWin.join('<br>')}<br>winning score ${f(mean(c.list.map(s => s.topScore)), 1)} · grown ${f(mean(c.list.map(s => s.grown)), 2)}`);
+  });
+}
+
+// ---------- main effects ----------
+function dotRow(levels, m) {
+  const vals = levels.map(l => l.v);
+  let lo = Math.min(...vals), hi = Math.max(...vals);
+  if (m.div) { lo = Math.min(lo, 0); hi = Math.max(hi, 0); }
+  const pad = (hi - lo) * 0.15 || Math.abs(hi) * 0.05 || 0.01; lo -= pad; hi += pad;
+  const W = 480, left = 150, right = 90, rh = 26, H = levels.length * rh + 26;
+  const x = v => left + (v - lo) / (hi - lo) * (W - left - right);
+  let s = `<svg viewBox="0 0 ${W} ${H}" width="${W}">`;
+  if (m.div && lo < 0 && hi > 0) s += `<line x1="${x(0)}" x2="${x(0)}" y1="4" y2="${H - 20}" stroke="var(--faint)" stroke-dasharray="3 3"/>`;
+  [lo + pad, (lo + hi) / 2, hi - pad].forEach(t => { s += `<text x="${x(t)}" y="${H - 4}" text-anchor="middle">${m.fmt(t)}</text>`; });
+  levels.forEach((l, i) => {
+    const y = 14 + i * rh;
+    s += `<line x1="${left}" x2="${W - right}" y1="${y}" y2="${y}" stroke="var(--rule)"/>`;
+    s += `<text x="${left - 10}" y="${y + 4}" text-anchor="end" class="strong">${esc(l.label)}</text>`;
+    s += `<circle cx="${x(l.v)}" cy="${y}" r="5.5" fill="var(--accent)" stroke="var(--panel)" stroke-width="2"/>`;
+    s += `<text x="${W - right + 8}" y="${y + 4}">${l.text}</text>`;
+  });
+  return s + '</svg>';
+}
+function renderEffects() {
+  const m = M[state.metric];
+  const factors = [
+    ['Starter rotation', ROTS.map(r => ({ label: ROT[r], v: metricMean(m, rows(s => s.options.starterRotation === r)), text: metricText(m, rows(s => s.options.starterRotation === r)) }))],
+    ['Extra rounds', [0, 1, 2].map(x => ({ label: `+${x} rounds`, v: metricMean(m, rows(s => s.options.extraRounds === x)), text: metricText(m, rows(s => s.options.extraRounds === x)) }))],
+    ['Tree preset', PRESETS.map(p => ({ label: PRESET[p], v: metricMean(m, rows(s => s.options.treePreset === p)), text: metricText(m, rows(s => s.options.treePreset === p)) }))],
+    ['Completion reward', REWARDS.map(r => ({ label: REWARD[r], v: metricMean(m, rows(s => s.rewards === r)), text: metricText(m, rows(s => s.rewards === r)) }))],
+  ];
+  document.getElementById('effects').innerHTML = factors.map(([name, levels]) => {
+    const spread = Math.max(...levels.map(l => l.v)) - Math.min(...levels.map(l => l.v));
+    return `<div class="panel"><h3>${name} <span class="pill">spread ${m.fmt(spread).replace('+', '')}</span></h3><div class="scroll">${dotRow(levels, m)}</div></div>`;
+  }).join('');
+}
+
+// ---------- seats ----------
+function seatChart(n, groups) {
+  const W = 460, H = 210, left = 40, bottom = 40, top = 16, right = 10;
+  const series = groups.map(g => ({ ...g, win: Array.from({ length: n }, (_, k) => mean(g.list.map(s => s.seatWin[k]))), // Scenarios share seeds, so their errors are correlated: use the mean per-scenario SE as a conservative bound.
+    se: Array.from({ length: n }, (_, k) => mean(g.list.map(s => s.seatWinSE[k]))) }));
+  const hi = Math.max(1 / n * 1.6, ...series.flatMap(s => s.win.map((w, k) => w + 2 * s.se[k]))) * 1.05;
+  const y = v => top + (1 - v / hi) * (H - top - bottom);
+  const gw = (W - left - right) / n, bw = Math.min(26, (gw - 16) / series.length);
+  const colors = ['--seq-3', '--seq-5', '--seq-7'].map(css);
+  let s = `<svg viewBox="0 0 ${W} ${H}" width="${W}">`;
+  [0, 0.25, 0.5, 0.75].filter(t => t < hi).forEach(t => { s += `<line x1="${left}" x2="${W - right}" y1="${y(t)}" y2="${y(t)}" stroke="var(--rule)"/><text x="${left - 6}" y="${y(t) + 4}" text-anchor="end">${pct(t, 0)}</text>`; });
+  for (let k = 0; k < n; k++) {
+    const gx = left + k * gw + (gw - bw * series.length) / 2;
+    series.forEach((ser, j) => {
+      const v = ser.win[k], x0 = gx + j * bw;
+      s += `<g data-tip="${esc(`Seat ${k + 1} · ${ser.label}<br>win ${pct(v)} (fair ${pct(1 / n)})<br>±2 SE ${pct(2 * ser.se[k])}`)}"><rect x="${x0 + 1}" y="${y(v)}" width="${bw - 2}" height="${y(0) - y(v)}" rx="3" fill="${colors[j]}"/>`;
+      s += `<line x1="${x0 + bw / 2}" x2="${x0 + bw / 2}" y1="${y(v + 2 * ser.se[k])}" y2="${y(Math.max(0, v - 2 * ser.se[k]))}" stroke="var(--fg)" stroke-width="1.2"/></g>`;
+    });
+    s += `<text class="strong" x="${left + k * gw + gw / 2}" y="${H - bottom + 16}" text-anchor="middle">Seat ${k + 1}</text>`;
+  }
+  s += `<line x1="${left}" x2="${W - right}" y1="${y(1 / n)}" y2="${y(1 / n)}" stroke="var(--fg)" stroke-dasharray="5 4"/>`;
+  s += `<line x1="${left}" x2="${W - right}" y1="${y(0)}" y2="${y(0)}" stroke="var(--faint)"/>`;
+  s += '</svg>';
+  const legend = series.map((ser, j) => `<span><span class="sw" style="background:${colors[j]}"></span>${ser.label}</span>`).join('');
+  return { svg: s, legend };
+}
+function renderSeats() {
+  const host = document.getElementById('seats');
+  host.innerHTML = counts.filter(n => state.n === 'all' || n === state.n).map(n => {
+    const groups = ROTS.map(r => ({ label: ROT[r], list: A.scenarios.filter(s => s.n === n && s.options.starterRotation === r) }));
+    const c = seatChart(n, groups);
+    return `<div class="panel"><h3>${n} players</h3><div class="legend">${c.legend}</div><div class="scroll">${c.svg}</div></div>`;
+  }).join('');
+  host.querySelectorAll('g[data-tip]').forEach(g => bindTip(g, g.dataset.tip));
+}
+
+// ---------- strategies ----------
+
+// ---------- tree ----------
+function treeRows() { return rows(s => (state.preset === 'all' || s.options.treePreset === state.preset) && (state.reward === 'all' || s.rewards === state.reward)); }
+function renderTree() {
+  const list = treeRows();
+  const rate = NODES.map((_, i) => mean(list.map(s => s.nodeRate[i])));
+  const round = NODES.map((_, i) => mean(list.map(s => s.nodeRound[i]).filter(v => v != null)));
+  const byStrategy = Object.fromEntries(present.map(k => [k, NODES.map((_, i) => mean(list.map(s => s.nodeByStrategy[k][i])))]));
+  const cw = 130, ch = 50, left = 30, top = 28, W = left + 3 * cw + 8, H = top + 5 * ch + 8;
+  let s = `<svg viewBox="0 0 ${W} ${H}" width="${W}" role="img" aria-label="Tree growth heat map">`;
+  ['s', 'd', 'g'].forEach((b, j) => { s += `<text class="strong" x="${left + j * cw + cw / 2}" y="16" text-anchor="middle">${BRANCH[b]}</text>`; });
+  for (let t = 5; t >= 1; t--) {
+    const y = top + (5 - t) * ch;
+    s += `<text x="${left - 8}" y="${y + ch / 2 + 4}" text-anchor="end">T${t}</text>`;
+    ['s', 'd', 'g'].forEach((b, j) => {
+      const i = NODES.indexOf(b + t), fill = seqColor(rate[i]), ink = inkFor(fill);
+      s += `<g data-k="${i}"><rect x="${left + j * cw + 2}" y="${y + 2}" width="${cw - 4}" height="${ch - 4}" rx="4" fill="${fill}"/>`;
+      s += `<text class="${ink}" x="${left + j * cw + cw / 2}" y="${y + 20}" text-anchor="middle" style="font-size:10px">${NODE_NAMES[b + t]}</text>`;
+      s += `<text class="${ink}" x="${left + j * cw + cw / 2}" y="${y + 37}" text-anchor="middle" style="font-weight:600">${pct(rate[i], 0)}</text></g>`;
+    });
+  }
+  s += '</svg>';
+  const label = `${state.preset === 'all' ? 'All presets' : PRESET[state.preset]} · ${state.reward === 'all' ? 'both rewards' : REWARD[state.reward]} · ${state.n === 'all' ? 'all player counts' : state.n + ' players'}`;
+  const th = document.getElementById('tree-heat');
+  th.innerHTML = `<h3>Ability growth rate</h3><div class="legend"><span>0%</span><span class="ramp" style="background:linear-gradient(90deg,${seqColor(0)},${seqColor(.5)},${seqColor(1)})"></span><span>100% of games</span><span class="pill">${esc(label)}</span></div><div class="scroll">${s}</div>`;
+  th.querySelectorAll('g[data-k]').forEach(g => { const i = +g.dataset.k; bindTip(g, `<b>${NODES[i]} ${NODE_NAMES[NODES[i]]}</b><br>grown in ${pct(rate[i])} of games<br>mean round ${f(round[i], 2)}${mixed ? `<br>grown per seat-game: ${present.map(k => `${STRATS[k]} ${f(byStrategy[k][i], 3)}`).join(' / ')}` : ''}`); });
+
+  // Cumulative abilities grown by end of round, one line per preset.
+  const ns = state.n === 'all' ? counts : [state.n];
+  const maxR = Math.max(...A.scenarios.filter(s => ns.includes(s.n)).map(s => s.rounds));
+  const colors = ['--seq-2', '--seq-4', '--seq-5', '--seq-7'].map(css);
+  const lines = PRESETS.map((p, j) => { const l = rows(s => s.options.treePreset === p && (state.reward === 'all' || s.rewards === state.reward)); let acc = 0; return { p, color: colors[j], pts: Array.from({ length: Math.ceil(maxR) }, (_, r) => (acc += mean(l.map(s => s.growRound[r])))) }; });
+  const W2 = 460, H2 = 230, L = 36, R = 92, T = 12, B = 32;
+  const hiY = Math.max(...lines.flatMap(l => l.pts)) * 1.08 || 1;
+  const xs = r => L + r / (Math.ceil(maxR) - 1) * (W2 - L - R), ys = v => T + (1 - v / hiY) * (H2 - T - B);
+  let c = `<svg viewBox="0 0 ${W2} ${H2}" width="${W2}">`;
+  for (let v = 0; v <= hiY; v += hiY > 8 ? 2 : 1) c += `<line x1="${L}" x2="${W2 - R}" y1="${ys(v)}" y2="${ys(v)}" stroke="var(--rule)"/><text x="${L - 6}" y="${ys(v) + 4}" text-anchor="end">${v}</text>`;
+  for (let r = 0; r < Math.ceil(maxR); r++) c += `<text x="${xs(r)}" y="${H2 - 12}" text-anchor="middle">R${r + 1}</text>`;
+  const ends = lines.map(l => ({ l, y: ys(l.pts[l.pts.length - 1]) })).sort((a, b) => a.y - b.y);
+  for (let i = 1; i < ends.length; i++) ends[i].y = Math.max(ends[i].y, ends[i - 1].y + 13);
+  lines.forEach(l => {
+    c += `<polyline fill="none" stroke="${l.color}" stroke-width="2" points="${l.pts.map((v, r) => `${xs(r)},${ys(v)}`).join(' ')}"/>`;
+    l.pts.forEach((v, r) => { c += `<circle cx="${xs(r)}" cy="${ys(v)}" r="4" fill="${l.color}" stroke="var(--panel)" stroke-width="2"><title>${PRESET[l.p]} · end of R${r + 1}: ${f(v, 2)}</title></circle>`; });
+  });
+  ends.forEach(e => { c += `<text x="${W2 - R + 8}" y="${e.y + 4}" class="strong" style="font-size:10px">${PRESET[e.l.p]}</text>`; });
+  c += '</svg>';
+  document.getElementById('tree-curve').innerHTML = `<h3>Abilities grown by end of round</h3><p class="note">Cumulative, all players. Later rounds exist only in longer games, so the tail averages fewer games.</p><div class="scroll">${c}</div>`;
+
+  // Highest tier reached.
+  const tier = [0, 1, 2, 3, 4, 5].map(t => mean(list.map(s => s.tierHist[t])));
+  const W3 = 460, H3 = 170, L3 = 36, B3 = 30, bw = (W3 - L3 - 10) / 6;
+  const hi3 = Math.max(...tier) * 1.15 || 1, y3 = v => 10 + (1 - v / hi3) * (H3 - 10 - B3);
+  let t3 = `<svg viewBox="0 0 ${W3} ${H3}" width="${W3}">`;
+  tier.forEach((v, t) => { const fill = css(t === 0 ? '--faint' : `--seq-${t + 2}`); t3 += `<rect x="${L3 + t * bw + 3}" y="${y3(v)}" width="${bw - 6}" height="${y3(0) - y3(v)}" rx="3" fill="${fill}"/><text x="${L3 + t * bw + bw / 2}" y="${y3(v) - 5}" text-anchor="middle" class="strong">${pct(v, 0)}</text><text x="${L3 + t * bw + bw / 2}" y="${H3 - 10}" text-anchor="middle">${t === 0 ? 'none' : 'T' + t}</text>`; });
+  t3 += `<line x1="${L3}" x2="${W3 - 10}" y1="${y3(0)}" y2="${y3(0)}" stroke="var(--faint)"/></svg>`;
+  const grown = mean(list.map(s => s.grown)), tp = mean(list.map(s => s.treeProgress));
+  document.getElementById('tree-tier').innerHTML = `<h3>Highest tier reached per game</h3><p class="note">${f(grown, 2)} abilities grown per game (cap 10 hearts). Final village progress value ${f(tp, 2)}.</p><div class="scroll">${t3}</div>`;
+
+  // Preset × player count table.
+  const tbl = PRESETS.map(p => `<tr><td>${PRESET[p]}</td>${counts.map(n => { const l = A.scenarios.filter(s => s.n === n && s.options.treePreset === p && (state.reward === 'all' || s.rewards === state.reward)); return `<td class="num">${f(mean(l.map(s => s.grown)), 2)}</td><td class="num">${pct(mean(l.map(s => s.tierHist[4] + s.tierHist[5])), 0)}</td><td class="num">${pct(mean(l.map(s => s.tierHist[5])), 0)}</td>`; }).join('')}</tr>`).join('');
+  document.getElementById('tree-table').innerHTML = `<h3>Tree progress by preset and player count</h3><table><thead><tr><th rowspan="2">Preset</th>${counts.map(n => `<th colspan="3" style="text-align:center">${n}p</th>`).join('')}</tr><tr>${counts.map(() => '<th>grown</th><th>T4+</th><th>T5</th>').join('')}</tr></thead><tbody>${tbl}</tbody></table>`;
+}
+
+// ---------- projects ----------
+function renderProjects() {
+  const groups = PRESETS.flatMap(p => REWARDS.map(r => ({ label: `${PRESET[p]} · ${r === 'fixed' ? 'fixed' : 'by stars'}`, list: rows(s => s.options.treePreset === p && s.rewards === r) })));
+  const all = { label: 'All scenarios', list: rows() };
+  const W = 520, L = 170, R = 84, rh = 34, T = 20, H = T + (groups.length + 1) * rh + 24;
+  const data = [all, ...groups].map(g => ({ ...g, played: [1, 2, 3, 4].map(k => mean(g.list.map(s => s.played[k]))), completed: [1, 2, 3, 4].map(k => mean(g.list.map(s => s.completed[k]))) }));
+  const hi = Math.max(...data.map(d => sum(d.played))) * 1.05;
+  const x = v => L + v / hi * (W - L - R);
+  const colors = [1, 2, 3, 4].map(k => css(`--star${k}`));
+  let s = `<svg viewBox="0 0 ${W} ${H}" width="${W}">`;
+  for (let t = 0; t <= hi; t += hi > 12 ? 4 : 2) s += `<line x1="${x(t)}" x2="${x(t)}" y1="${T - 6}" y2="${H - 22}" stroke="var(--rule)"/><text x="${x(t)}" y="${H - 6}" text-anchor="middle">${t}</text>`;
+  data.forEach((d, i) => {
+    const y = T + i * rh + (i ? 6 : 0);
+    s += `<text x="${L - 8}" y="${y + 10}" text-anchor="end" class="${i ? '' : 'strong'}" style="font-size:10.5px">${esc(d.label)}</text>`;
+    for (const [row, vals, op] of [[0, d.played, 0.45], [1, d.completed, 1]]) {
+      let acc = 0;
+      vals.forEach((v, k) => { if (v <= 0) return; const w = x(acc + v) - x(acc); s += `<rect x="${x(acc) + (acc ? 1 : 0)}" y="${y + row * 12}" width="${Math.max(0, w - (acc ? 1 : 0))}" height="10" fill="${colors[k]}" fill-opacity="${op}"><title>${esc(d.label)} · ${k + 1}★ ${row ? 'completed' : 'played'} ${f(v, 3)}/game</title></rect>`; acc += v; });
+      s += `<text x="${x(acc) + 5}" y="${y + row * 12 + 9}" style="font-size:10px">${row ? 'done' : 'played'} ${f(acc, 2)}</text>`;
+    }
+  });
+  s += '</svg>';
+  document.getElementById('proj-chart').innerHTML = `<h3>Played (pale) and completed (solid) per game</h3><div class="legend">${colors.map((c, k) => `<span><span class="sw" style="background:${c}"></span>${k + 1}★</span>`).join('')}</div><div class="scroll">${s}</div>`;
+  const ns = state.n === 'all' ? counts : [state.n];
+  const tbl = ns.map(n => { const l = A.scenarios.filter(s => s.n === n); return [1, 2, 3, 4].map(k => { const pl = mean(l.map(s => s.played[k])), co = mean(l.map(s => s.completed[k])), rd = mean(l.map(s => s.completedRound[k]).filter(v => v != null));
+    const by = mixed ? `<td class="num">${present.map(x => f(mean(l.map(s => s.playedBy[x][k])), 3)).join(' / ')}</td>` : '';
+    return `<tr><td>${k === 1 ? `<b>${n}p</b> ` : ''}${k}★</td><td class="num">${f(pl, 3)}</td><td class="num">${f(co, 3)}</td><td class="num">${pl ? pct(co / pl, 0) : '–'}</td><td class="num">${f(rd, 2)}</td>${by}</tr>`; }).join(''); }).join('');
+  document.getElementById('proj-table').innerHTML = `<h3>By difficulty and player count</h3><table><thead><tr><th>Stars</th><th>Played</th><th>Done</th><th>Rate</th><th>Done round</th>${mixed ? `<th>Opened per ${present.join(' / ')} seat</th>` : ''}</tr></thead><tbody>${tbl}</tbody></table>`;
+}
+
+// ---------- breakdown ----------
+const CAT = { '結案貢獻': 'Contribution on completion 結案貢獻', '未結案專案貢獻折半': 'Unfinished projects, half 未結案折半', '行動獎勵': 'Action rewards 行動獎勵', 'tree': 'Tree growth 星源樹成長', '發起獎勵': 'Initiation reward 發起獎勵', '結案獎勵': 'Finisher reward 結案獎勵', '年度結算發起獎勵': 'Yearly initiation 年度結算發起', '最終回合剩餘行動點': 'Leftover AP 剩餘行動點' };
+function renderBreakdown() {
+  const list = rows();
+  const cats = [...new Set(list.flatMap(s => present.flatMap(k => Object.keys(s.breakdown[k]))))];
+  const val = (k, c) => mean(list.map(s => s.breakdown[k][c] ?? 0));
+  const all = c => sum(present.map(k => val(k, c)));
+  cats.sort((a, b) => all(b) - all(a));
+  const signed = v => (v >= 0 ? '+' : '−') + Math.abs(v).toFixed(2);
+  const row = (label, v, strong) => `<tr><td>${strong ? `<b>${label}</b>` : label}</td>${present.map(k => `<td class="num">${strong ? '<b>' : ''}${f(v(k), 2)}${strong ? '</b>' : ''}</td>`).join('')}${mixed ? `<td class="num">${signed(v('A') - v('N'))}</td>` : ''}<td class="num">${strong ? '' : pct(v(present[0]) / sum(cats.map(c => val(present[0], c))), 0)}</td></tr>`;
+  const body = cats.map(c => row(esc(CAT[c] ?? c), k => val(k, c))).join('');
+  document.getElementById('breakdown').innerHTML = `<table><thead><tr><th>Source</th>${present.map(k => `<th>${STRATS[k]}</th>`).join('')}${mixed ? '<th>A − N</th>' : ''}<th>Share</th></tr></thead><tbody>${body}${row('Total', k => sum(cats.map(c => val(k, c))), true)}</tbody></table>`;
+}
+
+// ---------- all table ----------
+let sortKey = 'spread', sortDir = -1;
+function renderTable() {
+  const cols = [
+    { id: 'name', label: 'Scenario', get: s => s.id, fmt: (v, s) => `${ROT_SHORT[s.options.starterRotation]} · +${s.options.extraRounds} · ${PRESET[s.options.treePreset]} · ${s.rewards === 'fixed' ? 'fixed' : 'stars'}` },
+    { id: 'n', label: 'P', get: s => s.n, fmt: v => v },
+    ...['spread', 'absdev', 'top', 'margin', 'grown', 'tier5', 'completed', 'rate', 'adv'].map(id => ({ id, label: M[id].label.split(' (')[0], get: s => metricMean(M[id], [s]), fmt: (v, s) => { const a = metricAgg(M[id], [s]); return a.detail ? `${a.text} <span style="color:var(--muted)">(${a.detail})</span>` : a.text; } })),
+  ];
+  const list = rows().slice().sort((a, b) => { const c = cols.find(c => c.id === sortKey); const x = c.get(a), y = c.get(b); return (x > y ? 1 : x < y ? -1 : 0) * sortDir; });
+  document.getElementById('all-table').innerHTML = `<table><thead><tr>${cols.map(c => `<th class="sortable" data-k="${c.id}" aria-sort="${c.id === sortKey ? (sortDir > 0 ? 'ascending' : 'descending') : 'none'}">${esc(c.label)}${c.id === sortKey ? (sortDir > 0 ? ' ▲' : ' ▼') : ''}</th>`).join('')}</tr></thead><tbody>${list.map(s => `<tr>${cols.map((c, i) => `<td class="${i ? 'num' : ''}">${c.fmt(c.get(s), s)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+  document.querySelectorAll('#all-table th[data-k]').forEach(th => th.onclick = () => { if (sortKey === th.dataset.k) sortDir *= -1; else { sortKey = th.dataset.k; sortDir = -1; } renderTable(); });
+}
+
+function render() {
+  document.querySelectorAll('#ctl-n button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === String(state.n))));
+  renderHeat(); renderEffects(); renderSeats(); renderTree(); renderProjects(); renderBreakdown(); renderTable();
+}
+header(); findings(); controls(); render();
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', render);
+new MutationObserver(render).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+</script>

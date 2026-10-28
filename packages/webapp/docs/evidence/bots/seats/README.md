@@ -1,5 +1,7 @@
 # Bot seats in game rooms — evidence
 
+> Renamed after recording: the text uses the current names (Balanced → Novice, Counter → Advance; seats 阿衡 → 小新, 天平 → 菜菜). Screenshots and data files keep the names in use when they were recorded (`balanced`, `counter`).
+
 Runtime commit `7544b25`, 2026-10-27, Node 22.22.0, Chromium (Playwright).
 
 ## Setup
@@ -17,8 +19,8 @@ Runtime commit `7544b25`, 2026-10-27, Node 22.22.0, Chromium (Playwright).
    **＋ 電腦 · Add bot**, and Start is disabled.
    ![Empty seats](waiting-room-empty.png)
 2. **Add a bot to seat 1, then seat 2.**
-   - The seats became 阿衡 and 天平, each showing `SEAT n · BOT` and
-     `🤖 平衡型 Balanced` with a ✕ remove control.
+   - The seats became 小新 and 菜菜, each showing `SEAT n · BOT` and
+     `🤖 新手型 Novice` with a ✕ remove control.
    - All seats count as filled, so Start became available.
    ![Bots seated](waiting-room-bots.png)
 3. **Remove the seat 2 bot, then add it again.** The seat emptied, then
@@ -26,16 +28,16 @@ Runtime commit `7544b25`, 2026-10-27, Node 22.22.0, Chromium (Playwright).
 4. **A second browser with no saved seat** saw both bot seats and 0
    add/remove controls.
 5. **Lobby API after start.** `GET /games/OpenStarTerVillage/<id>` returned
-   bot seats with `data.bot.strategy = "balanced"` and no `credentials`
+   bot seats with `data.bot.strategy = "novice"` and no `credentials`
    field for any seat.
 6. **Start the game.**
-   - The game server logged `bot <id>:1 (balanced) started` and
-     `bot <id>:2 (balanced) started`.
+   - The game server logged `bot <id>:1 (novice) started` and
+     `bot <id>:2 (novice) started`.
    - Ben ended turn 1 (end turn, then confirm). Both bots then played their
      turns, and Ben's turn came back as round 2 after 1.3–1.8 s.
    - The board shows each bot's started project with contributions, 2
      points each, and the 數位政委 choices resolved by the bots. The
-     scoreboard and turn order show `阿衡 🤖` and `天平 🤖`.
+     scoreboard and turn order show `小新 🤖` and `菜菜 🤖`.
    ![Board after the bots' turns](board-after-bot-turns.png)
 7. **The solo host leaves the board for the lobby.**
    - The game server logged both bots `stopped`, because no human had a

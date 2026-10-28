@@ -6,7 +6,7 @@ import { join, resolve } from 'node:path';
 import { parseArgs } from 'node:util';
 import { gzipSync } from 'node:zlib';
 import { createProfileBot } from '@/game/bots/profileBot';
-import { BALANCED } from '@/game/bots/profiles';
+import { NOVICE } from '@/game/bots/profiles';
 import { runGame } from '@/game/bots/runner';
 import { EXPERIMENT_SCENARIOS as scenarios } from '@/game/standard/config';
 import { treeOutcome } from '@/game/standard/export';
@@ -21,7 +21,7 @@ const out = resolve(values.out!);
 mkdirSync(out, { recursive: true });
 const build = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
 const started = Date.now();
-const bot = createProfileBot(BALANCED);
+const bot = createProfileBot(NOVICE);
 const records = [];
 // Exact same seed prefix per player count, not per option: deals and events are paired.
 for (const numPlayers of [2, 3, 4]) {
@@ -65,6 +65,6 @@ writeFileSync(join(out, 'games.jsonl.gz'), gzipSync(records.map(r => JSON.string
 writeFileSync(join(out, 'manifest.json'), JSON.stringify({ build, startedAt: new Date(started).toISOString(),
   finishedAt: new Date().toISOString(), seconds: (Date.now() - started) / 1000,
   seedPrefix: values.seed, gamesPerScenarioPerPlayerCount: games, playerCounts: [2, 3, 4],
-  totalGames: records.length, failures: 0, scenarios, profile: BALANCED,
-  method: 'Authoritative headless reducer; player-view-only Balanced bots; identical seed per player count across all four rule options. Ties split wins.' }, null, 2));
+  totalGames: records.length, failures: 0, scenarios, profile: NOVICE,
+  method: 'Authoritative headless reducer; player-view-only Novice bots; identical seed per player count across all four rule options. Ties split wins.' }, null, 2));
 console.info(`${records.length} games saved to ${out}`);

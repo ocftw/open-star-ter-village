@@ -2,8 +2,8 @@
 
 Bots play complete 星源樹測試版 v1 games headless, so a rule change can be tested
 over hundreds of seeded games in seconds instead of 60–90 minute human sessions.
-Two strategies ship: **Balanced**, the reference that plays every seat in batch
-runs, and **Counter**, a Balanced variant tuned to beat Balanced when it acts
+Two strategies ship: **Novice**, the reference that plays every seat in batch
+runs, and **Advance**, a Novice variant tuned to beat Novice when it acts
 early.
 
 ## Run a batch
@@ -13,7 +13,7 @@ From the repository root:
 ```sh
 pnpm webapp bots                                # 100 games each at 2, 3 and 4 players
 pnpm webapp bots --players 4 --games 20 --seed trial
-pnpm webapp bots --profile counter              # every seat plays Counter
+pnpm webapp bots --profile advance              # every seat plays Advance
 pnpm webapp bots --weights '{"advancedDraw":1}' # override profile weights as JSON
 pnpm webapp bots --no-move-log --out /tmp/run   # skip move logs, choose the output folder
 pnpm webapp bots --players 4 --games 10 --rotation counterclockwise --extra-rounds 2 --tree-preset cc-013610 --rewards difficulty
@@ -54,7 +54,7 @@ the bot runner) are `src/botSeats.ts` and `src/botRunner.ts`.
   breaking ties with a per-game, per-seat seeded RNG. Ending the turn scores 0.
 - `profiles.ts` holds the weight profiles. A new strategy is mostly a new profile.
 
-### Balanced scoring
+### Novice scoring
 
 - **Projects:** change in the bot's expected points. A project completes with a
   chance that grows from `baseCompletionChance` to 1 as positions fill, discounted
@@ -70,22 +70,22 @@ the bot runner) are `src/botSeats.ts` and `src/botRunner.ts`.
 - **Costs:** `apCost` per AP (at least the leftover-AP score in the last round),
   `overtime` for using the overtime token, `workerToken` per token spent.
 - **Choices:** each target is scored with the same project model; skip is 0.
-  The draw choice uses `advancedDraw` (negative in Balanced, so it prefers the
+  The draw choice uses `advancedDraw` (negative in Novice, so it prefers the
   entry pile).
 
 The `nodeImpact` values are initial guesses. Recalibrate them from batch data
 (points per AP, node growth rate, ability trigger counts) and rerun.
 
-### Counter
+### Advance
 
 Every round is played in the same seat order (seat 1 first), because the start
 player does not rotate yet (a known bug, see the
 [rule-option report](evidence/standard-experiments/balance-300/README.md)). With
-Balanced in every seat, later seats finish the projects earlier seats set up
-and win far more often. Counter is the `COUNTER` profile: Balanced's scoring
+Novice in every seat, later seats finish the projects earlier seats set up
+and win far more often. Advance is the `ADVANCE` profile: Novice's scoring
 with four weights changed.
 
-| Weight | Balanced | Counter | Effect |
+| Weight | Novice | Advance | Effect |
 | --- | ---: | ---: | --- |
 | `village` | 0.3 | 0 | No value for what tree abilities give other players (a village completion still counts half) |
 | `unlock` | 0.5 | 0 | No value for higher tree tiers a growth makes reachable |
@@ -97,21 +97,21 @@ projects (its own 2★ completion rate roughly doubles) and to be the finisher
 more often. Ablations show that the tree weights and the opening cost each
 fail alone. In rooms a bot never takes seat 1, which is the host's, so the
 evidence also covers seats 3 and 4. See
-[the Counter evidence](evidence/bot-strategies/counter-1000/README.md).
+[the Advance evidence](evidence/bots/advance/README.md).
 
-### Compare a profile with Balanced
+### Compare a profile with Novice
 
 ```sh
 cd packages/webapp
-pnpm exec tsx scripts/compare-bot-strategies.ts --challenger counter --games 300 --out /tmp/counter
-python3 scripts/analyze-bot-strategies.py /tmp/counter
+pnpm exec tsx scripts/compare-bot-strategies.ts --challenger advance --games 300 --out /tmp/advance
+python3 scripts/analyze-bot-strategies.py /tmp/advance
 ```
 
-Each seed is played all-Balanced and again with the challenger in seat 1, then
+Each seed is played all-Novice and again with the challenger in seat 1, then
 seat 2 (`--seats`), at 2/3/4 players across the four Standard rule options
 (`--scenarios`), using every CPU (`--jobs`). `--weights` overrides the
 challenger's weights for ablations. The analysis reports the challenger's win
-share (ties split) with a 95% interval, the paired change against Balanced in
+share (ties split) with a 95% interval, the paired change against Novice in
 the same seat and seed, and which score sources moved.
 
 ## Bots in game rooms
@@ -120,7 +120,7 @@ In a Standard room, the host can seat bots before starting:
 
 1. In the waiting room, each empty seat shows **＋ 電腦 · Add bot** to the host.
    With more than one strategy registered, a picker appears next to it.
-2. A bot seat shows its name, `BOT`, and its strategy, e.g. `🤖 平衡型 Balanced`.
+2. A bot seat shows its name, `BOT`, and its strategy, e.g. `🤖 新手型 Novice`.
    The host can free it with **✕** until the game starts. Other players see
    bots but no controls.
 3. Bot seats count as filled, so the host can start once every seat is a
@@ -204,9 +204,9 @@ Fly app: `flyctl secrets set --app open-star-ter-village-tree-poc DEBUG_TELEMETR
 ## CI
 
 `src/game/bots/*.test.ts` checks that every enumerated action is accepted across
-seeded games, that 2/3/4 Balanced and random bots finish in 9 − n rounds, that a
+seeded games, that 2/3/4 Novice and random bots finish in 9 − n rounds, that a
 seed replays identically, and that rejected moves and stuck games fail loudly.
-`counter.test.ts` plays Counter from seats 1 and 2 to game over at every player
+`advance.test.ts` plays Advance from seats 1 and 2 to game over at every player
 count and rule option and replays it from a seed; `strategies.test.ts` checks
 every registry entry.
 `src/game/standard/telemetry.test.ts` checks the telemetry never reaches a
@@ -216,7 +216,7 @@ player view.
 
 Bots measure reachability, pacing and degenerate strategies. They do not measure
 clarity, fun or UI problems. With one strategy in every seat, results describe
-how Balanced plays, not how humans or other strategies would. Counter is tuned
-against Balanced only; its win rates say nothing about how it fares against
+how Novice plays, not how humans or other strategies would. Advance is tuned
+against Novice only; its win rates say nothing about how it fares against
 humans. Advanced
 projects in particular need a strategy that wants them (milestone 2).

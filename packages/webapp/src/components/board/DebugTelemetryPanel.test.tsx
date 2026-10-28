@@ -7,10 +7,10 @@ import DebugTelemetryPanel from './DebugTelemetryPanel';
 import type { GameContext } from '../GameContextHelpers';
 import { playerView } from '@/game/core/playerView';
 import { createProfileBot } from '@/game/bots/profileBot';
-import { BALANCED } from '@/game/bots/profiles';
+import { NOVICE } from '@/game/bots/profiles';
 import { runGame } from '@/game/bots/runner';
 
-const run = runGame({ numPlayers: 2, seed: 'debug-panel', bots: createProfileBot(BALANCED) });
+const run = runGame({ numPlayers: 2, seed: 'debug-panel', bots: createProfileBot(NOVICE) });
 const gameContext = {
   G: playerView({ G: run.state.G, ctx: run.state.ctx, playerID: '0' }),
   ctx: run.state.ctx,

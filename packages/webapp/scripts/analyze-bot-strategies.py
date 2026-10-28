@@ -1,4 +1,4 @@
-"""Summarize paired challenger-vs-Balanced trials using Python's standard library; split tied wins."""
+"""Summarize paired challenger-vs-Novice trials using Python's standard library; split tied wins."""
 import argparse
 import csv
 import gzip
@@ -67,7 +67,7 @@ for (count, scenario, seat) in sorted(k for k in games if k[2] is not None):
     assert all(trial[s]['players'][seat - 1]['profile'] == challenger for s in seeds)
 
     def delta(value):
-        # Paired within-seed difference: challenger arm minus all-Balanced.
+        # Paired within-seed difference: challenger arm minus all-Novice.
         return interval([value(trial[s]) - value(baseline[s]) for s in seeds])
 
     win = interval([share(trial[s], seat) for s in seeds])
@@ -85,33 +85,33 @@ for (count, scenario, seat) in sorted(k for k in games if k[2] is not None):
     cells.append({'numPlayers': count, 'scenario': scenario, 'seat': seat, 'games': len(seeds),
                   'uniform': 1 / count,
                   'challengerWinShare': win,
-                  'balancedWinShare': interval([share(baseline[s], seat) for s in seeds]),
+                  'noviceWinShare': interval([share(baseline[s], seat) for s in seeds]),
                   'pairedWinShareChange': delta(lambda r: share(r, seat)),
                   'aboveUniform': win['low'] > 1 / count,
                   'tiedGames': sum(len(trial[s]['winners']) > 1 for s in seeds),
-                  'challenger': challenger_means, 'balanced': baseline_means, 'pairedChange': paired,
+                  'challenger': challenger_means, 'novice': baseline_means, 'pairedChange': paired,
                   'otherSeats': others,
                   'msPerGame': {'challengerArm': st.mean(trial[s]['ms'] for s in seeds),
-                                'balancedArm': st.mean(baseline[s]['ms'] for s in seeds)}})
+                                'noviceArm': st.mean(baseline[s]['ms'] for s in seeds)}})
 
 # The task's pass rule: every scenario A cell above uniform; None when A was not run.
 scenario_a = [c['aboveUniform'] for c in cells if c['scenario'] == 'A']
 success = all(scenario_a) if scenario_a else None
 report = {'manifest': manifest, 'successScenarioA': success,
-          'method': 'Each seed is played all-Balanced and with the challenger in one seat; Balanced plays every other seat. '
+          'method': 'Each seed is played all-Novice and with the challenger in one seat; Novice plays every other seat. '
                     'Win shares split ties. Approximate 95% game-level normal intervals; paired intervals use within-seed '
-                    'differences against Balanced in the same seat and seed. Exploratory bot-versus-bot simulation, not a '
+                    'differences against Novice in the same seat and seed. Exploratory bot-versus-bot simulation, not a '
                     'human population estimate.',
           'cells': cells}
 (directory / 'analysis.json').write_text(json.dumps(report, indent=2, ensure_ascii=False) + '\n')
 with (directory / 'summary.csv').open('w') as out:
     writer = csv.writer(out)
-    writer.writerow(['players', 'scenario', 'seat', 'games', 'challengerWinShare', 'low', 'high', 'balancedWinShare',
-                     'pairedChange', 'pairedLow', 'pairedHigh', 'aboveUniform', 'challengerScore', 'balancedScore'])
+    writer.writerow(['players', 'scenario', 'seat', 'games', 'challengerWinShare', 'low', 'high', 'noviceWinShare',
+                     'pairedChange', 'pairedLow', 'pairedHigh', 'aboveUniform', 'challengerScore', 'noviceScore'])
     for c in cells:
         w, p = c['challengerWinShare'], c['pairedWinShareChange']
         writer.writerow([c['numPlayers'], c['scenario'], c['seat'], c['games'], *(round(x, 6) for x in (w['mean'], w['low'], w['high'],
-                         c['balancedWinShare']['mean'], p['mean'], p['low'], p['high'])), c['aboveUniform'],
-                         round(c['challenger']['score'], 4), round(c['balanced']['score'], 4)])
+                         c['noviceWinShare']['mean'], p['mean'], p['low'], p['high'])), c['aboveUniform'],
+                         round(c['challenger']['score'], 4), round(c['novice']['score'], 4)])
 print((directory / 'summary.csv').read_text())
 print('scenario A success:', success)

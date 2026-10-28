@@ -1,10 +1,10 @@
 import { createProfileBot } from './profileBot';
-import { BALANCED } from './profiles';
+import { NOVICE } from './profiles';
 import { runGame } from './runner';
 import { summarize, summaryCsv } from './summary';
 
 describe('batch summary', () => {
-  const bot = createProfileBot(BALANCED);
+  const bot = createProfileBot(NOVICE);
   const runs = [2, 3].flatMap(numPlayers => ['a', 'b'].map(seed => runGame({ numPlayers, seed: `summary-${seed}`, bots: bot })));
   const summaries = summarize(runs);
 
