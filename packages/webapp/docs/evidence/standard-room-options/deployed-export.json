@@ -1,0 +1,54 @@
+{
+  "ruleset": "tree-poc-v1",
+  "experiments": {
+    "government5": "any",
+    "completionRewards": "difficulty"
+  },
+  "build": "3ed34aee7b763c81f9284a32da5f4ac477990e4d",
+  "players": 2,
+  "rounds": 1,
+  "standardOptions": {
+    "starterRotation": "counterclockwise",
+    "extraRounds": 2,
+    "treePreset": "cc-013610"
+  },
+  "completedComplexity": 0,
+  "completedProjectIds": [],
+  "grown": [],
+  "remainingHearts": 10,
+  "scores": {
+    "0": 0,
+    "1": 0
+  },
+  "outcome": "星源樹枯萎",
+  "finished": false,
+  "log": [
+    {
+      "kind": "event",
+      "target": "又老又窮啊",
+      "round": 1,
+      "sequence": 1
+    },
+    {
+      "kind": "eventEffect",
+      "target": "本輪所有玩家皆不可成長星源樹。",
+      "projects": [],
+      "market": [
+        "工程師",
+        "議題工作者",
+        "文字工作者",
+        "議題工作者",
+        "行銷公關",
+        "議題工作者"
+      ],
+      "actionPoints": {
+        "0": 3,
+        "1": 3
+      },
+      "round": 1,
+      "sequence": 2
+    }
+  ],
+  "exportedAt": "2026-10-28T07:27:48.475Z",
+  "durationSeconds": 5
+}

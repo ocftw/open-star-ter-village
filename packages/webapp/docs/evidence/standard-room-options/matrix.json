@@ -1,0 +1,7497 @@
+{
+  "build": "3ed34aee7b763c81f9284a32da5f4ac477990e4d",
+  "dirty": false,
+  "games": 108,
+  "replayGames": 108,
+  "failures": 0,
+  "results": [
+    {
+      "key": "2p/none/extra-0/count-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 0,
+        "treePreset": "count-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 7,
+      "orders": [
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 44,
+        "1": 56
+      },
+      "treeProgress": {
+        "metric": "count",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 4
+      },
+      "replayIdentical": true,
+      "moves": 49,
+      "movesSha256": "a4181a2c10857b5a49ab95a5de2ff04fb8f6964c2be03170aa5fb6e886487f85"
+    },
+    {
+      "key": "2p/none/extra-0/cc-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 0,
+        "treePreset": "cc-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 7,
+      "orders": [
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 44,
+        "1": 56
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 4
+      },
+      "replayIdentical": true,
+      "moves": 49,
+      "movesSha256": "a4181a2c10857b5a49ab95a5de2ff04fb8f6964c2be03170aa5fb6e886487f85"
+    },
+    {
+      "key": "2p/none/extra-0/cc-00369/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 0,
+        "treePreset": "cc-00369"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 7,
+      "orders": [
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 40,
+        "1": 53
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          3,
+          6,
+          9
+        ],
+        "value": 4
+      },
+      "replayIdentical": true,
+      "moves": 46,
+      "movesSha256": "2dc56cb87877da425a8d7c0e33420cf28aa6880bb8a4c8c015d42f178d106dc4"
+    },
+    {
+      "key": "2p/none/extra-0/cc-013610/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 0,
+        "treePreset": "cc-013610"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 7,
+      "orders": [
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 52,
+        "1": 48
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          1,
+          3,
+          6,
+          10
+        ],
+        "value": 5
+      },
+      "replayIdentical": true,
+      "moves": 44,
+      "movesSha256": "2d1f390f14f0fa2a93678d5146366df30f95c861eaed60f0f177bee611a3ef1b"
+    },
+    {
+      "key": "2p/none/extra-1/count-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 1,
+        "treePreset": "count-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 8,
+      "orders": [
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 66,
+        "1": 71
+      },
+      "treeProgress": {
+        "metric": "count",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 6
+      },
+      "replayIdentical": true,
+      "moves": 57,
+      "movesSha256": "2a71cb2fd4f2976638bda46c6f8056ee5fbb6df363a9baca12b57eca4455aec6"
+    },
+    {
+      "key": "2p/none/extra-1/cc-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 1,
+        "treePreset": "cc-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 8,
+      "orders": [
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 66,
+        "1": 71
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 7
+      },
+      "replayIdentical": true,
+      "moves": 57,
+      "movesSha256": "2a71cb2fd4f2976638bda46c6f8056ee5fbb6df363a9baca12b57eca4455aec6"
+    },
+    {
+      "key": "2p/none/extra-1/cc-00369/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 1,
+        "treePreset": "cc-00369"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 8,
+      "orders": [
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 51,
+        "1": 70
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          3,
+          6,
+          9
+        ],
+        "value": 6
+      },
+      "replayIdentical": true,
+      "moves": 54,
+      "movesSha256": "ca35d57020bc6a5e4f08f480e041ceda2f7cc2636bde6370854c2e70f256e553"
+    },
+    {
+      "key": "2p/none/extra-1/cc-013610/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 1,
+        "treePreset": "cc-013610"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 8,
+      "orders": [
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 66,
+        "1": 48
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          1,
+          3,
+          6,
+          10
+        ],
+        "value": 6
+      },
+      "replayIdentical": true,
+      "moves": 50,
+      "movesSha256": "72babf62bbd2ec7afe0eccbbab1db24fefe3e7e36b456b1813e6b5cca2e006b0"
+    },
+    {
+      "key": "2p/none/extra-2/count-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 2,
+        "treePreset": "count-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 9,
+      "orders": [
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 108,
+        "1": 109
+      },
+      "treeProgress": {
+        "metric": "count",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 12
+      },
+      "replayIdentical": true,
+      "moves": 91,
+      "movesSha256": "db8b7e878ec8f1cdc4831167e80d6671c61f376eca1df03cc801d9660d43de39"
+    },
+    {
+      "key": "2p/none/extra-2/cc-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 2,
+        "treePreset": "cc-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 9,
+      "orders": [
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 108,
+        "1": 109
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 15
+      },
+      "replayIdentical": true,
+      "moves": 91,
+      "movesSha256": "db8b7e878ec8f1cdc4831167e80d6671c61f376eca1df03cc801d9660d43de39"
+    },
+    {
+      "key": "2p/none/extra-2/cc-00369/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 2,
+        "treePreset": "cc-00369"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 9,
+      "orders": [
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 73,
+        "1": 66
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          3,
+          6,
+          9
+        ],
+        "value": 7
+      },
+      "replayIdentical": true,
+      "moves": 64,
+      "movesSha256": "265853e06affe06e049336ae904d9b2581fe94c1be39888e83a40d5e2dd8cd73"
+    },
+    {
+      "key": "2p/none/extra-2/cc-013610/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 2,
+        "treePreset": "cc-013610"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 9,
+      "orders": [
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 57,
+        "1": 66
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          1,
+          3,
+          6,
+          10
+        ],
+        "value": 6
+      },
+      "replayIdentical": true,
+      "moves": 58,
+      "movesSha256": "7f6cd7a3c25c4f172ccecd0494635e330126f5a1af03f618dc82b3f44305821a"
+    },
+    {
+      "key": "2p/clockwise/extra-0/count-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 0,
+        "treePreset": "count-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 7,
+      "orders": [
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 45,
+        "1": 75
+      },
+      "treeProgress": {
+        "metric": "count",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 6
+      },
+      "replayIdentical": true,
+      "moves": 50,
+      "movesSha256": "29f976d9310875aee0b6d4511aa0c56c56cf7b79f0df84383c21726aee472221"
+    },
+    {
+      "key": "2p/clockwise/extra-0/cc-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 7,
+      "orders": [
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 45,
+        "1": 75
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 7
+      },
+      "replayIdentical": true,
+      "moves": 50,
+      "movesSha256": "29f976d9310875aee0b6d4511aa0c56c56cf7b79f0df84383c21726aee472221"
+    },
+    {
+      "key": "2p/clockwise/extra-0/cc-00369/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-00369"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 7,
+      "orders": [
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 42,
+        "1": 56
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          3,
+          6,
+          9
+        ],
+        "value": 5
+      },
+      "replayIdentical": true,
+      "moves": 44,
+      "movesSha256": "49b45d908a1d78bd76780e0b1089340c2d6081fa0d2b15f2fe8776dc1a6ab2e1"
+    },
+    {
+      "key": "2p/clockwise/extra-0/cc-013610/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-013610"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 7,
+      "orders": [
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 51,
+        "1": 41
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          1,
+          3,
+          6,
+          10
+        ],
+        "value": 4
+      },
+      "replayIdentical": true,
+      "moves": 43,
+      "movesSha256": "b6d4a4212c6766d43ae134a8b0d3da472c98498acf1d4793772555fc3cd29166"
+    },
+    {
+      "key": "2p/clockwise/extra-1/count-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 1,
+        "treePreset": "count-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 8,
+      "orders": [
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ]
+      ],
+      "scores": {
+        "0": 38,
+        "1": 59
+      },
+      "treeProgress": {
+        "metric": "count",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 4
+      },
+      "replayIdentical": true,
+      "moves": 49,
+      "movesSha256": "1837005039a45332948b77b005976534b7d109e9ed2d58ae9724bf665b827eef"
+    },
+    {
+      "key": "2p/clockwise/extra-1/cc-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 8,
+      "orders": [
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ]
+      ],
+      "scores": {
+        "0": 38,
+        "1": 59
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 4
+      },
+      "replayIdentical": true,
+      "moves": 49,
+      "movesSha256": "1837005039a45332948b77b005976534b7d109e9ed2d58ae9724bf665b827eef"
+    },
+    {
+      "key": "2p/clockwise/extra-1/cc-00369/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-00369"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 8,
+      "orders": [
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ]
+      ],
+      "scores": {
+        "0": 30,
+        "1": 65
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          3,
+          6,
+          9
+        ],
+        "value": 4
+      },
+      "replayIdentical": true,
+      "moves": 42,
+      "movesSha256": "5c683828dee724373ab37b37c781478a032fcba13f80dbd149b6e0e82086f80c"
+    },
+    {
+      "key": "2p/clockwise/extra-1/cc-013610/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-013610"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 8,
+      "orders": [
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ]
+      ],
+      "scores": {
+        "0": 54,
+        "1": 53
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          1,
+          3,
+          6,
+          10
+        ],
+        "value": 5
+      },
+      "replayIdentical": true,
+      "moves": 51,
+      "movesSha256": "9cc884d9b544f056cf96e92178eeaef64fbbefa9e26ad003ae025efa0404110b"
+    },
+    {
+      "key": "2p/clockwise/extra-2/count-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 2,
+        "treePreset": "count-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 9,
+      "orders": [
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 45,
+        "1": 81
+      },
+      "treeProgress": {
+        "metric": "count",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 6
+      },
+      "replayIdentical": true,
+      "moves": 59,
+      "movesSha256": "09bf36d89f4936522fc09ed427f8f348ed34de55ef70e2295aa26ffda843bc02"
+    },
+    {
+      "key": "2p/clockwise/extra-2/cc-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 9,
+      "orders": [
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 45,
+        "1": 81
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 6
+      },
+      "replayIdentical": true,
+      "moves": 59,
+      "movesSha256": "09bf36d89f4936522fc09ed427f8f348ed34de55ef70e2295aa26ffda843bc02"
+    },
+    {
+      "key": "2p/clockwise/extra-2/cc-00369/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-00369"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 9,
+      "orders": [
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 39,
+        "1": 59
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          3,
+          6,
+          9
+        ],
+        "value": 4
+      },
+      "replayIdentical": true,
+      "moves": 49,
+      "movesSha256": "724ee2d711ec6c8d3f91d7e1d02d5f3783ae31be70d6d98e61ea9f878be09699"
+    },
+    {
+      "key": "2p/clockwise/extra-2/cc-013610/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-013610"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 9,
+      "orders": [
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 75,
+        "1": 62
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          1,
+          3,
+          6,
+          10
+        ],
+        "value": 7
+      },
+      "replayIdentical": true,
+      "moves": 62,
+      "movesSha256": "eb4c58f3d30d8a0e6fddaf9306d7a836bd33ce3d961d5e37df7e4ee267036dc6"
+    },
+    {
+      "key": "2p/counterclockwise/extra-0/count-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 0,
+        "treePreset": "count-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 7,
+      "orders": [
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 45,
+        "1": 75
+      },
+      "treeProgress": {
+        "metric": "count",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 6
+      },
+      "replayIdentical": true,
+      "moves": 50,
+      "movesSha256": "29f976d9310875aee0b6d4511aa0c56c56cf7b79f0df84383c21726aee472221"
+    },
+    {
+      "key": "2p/counterclockwise/extra-0/cc-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 7,
+      "orders": [
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 45,
+        "1": 75
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 7
+      },
+      "replayIdentical": true,
+      "moves": 50,
+      "movesSha256": "29f976d9310875aee0b6d4511aa0c56c56cf7b79f0df84383c21726aee472221"
+    },
+    {
+      "key": "2p/counterclockwise/extra-0/cc-00369/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-00369"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 7,
+      "orders": [
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 42,
+        "1": 56
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          3,
+          6,
+          9
+        ],
+        "value": 5
+      },
+      "replayIdentical": true,
+      "moves": 44,
+      "movesSha256": "49b45d908a1d78bd76780e0b1089340c2d6081fa0d2b15f2fe8776dc1a6ab2e1"
+    },
+    {
+      "key": "2p/counterclockwise/extra-0/cc-013610/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-013610"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 7,
+      "orders": [
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 51,
+        "1": 41
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          1,
+          3,
+          6,
+          10
+        ],
+        "value": 4
+      },
+      "replayIdentical": true,
+      "moves": 43,
+      "movesSha256": "b6d4a4212c6766d43ae134a8b0d3da472c98498acf1d4793772555fc3cd29166"
+    },
+    {
+      "key": "2p/counterclockwise/extra-1/count-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 1,
+        "treePreset": "count-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 8,
+      "orders": [
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ]
+      ],
+      "scores": {
+        "0": 38,
+        "1": 59
+      },
+      "treeProgress": {
+        "metric": "count",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 4
+      },
+      "replayIdentical": true,
+      "moves": 49,
+      "movesSha256": "1837005039a45332948b77b005976534b7d109e9ed2d58ae9724bf665b827eef"
+    },
+    {
+      "key": "2p/counterclockwise/extra-1/cc-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 8,
+      "orders": [
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ]
+      ],
+      "scores": {
+        "0": 38,
+        "1": 59
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 4
+      },
+      "replayIdentical": true,
+      "moves": 49,
+      "movesSha256": "1837005039a45332948b77b005976534b7d109e9ed2d58ae9724bf665b827eef"
+    },
+    {
+      "key": "2p/counterclockwise/extra-1/cc-00369/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-00369"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 8,
+      "orders": [
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ]
+      ],
+      "scores": {
+        "0": 30,
+        "1": 65
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          3,
+          6,
+          9
+        ],
+        "value": 4
+      },
+      "replayIdentical": true,
+      "moves": 42,
+      "movesSha256": "5c683828dee724373ab37b37c781478a032fcba13f80dbd149b6e0e82086f80c"
+    },
+    {
+      "key": "2p/counterclockwise/extra-1/cc-013610/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-013610"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 8,
+      "orders": [
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ]
+      ],
+      "scores": {
+        "0": 54,
+        "1": 53
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          1,
+          3,
+          6,
+          10
+        ],
+        "value": 5
+      },
+      "replayIdentical": true,
+      "moves": 51,
+      "movesSha256": "9cc884d9b544f056cf96e92178eeaef64fbbefa9e26ad003ae025efa0404110b"
+    },
+    {
+      "key": "2p/counterclockwise/extra-2/count-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 2,
+        "treePreset": "count-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 9,
+      "orders": [
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 45,
+        "1": 81
+      },
+      "treeProgress": {
+        "metric": "count",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 6
+      },
+      "replayIdentical": true,
+      "moves": 59,
+      "movesSha256": "09bf36d89f4936522fc09ed427f8f348ed34de55ef70e2295aa26ffda843bc02"
+    },
+    {
+      "key": "2p/counterclockwise/extra-2/cc-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 9,
+      "orders": [
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 45,
+        "1": 81
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 6
+      },
+      "replayIdentical": true,
+      "moves": 59,
+      "movesSha256": "09bf36d89f4936522fc09ed427f8f348ed34de55ef70e2295aa26ffda843bc02"
+    },
+    {
+      "key": "2p/counterclockwise/extra-2/cc-00369/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-00369"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 9,
+      "orders": [
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 39,
+        "1": 59
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          3,
+          6,
+          9
+        ],
+        "value": 4
+      },
+      "replayIdentical": true,
+      "moves": 49,
+      "movesSha256": "724ee2d711ec6c8d3f91d7e1d02d5f3783ae31be70d6d98e61ea9f878be09699"
+    },
+    {
+      "key": "2p/counterclockwise/extra-2/cc-013610/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-013610"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 9,
+      "orders": [
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "0"
+        ],
+        [
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 75,
+        "1": 62
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          1,
+          3,
+          6,
+          10
+        ],
+        "value": 7
+      },
+      "replayIdentical": true,
+      "moves": 62,
+      "movesSha256": "eb4c58f3d30d8a0e6fddaf9306d7a836bd33ce3d961d5e37df7e4ee267036dc6"
+    },
+    {
+      "key": "3p/none/extra-0/count-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 0,
+        "treePreset": "count-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 6,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ]
+      ],
+      "scores": {
+        "0": 37,
+        "1": 59,
+        "2": 53
+      },
+      "treeProgress": {
+        "metric": "count",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 7
+      },
+      "replayIdentical": true,
+      "moves": 59,
+      "movesSha256": "b00f2c6b3557b829ce1af97cafb615dc641eda3ec7d2d5c4a3c0af975bd7f535"
+    },
+    {
+      "key": "3p/none/extra-0/cc-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 0,
+        "treePreset": "cc-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 6,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ]
+      ],
+      "scores": {
+        "0": 43,
+        "1": 58,
+        "2": 58
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 9
+      },
+      "replayIdentical": true,
+      "moves": 62,
+      "movesSha256": "7acfdd870b98fe500f5db5dc286eef89543795d68cd2e75663f856ea99569cc1"
+    },
+    {
+      "key": "3p/none/extra-0/cc-00369/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 0,
+        "treePreset": "cc-00369"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 6,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ]
+      ],
+      "scores": {
+        "0": 33,
+        "1": 46,
+        "2": 52
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          3,
+          6,
+          9
+        ],
+        "value": 7
+      },
+      "replayIdentical": true,
+      "moves": 56,
+      "movesSha256": "d47cc802edb1a824fc0db15d187e0a7b7bffdb87a54f927ecbef06fd5a29933d"
+    },
+    {
+      "key": "3p/none/extra-0/cc-013610/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 0,
+        "treePreset": "cc-013610"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 6,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ]
+      ],
+      "scores": {
+        "0": 46,
+        "1": 37,
+        "2": 55
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          1,
+          3,
+          6,
+          10
+        ],
+        "value": 7
+      },
+      "replayIdentical": true,
+      "moves": 56,
+      "movesSha256": "c341e2498ea5a7c298763cecb0ac0a961f6d39084beda709211e621434de29e2"
+    },
+    {
+      "key": "3p/none/extra-1/count-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 1,
+        "treePreset": "count-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 7,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ]
+      ],
+      "scores": {
+        "0": 44,
+        "1": 51,
+        "2": 55
+      },
+      "treeProgress": {
+        "metric": "count",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 7
+      },
+      "replayIdentical": true,
+      "moves": 68,
+      "movesSha256": "b68dfcb89b3290f833d05be831b9ae6dc637daeee666f64bee58db694edf7b43"
+    },
+    {
+      "key": "3p/none/extra-1/cc-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 1,
+        "treePreset": "cc-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 7,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ]
+      ],
+      "scores": {
+        "0": 44,
+        "1": 51,
+        "2": 55
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 8
+      },
+      "replayIdentical": true,
+      "moves": 68,
+      "movesSha256": "b68dfcb89b3290f833d05be831b9ae6dc637daeee666f64bee58db694edf7b43"
+    },
+    {
+      "key": "3p/none/extra-1/cc-00369/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 1,
+        "treePreset": "cc-00369"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 7,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ]
+      ],
+      "scores": {
+        "0": 46,
+        "1": 46,
+        "2": 54
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          3,
+          6,
+          9
+        ],
+        "value": 8
+      },
+      "replayIdentical": true,
+      "moves": 64,
+      "movesSha256": "b4f00af9c31859505fd09cab8862059ec5729ec9f8cf4b9cc4310886c390298f"
+    },
+    {
+      "key": "3p/none/extra-1/cc-013610/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 1,
+        "treePreset": "cc-013610"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 7,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ]
+      ],
+      "scores": {
+        "0": 47,
+        "1": 58,
+        "2": 54
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          1,
+          3,
+          6,
+          10
+        ],
+        "value": 8
+      },
+      "replayIdentical": true,
+      "moves": 69,
+      "movesSha256": "2551a054703b0923a1fbac3336d13cb95a2cab5672a17f042f127689d537a152"
+    },
+    {
+      "key": "3p/none/extra-2/count-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 2,
+        "treePreset": "count-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 8,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ]
+      ],
+      "scores": {
+        "0": 98,
+        "1": 102,
+        "2": 117
+      },
+      "treeProgress": {
+        "metric": "count",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 17
+      },
+      "replayIdentical": true,
+      "moves": 145,
+      "movesSha256": "f54f5db0b10941051fcf8b6e235487866423c951a793b476a741d1bf74ac1c49"
+    },
+    {
+      "key": "3p/none/extra-2/cc-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 2,
+        "treePreset": "cc-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 8,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ]
+      ],
+      "scores": {
+        "0": 98,
+        "1": 102,
+        "2": 117
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 21
+      },
+      "replayIdentical": true,
+      "moves": 145,
+      "movesSha256": "f54f5db0b10941051fcf8b6e235487866423c951a793b476a741d1bf74ac1c49"
+    },
+    {
+      "key": "3p/none/extra-2/cc-00369/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 2,
+        "treePreset": "cc-00369"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 8,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ]
+      ],
+      "scores": {
+        "0": 101,
+        "1": 94,
+        "2": 94
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          3,
+          6,
+          9
+        ],
+        "value": 18
+      },
+      "replayIdentical": true,
+      "moves": 121,
+      "movesSha256": "192a38f512873ebcdbcbeeb5b1f0958b33b006aaf028ece835755312e7b94d1e"
+    },
+    {
+      "key": "3p/none/extra-2/cc-013610/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 2,
+        "treePreset": "cc-013610"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 8,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ]
+      ],
+      "scores": {
+        "0": 65,
+        "1": 70,
+        "2": 83
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          1,
+          3,
+          6,
+          10
+        ],
+        "value": 12
+      },
+      "replayIdentical": true,
+      "moves": 87,
+      "movesSha256": "4379f66b54d2f302548748fd8db6274412e58443caeeb02054f307cd91830bbf"
+    },
+    {
+      "key": "3p/clockwise/extra-0/count-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 0,
+        "treePreset": "count-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 6,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 63,
+        "1": 46,
+        "2": 52
+      },
+      "treeProgress": {
+        "metric": "count",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 8
+      },
+      "replayIdentical": true,
+      "moves": 68,
+      "movesSha256": "e5dbd5e30c6c742087f3a8f7d4e6d00aa270333dfaa8a5102564b95b9a90cc96"
+    },
+    {
+      "key": "3p/clockwise/extra-0/cc-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 6,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 63,
+        "1": 46,
+        "2": 52
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 8
+      },
+      "replayIdentical": true,
+      "moves": 68,
+      "movesSha256": "e5dbd5e30c6c742087f3a8f7d4e6d00aa270333dfaa8a5102564b95b9a90cc96"
+    },
+    {
+      "key": "3p/clockwise/extra-0/cc-00369/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-00369"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 6,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 49,
+        "1": 39,
+        "2": 51
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          3,
+          6,
+          9
+        ],
+        "value": 7
+      },
+      "replayIdentical": true,
+      "moves": 56,
+      "movesSha256": "9594c436148ed621b249309cc319ddff4bac77fcfd61acaedc47ae32eab2b436"
+    },
+    {
+      "key": "3p/clockwise/extra-0/cc-013610/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-013610"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 6,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 40,
+        "1": 43,
+        "2": 44
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          1,
+          3,
+          6,
+          10
+        ],
+        "value": 6
+      },
+      "replayIdentical": true,
+      "moves": 55,
+      "movesSha256": "05b0adaef9e473fb540468c2314bee45a306487c275247b343063d62ee739b01"
+    },
+    {
+      "key": "3p/clockwise/extra-1/count-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 1,
+        "treePreset": "count-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 7,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ]
+      ],
+      "scores": {
+        "0": 68,
+        "1": 76,
+        "2": 72
+      },
+      "treeProgress": {
+        "metric": "count",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 11
+      },
+      "replayIdentical": true,
+      "moves": 94,
+      "movesSha256": "7a7fee60596d21646bc87185845f53eb4d562039f3bfefc4e4c8cc4bfcc593fa"
+    },
+    {
+      "key": "3p/clockwise/extra-1/cc-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 7,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ]
+      ],
+      "scores": {
+        "0": 68,
+        "1": 76,
+        "2": 72
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 12
+      },
+      "replayIdentical": true,
+      "moves": 94,
+      "movesSha256": "7a7fee60596d21646bc87185845f53eb4d562039f3bfefc4e4c8cc4bfcc593fa"
+    },
+    {
+      "key": "3p/clockwise/extra-1/cc-00369/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-00369"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 7,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ]
+      ],
+      "scores": {
+        "0": 50,
+        "1": 59,
+        "2": 63
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          3,
+          6,
+          9
+        ],
+        "value": 9
+      },
+      "replayIdentical": true,
+      "moves": 72,
+      "movesSha256": "9d02e91706db6dd10b8591f5ae9a689df73b0389c9da471ac22dbc42d54a7256"
+    },
+    {
+      "key": "3p/clockwise/extra-1/cc-013610/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-013610"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 7,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ]
+      ],
+      "scores": {
+        "0": 50,
+        "1": 68,
+        "2": 50
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          1,
+          3,
+          6,
+          10
+        ],
+        "value": 9
+      },
+      "replayIdentical": true,
+      "moves": 74,
+      "movesSha256": "cbf2d96cf0828eb50c2dcfd36511fdc73fe9b8191bc4c449ba72fa33405b0394"
+    },
+    {
+      "key": "3p/clockwise/extra-2/count-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 2,
+        "treePreset": "count-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 8,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ]
+      ],
+      "scores": {
+        "0": 117,
+        "1": 124,
+        "2": 117
+      },
+      "treeProgress": {
+        "metric": "count",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 19
+      },
+      "replayIdentical": true,
+      "moves": 160,
+      "movesSha256": "ac9b10f3c927c2d39822ca9bc58e441b6ec21f45e2d3ea2f69c9522511673f4b"
+    },
+    {
+      "key": "3p/clockwise/extra-2/cc-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 8,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ]
+      ],
+      "scores": {
+        "0": 117,
+        "1": 124,
+        "2": 117
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 25
+      },
+      "replayIdentical": true,
+      "moves": 160,
+      "movesSha256": "ac9b10f3c927c2d39822ca9bc58e441b6ec21f45e2d3ea2f69c9522511673f4b"
+    },
+    {
+      "key": "3p/clockwise/extra-2/cc-00369/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-00369"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 8,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ]
+      ],
+      "scores": {
+        "0": 69,
+        "1": 82,
+        "2": 99
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          3,
+          6,
+          9
+        ],
+        "value": 15
+      },
+      "replayIdentical": true,
+      "moves": 102,
+      "movesSha256": "04dab7f95cc182df9057eb3635557eada8936cc28924bfc013415347a305f321"
+    },
+    {
+      "key": "3p/clockwise/extra-2/cc-013610/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-013610"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 8,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ]
+      ],
+      "scores": {
+        "0": 62,
+        "1": 93,
+        "2": 103
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          1,
+          3,
+          6,
+          10
+        ],
+        "value": 16
+      },
+      "replayIdentical": true,
+      "moves": 107,
+      "movesSha256": "071afd6b04fb6c2402cc7d39efef9e362900000cd47700fe2c8fc0631b6000c7"
+    },
+    {
+      "key": "3p/counterclockwise/extra-0/count-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 0,
+        "treePreset": "count-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 6,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ]
+      ],
+      "scores": {
+        "0": 46,
+        "1": 42,
+        "2": 47
+      },
+      "treeProgress": {
+        "metric": "count",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 7
+      },
+      "replayIdentical": true,
+      "moves": 59,
+      "movesSha256": "c45eaa62007eddd3d80564eb455d8abccba3b8d017a0aa73f9845ade389fb87c"
+    },
+    {
+      "key": "3p/counterclockwise/extra-0/cc-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 6,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ]
+      ],
+      "scores": {
+        "0": 46,
+        "1": 42,
+        "2": 47
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 7
+      },
+      "replayIdentical": true,
+      "moves": 59,
+      "movesSha256": "c45eaa62007eddd3d80564eb455d8abccba3b8d017a0aa73f9845ade389fb87c"
+    },
+    {
+      "key": "3p/counterclockwise/extra-0/cc-00369/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-00369"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 6,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ]
+      ],
+      "scores": {
+        "0": 37,
+        "1": 41,
+        "2": 55
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          3,
+          6,
+          9
+        ],
+        "value": 7
+      },
+      "replayIdentical": true,
+      "moves": 56,
+      "movesSha256": "98ce6cae704249fff3975656a87c8f5e906c109beeafccba48f88812bcdfbea4"
+    },
+    {
+      "key": "3p/counterclockwise/extra-0/cc-013610/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-013610"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 6,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ]
+      ],
+      "scores": {
+        "0": 41,
+        "1": 50,
+        "2": 54
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          1,
+          3,
+          6,
+          10
+        ],
+        "value": 8
+      },
+      "replayIdentical": true,
+      "moves": 59,
+      "movesSha256": "edd760fd4348c09d0d5bb61b9b70a14651cc66cc4585bf169d91b6d5bbbec138"
+    },
+    {
+      "key": "3p/counterclockwise/extra-1/count-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 1,
+        "treePreset": "count-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 7,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ]
+      ],
+      "scores": {
+        "0": 79,
+        "1": 78,
+        "2": 74
+      },
+      "treeProgress": {
+        "metric": "count",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 13
+      },
+      "replayIdentical": true,
+      "moves": 100,
+      "movesSha256": "608153a3658d041eccf2cb95db9334ca35fe595584e232dee6f6e72dc910673b"
+    },
+    {
+      "key": "3p/counterclockwise/extra-1/cc-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 7,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ]
+      ],
+      "scores": {
+        "0": 79,
+        "1": 78,
+        "2": 74
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 15
+      },
+      "replayIdentical": true,
+      "moves": 100,
+      "movesSha256": "608153a3658d041eccf2cb95db9334ca35fe595584e232dee6f6e72dc910673b"
+    },
+    {
+      "key": "3p/counterclockwise/extra-1/cc-00369/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-00369"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 7,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ]
+      ],
+      "scores": {
+        "0": 49,
+        "1": 51,
+        "2": 47
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          3,
+          6,
+          9
+        ],
+        "value": 7
+      },
+      "replayIdentical": true,
+      "moves": 67,
+      "movesSha256": "5d6b096b39f8e0495de4bb4c8e2b3fbcbcce6a10794ef997887e7e1a0922d06b"
+    },
+    {
+      "key": "3p/counterclockwise/extra-1/cc-013610/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-013610"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 7,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ]
+      ],
+      "scores": {
+        "0": 49,
+        "1": 52,
+        "2": 65
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          1,
+          3,
+          6,
+          10
+        ],
+        "value": 10
+      },
+      "replayIdentical": true,
+      "moves": 72,
+      "movesSha256": "bea80cf170696a608bb02b7f975ae8228ae3b3d2282cf5a82a3b964fc45493d5"
+    },
+    {
+      "key": "3p/counterclockwise/extra-2/count-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 2,
+        "treePreset": "count-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 8,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 91,
+        "1": 107,
+        "2": 115
+      },
+      "treeProgress": {
+        "metric": "count",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 16
+      },
+      "replayIdentical": true,
+      "moves": 145,
+      "movesSha256": "b671e212285b674fbe1d30d51f918b1cc19ec232ff1b9898a10d1af95b03fd0b"
+    },
+    {
+      "key": "3p/counterclockwise/extra-2/cc-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 8,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 91,
+        "1": 107,
+        "2": 115
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 20
+      },
+      "replayIdentical": true,
+      "moves": 145,
+      "movesSha256": "b671e212285b674fbe1d30d51f918b1cc19ec232ff1b9898a10d1af95b03fd0b"
+    },
+    {
+      "key": "3p/counterclockwise/extra-2/cc-00369/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-00369"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 8,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 79,
+        "1": 89,
+        "2": 76
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          3,
+          6,
+          9
+        ],
+        "value": 17
+      },
+      "replayIdentical": true,
+      "moves": 94,
+      "movesSha256": "f6ea501752bd9b60bbd2bc2bbf2258d3dd650669c0a468d50a22724448e104bd"
+    },
+    {
+      "key": "3p/counterclockwise/extra-2/cc-013610/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-013610"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 8,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "2",
+          "0"
+        ],
+        [
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 67,
+        "1": 73,
+        "2": 83
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          1,
+          3,
+          6,
+          10
+        ],
+        "value": 13
+      },
+      "replayIdentical": true,
+      "moves": 91,
+      "movesSha256": "c50711f399a20a6d149725ec5c3d61a6b7d2546f0aa3fe5e9b5ca93d8dc41c52"
+    },
+    {
+      "key": "4p/none/extra-0/count-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 0,
+        "treePreset": "count-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 5,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ]
+      ],
+      "scores": {
+        "0": 60,
+        "1": 54,
+        "2": 41,
+        "3": 48
+      },
+      "treeProgress": {
+        "metric": "count",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 11
+      },
+      "replayIdentical": true,
+      "moves": 80,
+      "movesSha256": "6e82e7e17893162aebf5b5eda2def58fb1c95edc346ce644a790deb63844cdc3"
+    },
+    {
+      "key": "4p/none/extra-0/cc-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 0,
+        "treePreset": "cc-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 5,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ]
+      ],
+      "scores": {
+        "0": 60,
+        "1": 54,
+        "2": 41,
+        "3": 48
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 12
+      },
+      "replayIdentical": true,
+      "moves": 80,
+      "movesSha256": "6e82e7e17893162aebf5b5eda2def58fb1c95edc346ce644a790deb63844cdc3"
+    },
+    {
+      "key": "4p/none/extra-0/cc-00369/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 0,
+        "treePreset": "cc-00369"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 5,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ]
+      ],
+      "scores": {
+        "0": 25,
+        "1": 37,
+        "2": 42,
+        "3": 34
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          3,
+          6,
+          9
+        ],
+        "value": 7
+      },
+      "replayIdentical": true,
+      "moves": 61,
+      "movesSha256": "7e64fa10908310af6ab8d878e53094c539ea5bd05266243713b79289f1c763c4"
+    },
+    {
+      "key": "4p/none/extra-0/cc-013610/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 0,
+        "treePreset": "cc-013610"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 5,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ]
+      ],
+      "scores": {
+        "0": 39,
+        "1": 31,
+        "2": 41,
+        "3": 40
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          1,
+          3,
+          6,
+          10
+        ],
+        "value": 8
+      },
+      "replayIdentical": true,
+      "moves": 62,
+      "movesSha256": "04b9ea72c3cbab62e649d6831f6f72a13983249cde0680ee594874f92972b64b"
+    },
+    {
+      "key": "4p/none/extra-1/count-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 1,
+        "treePreset": "count-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 6,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ]
+      ],
+      "scores": {
+        "0": 69,
+        "1": 71,
+        "2": 71,
+        "3": 44
+      },
+      "treeProgress": {
+        "metric": "count",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 13
+      },
+      "replayIdentical": true,
+      "moves": 112,
+      "movesSha256": "56fb1a4d7c942ad4ea5392de4e5bbcb955cc126f61bf92c34a7f6b3481d51266"
+    },
+    {
+      "key": "4p/none/extra-1/cc-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 1,
+        "treePreset": "cc-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 6,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ]
+      ],
+      "scores": {
+        "0": 69,
+        "1": 71,
+        "2": 71,
+        "3": 44
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 15
+      },
+      "replayIdentical": true,
+      "moves": 112,
+      "movesSha256": "56fb1a4d7c942ad4ea5392de4e5bbcb955cc126f61bf92c34a7f6b3481d51266"
+    },
+    {
+      "key": "4p/none/extra-1/cc-00369/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 1,
+        "treePreset": "cc-00369"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 6,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ]
+      ],
+      "scores": {
+        "0": 44,
+        "1": 58,
+        "2": 64,
+        "3": 48
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          3,
+          6,
+          9
+        ],
+        "value": 13
+      },
+      "replayIdentical": true,
+      "moves": 87,
+      "movesSha256": "11ea60a854b83d804c743a2a42f336a4040065a99d105c450968ab898e92b4ed"
+    },
+    {
+      "key": "4p/none/extra-1/cc-013610/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 1,
+        "treePreset": "cc-013610"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 6,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ]
+      ],
+      "scores": {
+        "0": 45,
+        "1": 57,
+        "2": 55,
+        "3": 40
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          1,
+          3,
+          6,
+          10
+        ],
+        "value": 11
+      },
+      "replayIdentical": true,
+      "moves": 78,
+      "movesSha256": "be77df7ef86909c3245176605e6d6d54f11675f6aacff5943b282943ae5012f0"
+    },
+    {
+      "key": "4p/none/extra-2/count-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 2,
+        "treePreset": "count-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 7,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ]
+      ],
+      "scores": {
+        "0": 72,
+        "1": 56,
+        "2": 105,
+        "3": 108
+      },
+      "treeProgress": {
+        "metric": "count",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 18
+      },
+      "replayIdentical": true,
+      "moves": 152,
+      "movesSha256": "dd7715d51202d3125ed9557d7da97f88e1c5727c0b493a9f5bafedec6bbcedb7"
+    },
+    {
+      "key": "4p/none/extra-2/cc-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 2,
+        "treePreset": "cc-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 7,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ]
+      ],
+      "scores": {
+        "0": 72,
+        "1": 56,
+        "2": 105,
+        "3": 108
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 23
+      },
+      "replayIdentical": true,
+      "moves": 152,
+      "movesSha256": "dd7715d51202d3125ed9557d7da97f88e1c5727c0b493a9f5bafedec6bbcedb7"
+    },
+    {
+      "key": "4p/none/extra-2/cc-00369/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 2,
+        "treePreset": "cc-00369"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 7,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ]
+      ],
+      "scores": {
+        "0": 90,
+        "1": 64,
+        "2": 84,
+        "3": 85
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          3,
+          6,
+          9
+        ],
+        "value": 20
+      },
+      "replayIdentical": true,
+      "moves": 142,
+      "movesSha256": "3de8904447f91ff49441ef03b4dfb62228bc3261995c34c887cc611c36824c87"
+    },
+    {
+      "key": "4p/none/extra-2/cc-013610/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 2,
+        "treePreset": "cc-013610"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 7,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ]
+      ],
+      "scores": {
+        "0": 76,
+        "1": 72,
+        "2": 73,
+        "3": 95
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          1,
+          3,
+          6,
+          10
+        ],
+        "value": 22
+      },
+      "replayIdentical": true,
+      "moves": 135,
+      "movesSha256": "f533f23abc53ee9a26ae4f788b4de03d2c71d043d225a955c5564cfea71c7a66"
+    },
+    {
+      "key": "4p/clockwise/extra-0/count-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 0,
+        "treePreset": "count-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 5,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "1",
+          "2",
+          "3",
+          "0"
+        ],
+        [
+          "2",
+          "3",
+          "0",
+          "1"
+        ],
+        [
+          "3",
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ]
+      ],
+      "scores": {
+        "0": 57,
+        "1": 51,
+        "2": 45,
+        "3": 42
+      },
+      "treeProgress": {
+        "metric": "count",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 10
+      },
+      "replayIdentical": true,
+      "moves": 81,
+      "movesSha256": "b156a477ebeb36b444cf3a205df661b28639434d2bd91fb933e82afd199edb13"
+    },
+    {
+      "key": "4p/clockwise/extra-0/cc-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 5,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "1",
+          "2",
+          "3",
+          "0"
+        ],
+        [
+          "2",
+          "3",
+          "0",
+          "1"
+        ],
+        [
+          "3",
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ]
+      ],
+      "scores": {
+        "0": 57,
+        "1": 51,
+        "2": 45,
+        "3": 42
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 11
+      },
+      "replayIdentical": true,
+      "moves": 81,
+      "movesSha256": "b156a477ebeb36b444cf3a205df661b28639434d2bd91fb933e82afd199edb13"
+    },
+    {
+      "key": "4p/clockwise/extra-0/cc-00369/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-00369"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 5,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "1",
+          "2",
+          "3",
+          "0"
+        ],
+        [
+          "2",
+          "3",
+          "0",
+          "1"
+        ],
+        [
+          "3",
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ]
+      ],
+      "scores": {
+        "0": 43,
+        "1": 42,
+        "2": 42,
+        "3": 44
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          3,
+          6,
+          9
+        ],
+        "value": 10
+      },
+      "replayIdentical": true,
+      "moves": 65,
+      "movesSha256": "12d8561ad0683eb37143795bc7370a16819a209db6b7522db43b02ac78c67eca"
+    },
+    {
+      "key": "4p/clockwise/extra-0/cc-013610/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-013610"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 5,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "1",
+          "2",
+          "3",
+          "0"
+        ],
+        [
+          "2",
+          "3",
+          "0",
+          "1"
+        ],
+        [
+          "3",
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ]
+      ],
+      "scores": {
+        "0": 38,
+        "1": 37,
+        "2": 47,
+        "3": 29
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          1,
+          3,
+          6,
+          10
+        ],
+        "value": 8
+      },
+      "replayIdentical": true,
+      "moves": 61,
+      "movesSha256": "844bb886215f56afcfe1a9a71270f033818e64a7e6a6fc896b31009849afdc3c"
+    },
+    {
+      "key": "4p/clockwise/extra-1/count-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 1,
+        "treePreset": "count-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 6,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "1",
+          "2",
+          "3",
+          "0"
+        ],
+        [
+          "2",
+          "3",
+          "0",
+          "1"
+        ],
+        [
+          "3",
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "1",
+          "2",
+          "3",
+          "0"
+        ]
+      ],
+      "scores": {
+        "0": 65,
+        "1": 95,
+        "2": 80,
+        "3": 76
+      },
+      "treeProgress": {
+        "metric": "count",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 17
+      },
+      "replayIdentical": true,
+      "moves": 139,
+      "movesSha256": "c3fd7950374714437416259b25a948aad2d50f2dd07c750ba61cf4bb54dc4b20"
+    },
+    {
+      "key": "4p/clockwise/extra-1/cc-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 6,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "1",
+          "2",
+          "3",
+          "0"
+        ],
+        [
+          "2",
+          "3",
+          "0",
+          "1"
+        ],
+        [
+          "3",
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "1",
+          "2",
+          "3",
+          "0"
+        ]
+      ],
+      "scores": {
+        "0": 65,
+        "1": 95,
+        "2": 80,
+        "3": 76
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 22
+      },
+      "replayIdentical": true,
+      "moves": 139,
+      "movesSha256": "c3fd7950374714437416259b25a948aad2d50f2dd07c750ba61cf4bb54dc4b20"
+    },
+    {
+      "key": "4p/clockwise/extra-1/cc-00369/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-00369"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 6,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "1",
+          "2",
+          "3",
+          "0"
+        ],
+        [
+          "2",
+          "3",
+          "0",
+          "1"
+        ],
+        [
+          "3",
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "1",
+          "2",
+          "3",
+          "0"
+        ]
+      ],
+      "scores": {
+        "0": 62,
+        "1": 56,
+        "2": 67,
+        "3": 60
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          3,
+          6,
+          9
+        ],
+        "value": 16
+      },
+      "replayIdentical": true,
+      "moves": 91,
+      "movesSha256": "56ad18fbdf2a706858b81ab7460e9ad412be05288e4d27a5ba0c842971e7a116"
+    },
+    {
+      "key": "4p/clockwise/extra-1/cc-013610/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-013610"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 6,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "1",
+          "2",
+          "3",
+          "0"
+        ],
+        [
+          "2",
+          "3",
+          "0",
+          "1"
+        ],
+        [
+          "3",
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "1",
+          "2",
+          "3",
+          "0"
+        ]
+      ],
+      "scores": {
+        "0": 40,
+        "1": 51,
+        "2": 42,
+        "3": 54
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          1,
+          3,
+          6,
+          10
+        ],
+        "value": 10
+      },
+      "replayIdentical": true,
+      "moves": 75,
+      "movesSha256": "3ba0ff9bf46028ef5fdf8ccc38ff086ce5eef315a5037f227c4a8cc494eacaf8"
+    },
+    {
+      "key": "4p/clockwise/extra-2/count-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 2,
+        "treePreset": "count-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 7,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "1",
+          "2",
+          "3",
+          "0"
+        ],
+        [
+          "2",
+          "3",
+          "0",
+          "1"
+        ],
+        [
+          "3",
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "1",
+          "2",
+          "3",
+          "0"
+        ],
+        [
+          "2",
+          "3",
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 68,
+        "1": 99,
+        "2": 86,
+        "3": 111
+      },
+      "treeProgress": {
+        "metric": "count",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 19
+      },
+      "replayIdentical": true,
+      "moves": 168,
+      "movesSha256": "067d3e1be70af16c3a8ef5f564278542f9b10a278d1b79c597a1a65bc9f365f0"
+    },
+    {
+      "key": "4p/clockwise/extra-2/cc-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 7,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "1",
+          "2",
+          "3",
+          "0"
+        ],
+        [
+          "2",
+          "3",
+          "0",
+          "1"
+        ],
+        [
+          "3",
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "1",
+          "2",
+          "3",
+          "0"
+        ],
+        [
+          "2",
+          "3",
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 68,
+        "1": 99,
+        "2": 86,
+        "3": 111
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 25
+      },
+      "replayIdentical": true,
+      "moves": 168,
+      "movesSha256": "067d3e1be70af16c3a8ef5f564278542f9b10a278d1b79c597a1a65bc9f365f0"
+    },
+    {
+      "key": "4p/clockwise/extra-2/cc-00369/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-00369"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 7,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "1",
+          "2",
+          "3",
+          "0"
+        ],
+        [
+          "2",
+          "3",
+          "0",
+          "1"
+        ],
+        [
+          "3",
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "1",
+          "2",
+          "3",
+          "0"
+        ],
+        [
+          "2",
+          "3",
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 68,
+        "1": 94,
+        "2": 73,
+        "3": 76
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          3,
+          6,
+          9
+        ],
+        "value": 21
+      },
+      "replayIdentical": true,
+      "moves": 131,
+      "movesSha256": "3906c807664e105f0160474ac74a1706a55d7e1962d40632d0ba74dc82354aa8"
+    },
+    {
+      "key": "4p/clockwise/extra-2/cc-013610/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-013610"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 7,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "1",
+          "2",
+          "3",
+          "0"
+        ],
+        [
+          "2",
+          "3",
+          "0",
+          "1"
+        ],
+        [
+          "3",
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "1",
+          "2",
+          "3",
+          "0"
+        ],
+        [
+          "2",
+          "3",
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 61,
+        "1": 68,
+        "2": 44,
+        "3": 62
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          1,
+          3,
+          6,
+          10
+        ],
+        "value": 14
+      },
+      "replayIdentical": true,
+      "moves": 95,
+      "movesSha256": "2cb15be36174d80b1c4a2337ddb10ac570c92daf5f27888ce062511759cfe424"
+    },
+    {
+      "key": "4p/counterclockwise/extra-0/count-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 0,
+        "treePreset": "count-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 5,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "3",
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "3",
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "2",
+          "3",
+          "0"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ]
+      ],
+      "scores": {
+        "0": 50,
+        "1": 41,
+        "2": 36,
+        "3": 47
+      },
+      "treeProgress": {
+        "metric": "count",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 8
+      },
+      "replayIdentical": true,
+      "moves": 73,
+      "movesSha256": "acd90b34000688ad68433c7934569545ca3ef2af86702aa0c4e8e4f64256e567"
+    },
+    {
+      "key": "4p/counterclockwise/extra-0/cc-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 5,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "3",
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "3",
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "2",
+          "3",
+          "0"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ]
+      ],
+      "scores": {
+        "0": 50,
+        "1": 41,
+        "2": 36,
+        "3": 47
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 9
+      },
+      "replayIdentical": true,
+      "moves": 73,
+      "movesSha256": "acd90b34000688ad68433c7934569545ca3ef2af86702aa0c4e8e4f64256e567"
+    },
+    {
+      "key": "4p/counterclockwise/extra-0/cc-00369/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-00369"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 5,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "3",
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "3",
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "2",
+          "3",
+          "0"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ]
+      ],
+      "scores": {
+        "0": 41,
+        "1": 39,
+        "2": 38,
+        "3": 47
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          3,
+          6,
+          9
+        ],
+        "value": 9
+      },
+      "replayIdentical": true,
+      "moves": 64,
+      "movesSha256": "4c605ef5bdace52a27c85d6edc1a92cf36fa302b8db95440ebeb878af101d3ac"
+    },
+    {
+      "key": "4p/counterclockwise/extra-0/cc-013610/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-013610"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 5,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "3",
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "3",
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "2",
+          "3",
+          "0"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ]
+      ],
+      "scores": {
+        "0": 41,
+        "1": 29,
+        "2": 41,
+        "3": 48
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          1,
+          3,
+          6,
+          10
+        ],
+        "value": 9
+      },
+      "replayIdentical": true,
+      "moves": 63,
+      "movesSha256": "5fb70653e41f2868cd258b8046a65e0f4b1d667c3877f3a6135bf460fcd4712c"
+    },
+    {
+      "key": "4p/counterclockwise/extra-1/count-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 1,
+        "treePreset": "count-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 6,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "3",
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "3",
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "2",
+          "3",
+          "0"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "3",
+          "0",
+          "1",
+          "2"
+        ]
+      ],
+      "scores": {
+        "0": 63,
+        "1": 83,
+        "2": 76,
+        "3": 62
+      },
+      "treeProgress": {
+        "metric": "count",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 15
+      },
+      "replayIdentical": true,
+      "moves": 124,
+      "movesSha256": "1fe3915bd3db596fcd684778a4930b98e710b372cdeb7fe23ac0888f24a97060"
+    },
+    {
+      "key": "4p/counterclockwise/extra-1/cc-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 6,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "3",
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "3",
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "2",
+          "3",
+          "0"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "3",
+          "0",
+          "1",
+          "2"
+        ]
+      ],
+      "scores": {
+        "0": 63,
+        "1": 83,
+        "2": 76,
+        "3": 62
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 18
+      },
+      "replayIdentical": true,
+      "moves": 124,
+      "movesSha256": "1fe3915bd3db596fcd684778a4930b98e710b372cdeb7fe23ac0888f24a97060"
+    },
+    {
+      "key": "4p/counterclockwise/extra-1/cc-00369/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-00369"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 6,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "3",
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "3",
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "2",
+          "3",
+          "0"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "3",
+          "0",
+          "1",
+          "2"
+        ]
+      ],
+      "scores": {
+        "0": 49,
+        "1": 76,
+        "2": 61,
+        "3": 51
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          3,
+          6,
+          9
+        ],
+        "value": 15
+      },
+      "replayIdentical": true,
+      "moves": 94,
+      "movesSha256": "b286801b96c00f50c4e0af70490b6744323d5ab571df7fb62eb21514807bfbfd"
+    },
+    {
+      "key": "4p/counterclockwise/extra-1/cc-013610/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-013610"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 6,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "3",
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "3",
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "2",
+          "3",
+          "0"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "3",
+          "0",
+          "1",
+          "2"
+        ]
+      ],
+      "scores": {
+        "0": 44,
+        "1": 50,
+        "2": 42,
+        "3": 52
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          1,
+          3,
+          6,
+          10
+        ],
+        "value": 10
+      },
+      "replayIdentical": true,
+      "moves": 75,
+      "movesSha256": "5b42055c4213a4f1c1fff5d106aa01493ed27d2b65d185b8d711f4ea9247768e"
+    },
+    {
+      "key": "4p/counterclockwise/extra-2/count-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 2,
+        "treePreset": "count-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 7,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "3",
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "3",
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "2",
+          "3",
+          "0"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "3",
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "3",
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 76,
+        "1": 70,
+        "2": 78,
+        "3": 67
+      },
+      "treeProgress": {
+        "metric": "count",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 16
+      },
+      "replayIdentical": true,
+      "moves": 133,
+      "movesSha256": "d7a3082b7300c2c7eee70edc50461f14f33de72f8e70f91c68cfdaa44ad8dad2"
+    },
+    {
+      "key": "4p/counterclockwise/extra-2/cc-00246/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-00246"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 7,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "3",
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "3",
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "2",
+          "3",
+          "0"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "3",
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "3",
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 76,
+        "1": 70,
+        "2": 78,
+        "3": 67
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          2,
+          4,
+          6
+        ],
+        "value": 19
+      },
+      "replayIdentical": true,
+      "moves": 133,
+      "movesSha256": "d7a3082b7300c2c7eee70edc50461f14f33de72f8e70f91c68cfdaa44ad8dad2"
+    },
+    {
+      "key": "4p/counterclockwise/extra-2/cc-00369/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-00369"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 7,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "3",
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "3",
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "2",
+          "3",
+          "0"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "3",
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "3",
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 67,
+        "1": 82,
+        "2": 86,
+        "3": 76
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          0,
+          3,
+          6,
+          9
+        ],
+        "value": 21
+      },
+      "replayIdentical": true,
+      "moves": 139,
+      "movesSha256": "7f6b175f070fdaf47f4222b24bbe893e5ee69b9b21d4eaef9d1984991c42d0a9"
+    },
+    {
+      "key": "4p/counterclockwise/extra-2/cc-013610/fixed",
+      "seed": "room-options-matrix-v1",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-013610"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "rounds": 7,
+      "orders": [
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "3",
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "3",
+          "0",
+          "1"
+        ],
+        [
+          "1",
+          "2",
+          "3",
+          "0"
+        ],
+        [
+          "0",
+          "1",
+          "2",
+          "3"
+        ],
+        [
+          "3",
+          "0",
+          "1",
+          "2"
+        ],
+        [
+          "2",
+          "3",
+          "0",
+          "1"
+        ]
+      ],
+      "scores": {
+        "0": 63,
+        "1": 48,
+        "2": 55,
+        "3": 67
+      },
+      "treeProgress": {
+        "metric": "cc",
+        "thresholds": [
+          0,
+          1,
+          3,
+          6,
+          10
+        ],
+        "value": 14
+      },
+      "replayIdentical": true,
+      "moves": 103,
+      "movesSha256": "06373e1bbfe1be778af9af6bba080f2fa4f9b94a4ef5494a4739b47c138e5233"
+    }
+  ]
+}
