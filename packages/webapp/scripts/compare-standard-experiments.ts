@@ -8,7 +8,7 @@ import { gzipSync } from 'node:zlib';
 import { createProfileBot } from '@/game/bots/profileBot';
 import { BALANCED } from '@/game/bots/profiles';
 import { runGame } from '@/game/bots/runner';
-import type { StandardExperiments } from '@/game/standard/config';
+import { EXPERIMENT_SCENARIOS as scenarios } from '@/game/standard/config';
 import { treeOutcome } from '@/game/standard/export';
 
 const { values } = parseArgs({ options: {
@@ -20,12 +20,6 @@ assert.ok(Number.isInteger(games) && games > 0, 'games must be a positive intege
 const out = resolve(values.out!);
 mkdirSync(out, { recursive: true });
 const build = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
-const scenarios: { id: string; experiments: StandardExperiments }[] = [
-  { id: 'A', experiments: { government5: 'existing', completionRewards: 'fixed' } },
-  { id: 'B', experiments: { government5: 'any', completionRewards: 'fixed' } },
-  { id: 'C', experiments: { government5: 'existing', completionRewards: 'difficulty' } },
-  { id: 'D', experiments: { government5: 'any', completionRewards: 'difficulty' } },
-];
 const started = Date.now();
 const bot = createProfileBot(BALANCED);
 const records = [];

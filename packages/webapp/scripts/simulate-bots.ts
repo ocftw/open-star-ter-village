@@ -2,6 +2,7 @@
  * Batch bot games for Standard mode.
  *
  *   pnpm webapp bots --players 2,3,4 --games 100 --profile balanced
+ *   pnpm webapp bots --profile counter
  *
  * Writes per-game exports (with telemetry), move logs and a summary to
  * bot-runs/<timestamp>/ and prints the summary table.

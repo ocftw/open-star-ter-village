@@ -1,3 +1,4 @@
+import { PROFILES } from './profiles';
 import { BOT_STRATEGIES, isBotStrategy, pickBotName } from './strategies';
 
 describe('bot strategies', () => {
@@ -6,6 +7,20 @@ describe('bot strategies', () => {
       expect(new Set(strategy.names).size).toBe(strategy.names.length);
       expect(strategy.names.length).toBeGreaterThanOrEqual(3);
     }
+  });
+
+  test('every strategy is keyed by its id, uses its CLI profile, and has a label and description', () => {
+    for (const [key, strategy] of Object.entries(BOT_STRATEGIES)) {
+      expect(strategy.id).toBe(key);
+      expect(strategy.profile).toBe(PROFILES[key]);
+      expect(strategy.label).toMatch(/\S/);
+      expect(strategy.description).toMatch(/\S/);
+    }
+  });
+
+  test('no two strategies share a seat name', () => {
+    const names = Object.values(BOT_STRATEGIES).flatMap(strategy => strategy.names);
+    expect(new Set(names).size).toBe(names.length);
   });
 
   test('picks the first unused name, then numbers once the list runs out', () => {
@@ -18,6 +33,7 @@ describe('bot strategies', () => {
 
   test('recognises only registered strategy ids', () => {
     expect(isBotStrategy('balanced')).toBe(true);
+    expect(isBotStrategy('counter')).toBe(true);
     expect(isBotStrategy('toString')).toBe(false);
     expect(isBotStrategy(undefined)).toBe(false);
   });

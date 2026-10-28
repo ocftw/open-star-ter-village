@@ -5,6 +5,13 @@ export interface StandardExperiments {
   completionRewards: 'fixed' | 'difficulty';
 }
 export const DEFAULT_EXPERIMENTS: StandardExperiments = {government5:'existing', completionRewards:'fixed'};
+/** The four rule-option combinations bot trials compare; A is the default rules. */
+export const EXPERIMENT_SCENARIOS: { id: 'A' | 'B' | 'C' | 'D'; experiments: StandardExperiments }[] = [
+  { id: 'A', experiments: { government5: 'existing', completionRewards: 'fixed' } },
+  { id: 'B', experiments: { government5: 'any', completionRewards: 'fixed' } },
+  { id: 'C', experiments: { government5: 'existing', completionRewards: 'difficulty' } },
+  { id: 'D', experiments: { government5: 'any', completionRewards: 'difficulty' } },
+];
 export function experimentLabel(value?: StandardExperiments): string {
   const e = value ?? DEFAULT_EXPERIMENTS;
   return `政府 5：${e.government5 === 'any' ? '不限既有方塊' : '僅既有方塊'} · 結案獎勵：${e.completionRewards === 'difficulty' ? '發起／結案各依星數 +1～+4' : '發起／結案各 +2'}`;

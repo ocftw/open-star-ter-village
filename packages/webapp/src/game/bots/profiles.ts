@@ -79,7 +79,19 @@ export const BALANCED: Profile = {
   nodeImpact: DEFAULT_NODE_IMPACT,
 };
 
-export const PROFILES: Record<string, Profile> = { balanced: BALANCED };
+/**
+ * Counter: Balanced's scoring tuned to beat Balanced, above all from the early
+ * seats where Balanced loses to the players after it. It gives no value to
+ * what tree abilities give other players or to the tiers a growth unlocks,
+ * weights the shared tree at 0.6, and pays 1 point to open a project, so its
+ * actions go to completing its own projects before later seats can.
+ */
+export const COUNTER: Profile = {
+  ...withWeights(BALANCED, { village: 0, tree: 0.6, unlock: 0, initiation: -1 }),
+  name: 'counter',
+};
+
+export const PROFILES: Record<string, Profile> = { balanced: BALANCED, counter: COUNTER };
 
 /** A profile with some weights overridden, e.g. from CLI JSON. */
 export function withWeights(profile: Profile, overrides: Partial<Weights>): Profile {
