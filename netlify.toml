@@ -13,7 +13,7 @@
   # CACHED_COMMIT_REF equal to COMMIT_REF. Diffing a commit against itself is
   # always quiet, so every cacheless build was canceled, and a canceled build
   # never saves a cache, which left production frozen.
-  ignore    = '[ -n "$CACHED_COMMIT_REF" ] && [ "$CACHED_COMMIT_REF" != "$COMMIT_REF" ] && git diff --quiet "$CACHED_COMMIT_REF" "$COMMIT_REF" -- homepage/ netlify/ netlify.toml pnpm-lock.yaml pnpm-workspace.yaml package.json'
+  ignore    = '[ -n "$CACHED_COMMIT_REF" ] && [ "$CACHED_COMMIT_REF" != "$COMMIT_REF" ] && git diff --quiet "$CACHED_COMMIT_REF" "$COMMIT_REF" -- homepage/ packages/link-analytics/ netlify/ netlify.toml pnpm-lock.yaml pnpm-workspace.yaml package.json'
 
 [build.environment]
   NODE_VERSION = "24"

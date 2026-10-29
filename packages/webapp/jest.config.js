@@ -5,6 +5,8 @@ const config = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
+    '^@open-star-ter-village/link-analytics$':
+      '<rootDir>/../link-analytics/src/index.ts',
   },
   transform: {
     '^.+\\.tsx?$': ['ts-jest', {

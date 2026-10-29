@@ -9,6 +9,7 @@ const canUploadSentrySourceMaps = Boolean(sentryDsn && sentryAuthToken && sentry
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
+  transpilePackages: ['@open-star-ter-village/link-analytics'],
   env: {
     SENTRY_DSN: sentryDsn,
     SENTRY_ENVIRONMENT: process.env.SENTRY_ENVIRONMENT,

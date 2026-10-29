@@ -1,6 +1,6 @@
 import React from 'react';
 import { ParseMarkdownAndHtml } from './parseMarkdownAndHtml';
-import TrackedPromotionLink from './trackedPromotionLink';
+import TrackedLink from './trackedLink';
 import type { CtaBannerProps } from '../types/components';
 
 const CtaBanner: React.FC<CtaBannerProps> = ({
@@ -19,10 +19,12 @@ const CtaBanner: React.FC<CtaBannerProps> = ({
           <h2>{title}</h2>
           <ParseMarkdownAndHtml markdown={true}>{content}</ParseMarkdownAndHtml>
         </div>
-        <TrackedPromotionLink
+        <TrackedLink
           analyticsId={analyticsId}
-          creativeName="Resource online game banner"
-          creativeSlot="resource_online_game_banner"
+          promotion={{
+            creativeName: 'Resource online game banner',
+            creativeSlot: 'resource_online_game_banner',
+          }}
           href={ctaUrl}
           className="cta-banner-link"
           target={openInNewTab ? '_blank' : undefined}
@@ -30,7 +32,7 @@ const CtaBanner: React.FC<CtaBannerProps> = ({
           locale={false}
         >
           {ctaLabel}
-        </TrackedPromotionLink>
+        </TrackedLink>
       </div>
     </div>
   </section>
