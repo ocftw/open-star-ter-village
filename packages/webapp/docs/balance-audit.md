@@ -1,6 +1,6 @@
 # 星源樹 POC 平衡審核（2026-10-27）
 
-> 2026-10-28 update: [3,600-game paired factorial experiment](evidence/standard-experiments/balance-300/README.md) compares all four room settings at 2/3/4 players (300 each). It finds fixed turn order despite the intended rotation; seat fairness must be reassessed after that defect is fixed. The audit below preserves the original human-export evidence.
+> 2026-10-28 update: [3,600-game paired factorial experiment](https://github.com/ocftw/open-star-ter-village/blob/c75742d9/packages/webapp/docs/evidence/standard-experiments/balance-300/README.md) (historical; superseded by the [all-Advance sweep](evidence/bots/advance/sweep72/README.md)) compares all four room settings at 2/3/4 players (300 each). It finds fixed turn order despite the intended rotation; seat fairness must be reassessed after that defect is fixed. The audit below preserves the original human-export evidence.
 
 結論：維持 2/4/6、發起／結案各 +2、政府 5 僅推進自己的既有方塊。這是先維持已核准 POC 規則的建議，不代表已證明最佳平衡。此次補齊事件後，舊局資料無法直接代表新事件池的平衡。
 
