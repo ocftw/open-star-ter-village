@@ -266,8 +266,8 @@ out of the v1 profiles.
   job. V1 retains its engineer-specific estimate.
 - **開源 4 — 經驗傳承:** the finisher may advance one of their own existing
   cubes, of any job, on another project. Choice scoring values that cube's
-  contribution, owner points and finisher credit; other players' cubes and
-  creating new cubes are excluded. Both v2 variants use an initial impact
+  contribution, owner points and finisher credit using the engine's legal
+  choices, which already exclude other players' cubes and new cubes. Both v2 variants use an initial impact
   of 0.5 AP per round, reduced from 0.6 after checking the own-cubes rule.
   This remains above v1's 0.4 because every completion and any job can qualify,
   but still requires an eligible own cube elsewhere. It is a conservative

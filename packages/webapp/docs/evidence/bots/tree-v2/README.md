@@ -101,3 +101,56 @@ Reverified 2026-10-30 at `fbe51273` after the correction:
 
 The screenshots and original verification record above retain their explicitly
 identified earlier build; they demonstrate the unchanged report control.
+
+
+## Review corrections at bc556d9c
+
+Reverified after seven separate review commits on 2026-10-30. Runtime source
+and scripts were committed and clean at `bc556d9c718a22bd2398bf9ae77bac144b06f5a9`;
+subsequent changes document the results.
+
+- Every rule, including v1, now emits and analyzes runner `fg`. The v1 record
+  schema intentionally gains `fg`; IDs, seeds and bot decisions stay the
+  same. Historical schema claims above describe the initial version only.
+  The Python fixture gives every rule `fg=[2,3]` and a deliberately different
+  `f20=[-1,5]`, proving these remain separate metrics.
+- Maintenance discounts expected completion time for cards and unfinished
+  slots. Tests cover a slow 4★ card and a project needing three more rounds;
+  a completed slot still receives the full remaining-round horizon.
+- Normal adds no flat v2 Government 1/2 impact on top of explicit access and
+  contract values. Its collab node test equals reward plus expected contract
+  delta; Advance retains flat estimates.
+- Without Source 3, v2 uses the same engineer-first hand estimate as v1.
+- Source 4 tests now score `choiceOptions` results. Ownership legality is
+  delegated to the engine; the redundant bot guard was removed.
+- Changing Tree rules refreshes the header. The browser verifier derives
+  rules and row counts from the report, and compares its failed fact to the
+  selected scenarios' failures.
+
+| Command | Observed result |
+| --- | --- |
+| `pnpm webapp exec tsc --noEmit` | Exit 0. Requested shorthand `pnpm webapp tsc` has no package script; it reports ERR_PNPM_RECURSIVE_RUN_NO_SCRIPT. The compiler was run explicitly. |
+| `pnpm webapp lint` | Exit 0; no warnings/errors |
+| `pnpm webapp test` | 440 tests / 39 suites passed |
+| `python3 -m unittest scripts/test_analyze_standard_sweep.py` (from packages/webapp) | Exit 0; all three tree-rule subcases passed |
+| `pnpm webapp bots:smoke` | 1,296 games, 0 failures |
+| `pnpm webapp bots:behaviour` | 9,000 games, 0 failures; all 3 baseline cells exactly match |
+| `pnpm webapp build` | Exit 0; production client/server build |
+
+Report interaction was exercised with:
+
+```sh
+python3 packages/webapp/scripts/report-standard-sweep.py packages/webapp/bot-runs/smoke /tmp/review-report.html
+pnpm webapp exec node scripts/verify-standard-sweep-report.cjs /tmp/review-report.html
+```
+
+Observed: all three available rules isolate rows and refresh failure counts;
+no browser errors. A second synthetic analysis retained only room scenario 0
+for v1 and v2-collab, with failures set to 1 and 3 per player-count row. The
+same verifier passed with just those two rules and one displayed 4-player
+row each; header failures changed from 3 to 9. These are synthetic regression
+inputs, not failed smoke games or balance evidence.
+
+The previous report screenshots demonstrate the original control layout;
+this review adds behavioral checks without a layout change. No engine files
+were edited, and no large balance sweep was run.
