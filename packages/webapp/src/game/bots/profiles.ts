@@ -72,6 +72,24 @@ export const DEFAULT_NODE_IMPACT: Record<NodeId, number> = {
   'government-5': 0.5, // redistribute half the owner's contribution
 };
 
+/** V2 estimates are separate so tuning them cannot change any v1 profile. */
+export const V2_NODE_IMPACT = {
+  'v2-collab': {
+    ...DEFAULT_NODE_IMPACT,
+    'source-3': 0.5, // any main job starts at 3
+    'source-4': 0.6, // any player's cube, any job
+    'government-1': 0.2, // earlier advanced access
+    'government-2': 0.3, // helpers earn a contract on advanced projects
+  },
+  'v2-maintenance': {
+    ...DEFAULT_NODE_IMPACT,
+    'source-3': 0.5,
+    'source-4': 0.6,
+    'government-1': 0.2,
+    'government-2': 0.4, // recurring owner income after advanced completions
+  },
+} satisfies Record<'v2-collab' | 'v2-maintenance', Record<NodeId, number>>;
+
 export const NOVICE: Profile = {
   name: 'novice',
   weights: {
