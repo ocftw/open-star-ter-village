@@ -4,7 +4,7 @@ import type { FnContext } from 'boardgame.io';
 import { INVALID_MOVE } from 'boardgame.io/core';
 import type { GameState, ClientGameState } from '../store/store';
 import type { Choice, ChoiceKind, NodeId } from './state';
-import { growthReason, hasNode, REWARDS } from './tree';
+import { advancedScoreGate, growthReason, hasNode, REWARDS, treeRules } from './tree';
 import { ProjectBoardMutator, ProjectBoardSelector } from '../store/slice/projectBoard';
 import ProjectSlotSlice, { ProjectSlotSelector, ProjectSlotMutator } from '../store/slice/projectSlot/projectSlot';
 import { PlayersMutator } from '../store/slice/players';
@@ -45,7 +45,7 @@ export function syncTreeRules(G: GameState) {
   while (G.table.projectBoard.length < r.table.maxProjectSlots) {
     G.table.projectBoard.push(ProjectSlotSlice.initialState(`project-slot-${G.table.projectBoard.length}`));
   }
-  G.standard.nextEvent = hasNode(G, 'government-2') ? G.decks.events.drawPile[0] : undefined;
+  G.standard.nextEvent = hasNode(G, 'government-2') && treeRules(G) === 'v1' ? G.decks.events.drawPile[0] : undefined;
 }
 export const growTree: GameMove<(node: NodeId, overtime?: boolean) => void> = ({ G, ctx, playerID }, node, overtime = false) => {
   if (playerID !== ctx.currentPlayer || growthReason(G, node, playerID, overtime)) return INVALID_MOVE;
@@ -68,7 +68,7 @@ export function choiceOptions(G: GameState | ClientGameState, c: Choice): Choice
   if (c.kind === 'discard') return (G.players[c.playerId]?.hand?.projects ?? []).map(card => ({ label: card.name, target: { projectId: '', cardId: card.id } }));
   if (c.kind === 'draw') {
     return [{ label: '入門專案', target: { projectId: '', pile: 'entry' as const } },
-      ...(G.table.scoreBoard[c.playerId] > 20 ? [{ label: '進階專案', target: { projectId: '', pile: 'advanced' as const } }] : [])];
+      ...(G.table.scoreBoard[c.playerId] > advancedScoreGate(G) ? [{ label: '進階專案', target: { projectId: '', pile: 'advanced' as const } }] : [])];
   }
   const options: ChoiceOption[] = [];
   for (const slot of unfinished) {
@@ -97,7 +97,7 @@ export function choiceOptions(G: GameState | ClientGameState, c: Choice): Choice
     }
     for (const cube of slot.contributions) {
       if (c.kind !== 'digitalMinister' && cube.worker !== c.playerId) continue;
-      if (c.kind === 'source4' && cube.jobName !== '工程師') continue;
+      if (c.kind === 'source4' && treeRules(G) === 'v1' && cube.jobName !== '工程師') continue;
       if (ProjectSlotSelector.getJobContribution(slot, cube.jobName) >= slot.card!.requirements[cube.jobName]) continue;
       options.push({ label: `${slot.card!.name} / 玩家 ${Number(cube.worker) + 1} / ${cube.jobName} ${cube.value} → ${cube.value + 1}`, target: { projectId: slot.card!.id, worker: cube.worker, jobName: cube.jobName } });
     }
@@ -124,7 +124,7 @@ export const resolveStandardChoice: GameMove<(id: number, target: ChoiceTarget |
       const [card] = hand.splice(index, 1);
       (card.difficulty <= 2 ? G.decks.projects : G.decks.advanced!).drawPile.push(card);
     } else if (c.kind === 'draw') {
-      const advancedEligible = G.table.scoreBoard[playerID] > 20;
+      const advancedEligible = G.table.scoreBoard[playerID] > advancedScoreGate(G);
       const preferred = target.pile === 'advanced' ? G.decks.advanced! : G.decks.projects;
       const fallback = target.pile === 'advanced' ? G.decks.projects : advancedEligible ? G.decks.advanced! : undefined;
       const advancedBefore = G.decks.advanced!.drawPile.length;
@@ -178,15 +178,25 @@ function settleStandard(G: GameState) {
     scoreWithHistory(G, slot.owner, ownerReward, '發起獎勵', snapshot);
     scoreWithHistory(G, slot.owner, G.rules.event?.extraOwnerVictoryPoints ?? 0, '年度結算發起獎勵', snapshot);
     scoreWithHistory(G, slot.lastContributor, finisherReward, '結案獎勵', snapshot);
+    // v2 Government 2 contracts cover 3★ and 4★ projects completed while it is grown.
+    const contract = hasNode(G, 'government-2') && slot.card!.difficulty >= 3 ? treeRules(G) : 'v1';
+    if (contract === 'v2-collab') {
+      for (const helper of Array.from(new Set(slot.contributions.map(c => c.worker))).filter(w => w !== slot.owner)) scoreWithHistory(G, helper, 2, '協作合約', snapshot);
+    }
+    if (contract === 'v2-maintenance') s.maintenance = { ...s.maintenance, [slot.owner]: (s.maintenance?.[slot.owner] ?? 0) + 1 };
     PlayersMutator.addWorkerTokens(G.players, slot.owner, slot.ownerToken);
     s.completedProjectIds.push(slot.card!.id);
     s.completedComplexity = (s.completedComplexity ?? 0) + slot.card!.difficulty;
     log(G, 'complete', slot.lastContributor, slot.card!.name);
     trackCompletion(G, slot);
-    if (hasNode(G, 'source-4') && engineer) enqueue(G, 'source4', slot.lastContributor, slot.card!.id);
+    if (hasNode(G, 'source-4') && (engineer || treeRules(G) !== 'v1')) enqueue(G, 'source4', slot.lastContributor, slot.card!.id);
     if (hasNode(G, 'government-5') && ownerContribution >= 2) enqueue(G, 'government5', slot.owner, slot.card!.id, Math.floor(ownerContribution / 2));
   }
   ProjectBoardMutator.remove(G.table.projectBoard, completed);
+}
+/** Round-end income from v2 維運合約, paid from the round the project completed in. */
+export function endStandardRound(G: GameState) {
+  for (const [playerId, contracts] of Object.entries(G.standard?.maintenance ?? {})) scoreWithHistory(G, playerId, contracts, '維運合約');
 }
 export function beginStandardEvent(G: GameState) {
   if (!G.standard) return;
@@ -242,14 +252,15 @@ export function advanceStandard(context: FnContext<GameState>) {
       if (s.choices.length) continue;
       if (s.phase === 'event') { s.phase = 'action'; continue; }
       s.phase = 'restore';
-      if (hasNode(G, 'government-1')) enqueue(G, 'discard', ctx.currentPlayer);
+      if (hasNode(G, 'government-1') && treeRules(G) === 'v1') enqueue(G, 'discard', ctx.currentPlayer);
       continue;
     }
     if (s.phase === 'restore') {
       const player = G.players[ctx.currentPlayer];
-      const canDraw = G.decks.projects.drawPile.length || (G.table.scoreBoard[ctx.currentPlayer] > 20 && G.decks.advanced!.drawPile.length);
+      const advancedEligible = G.table.scoreBoard[ctx.currentPlayer] > advancedScoreGate(G);
+      const canDraw = G.decks.projects.drawPile.length || (advancedEligible && G.decks.advanced!.drawPile.length);
       if (player.hand.projects.length < G.rules.player.maxProjectCards && canDraw) {
-        if (G.table.scoreBoard[ctx.currentPlayer] > 20) { enqueue(G, 'draw', ctx.currentPlayer); continue; }
+        if (advancedEligible) { enqueue(G, 'draw', ctx.currentPlayer); continue; }
         player.hand.projects.push(G.decks.projects.drawPile.shift()!);
         continue;
       }
