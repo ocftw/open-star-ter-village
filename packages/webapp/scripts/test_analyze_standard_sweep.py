@@ -13,8 +13,8 @@ SCRIPT = Path(__file__).with_name('analyze-standard-sweep.py')
 
 class TreeRulesAnalysisTest(unittest.TestCase):
     def test_gate_and_contract_labels_survive_analysis(self):
-        for rule in ['v1', 'v2-collab', 'v2-maintenance']:
-            with self.subTest(rule=rule), tempfile.TemporaryDirectory() as tmp:
+        for rule, style in [('v1', 'legacy'), ('v2-collab', 'legacy'), ('v2-maintenance', 'legacy'), ('v1', 'bundle'), ('v2-collab', 'bundle')]:
+            with self.subTest(rule=rule, style=style), tempfile.TemporaryDirectory() as tmp:
                 root = Path(tmp)
                 (root / 'b01').mkdir()
                 record = {'n': 2, 'c': 'AA', 'sc': [5, 4], 'w': [0], 'rd': 7, 'mv': 20,
@@ -23,10 +23,14 @@ class TreeRulesAnalysisTest(unittest.TestCase):
                 record['fg'] = [2, 3]
                 with gzip.open(root / 'b01/s00.jsonl.gz', 'wt') as f:
                     f.write(json.dumps(record) + '\n')
-                # Legacy v1 manifests may omit treeRules entirely.
-                options = {} if rule == 'v1' else {'treeRules': rule}
-                manifest = {'scenarioIndexes': [0], 'playerCounts': [2], 'scenarios': [
-                    {'id': 'fixture', 'standardOptions': options, 'experiments': {'completionRewards': 'fixed'}}]}
+                scenario = {'id': 'fixture', 'standardOptions': {}, 'experiments': {'completionRewards': 'fixed'}}
+                if style == 'bundle':
+                    # Current manifests name the feature bundle beside the room options.
+                    scenario['treeRules'] = rule
+                elif rule != 'v1':
+                    # Legacy manifests kept treeRules in the room options, and v1 ones may omit it.
+                    scenario['standardOptions'] = {'treeRules': rule}
+                manifest = {'scenarioIndexes': [0], 'playerCounts': [2], 'scenarios': [scenario]}
                 (root / 'manifest.json').write_text(json.dumps(manifest))
                 subprocess.run([sys.executable, str(SCRIPT), str(root), '--workers', '1'], check=True, capture_output=True)
                 row = json.loads((root / 'analysis.json').read_text())['scenarios'][0]
