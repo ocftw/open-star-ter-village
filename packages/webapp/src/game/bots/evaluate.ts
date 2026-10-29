@@ -240,7 +240,8 @@ export function nodeValue(p: Position, node: NodeId): number {
   const perAp = p.profile.planner?.apValue ?? w.pointsPerAP;
   const variant = treeRules(p.view);
   const impact = variant === 'v1' ? p.profile.nodeImpact : V2_NODE_IMPACT[variant];
-  const consequence = impact[node] * Math.max(0, p.roundsLeft - 0.5) * beneficiaries * perAp
+  const flatImpact = variant !== 'v1' && p.profile.planner && (node === 'government-1' || node === 'government-2') ? 0 : impact[node];
+  const consequence = flatImpact * Math.max(0, p.roundsLeft - 0.5) * beneficiaries * perAp
     + (p.profile.planner ? paceGain(p, node) : 0) + advancedAccessValue(p, node);
   const grown = p.view.standard?.grown ?? [];
   const progress = treeProgress(p.view);

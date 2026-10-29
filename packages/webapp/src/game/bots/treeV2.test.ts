@@ -3,7 +3,7 @@ import type { GameState } from '@/game/store/store';
 import type { TreeRules } from '@/game/standard/options';
 import { normalizeStandardOptions } from '@/game/standard/options';
 import { playerView } from '@/game/core/playerView';
-import { cardValue, contractBonus, nodeValue, position, scoreAction } from './evaluate';
+import { cardValue, contractBonus, finishChance, nodeValue, position, scoreAction } from './evaluate';
 import { ADVANCE, NORMAL, NOVICE, type Profile } from './profiles';
 import { initialState } from './runner';
 
@@ -135,4 +135,16 @@ test('maintenance discounts the rounds spent finishing cards and live projects',
   expect(contractBonus(p, slot)).toBe(1); // 27 points / 3 per AP / 3 AP per round
   slot.contributions[0].value = 28;
   expect(contractBonus(p, slot)).toBe(4);
+});
+
+
+test('Normal values v2 government nodes through explicit gains without flat impact', () => {
+  const s = state();
+  s.G.players['0'].hand.projects = [];
+  const slot = project(s, '1');
+  slot.contributions[0].worker = '0';
+  const p = at(s, NORMAL);
+  expect(nodeValue(p, 'government-2')).toBeCloseTo(1 + 2 * finishChance(p, slot));
+  expect(nodeValue(p, 'government-1')).toBe(1); // score below the access gate
+  expect(nodeValue(at(s, ADVANCE), 'government-1')).toBeGreaterThan(ADVANCE.weights.tree);
 });
