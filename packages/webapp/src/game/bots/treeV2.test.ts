@@ -94,16 +94,16 @@ test('maintenance values owner income over remaining round ends, not helper inco
   expect(scoreAction(at(s), help)).toBe(withContract);
 });
 
-test('v2 Source 4 evaluates another player’s non-engineer cube and finisher credit', () => {
-  const s = state();
+test.each(['v2-collab', 'v2-maintenance'] as const)('%s Source 4 values only existing own cubes, of any job', rule => {
+  const s = state(rule);
   const slot = project(s, '0');
   s.G.standard!.choices = [{ id: 1, kind: 'source4', playerId: '0', projectId: 'done', budget: 1 }];
-  const score = scoreAction(at(s), { move: 'resolveStandardChoice', args: [1, { projectId: slot.card!.id, jobName: '法務', worker: '0' }] });
-  expect(score).toBeGreaterThan(0);
+  const score = (worker: string) => scoreAction(at(s), { move: 'resolveStandardChoice', args: [1, { projectId: slot.card!.id, jobName: '法務', worker }] });
+  expect(score('0')).toBeGreaterThan(0);
+  expect(score('1')).toBe(-Infinity);
   slot.contributions[0].worker = '1';
-  const other = scoreAction(at(s), { move: 'resolveStandardChoice', args: [1, { projectId: slot.card!.id, jobName: '法務', worker: '1' }] });
-  expect(Number.isFinite(other)).toBe(true);
-  expect(other).toBeLessThan(score);
+  expect(score('1')).toBe(-Infinity);
+  expect(score('0')).toBe(-Infinity); // Source 4 cannot create a new own cube.
 });
 
 test('Normal prices earlier advanced access only when growth crosses the gate; Advance keeps flat draws', () => {
