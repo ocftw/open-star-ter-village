@@ -1,4 +1,4 @@
-import { DEFAULT_STANDARD_OPTIONS, normalizeStandardOptions, standardRoundCount, TREE_PRESETS } from './options';
+import { DEFAULT_STANDARD_OPTIONS, normalizeStandardOptions, standardOptionsLabel, standardRoundCount, TREE_PRESETS, TREE_RULES } from './options';
 import { roomSetupError } from './config';
 
 describe('Standard room options', () => {
@@ -16,7 +16,7 @@ describe('Standard room options', () => {
 
   test.each([null, [], 'none', { extraRounds: -1 }, { extraRounds: 3 }, { extraRounds: 0.5 },
     { extraRounds: '1' }, { extraRounds: undefined }, { starterRotation: 'reverse' },
-    { treePreset: 'toString' }, { treePreset: 'unknown' }, { extra: true }])('rejects malformed options: %j', input => {
+    { treePreset: 'toString' }, { treePreset: 'unknown' }, { treeRules: 'v3' }, { treeRules: 'toString' }, { extra: true }])('rejects malformed options: %j', input => {
     expect(() => normalizeStandardOptions(input)).toThrow();
   });
 
@@ -31,5 +31,16 @@ describe('Standard room options', () => {
       }
     }
     expect(count).toBe(108);
+  });
+
+  test('tree rules default to v1 and only v2 variants appear in the label', () => {
+    expect(normalizeStandardOptions({}).treeRules).toBe('v1');
+    expect(standardOptionsLabel(normalizeStandardOptions({}))).toBe('先手不輪替 · 額外 0 輪 · 結案數 0／0／2／4／6');
+    for (const treeRules of Object.keys(TREE_RULES).filter(r => r !== 'v1')) {
+      expect(standardOptionsLabel(normalizeStandardOptions({ treeRules }))).toContain(TREE_RULES[treeRules as keyof typeof TREE_RULES]);
+    }
+    // Rooms created before tree rules existed keep the v1 label.
+    const { treeRules: _omitted, ...legacy } = DEFAULT_STANDARD_OPTIONS;
+    expect(standardOptionsLabel(legacy as typeof DEFAULT_STANDARD_OPTIONS)).toBe('先手不輪替 · 額外 0 輪 · 結案數 0／0／2／4／6');
   });
 });
