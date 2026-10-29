@@ -9,6 +9,10 @@
  *
  *   NODE_ENV=production pnpm webapp exec tsx scripts/sweep-standard-scenarios.ts --batches 30 --runs 100
  *   NODE_ENV=production pnpm webapp exec tsx scripts/sweep-standard-scenarios.ts --tables advance --out bot-runs/sweep72-advance
+ *
+ * `--scenarios default` (or a comma list of scenario indexes) plays only those
+ * scenarios; job files keep their index in the full 72, so seeds and results
+ * match the same scenario in a full sweep. See docs/bot-testing.md.
  */
 import assert from 'node:assert/strict';
 import { execFileSync, spawn, type ChildProcess } from 'node:child_process';
@@ -32,6 +36,8 @@ const { values } = parseArgs({ options: {
   seed: { type: 'string', default: 'sweep72-v1' },
   // `all`: every seat assignment of Novice and Advance; `advance`: Advance in every seat.
   tables: { type: 'string', default: 'all' },
+  // `all`, `default` (the default room: scenario 0) or comma-separated indexes into the 72.
+  scenarios: { type: 'string', default: 'all' },
   jobs: { type: 'string', default: String(availableParallelism()) },
   out: { type: 'string', default: 'bot-runs/sweep72' },
   child: { type: 'boolean', default: false },
@@ -55,6 +61,9 @@ const SCENARIOS: Scenario[] = ROTATIONS.flatMap(starterRotation => ([0, 1, 2] as
     experiments: { government5: 'any', completionRewards },
   })))));
 assert.equal(SCENARIOS.length, 72);
+const scenarioIndexes = values.scenarios === 'all' ? SCENARIOS.map((_, i) => i)
+  : values.scenarios === 'default' ? [0] : values.scenarios!.split(',').map(Number);
+assert.ok(scenarioIndexes.length && scenarioIndexes.every(i => Number.isInteger(i) && i >= 0 && i < SCENARIOS.length), 'scenarios must be all, default or indexes 0-71');
 
 /** Seat assignments as strings, seat 1 first: N = Novice, A = Advance. */
 const combos = (n: number) => values.tables === 'advance' ? ['A'.repeat(n)] : Array.from({ length: 2 ** n }, (_, mask) =>
@@ -137,17 +146,17 @@ async function main() {
   const gamesPerJob = runs * playerCounts.reduce((sum, n) => sum + combos(n).length, 0);
   writeFileSync(join(out, 'manifest.json'), JSON.stringify({ build, uncommittedSrcChanges: dirty, nodeEnv: process.env.NODE_ENV,
     tables: values.tables, seedPrefix: values.seed, seeds: `${values.seed}-b<1..${batches}>-<players>p-r<0..${runs - 1}>`, batches, runsPerBatch: runs,
-    playerCounts, combos: Object.fromEntries(playerCounts.map(n => [n, combos(n)])), scenarios: SCENARIOS,
-    gamesPerJob, totalGames: gamesPerJob * batches * SCENARIOS.length,
+    playerCounts, combos: Object.fromEntries(playerCounts.map(n => [n, combos(n)])), scenarios: SCENARIOS, scenarioIndexes,
+    gamesPerJob, totalGames: gamesPerJob * batches * scenarioIndexes.length,
     strategies: { N: { profile: 'novice', weights: NOVICE.weights }, A: { profile: 'advance', weights: ADVANCE.weights } },
     method: 'Authoritative headless reducer; bots see only their own player view. Every seed is played under all 72 scenarios and every seat assignment. Government 5 is the current new-room rule (any).' }, null, 2));
 
   // Batch-major order: early batches complete across all scenarios first, so partial results are balanced.
   const queue: { batch: number; scenario: number }[] = [];
-  for (let batch = 1; batch <= batches; batch++) for (let scenario = 0; scenario < SCENARIOS.length; scenario++) {
+  for (let batch = 1; batch <= batches; batch++) for (const scenario of scenarioIndexes) {
     if (!existsSync(jobFile(out, batch, scenario))) queue.push({ batch, scenario });
   }
-  const total = batches * SCENARIOS.length;
+  const total = batches * scenarioIndexes.length;
   let done = total - queue.length;
   let failures = 0;
   const started = Date.now();
@@ -175,4 +184,5 @@ async function main() {
   await Promise.all(Array.from({ length: Math.min(jobCount, queue.length) }, () =>
     work(spawn(process.execPath, [...process.execArgv, process.argv[1], ...process.argv.slice(2), '--child'], { stdio: ['inherit', 'inherit', 'inherit', 'ipc'] }))));
   console.info(`sweep complete: ${done}/${total} jobs, ${failures} failed games`);
+  if (failures) process.exitCode = 1;
 }

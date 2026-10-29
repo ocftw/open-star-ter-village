@@ -139,9 +139,10 @@ def main():
     batches_by_scenario = defaultdict(set)
     for path in files:
         batches_by_scenario[int(path.stem.split('.')[0][1:])].add(int(path.parent.name[1:]))
-    # Use only batches finished for every scenario, so scenarios stay paired.
-    complete = sorted(set.intersection(*batches_by_scenario.values())) if len(batches_by_scenario) == 72 else []
-    assert complete, 'no batch is complete for all 72 scenarios yet'
+    # Use only batches finished for every scenario in the run, so scenarios stay paired.
+    indexes = manifest.get('scenarioIndexes', list(range(72)))
+    complete = sorted(set.intersection(*(batches_by_scenario[i] for i in indexes))) if all(i in batches_by_scenario for i in indexes) else []
+    assert complete, f'no batch is complete for all {len(indexes)} scenarios yet'
     files = [p for p in files if int(p.parent.name[1:]) in complete]
 
     cells = {}
@@ -169,7 +170,7 @@ def main():
         g = c['games']
         out['combos'].append({'scenario': scenario, 'n': n, 'combo': combo, 'games': g, 'failures': c['failures'],
                               'winRate': [w / g for w in c['win']], 'meanScore': [s / g for s in c['score']]})
-    for scenario in range(72):
+    for scenario in indexes:
         for n in manifest['playerCounts']:
             group = [c for (s, nn, _), c in cells.items() if s == scenario and nn == n]
             total = new_cell(n)

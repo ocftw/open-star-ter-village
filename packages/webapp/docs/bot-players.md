@@ -6,6 +6,9 @@ Two strategies ship: **Novice**, the reference that plays every seat in batch
 runs, and **Advance**, a Novice variant tuned to beat Novice when it acts
 early.
 
+How to test with bots, from a 5-second smoke run to a full sweep, and what
+to commit: [bot testing](bot-testing.md).
+
 ## Run a batch
 
 From the repository root:

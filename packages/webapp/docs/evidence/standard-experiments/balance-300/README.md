@@ -16,9 +16,13 @@
 | D | 可新增自己的方塊；每個新方塊花 1 庫存 token | 各依專案星數 +1～+4 |
 
 - [Manifest：版本、時間、種子與完整策略權重](manifest.json)。測試 checkout 為 `96a698e1`，遊戲與機器人程式碼和已部署 `6c6f5116` 相同；兩者只差部署證據文件。沒有修改遊戲規則或部署。
-- [全部 3,600 場壓縮 JSONL](games.jsonl.gz)：每場種子、選項、各座位得分、勝者、事件、結案快照、成長、政府 5 統計與實際每輪順序；可按種子重跑。不是只保存平均值。
+- 全部 3,600 場壓縮 JSONL（`games.jsonl.gz`，已移除，見下方說明）：每場種子、選項、各座位得分、勝者、事件、結案快照、成長、政府 5 統計與實際每輪順序；可按種子重跑。不是只保存平均值。
 - [完整分析與信賴區間](analysis.json)、[摘要 CSV](summary.csv)。原始計算保留精度；本文只做顯示四捨五入。
 - [勝率 PNG](seat-win-rates.png)、[向量圖 SVG](seat-win-rates.svg)。
+
+> 原始逐場資料與產生它的腳本（`compare-standard-experiments.ts`、`analyze-standard-experiments.py`、`plot-standard-experiments.py`）已移除，
+> 因為 [sweep72](../../bots/advance/sweep72/README.md) 以同樣的規則選項取代了這批測試。要重跑，先 `git checkout 068c6c4c`。
+> 測試規範見 [docs/bot-testing.md](../../../bot-testing.md)。
 
 ```sh
 pnpm webapp exec tsx scripts/compare-standard-experiments.ts \
