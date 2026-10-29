@@ -84,7 +84,7 @@ td.num { font-family: var(--mono); }
 
 <div class="wrap">
   <header class="top">
-    <span class="eyebrow">Standard Mode · 星源樹測試版 v1 · PR #457 · Advance bots</span>
+    <span class="eyebrow">Standard Mode · 星源樹測試版 v1 · PR #457 · bot sweep</span>
     <h1>Star Tree Balance Sweep</h1>
     <p class="lede" id="lede"></p>
     <div class="facts" id="facts"></div>
@@ -172,7 +172,7 @@ const pp = (v, d = 1) => (v >= 0 ? '+' : '−') + Math.abs(v * 100).toFixed(d) +
 const f = (v, d = 2) => v == null || Number.isNaN(v) ? '–' : v.toFixed(d);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
-const STRATS = { N: 'Novice', A: 'Advance' };
+const STRATS = { N: 'Novice', A: 'Advance', S: 'Strategist' };
 const present = Object.keys(STRATS).filter(k => A.scenarios.some(s => s.seatGames[k] > 0));
 const mixed = present.length > 1;
 // Strongest minus weakest seat, each seat's win rate averaged over the games first. Pooled player
@@ -245,7 +245,7 @@ function scaleFor(m, values) {
 function header() {
   const games = sum(A.scenarios.map(s => s.games)), fails = sum(A.scenarios.map(s => s.failures));
   const b = A.batchesUsed.length, runs = A.manifest.runsPerBatch;
-  const tables = mixed ? 'every seat assignment of the Novice and Advance bots (4 tables at 2 players, 8 at 3, 16 at 4)' : 'the Advance bot (進階型) in every seat';
+  const tables = mixed ? `every seat assignment of the ${present.map(k => STRATS[k]).join(' and ')} bots` : `the ${STRATS[present[0]]} bot in every seat`;
   document.getElementById('lede').textContent = `Every room option in the Standard POC (3 starter rotations × 3 extra-round settings × 4 tree presets × 2 completion rewards = 72 scenarios), played by ${tables}. Each of ${b} seed batches deals ${runs} games per player count, and every deal is replayed under all 72 scenarios, so scenario comparisons are paired.`;
   document.getElementById('facts').innerHTML = [
     ['games', games.toLocaleString('en')], ['failed', fails.toLocaleString('en')], ['seed batches', `${b} / ${A.manifest.batches}`],
