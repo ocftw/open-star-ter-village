@@ -1,0 +1,2934 @@
+{
+  "build": "38e84acca14c5f8febf14d630f454b90237a3ec2",
+  "uncommittedSrcChanges": false,
+  "nodeEnv": "production",
+  "treeRules": [
+    "v1",
+    "v2-collab",
+    "v2-maintenance"
+  ],
+  "tables": "normal",
+  "seedPrefix": "sweep72-v1",
+  "seeds": "sweep72-v1-b<1..5>-<players>p-r<0..99>",
+  "batches": 5,
+  "runsPerBatch": 100,
+  "playerCounts": [
+    2,
+    3,
+    4
+  ],
+  "combos": {
+    "2": [
+      "MM"
+    ],
+    "3": [
+      "MMM"
+    ],
+    "4": [
+      "MMMM"
+    ]
+  },
+  "scenarios": [
+    {
+      "id": "none|x0|count-00246|fixed",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 0,
+        "treePreset": "count-00246",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "none|x0|count-00246|difficulty",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 0,
+        "treePreset": "count-00246",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "none|x0|cc-00246|fixed",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 0,
+        "treePreset": "cc-00246",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "none|x0|cc-00246|difficulty",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 0,
+        "treePreset": "cc-00246",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "none|x0|cc-00369|fixed",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 0,
+        "treePreset": "cc-00369",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "none|x0|cc-00369|difficulty",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 0,
+        "treePreset": "cc-00369",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "none|x0|cc-013610|fixed",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 0,
+        "treePreset": "cc-013610",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "none|x0|cc-013610|difficulty",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 0,
+        "treePreset": "cc-013610",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "none|x1|count-00246|fixed",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 1,
+        "treePreset": "count-00246",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "none|x1|count-00246|difficulty",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 1,
+        "treePreset": "count-00246",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "none|x1|cc-00246|fixed",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 1,
+        "treePreset": "cc-00246",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "none|x1|cc-00246|difficulty",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 1,
+        "treePreset": "cc-00246",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "none|x1|cc-00369|fixed",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 1,
+        "treePreset": "cc-00369",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "none|x1|cc-00369|difficulty",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 1,
+        "treePreset": "cc-00369",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "none|x1|cc-013610|fixed",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 1,
+        "treePreset": "cc-013610",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "none|x1|cc-013610|difficulty",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 1,
+        "treePreset": "cc-013610",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "none|x2|count-00246|fixed",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 2,
+        "treePreset": "count-00246",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "none|x2|count-00246|difficulty",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 2,
+        "treePreset": "count-00246",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "none|x2|cc-00246|fixed",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 2,
+        "treePreset": "cc-00246",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "none|x2|cc-00246|difficulty",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 2,
+        "treePreset": "cc-00246",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "none|x2|cc-00369|fixed",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 2,
+        "treePreset": "cc-00369",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "none|x2|cc-00369|difficulty",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 2,
+        "treePreset": "cc-00369",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "none|x2|cc-013610|fixed",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 2,
+        "treePreset": "cc-013610",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "none|x2|cc-013610|difficulty",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 2,
+        "treePreset": "cc-013610",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "clockwise|x0|count-00246|fixed",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 0,
+        "treePreset": "count-00246",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "clockwise|x0|count-00246|difficulty",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 0,
+        "treePreset": "count-00246",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "clockwise|x0|cc-00246|fixed",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-00246",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "clockwise|x0|cc-00246|difficulty",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-00246",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "clockwise|x0|cc-00369|fixed",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-00369",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "clockwise|x0|cc-00369|difficulty",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-00369",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "clockwise|x0|cc-013610|fixed",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-013610",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "clockwise|x0|cc-013610|difficulty",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-013610",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "clockwise|x1|count-00246|fixed",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 1,
+        "treePreset": "count-00246",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "clockwise|x1|count-00246|difficulty",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 1,
+        "treePreset": "count-00246",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "clockwise|x1|cc-00246|fixed",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-00246",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "clockwise|x1|cc-00246|difficulty",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-00246",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "clockwise|x1|cc-00369|fixed",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-00369",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "clockwise|x1|cc-00369|difficulty",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-00369",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "clockwise|x1|cc-013610|fixed",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-013610",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "clockwise|x1|cc-013610|difficulty",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-013610",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "clockwise|x2|count-00246|fixed",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 2,
+        "treePreset": "count-00246",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "clockwise|x2|count-00246|difficulty",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 2,
+        "treePreset": "count-00246",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "clockwise|x2|cc-00246|fixed",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-00246",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "clockwise|x2|cc-00246|difficulty",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-00246",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "clockwise|x2|cc-00369|fixed",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-00369",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "clockwise|x2|cc-00369|difficulty",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-00369",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "clockwise|x2|cc-013610|fixed",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-013610",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "clockwise|x2|cc-013610|difficulty",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-013610",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "counterclockwise|x0|count-00246|fixed",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 0,
+        "treePreset": "count-00246",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "counterclockwise|x0|count-00246|difficulty",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 0,
+        "treePreset": "count-00246",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "counterclockwise|x0|cc-00246|fixed",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-00246",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "counterclockwise|x0|cc-00246|difficulty",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-00246",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "counterclockwise|x0|cc-00369|fixed",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-00369",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "counterclockwise|x0|cc-00369|difficulty",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-00369",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "counterclockwise|x0|cc-013610|fixed",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-013610",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "counterclockwise|x0|cc-013610|difficulty",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-013610",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "counterclockwise|x1|count-00246|fixed",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 1,
+        "treePreset": "count-00246",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "counterclockwise|x1|count-00246|difficulty",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 1,
+        "treePreset": "count-00246",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "counterclockwise|x1|cc-00246|fixed",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-00246",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "counterclockwise|x1|cc-00246|difficulty",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-00246",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "counterclockwise|x1|cc-00369|fixed",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-00369",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "counterclockwise|x1|cc-00369|difficulty",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-00369",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "counterclockwise|x1|cc-013610|fixed",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-013610",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "counterclockwise|x1|cc-013610|difficulty",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-013610",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "counterclockwise|x2|count-00246|fixed",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 2,
+        "treePreset": "count-00246",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "counterclockwise|x2|count-00246|difficulty",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 2,
+        "treePreset": "count-00246",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "counterclockwise|x2|cc-00246|fixed",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-00246",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "counterclockwise|x2|cc-00246|difficulty",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-00246",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "counterclockwise|x2|cc-00369|fixed",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-00369",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "counterclockwise|x2|cc-00369|difficulty",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-00369",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "counterclockwise|x2|cc-013610|fixed",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-013610",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "counterclockwise|x2|cc-013610|difficulty",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-013610",
+        "treeRules": "v1"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "none|x0|count-00246|fixed|v2-collab",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 0,
+        "treePreset": "count-00246",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "none|x0|count-00246|difficulty|v2-collab",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 0,
+        "treePreset": "count-00246",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "none|x0|cc-00246|fixed|v2-collab",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 0,
+        "treePreset": "cc-00246",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "none|x0|cc-00246|difficulty|v2-collab",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 0,
+        "treePreset": "cc-00246",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "none|x0|cc-00369|fixed|v2-collab",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 0,
+        "treePreset": "cc-00369",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "none|x0|cc-00369|difficulty|v2-collab",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 0,
+        "treePreset": "cc-00369",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "none|x0|cc-013610|fixed|v2-collab",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 0,
+        "treePreset": "cc-013610",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "none|x0|cc-013610|difficulty|v2-collab",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 0,
+        "treePreset": "cc-013610",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "none|x1|count-00246|fixed|v2-collab",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 1,
+        "treePreset": "count-00246",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "none|x1|count-00246|difficulty|v2-collab",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 1,
+        "treePreset": "count-00246",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "none|x1|cc-00246|fixed|v2-collab",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 1,
+        "treePreset": "cc-00246",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "none|x1|cc-00246|difficulty|v2-collab",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 1,
+        "treePreset": "cc-00246",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "none|x1|cc-00369|fixed|v2-collab",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 1,
+        "treePreset": "cc-00369",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "none|x1|cc-00369|difficulty|v2-collab",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 1,
+        "treePreset": "cc-00369",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "none|x1|cc-013610|fixed|v2-collab",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 1,
+        "treePreset": "cc-013610",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "none|x1|cc-013610|difficulty|v2-collab",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 1,
+        "treePreset": "cc-013610",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "none|x2|count-00246|fixed|v2-collab",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 2,
+        "treePreset": "count-00246",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "none|x2|count-00246|difficulty|v2-collab",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 2,
+        "treePreset": "count-00246",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "none|x2|cc-00246|fixed|v2-collab",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 2,
+        "treePreset": "cc-00246",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "none|x2|cc-00246|difficulty|v2-collab",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 2,
+        "treePreset": "cc-00246",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "none|x2|cc-00369|fixed|v2-collab",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 2,
+        "treePreset": "cc-00369",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "none|x2|cc-00369|difficulty|v2-collab",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 2,
+        "treePreset": "cc-00369",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "none|x2|cc-013610|fixed|v2-collab",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 2,
+        "treePreset": "cc-013610",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "none|x2|cc-013610|difficulty|v2-collab",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 2,
+        "treePreset": "cc-013610",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "clockwise|x0|count-00246|fixed|v2-collab",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 0,
+        "treePreset": "count-00246",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "clockwise|x0|count-00246|difficulty|v2-collab",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 0,
+        "treePreset": "count-00246",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "clockwise|x0|cc-00246|fixed|v2-collab",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-00246",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "clockwise|x0|cc-00246|difficulty|v2-collab",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-00246",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "clockwise|x0|cc-00369|fixed|v2-collab",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-00369",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "clockwise|x0|cc-00369|difficulty|v2-collab",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-00369",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "clockwise|x0|cc-013610|fixed|v2-collab",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-013610",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "clockwise|x0|cc-013610|difficulty|v2-collab",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-013610",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "clockwise|x1|count-00246|fixed|v2-collab",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 1,
+        "treePreset": "count-00246",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "clockwise|x1|count-00246|difficulty|v2-collab",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 1,
+        "treePreset": "count-00246",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "clockwise|x1|cc-00246|fixed|v2-collab",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-00246",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "clockwise|x1|cc-00246|difficulty|v2-collab",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-00246",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "clockwise|x1|cc-00369|fixed|v2-collab",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-00369",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "clockwise|x1|cc-00369|difficulty|v2-collab",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-00369",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "clockwise|x1|cc-013610|fixed|v2-collab",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-013610",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "clockwise|x1|cc-013610|difficulty|v2-collab",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-013610",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "clockwise|x2|count-00246|fixed|v2-collab",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 2,
+        "treePreset": "count-00246",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "clockwise|x2|count-00246|difficulty|v2-collab",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 2,
+        "treePreset": "count-00246",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "clockwise|x2|cc-00246|fixed|v2-collab",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-00246",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "clockwise|x2|cc-00246|difficulty|v2-collab",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-00246",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "clockwise|x2|cc-00369|fixed|v2-collab",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-00369",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "clockwise|x2|cc-00369|difficulty|v2-collab",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-00369",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "clockwise|x2|cc-013610|fixed|v2-collab",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-013610",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "clockwise|x2|cc-013610|difficulty|v2-collab",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-013610",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "counterclockwise|x0|count-00246|fixed|v2-collab",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 0,
+        "treePreset": "count-00246",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "counterclockwise|x0|count-00246|difficulty|v2-collab",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 0,
+        "treePreset": "count-00246",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "counterclockwise|x0|cc-00246|fixed|v2-collab",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-00246",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "counterclockwise|x0|cc-00246|difficulty|v2-collab",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-00246",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "counterclockwise|x0|cc-00369|fixed|v2-collab",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-00369",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "counterclockwise|x0|cc-00369|difficulty|v2-collab",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-00369",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "counterclockwise|x0|cc-013610|fixed|v2-collab",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-013610",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "counterclockwise|x0|cc-013610|difficulty|v2-collab",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-013610",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "counterclockwise|x1|count-00246|fixed|v2-collab",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 1,
+        "treePreset": "count-00246",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "counterclockwise|x1|count-00246|difficulty|v2-collab",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 1,
+        "treePreset": "count-00246",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "counterclockwise|x1|cc-00246|fixed|v2-collab",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-00246",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "counterclockwise|x1|cc-00246|difficulty|v2-collab",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-00246",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "counterclockwise|x1|cc-00369|fixed|v2-collab",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-00369",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "counterclockwise|x1|cc-00369|difficulty|v2-collab",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-00369",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "counterclockwise|x1|cc-013610|fixed|v2-collab",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-013610",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "counterclockwise|x1|cc-013610|difficulty|v2-collab",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-013610",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "counterclockwise|x2|count-00246|fixed|v2-collab",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 2,
+        "treePreset": "count-00246",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "counterclockwise|x2|count-00246|difficulty|v2-collab",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 2,
+        "treePreset": "count-00246",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "counterclockwise|x2|cc-00246|fixed|v2-collab",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-00246",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "counterclockwise|x2|cc-00246|difficulty|v2-collab",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-00246",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "counterclockwise|x2|cc-00369|fixed|v2-collab",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-00369",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "counterclockwise|x2|cc-00369|difficulty|v2-collab",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-00369",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "counterclockwise|x2|cc-013610|fixed|v2-collab",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-013610",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "counterclockwise|x2|cc-013610|difficulty|v2-collab",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-013610",
+        "treeRules": "v2-collab"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "none|x0|count-00246|fixed|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 0,
+        "treePreset": "count-00246",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "none|x0|count-00246|difficulty|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 0,
+        "treePreset": "count-00246",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "none|x0|cc-00246|fixed|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 0,
+        "treePreset": "cc-00246",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "none|x0|cc-00246|difficulty|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 0,
+        "treePreset": "cc-00246",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "none|x0|cc-00369|fixed|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 0,
+        "treePreset": "cc-00369",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "none|x0|cc-00369|difficulty|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 0,
+        "treePreset": "cc-00369",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "none|x0|cc-013610|fixed|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 0,
+        "treePreset": "cc-013610",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "none|x0|cc-013610|difficulty|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 0,
+        "treePreset": "cc-013610",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "none|x1|count-00246|fixed|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 1,
+        "treePreset": "count-00246",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "none|x1|count-00246|difficulty|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 1,
+        "treePreset": "count-00246",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "none|x1|cc-00246|fixed|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 1,
+        "treePreset": "cc-00246",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "none|x1|cc-00246|difficulty|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 1,
+        "treePreset": "cc-00246",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "none|x1|cc-00369|fixed|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 1,
+        "treePreset": "cc-00369",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "none|x1|cc-00369|difficulty|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 1,
+        "treePreset": "cc-00369",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "none|x1|cc-013610|fixed|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 1,
+        "treePreset": "cc-013610",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "none|x1|cc-013610|difficulty|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 1,
+        "treePreset": "cc-013610",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "none|x2|count-00246|fixed|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 2,
+        "treePreset": "count-00246",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "none|x2|count-00246|difficulty|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 2,
+        "treePreset": "count-00246",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "none|x2|cc-00246|fixed|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 2,
+        "treePreset": "cc-00246",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "none|x2|cc-00246|difficulty|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 2,
+        "treePreset": "cc-00246",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "none|x2|cc-00369|fixed|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 2,
+        "treePreset": "cc-00369",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "none|x2|cc-00369|difficulty|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 2,
+        "treePreset": "cc-00369",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "none|x2|cc-013610|fixed|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 2,
+        "treePreset": "cc-013610",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "none|x2|cc-013610|difficulty|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "none",
+        "extraRounds": 2,
+        "treePreset": "cc-013610",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "clockwise|x0|count-00246|fixed|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 0,
+        "treePreset": "count-00246",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "clockwise|x0|count-00246|difficulty|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 0,
+        "treePreset": "count-00246",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "clockwise|x0|cc-00246|fixed|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-00246",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "clockwise|x0|cc-00246|difficulty|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-00246",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "clockwise|x0|cc-00369|fixed|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-00369",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "clockwise|x0|cc-00369|difficulty|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-00369",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "clockwise|x0|cc-013610|fixed|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-013610",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "clockwise|x0|cc-013610|difficulty|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-013610",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "clockwise|x1|count-00246|fixed|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 1,
+        "treePreset": "count-00246",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "clockwise|x1|count-00246|difficulty|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 1,
+        "treePreset": "count-00246",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "clockwise|x1|cc-00246|fixed|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-00246",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "clockwise|x1|cc-00246|difficulty|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-00246",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "clockwise|x1|cc-00369|fixed|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-00369",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "clockwise|x1|cc-00369|difficulty|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-00369",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "clockwise|x1|cc-013610|fixed|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-013610",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "clockwise|x1|cc-013610|difficulty|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-013610",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "clockwise|x2|count-00246|fixed|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 2,
+        "treePreset": "count-00246",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "clockwise|x2|count-00246|difficulty|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 2,
+        "treePreset": "count-00246",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "clockwise|x2|cc-00246|fixed|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-00246",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "clockwise|x2|cc-00246|difficulty|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-00246",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "clockwise|x2|cc-00369|fixed|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-00369",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "clockwise|x2|cc-00369|difficulty|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-00369",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "clockwise|x2|cc-013610|fixed|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-013610",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "clockwise|x2|cc-013610|difficulty|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "clockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-013610",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "counterclockwise|x0|count-00246|fixed|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 0,
+        "treePreset": "count-00246",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "counterclockwise|x0|count-00246|difficulty|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 0,
+        "treePreset": "count-00246",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "counterclockwise|x0|cc-00246|fixed|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-00246",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "counterclockwise|x0|cc-00246|difficulty|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-00246",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "counterclockwise|x0|cc-00369|fixed|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-00369",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "counterclockwise|x0|cc-00369|difficulty|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-00369",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "counterclockwise|x0|cc-013610|fixed|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-013610",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "counterclockwise|x0|cc-013610|difficulty|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 0,
+        "treePreset": "cc-013610",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "counterclockwise|x1|count-00246|fixed|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 1,
+        "treePreset": "count-00246",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "counterclockwise|x1|count-00246|difficulty|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 1,
+        "treePreset": "count-00246",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "counterclockwise|x1|cc-00246|fixed|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-00246",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "counterclockwise|x1|cc-00246|difficulty|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-00246",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "counterclockwise|x1|cc-00369|fixed|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-00369",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "counterclockwise|x1|cc-00369|difficulty|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-00369",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "counterclockwise|x1|cc-013610|fixed|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-013610",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "counterclockwise|x1|cc-013610|difficulty|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 1,
+        "treePreset": "cc-013610",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "counterclockwise|x2|count-00246|fixed|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 2,
+        "treePreset": "count-00246",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "counterclockwise|x2|count-00246|difficulty|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 2,
+        "treePreset": "count-00246",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "counterclockwise|x2|cc-00246|fixed|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-00246",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "counterclockwise|x2|cc-00246|difficulty|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-00246",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "counterclockwise|x2|cc-00369|fixed|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-00369",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "counterclockwise|x2|cc-00369|difficulty|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-00369",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    },
+    {
+      "id": "counterclockwise|x2|cc-013610|fixed|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-013610",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      }
+    },
+    {
+      "id": "counterclockwise|x2|cc-013610|difficulty|v2-maintenance",
+      "standardOptions": {
+        "starterRotation": "counterclockwise",
+        "extraRounds": 2,
+        "treePreset": "cc-013610",
+        "treeRules": "v2-maintenance"
+      },
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      }
+    }
+  ],
+  "scenarioIndexes": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    72,
+    73,
+    74,
+    75,
+    76,
+    77,
+    78,
+    79,
+    144,
+    145,
+    146,
+    147,
+    148,
+    149,
+    150,
+    151
+  ],
+  "gamesPerJob": 300,
+  "totalGames": 36000,
+  "strategies": {
+    "N": {
+      "profile": "novice",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0.3,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0.5,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": 0,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      }
+    },
+    "A": {
+      "profile": "advance",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0,
+        "villageCompletion": 1,
+        "tree": 0.6,
+        "unlock": 0,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": -1,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      }
+    },
+    "M": {
+      "profile": "normal",
+      "weights": {
+        "points": 1,
+        "baseCompletionChance": 0.25,
+        "village": 0,
+        "villageCompletion": 1,
+        "tree": 1,
+        "unlock": 0,
+        "pointsPerAP": 1,
+        "apCost": 0.3,
+        "overtime": 0.1,
+        "workerToken": 0.2,
+        "presence": 0.5,
+        "initiation": -1,
+        "advancedDraw": -0.5,
+        "marketLoss": 0.2
+      },
+      "planner": {
+        "focus": 0.6,
+        "helperShare": 0.25,
+        "apValue": 2
+      }
+    }
+  },
+  "method": "Authoritative headless reducer; bots see only their own player view. Each selected tree rule uses paired seeds across the selected room scenarios and seat assignments. Government 5 is the current new-room rule (any)."
+}

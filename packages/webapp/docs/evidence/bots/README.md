@@ -11,9 +11,11 @@ bots/
 │   ├── sweep72/           648,000 games, Normal in every seat, all 72 room-option scenarios
 │   ├── vs-advance/        36,000 games: Normal in each seat, Advance in the others
 │   └── vs-novice/         112,000 games: every seat assignment of Novice and Normal
-└── advance/               進階型 Advance, profile ADVANCE
-    ├── vs-novice/         112,000 games: every seat assignment of Novice and Advance
-    └── sweep72/           648,000 games, Advance in every seat, all 72 room-option scenarios
+├── advance/               進階型 Advance, profile ADVANCE
+│   ├── vs-novice/         112,000 games: every seat assignment of Novice and Advance
+│   └── sweep72/           648,000 games, Advance in every seat, all 72 room-option scenarios
+└── tree-v2/               Tree v2 prototype rules: bot valuation checks
+    └── sweep/             72,000 games: v1 vs both v2 rules, all-Advance and all-Normal, scenarios 0–7
 ```
 
 Each profile folder has a README that describes the profile and lists its
