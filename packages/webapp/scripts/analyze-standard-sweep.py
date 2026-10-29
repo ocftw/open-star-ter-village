@@ -77,7 +77,7 @@ def read_file(path):
                 if r >= 0:
                     cell['f20'][seat] += r
                     cell['f20n'][seat] += 1
-            for seat, r in enumerate(g.get('fg', g['f20'])):
+            for seat, r in enumerate(g['fg']):
                 if r >= 0:
                     cell['fg'][seat] += r
                     cell['fgn'][seat] += 1

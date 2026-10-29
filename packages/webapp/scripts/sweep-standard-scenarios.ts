@@ -122,7 +122,7 @@ function playGame(scenario: Scenario, numPlayers: number, combo: string, seed: s
     p: Object.values(t.projects).map(p => [p.difficulty, Number(p.initiator), p.initiatedRound, p.finisher === undefined ? -1 : Number(p.finisher), p.completedRound ?? -1]),
     ad: seats.map(id => t.advancedDraws[id] ?? 0),
     f20: seats.map(id => t.firstOver20Round[id] ?? -1),
-    ...(scenario.standardOptions.treeRules !== 'v1' ? { fg: seats.map(id => run.firstAdvancedGateRound[id] ?? -1) } : {}),
+    fg: seats.map(id => run.firstAdvancedGateRound[id] ?? -1),
     g5: [t.government5.budget, t.government5.used],
     bd: breakdown,
     ev: s.log.filter(l => l.kind === 'event').map(l => l.target),
