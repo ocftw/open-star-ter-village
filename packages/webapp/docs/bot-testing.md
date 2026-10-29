@@ -133,6 +133,9 @@ Other tools:
 ## Tree v2 prototype
 
 The sweep accepts `--tree-rules v1,v2-collab,v2-maintenance` or `--tree-rules all`.
+Each name is a bundle of the four prototype feature options (`FEATURE_BUNDLES` in
+`src/game/standard/options.ts`): `v1` plays every original rule, and both v2
+bundles switch all four features on, differing only in Government 2.
 Omitting the flag selects only `v1`; `bots:behaviour` continues to replay the
 unchanged v1 baseline. `--scenarios` selects the same 0–71 room-option indexes
 within each selected tree rule. V1 IDs and seeds are unchanged. V2 IDs append
@@ -148,8 +151,8 @@ python3 scripts/analyze-standard-sweep.py bot-runs/tree-v2-check
 python3 scripts/report-standard-sweep.py bot-runs/tree-v2-check
 ```
 
-The manifest records selected `treeRules` and each scenario's normalized
-options. Use a fresh output folder when changing seeds, profiles or code;
+The manifest records selected `treeRules`, and each scenario's bundle name
+(`treeRules`) beside its normalized options, which carry the four features. Use a fresh output folder when changing seeds, profiles or code;
 resume only the identical configuration. Each seed is played once per
 combination, shared across tree rules for paired comparisons.
 
@@ -165,9 +168,3 @@ separate score sources, not folded into ordinary completion rewards.
 
 The HTML report's **Tree rules** selector filters every chart, summary and
 scenario table to one variant. It defaults to the first available rule.
-
-**Integration limit:** until the separate tree-v2-rules engine PR merges,
-v2 setup still runs v1 engine mechanics. Unit tests establish v2 valuation
-behavior; smoke games establish execution and analysis compatibility only.
-Do not interpret those outcomes as v2 balance evidence or run the large
-sweep until both PRs are integrated.
