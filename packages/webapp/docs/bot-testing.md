@@ -155,10 +155,11 @@ combination, shared across tree rules for paired comparisons.
 
 Analysis carries `options.treeRules`, `firstAdvancedGateRound` (mean round per
 seat among players who passed the in-play gate) and `firstAdvancedGateRate`
-(the fraction who did). V2 per-game `fg` records the first observed round with
+(the fraction who did). Per-game `fg` for every tree rule records the first observed round with
 score strictly above `advancedScoreGate(G)`, including access unlocked when
-the gate drops; final scoring is excluded. V1 records retain their exact
-format and use the existing `f20` observations. The old `firstOver20*` fields
+the gate drops; final scoring is excluded. V1 now also emits `fg`, using the same observation timing as v2. Analysis
+requires `fg`; regenerate old sweep records rather than substituting `f20`.
+The old `firstOver20*` fields
 remain available for historical comparisons. `協作合約` and `維運合約` are
 separate score sources, not folded into ordinary completion rewards.
 

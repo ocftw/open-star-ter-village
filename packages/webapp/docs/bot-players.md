@@ -279,11 +279,13 @@ out of the v1 profiles.
 - **政府 2 — 協作合約:** the project model adds +2 for a non-owner with at least
   one cube on a 3★/4★ project, weighted by completion probability. Multiple
   cubes do not multiply the contract.
-- **政府 2 — 維運合約:** the project model adds owner value of +1 times remaining
-  round ends, weighted by completion probability. The current round is
-  included. This is a planning estimate assuming completion this round; it
-  can overvalue slow projects. Completed projects are absent from this
-  estimate, so existing contracts are not retroactively awarded on growth.
+- **政府 2 — 維運合約:** maintenance value discounts the time needed to finish.
+  For a hand card it uses `max(0, rounds - requiredAP / APperRound)` payouts;
+  for a live project it estimates recruit and contribution AP from unfilled
+  requirements and the current pace. An already complete project receives
+  all remaining round ends, including the current one. Normal uses its
+  explicit contract/access gains for Government 1/2 without adding flat v2
+  impact; non-planner profiles retain the flat estimates.
 
 Contract estimates require Government 2 already grown (or its hypothetical
 growth when Normal evaluates that node). Entry projects receive neither
