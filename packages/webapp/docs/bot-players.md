@@ -7,6 +7,9 @@ runs; **Normal**, which plans from the rounds left and the tree's effect on
 pace; and **Advance**, a Novice variant tuned to beat Novice when it acts
 early.
 
+How to test with bots, from a 5-second smoke run to a full sweep, and what
+to commit: [bot testing](bot-testing.md).
+
 ## Run a batch
 
 From the repository root:

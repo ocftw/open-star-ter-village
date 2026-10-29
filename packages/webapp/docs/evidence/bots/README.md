@@ -22,6 +22,8 @@ runs. Profiles are defined in
 [`src/game/bots/profiles.ts`](../../../src/game/bots/profiles.ts) and offered
 in rooms through [`src/game/bots/strategies.ts`](../../../src/game/bots/strategies.ts).
 
+How to size, run and check a sweep: [bot testing](../../bot-testing.md).
+
 ## Adding a run or a profile
 
 - Put each run in `bots/<profile id>/<run>/`, using the profile's id from

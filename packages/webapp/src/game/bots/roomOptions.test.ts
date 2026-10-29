@@ -4,10 +4,13 @@ import { NOVICE } from './profiles';
 import { normalizeStandardOptions, TREE_PRESETS } from '../standard/options';
 
 const bot = createProfileBot(NOVICE);
-const cases = [2, 3, 4].flatMap(numPlayers => ['none', 'clockwise', 'counterclockwise'].flatMap(starterRotation =>
-  [0, 1, 2].flatMap(extraRounds => Object.keys(TREE_PRESETS).map(treePreset => ({
-    numPlayers, standardOptions: normalizeStandardOptions({ starterRotation, extraRounds, treePreset }),
-  })))));
+// Every rotation × extra-round pair per player count; tree presets rotate through the cases.
+// The full 72-scenario matrix runs in `pnpm webapp bots:smoke` (docs/bot-testing.md).
+const presets = Object.keys(TREE_PRESETS);
+const cases = [2, 3, 4].flatMap(numPlayers => ['none', 'clockwise', 'counterclockwise'].flatMap((starterRotation, r) =>
+  [0, 1, 2].map(extraRounds => ({
+    numPlayers, standardOptions: normalizeStandardOptions({ starterRotation, extraRounds, treePreset: presets[(numPlayers + r * 3 + extraRounds) % presets.length] }),
+  }))));
 
 test.each(cases)('finishes configured game and uses actual round order: %j', ({ numPlayers, standardOptions }) => {
   const run = runGame({ numPlayers, standardOptions, seed: 'room-options-matrix-v1', bots: bot });
