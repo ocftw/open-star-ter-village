@@ -297,8 +297,6 @@ function choiceValue(p: Position, target: ChoiceTarget | null): number {
   }
   const slot = slotByProject(p, target.projectId);
   if (!slot || !target.jobName) return 0;
-  if (choice.kind === 'source4' && treeRules(p.view) !== 'v1'
-    && (target.worker !== p.me || !ProjectSlotSelector.hasWorker(slot, target.jobName, p.me))) return -Infinity;
   if (choice.kind === 'government4' || choice.kind === 'extraRecruit') return recruitValue(p, slot, target.jobName);
   // Government 5 may spend a reserve token to create the player's first cube here.
   const newCubeCost = choice.kind === 'government5' && !ProjectSlotSelector.hasWorker(slot, target.jobName, p.me) ? w.workerToken : 0;
