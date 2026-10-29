@@ -5,13 +5,31 @@ to a full sweep, and how to keep the results.
 
 Bot games are deterministic. The seed fixes the deals, the events and each
 seat's tie-break stream, so the same seed, bots, rules and options always give
-the same game, move for move. Two consequences:
+the same game, move for move.
 
-- More games means more seeds, never the same seed again. A sweep's seed is
-  `<prefix>-b<batch>-<players>p-r<run>`, so 30 batches × 100 runs is 3,000
-  different deals per scenario and player count.
-- A run that replays recorded seeds must reproduce the recorded numbers
-  exactly. Any difference means the rules or a bot changed behaviour.
+## Seeded testing rules
+
+A *combination* is one room-option scenario, one rule set, one bot seating
+(which profile sits in which seat) and one seed. Its game is fixed.
+
+1. **One game per combination.** Play each combination once. Playing it again
+   gives the same game and adds no information.
+2. **Scale by adding combinations, never by repeating one.** For more games,
+   add seeds (`--batches`, `--runs`); for more rules or room options, add
+   scenarios (`--scenarios`); for more bots, add seatings (`--tables`). Every
+   new seed is a new deal and event order: a sweep's seed is
+   `<prefix>-b<batch>-<players>p-r<run>`, so 30 batches × 100 runs is 3,000
+   different deals per scenario and player count.
+3. **Pair on seeds.** Use the same seeds for every scenario and seating you
+   compare, so a difference comes from the option or the bot, not the deal.
+   The sweep shares each seed across all scenarios and seatings in a run.
+4. **Replay only to check.** Rerun recorded seeds only to confirm nothing
+   changed (`bots:behaviour`, the replay tests). The numbers must match
+   exactly; any difference means the rules or a bot changed behaviour.
+5. **Keep one recorded result per question.** A recorded run stays valid while
+   it replays exactly at the current build. When behaviour changes, record a
+   new run and remove the old one instead of keeping both; git history keeps
+   it.
 
 All commands run from the repository root. Sweep output goes to
 `packages/webapp/bot-runs/` (gitignored).
@@ -69,9 +87,12 @@ python3 scripts/analyze-standard-sweep.py bot-runs/<run>
 python3 scripts/report-standard-sweep.py bot-runs/<run>
 ```
 
-- `--tables all` plays every Novice/Advance seat assignment (2ⁿ tables per
-  player count) instead of Advance only.
-- `--scenarios default` or `--scenarios 0,5,17` plays only those scenarios.
+- `--tables` picks the seatings: `advance` or `normal` (one profile in every
+  seat), `all` (every Novice/Advance seat assignment, 2ⁿ tables per player
+  count), `novice-normal` (every Novice/Normal assignment) or `normal-seat`
+  (Normal in each seat, Advance in the others).
+- `--scenarios default`, `--scenarios 0,5,17` or `--scenarios 0-7` plays only
+  those scenarios.
   Job files keep their index in the full 72, so they pair with a full sweep.
 - The sweep resumes: rerun the same command and finished jobs are skipped.
   Delete the output folder to start over.
@@ -93,7 +114,8 @@ Record a run under `docs/evidence/bots/<profile id>/<run>/`, following
 
 - `README.md`: date, build, machine, the exact commands, results tables and
   limits.
-- `manifest.json` (build, seeds, scenarios, bot weights) and `analysis.json`.
+- `manifest.json` (build, seeds, scenarios, bot weights) and `analysis.json`
+  (a sweep) or `summary.json` (a run that mixes profiles).
 - Do not commit per-game records (`bot-runs/**/*.jsonl.gz`). They are large,
   and the manifest's build and seeds regenerate them exactly.
 
@@ -104,5 +126,5 @@ Other tools:
 
 - `pnpm webapp bots` for a quick batch with per-game exports and move logs
   ([bot players](bot-players.md)).
-- `scripts/compare-bot-strategies.ts` to compare a profile, or weight
-  overrides, against Novice in seat 1 or 2.
+- `scripts/summarize-seat-tables.py bot-runs/<run>` for win rates by seat and
+  seat assignment in a run that mixes profiles.
