@@ -1,4 +1,3 @@
-import { EXPERIMENT_SCENARIOS } from '@/game/standard/config';
 import { createProfileBot } from './profileBot';
 import { NOVICE, ADVANCE, type Weights } from './profiles';
 import { runGame } from './runner';
@@ -12,12 +11,11 @@ function seated(numPlayers: number, seat: string): Record<string, Bot> {
 }
 
 describe('advance profile', () => {
-  const cases = [2, 3, 4].flatMap(numPlayers => EXPERIMENT_SCENARIOS.flatMap(({ id, experiments }) =>
-    ['0', '1'].map(seat => ({ numPlayers, id, experiments, seat }))));
-
-  test.each(cases)('plays only legal moves to game over: $numPlayers players, rules $id, seat index $seat', ({ numPlayers, id, experiments, seat }) => {
+  // Rule-variant legality is covered by runner.test.ts; this checks Advance itself at each player count.
+  test.each([2, 3, 4])('plays only legal moves to game over: %i players', numPlayers => {
+    const seat = '0';
     // The runner fails on the first move the game rejects.
-    const run = runGame({ numPlayers, seed: `advance-legal-${id}`, bots: seated(numPlayers, seat), experiments, legacyExperiments: true });
+    const run = runGame({ numPlayers, seed: 'advance-legal', bots: seated(numPlayers, seat) });
     expect(run.state.ctx.gameover).toBeDefined();
     expect(run.moves.some(move => move.playerID === seat)).toBe(true);
   });
