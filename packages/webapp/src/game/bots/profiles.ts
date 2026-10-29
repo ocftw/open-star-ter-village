@@ -32,11 +32,25 @@ export interface Weights {
   marketLoss: number;
 }
 
+/**
+ * Pace planning from the current rules and rounds left. Profiles without it
+ * keep the fixed completion chance and the flat `advancedDraw` preference.
+ */
+export interface Planner {
+  /** Share of the bot's remaining AP it expects to put into any one project. */
+  focus: number;
+  /** Share of another contributor's AP the bot expects them to put into a project they joined. */
+  helperShare: number;
+  /** Points one AP is assumed to earn elsewhere; the cost of AP a new project ties up. */
+  apValue: number;
+}
+
 export interface Profile {
   name: string;
   weights: Weights;
   /** Estimated gain, in AP per round, of each tree ability for every player it applies to. */
   nodeImpact: Record<NodeId, number>;
+  planner?: Planner;
 }
 
 /** Initial guesses; recalibrate from batch results (points per AP, ability trigger rates). */
@@ -91,7 +105,21 @@ export const ADVANCE: Profile = {
   name: 'advance',
 };
 
-export const PROFILES: Record<string, Profile> = { novice: NOVICE, advance: ADVANCE };
+/**
+ * Normal: Advance's weights plus pace planning. It judges whether a
+ * project can still be finished from the AP it and the project's other
+ * contributors have left under the current rules (tree abilities included),
+ * chooses the project pile whose cards are worth most in the rounds left, and
+ * values a tree ability by its AP at `apValue` plus what it speeds up in the
+ * bot's own projects, without Advance's 0.6 tree discount.
+ */
+export const NORMAL: Profile = {
+  ...withWeights(ADVANCE, { tree: 1 }),
+  name: 'normal',
+  planner: { focus: 0.6, helperShare: 0.25, apValue: 2 },
+};
+
+export const PROFILES: Record<string, Profile> = { novice: NOVICE, normal: NORMAL, advance: ADVANCE };
 
 /** A profile with some weights overridden, e.g. from CLI JSON. */
 export function withWeights(profile: Profile, overrides: Partial<Weights>): Profile {

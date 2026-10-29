@@ -1,3 +1,0 @@
-players,scenario,seat,games,challengerWinShare,low,high,balancedWinShare,pairedChange,pairedLow,pairedHigh,aboveUniform,challengerScore,balancedScore
-3,A,3,1000,0.637333,0.608386,0.666281,0.4235,0.213833,0.1754,0.252267,True,52.865,48.84
-4,A,3,1000,0.422833,0.393089,0.452577,0.291833,0.131,0.093015,0.168985,True,44.385,42.214

@@ -84,7 +84,7 @@ td.num { font-family: var(--mono); }
 
 <div class="wrap">
   <header class="top">
-    <span class="eyebrow">Standard Mode · 星源樹測試版 v1 · PR #457 · Advance bots</span>
+    <span class="eyebrow">Standard Mode · 星源樹測試版 v1 · PR #457 · bot sweep</span>
     <h1>Star Tree Balance Sweep</h1>
     <p class="lede" id="lede"></p>
     <div class="facts" id="facts"></div>
@@ -172,7 +172,7 @@ const pp = (v, d = 1) => (v >= 0 ? '+' : '−') + Math.abs(v * 100).toFixed(d) +
 const f = (v, d = 2) => v == null || Number.isNaN(v) ? '–' : v.toFixed(d);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
-const STRATS = { N: 'Novice', A: 'Advance' };
+const STRATS = { N: 'Novice', M: 'Normal', A: 'Advance' };
 const present = Object.keys(STRATS).filter(k => A.scenarios.some(s => s.seatGames[k] > 0));
 const mixed = present.length > 1;
 // Strongest minus weakest seat, each seat's win rate averaged over the games first. Pooled player
@@ -206,6 +206,13 @@ const METRICS = [
   { id: 'rate', label: 'Completion rate', fmt: v => pct(v), get: s => sum(s.completed) / sum(s.played) },
   { id: 'adv', label: '3★–4★ projects played per game', fmt: v => f(v, 3), get: s => s.played[3] + s.played[4] },
   { id: 'g5', label: 'Government 5 points used per game', fmt: v => f(v, 2), get: s => s.government5[1] },
+  // One group per difficulty. Rate and round have no value in a scenario that never plays or finishes that difficulty.
+  ...[1, 2, 3, 4].flatMap(k => [
+    { id: `played${k}`, group: `${k}★ projects`, label: `${k}★ projects played per game`, fmt: v => f(v, k > 2 ? 3 : 2), get: s => s.played[k] },
+    { id: `completed${k}`, group: `${k}★ projects`, label: `${k}★ projects completed per game`, fmt: v => f(v, k > 2 ? 3 : 2), get: s => s.completed[k] },
+    { id: `rate${k}`, group: `${k}★ projects`, label: `${k}★ completion rate`, fmt: v => Number.isFinite(v) ? pct(v) : '–', get: s => s.played[k] ? s.completed[k] / s.played[k] : NaN },
+    { id: `round${k}`, group: `${k}★ projects`, label: `${k}★ mean completion round`, fmt: v => f(v, 2), get: s => s.completedRound[k] ?? NaN },
+  ]),
 ];
 const M = Object.fromEntries(METRICS.map(m => [m.id, m]));
 const state = { n: A.manifest.playerCounts.includes(4) ? 4 : 'all', metric: 'spread', preset: 'all', reward: 'all' };
@@ -214,7 +221,7 @@ const counts = A.manifest.playerCounts;
 // Pool scenario rows of the selected player counts: every row has the same game count, so pooling is a mean.
 const rows = (filter = () => true) => A.scenarios.filter(s => (state.n === 'all' || s.n === state.n) && filter(s));
 // Spread is taken per scenario, then averaged, so cells, main effects and the table agree.
-const metricMean = (m, list) => mean(list.map(m.agg ? s => m.agg([s]).v : m.get));
+const metricMean = (m, list) => mean(list.map(m.agg ? s => m.agg([s]).v : m.get).filter(Number.isFinite));
 const metricText = (m, list) => m.fmt(metricMean(m, list));
 const metricAgg = (m, list) => ({ ...(m.agg && list.length === 1 ? m.agg(list) : { sub: '', detail: '' }), text: metricText(m, list) });
 
@@ -237,15 +244,16 @@ function lum(hex) { const [r, g, b] = hexToRgb(hex).map(v => { v /= 255; return 
 const inkFor = fill => lum(fill) > 0.36 ? 'on-light' : 'on-dark';
 function scaleFor(m, values) {
   if (m.div) { const ext = Math.max(...values.map(Math.abs)) || 1; return { color: v => divColor(v / ext), legend: `<span>${m.fmt(-ext)}</span><span class="ramp" style="background:linear-gradient(90deg,${divColor(-1)},${divColor(0)},${divColor(1)})"></span><span>${m.fmt(ext)}</span>` }; }
+  values = values.filter(Number.isFinite);
   const lo = Math.min(...values), hi = Math.max(...values), span = hi - lo || 1;
-  return { color: v => seqColor((v - lo) / span), legend: `<span>${m.fmt(lo)}</span><span class="ramp" style="background:linear-gradient(90deg,${seqColor(0)},${seqColor(0.5)},${seqColor(1)})"></span><span>${m.fmt(hi)}</span>` };
+  return { color: v => Number.isFinite(v) ? seqColor((v - lo) / span) : css('--rule'), legend: `<span>${m.fmt(lo)}</span><span class="ramp" style="background:linear-gradient(90deg,${seqColor(0)},${seqColor(0.5)},${seqColor(1)})"></span><span>${m.fmt(hi)}</span>` };
 }
 
 // ---------- header ----------
 function header() {
   const games = sum(A.scenarios.map(s => s.games)), fails = sum(A.scenarios.map(s => s.failures));
   const b = A.batchesUsed.length, runs = A.manifest.runsPerBatch;
-  const tables = mixed ? 'every seat assignment of the Novice and Advance bots (4 tables at 2 players, 8 at 3, 16 at 4)' : 'the Advance bot (進階型) in every seat';
+  const tables = mixed ? `every seat assignment of the ${present.map(k => STRATS[k]).join(' and ')} bots` : `the ${STRATS[present[0]]} bot in every seat`;
   document.getElementById('lede').textContent = `Every room option in the Standard POC (3 starter rotations × 3 extra-round settings × 4 tree presets × 2 completion rewards = 72 scenarios), played by ${tables}. Each of ${b} seed batches deals ${runs} games per player count, and every deal is replayed under all 72 scenarios, so scenario comparisons are paired.`;
   document.getElementById('facts').innerHTML = [
     ['games', games.toLocaleString('en')], ['failed', fails.toLocaleString('en')], ['seed batches', `${b} / ${A.manifest.batches}`],
@@ -283,7 +291,10 @@ function controls() {
   seg.innerHTML = ['all', ...counts].map(v => `<button type="button" data-v="${v}" aria-pressed="${state.n === v}">${v === 'all' ? 'All' : v + 'p'}</button>`).join('');
   seg.onclick = e => { const b = e.target.closest('button'); if (!b) return; state.n = b.dataset.v === 'all' ? 'all' : Number(b.dataset.v); render(); };
   const sel = document.getElementById('ctl-metric');
-  sel.innerHTML = METRICS.map(m => `<option value="${m.id}">${esc(m.label)}</option>`).join('');
+  const option = m => `<option value="${m.id}">${esc(m.label)}</option>`;
+  const groups = [...new Set(METRICS.filter(m => m.group).map(m => m.group))];
+  sel.innerHTML = METRICS.filter(m => !m.group).map(option).join('')
+    + groups.map(g => `<optgroup label="${esc(g)}">${METRICS.filter(m => m.group === g).map(option).join('')}</optgroup>`).join('');
   sel.value = state.metric; sel.onchange = () => { state.metric = sel.value; render(); };
   const ps = document.getElementById('ctl-preset');
   ps.innerHTML = `<option value="all">All presets</option>` + PRESETS.map(p => `<option value="${p}">${PRESET[p]}</option>`).join('');

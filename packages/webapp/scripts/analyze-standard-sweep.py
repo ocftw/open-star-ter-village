@@ -17,7 +17,10 @@ NODES = [f'{b}{t}' for b in 'sdg' for t in range(1, 6)]
 NODE_INDEX = {node: i for i, node in enumerate(NODES)}
 MAX_ROUNDS = 10
 # Runs from before the rename wrote Balanced/Counter as B/C.
-LEGACY_SEATS = str.maketrans('BC', 'NA')
+# Older runs used B = Balanced, C = Counter and S = Strategist for today's Novice, Advance and Normal.
+LEGACY_SEATS = str.maketrans('BCS', 'NAM')
+# Seat letters in a combo: N = Novice, M = Normal, A = Advance.
+STRATEGIES = 'NMA'
 
 
 def new_cell(n):
@@ -25,12 +28,12 @@ def new_cell(n):
         'games': 0, 'failures': 0, 'ties': 0, 'margin': 0, 'top': 0, 'rounds': 0, 'moves': 0,
         'win': [0.0] * n, 'score': [0] * n, 'score2': [0] * n,
         'grownHist': [0] * 11, 'tierHist': [0] * 6, 'node': [0] * 15, 'nodeRound': [0] * 15,
-        'nodeBy': {'N': [0] * 15, 'A': [0] * 15}, 'growRound': [0] * MAX_ROUNDS, 'tp': 0,
+        'nodeBy': {k: [0] * 15 for k in STRATEGIES}, 'growRound': [0] * MAX_ROUNDS, 'tp': 0,
         'played': [0] * 5, 'completed': [0] * 5, 'completedRound': [0] * 5,
-        'playedBy': {'N': [0] * 5, 'A': [0] * 5}, 'completedBy': {'N': [0] * 5, 'A': [0] * 5},
-        'finishedBy': {'N': [0] * 5, 'A': [0] * 5},
-        'breakdown': {'N': defaultdict(int), 'A': defaultdict(int)}, 'residual': 0,
-        'advancedDraws': {'N': 0, 'A': 0}, 'g5': [0, 0], 'f20': [0] * n, 'f20n': [0] * n,
+        'playedBy': {k: [0] * 5 for k in STRATEGIES}, 'completedBy': {k: [0] * 5 for k in STRATEGIES},
+        'finishedBy': {k: [0] * 5 for k in STRATEGIES},
+        'breakdown': {k: defaultdict(int) for k in STRATEGIES}, 'residual': 0,
+        'advancedDraws': {k: 0 for k in STRATEGIES}, 'g5': [0, 0], 'f20': [0] * n, 'f20n': [0] * n,
     }
 
 
@@ -189,7 +192,7 @@ def main():
             n_rates = [v[2] / v[3] for v in strategy.values()]
             a_adv = [a - b for a, b in zip(a_rates, n_rates)]
             a_adv_m, a_adv_sd = mean_sd(a_adv) if a_adv else (None, None)
-            games_by = {k: sum(c['games'] * combo.count(k) for (s, nn, combo), c in cells.items() if s == scenario and nn == n) for k in 'NA'}
+            games_by = {k: sum(c['games'] * combo.count(k) for (s, nn, combo), c in cells.items() if s == scenario and nn == n) for k in STRATEGIES}
             per = lambda k, x: x / games_by[k] if games_by[k] else None
             out['scenarios'].append({
                 'index': scenario, 'id': scenarios[scenario]['id'], 'n': n, 'games': g, 'failures': total['failures'],
@@ -214,7 +217,7 @@ def main():
                 'finishedBy': {k: [per(k, x) for x in v] for k, v in total['finishedBy'].items() if games_by[k]},
                 'breakdown': {k: {cat: per(k, x) for cat, x in v.items()} for k, v in total['breakdown'].items() if games_by[k]},
                 'breakdownResidual': total['residual'] / g,
-                'advancedDraws': {k: per(k, total['advancedDraws'][k]) for k in 'NA' if games_by[k]},
+                'advancedDraws': {k: per(k, total['advancedDraws'][k]) for k in STRATEGIES if games_by[k]},
                 'government5': [x / g for x in total['g5']],
                 'firstOver20Round': [r / m if m else None for r, m in zip(total['f20'], total['f20n'])],
                 'firstOver20Rate': [m / g for m in total['f20n']],

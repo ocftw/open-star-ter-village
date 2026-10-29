@@ -15,10 +15,10 @@ results from all-Novice runs as a property of this bot, not of the rules.
 
 | Run | What it shows |
 | --- | --- |
-| [baseline-100](baseline-100/README.md) | First batch runner check: 100 games per player count, completion and tree reach, debug panel |
+| [advance/vs-novice](../advance/vs-novice/README.md) | Every Novice/Advance seat assignment on the default room options, including the all-Novice tables |
+| [normal/vs-novice](../normal/vs-novice/README.md) | Every Novice/Normal seat assignment on the default room options, including the all-Novice tables |
 
-Rule experiments that used Novice in every seat:
-[balance-300](../../standard-experiments/balance-300/README.md). The larger
-`seed-batches-1-100` run was removed because the all-Advance
-[sweep72](../advance/sweep72/README.md) supersedes it; it is in git history at
-`068c6c4c`.
+Earlier all-Novice runs (`baseline-100`, the `balance-300` rule experiment and
+`seed-batches-1-100`) were recorded on builds whose rules have since changed
+and were removed; they stay in git history, e.g.
+[baseline-100 at c75742d9](https://github.com/ocftw/open-star-ter-village/blob/c75742d9/packages/webapp/docs/evidence/bots/novice/baseline-100/README.md).

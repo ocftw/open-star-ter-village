@@ -2,8 +2,9 @@
 
 Bots play complete 星源樹測試版 v1 games headless, so a rule change can be tested
 over hundreds of seeded games in seconds instead of 60–90 minute human sessions.
-Two strategies ship: **Novice**, the reference that plays every seat in batch
-runs, and **Advance**, a Novice variant tuned to beat Novice when it acts
+Three strategies ship: **Novice**, the reference that plays every seat in batch
+runs; **Normal**, which plans from the rounds left and the tree's effect on
+pace; and **Advance**, a Novice variant tuned to beat Novice when it acts
 early.
 
 How to test with bots, from a 5-second smoke run to a full sweep, and what
@@ -20,7 +21,6 @@ pnpm webapp bots --profile advance              # every seat plays Advance
 pnpm webapp bots --weights '{"advancedDraw":1}' # override profile weights as JSON
 pnpm webapp bots --no-move-log --out /tmp/run   # skip move logs, choose the output folder
 pnpm webapp bots --players 4 --games 10 --rotation counterclockwise --extra-rounds 2 --tree-preset cc-013610 --rewards difficulty
-pnpm webapp exec tsx scripts/verify-standard-room-options.ts /tmp/room-matrix.json
 ```
 
 Output goes to `packages/webapp/bot-runs/<timestamp>/` (gitignored):
@@ -35,10 +35,9 @@ Output goes to `packages/webapp/bot-runs/<timestamp>/` (gitignored):
 
 The same seed always replays the same game, so a failing or surprising seed
 can be rerun and inspected move by move. The command exits non-zero if any
-game fails. Room options use the same strict normalizer as the server. The matrix
-command runs all 108 configuration/player-count cases with fixed rewards, repeats
-each seed, verifies actual round orders, and records build/settings/scores/progress
-and move hashes. It is a smoke matrix, not evidence of game balance.
+game fails. Room options use the same strict normalizer as the server. Every
+room option is played to the end by `pnpm webapp bots:smoke`
+([bot testing](bot-testing.md)), one game per seed.
 
 ## How it works
 
@@ -82,8 +81,8 @@ The `nodeImpact` values are initial guesses. Recalibrate them from batch data
 ### Advance
 
 Every round is played in the same seat order (seat 1 first), because the start
-player does not rotate yet (a known bug, see the
-[rule-option report](evidence/standard-experiments/balance-300/README.md)). With
+player did not rotate yet (a bug since fixed, see the historical
+[rule-option report](https://github.com/ocftw/open-star-ter-village/blob/c75742d9/packages/webapp/docs/evidence/standard-experiments/balance-300/README.md)). With
 Novice in every seat, later seats finish the projects earlier seats set up
 and win far more often. Advance is the `ADVANCE` profile: Novice's scoring
 with four weights changed.
@@ -102,20 +101,47 @@ fail alone. In rooms a bot never takes seat 1, which is the host's, so the
 evidence also covers seats 3 and 4. See
 [the Advance evidence](evidence/bots/advance/README.md).
 
-### Compare a profile with Novice
+### Normal
+
+Normal is the `NORMAL` profile (一般型, strategy id `normal`, seat names 阿明,
+小華, 中中, 平平, 阿正, 小安): Advance's weights with `tree` back at 1 and a
+`planner` block. Earlier runs called it Strategist (seat letter `S`; the
+analyzer reads it as `M`). The planner replaces three guesses with estimates
+from the current rules and the rounds left:
+
+- **Finishing a project.** Instead of a completion chance that grows as
+  positions fill, it counts the AP the bot still needs (one recruit per open
+  job it has no cube on, then contributions at its cap), subtracts what the
+  project's other contributors fill with `helperShare` of their AP, and
+  compares that with `focus` of the bot's own remaining AP. The chance is
+  about half when the two match and near 0.95 with a few AP to spare.
+- **Drawing a project.** Each pile is worth the average, over the cards the bot
+  has not seen, of starting the card next round and working it alone: points
+  if it completes, half the contributions if not, the start reward, minus
+  `apValue` for every AP it ties up. In the last round it keeps the entry pile.
+- **Growing the tree.** An ability's AP per round is priced at `apValue`
+  instead of 1, and the bot adds what the ability changes in its own live
+  projects and hand cards, e.g. a 3★ that becomes finishable.
+
+Caps, recruit value, start cost and AP per round come from the rules in play,
+so grown abilities and events count. The planner does not yet predict whether
+other players will join a new project or weigh its score against theirs.
+
+### Compare profiles
+
+Play every seat assignment of two profiles on the same seeds with the sweep's
+`--tables` option, then summarize win rates by seat and by seat assignment:
 
 ```sh
 cd packages/webapp
-pnpm exec tsx scripts/compare-bot-strategies.ts --challenger advance --games 300 --out /tmp/advance
-python3 scripts/analyze-bot-strategies.py /tmp/advance
+NODE_ENV=production pnpm exec tsx scripts/sweep-standard-scenarios.ts \
+  --tables novice-normal --scenarios 0-7 --batches 5 --runs 100 --out bot-runs/novice-normal
+python3 scripts/summarize-seat-tables.py bot-runs/novice-normal
 ```
 
-Each seed is played all-Novice and again with the challenger in seat 1, then
-seat 2 (`--seats`), at 2/3/4 players across the four Standard rule options
-(`--scenarios`), using every CPU (`--jobs`). `--weights` overrides the
-challenger's weights for ablations. The analysis reports the challenger's win
-share (ties split) with a 95% interval, the paired change against Novice in
-the same seat and seed, and which score sources moved.
+`--tables all` seats Novice and Advance, `novice-normal` Novice and Normal,
+`normal-seat` Normal in each seat against Advance. See
+[bot testing](bot-testing.md) for how to size and record a run.
 
 ## Bots in game rooms
 
