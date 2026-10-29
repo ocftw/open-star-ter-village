@@ -4,7 +4,8 @@
  * seat assignment of the two bot strategies (2^n per player count: 4 + 8 + 16),
  * or only the all-Advance table with `--tables advance`, the all-Strategist table
  * with `--tables strategist`, or Strategist in each seat against Advance with
- * `--tables strategist-seat`. `--scenarios` limits a run to some scenario indexes.
+ * `--tables strategist-seat`, or every seat assignment of Novice and Strategist with
+ * `--tables novice-strategist`. `--scenarios` limits a run to some scenario indexes.
  * Seeds are shared across scenarios and seat assignments, so every comparison is
  * paired. Work is split into (batch, scenario) jobs; finished jobs are skipped
  * on rerun, so an interrupted sweep resumes where it stopped.
@@ -34,7 +35,8 @@ const { values } = parseArgs({ options: {
   players: { type: 'string', default: '2,3,4' },
   seed: { type: 'string', default: 'sweep72-v1' },
   // `all`: every seat assignment of Novice and Advance; `advance` / `strategist`: one profile in every seat;
-  // `strategist-seat`: Strategist in one seat, Advance in the others, for every seat.
+  // `strategist-seat`: Strategist in one seat, Advance in the others, for every seat;
+  // `novice-strategist`: every seat assignment of Novice and Strategist.
   tables: { type: 'string', default: 'all' },
   // Scenario indexes to run, e.g. `0-7` or `0,8,16`; all 72 by default.
   scenarios: { type: 'string', default: '0-71' },
@@ -49,7 +51,8 @@ const jobCount = Number(values.jobs);
 const playerCounts = values.players!.split(',').map(Number);
 assert.ok(Number.isInteger(batches) && batches > 0 && Number.isInteger(runs) && runs > 0, 'batches and runs must be positive integers');
 assert.ok(playerCounts.every(n => [2, 3, 4].includes(n)), 'players must be 2, 3 or 4');
-assert.ok(['all', 'advance', 'strategist', 'strategist-seat'].includes(values.tables!), 'tables must be all, advance, strategist or strategist-seat');
+assert.ok(['all', 'advance', 'strategist', 'strategist-seat', 'novice-strategist'].includes(values.tables!),
+  'tables must be all, advance, strategist, strategist-seat or novice-strategist');
 
 const ROTATIONS = ['none', 'clockwise', 'counterclockwise'] as const;
 const REWARDS = ['fixed', 'difficulty'] as const;
@@ -72,8 +75,9 @@ const combos = (n: number): string[] => {
   if (values.tables === 'advance') return ['A'.repeat(n)];
   if (values.tables === 'strategist') return ['S'.repeat(n)];
   if (values.tables === 'strategist-seat') return Array.from({ length: n }, (_, seat) => 'A'.repeat(seat) + 'S' + 'A'.repeat(n - seat - 1));
+  const other = values.tables === 'novice-strategist' ? 'S' : 'A';
   return Array.from({ length: 2 ** n }, (_, mask) =>
-    Array.from({ length: n }, (_, seat) => (mask >> seat) & 1 ? 'A' : 'N').join(''));
+    Array.from({ length: n }, (_, seat) => (mask >> seat) & 1 ? other : 'N').join(''));
 };
 
 const jobFile = (out: string, batch: number, scenario: number) => join(out, `b${String(batch).padStart(2, '0')}`, `s${String(scenario).padStart(2, '0')}.jsonl.gz`);
