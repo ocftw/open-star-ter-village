@@ -7,7 +7,7 @@ import { OpenStarTerVillage } from '../game';
 import { setup } from '../core/setup';
 import { GameState } from '../store/store';
 import { roomSetupError } from './config';
-import { normalizeStandardOptions, TREE_PRESETS } from './options';
+import { normalizeStandardOptions, TREE_PRESETS, type TreeRules } from './options';
 import { standardState } from './state';
 import { predecessors, growthReason, NODES } from './tree';
 import { advanceStandard, beginStandardEvent, choiceOptions, enqueue, growTree, resolveStandardChoice, syncTreeRules } from './engine';
@@ -510,5 +510,73 @@ describe('Government 5 new-cube experiment', () => {
     advanceStandard(context(G));
     expect(G.players['0'].token.workers).toBe(1);
     expect(G.table.scoreBoard['0']).toBe(3);
+  });
+});
+
+describe('tree v2', () => {
+  function v2(treeRules: TreeRules = 'v2-collab') {
+    const G = state(); G.standard!.options = normalizeStandardOptions({ treeRules }); return G;
+  }
+  test('a node connects to any grown node one tier down', () => {
+    const v1 = state(), next = v2(); v1.standard!.grown = ['source-1']; next.standard!.grown = ['source-1'];
+    expect(growthReason(v1, 'government-2', '0')).toBe('沒有相連下層能力');
+    expect(growthReason(next, 'government-2', '0')).toBeUndefined();
+    next.standard!.completedProjectIds = ['a', 'b'];
+    expect(growthReason(next, 'government-3', '0')).toBe('沒有相連下層能力');
+  });
+  test.each([[10, false], [11, true]])('Government 1 opens the advanced pile above 10 points (%i points)', (score, offered) => {
+    const G = v2(); G.standard!.grown = ['government-1']; G.standard!.phase = 'restore';
+    G.players['0'].hand.projects = []; G.table.scoreBoard['0'] = score;
+    advanceStandard(context(G));
+    expect(G.standard!.choices.map(c => c.kind)).toEqual(offered ? ['draw'] : []);
+    if (offered) {
+      const c = G.standard!.choices[0];
+      expect(choiceOptions(G, c).map(o => o.target.pile)).toEqual(['entry', 'advanced']);
+      resolveStandardChoice(context(G), c.id, { projectId: '', pile: 'advanced' });
+      expect(G.players['0'].hand.projects[0].difficulty).toBeGreaterThan(2);
+    }
+  });
+  test('the gate stays at 20 without Government 1; only v1 Government 1 discards', () => {
+    const G = v2(); G.standard!.phase = 'restore'; G.players['0'].hand.projects = []; G.table.scoreBoard['0'] = 15;
+    advanceStandard(context(G));
+    expect(G.standard!.choices).toEqual([]);
+    const grown = v2(); grown.standard!.grown = ['government-1']; grown.standard!.phase = 'settlement'; grown.table.scoreBoard['0'] = 5;
+    grown.players['0'].hand.projects = [{ id: 'kept', name: 'kept', type: 'ignored', difficulty: 1, description: '', requirements: { 工程師: 2 } }];
+    advanceStandard(context(grown));
+    expect(grown.standard!.choices).toEqual([]);
+    const v1 = state(); v1.standard!.grown = ['government-1']; v1.standard!.phase = 'settlement'; v1.table.scoreBoard['0'] = 15;
+    v1.players['0'].hand.projects = [{ id: 'kept', name: 'kept', type: 'ignored', difficulty: 1, description: '', requirements: { 工程師: 2 } }];
+    advanceStandard(context(v1));
+    expect(v1.standard!.choices.map(c => c.kind)).toEqual(['discard']);
+  });
+  test('Government 2 shows no event preview', () => {
+    const G = v2(); G.standard!.grown = ['government-2']; syncTreeRules(G);
+    expect(G.standard!.nextEvent).toBeUndefined();
+  });
+  test.each([['法務專家', 3], ['工程師', 1]])('Source 3 starts a %s at %i when the card needs that job most', (jobName, value) => {
+    const G = v2(); G.standard!.grown = ['source-3'];
+    G.players['0'].hand.projects = [{ id: 'hand', name: 'test', type: 'ignored', difficulty: 3, description: '', requirements: { 法務專家: 6, 工程師: 2 } }];
+    G.table.jobSlots = [{ id: 'job', name: jobName }];
+    createProject(context(G), 'hand', 'job');
+    expect(G.table.projectBoard[0].contributions[0].value).toBe(value);
+  });
+  test.each([['文字工作者', 3], ['美術設計', 1]])('Source 3 counts the job a mismatched card fills under Data 5 (%s → %i)', (jobName, value) => {
+    const G = v2(); G.standard!.grown = ['source-3', 'data-5'];
+    G.players['0'].hand.projects = [{ id: 'hand', name: 'test', type: 'ignored', difficulty: 1, description: '', requirements: { 文字工作者: 5, 美術設計: 2 } }];
+    G.table.jobSlots = [{ id: 'engineer', name: '工程師' }];
+    createProject(context(G), 'hand', 'engineer', jobName);
+    expect(G.table.projectBoard[0].contributions[0].value).toBe(value);
+  });
+  test('Source 4 follows every completion and moves a cube of any job', () => {
+    const G = v2(); G.standard!.grown = ['source-4'];
+    project(G, 'complete', '0', 5, 5, '美術設計'); project(G, 'target', '0', 1, 4, '文字工作者');
+    G.standard!.phase = 'settlement'; advanceStandard(context(G));
+    const c = G.standard!.choices[0];
+    expect(c.kind).toBe('source4');
+    expect(choiceOptions(G, c).map(o => o.target.jobName)).toEqual(['文字工作者']);
+    const v1 = state(); v1.standard!.grown = ['source-4'];
+    project(v1, 'complete', '0', 5, 5, '美術設計'); project(v1, 'target', '0', 1, 4, '文字工作者');
+    v1.standard!.phase = 'settlement'; advanceStandard(context(v1));
+    expect(v1.standard!.choices).toEqual([]);
   });
 });

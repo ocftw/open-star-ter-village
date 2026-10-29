@@ -83,7 +83,7 @@ export function growthReason(G: GameState | ClientGameState, node: NodeId, playe
   if (s.grown.filter(n => n.endsWith(`-${tier}`)).length >= 2) return '本層已滿 2 顆';
   const progress = treeProgress(G);
   if (progress.value < progress.thresholds[tier - 1]) return `需要全村${progress.metric === 'cc' ? '結案複雜度 CC' : '結案數'} ${progress.thresholds[tier - 1]}`;
-  if (tier > 1 && !predecessors(node).some(n => s.grown.includes(n))) return '沒有相連下層能力';
+  if (!isConnected(G, node)) return '沒有相連下層能力';
   if (!G.players[playerId] || G.players[playerId].token.actions < 1) return '需要 1 行動點';
   if (s.growthUsed && !overtime) return '本回合已成長；可使用加班';
   if (overtime && (!s.growthUsed || G.players[playerId].token.overtime < 1)) return '無法使用加班';
