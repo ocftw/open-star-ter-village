@@ -3,7 +3,7 @@ import type { GameState } from '@/game/store/store';
 import type { TreeRules } from '@/game/standard/options';
 import { normalizeStandardOptions } from '@/game/standard/options';
 import { playerView } from '@/game/core/playerView';
-import { cardValue, nodeValue, position, scoreAction } from './evaluate';
+import { cardValue, contractBonus, nodeValue, position, scoreAction } from './evaluate';
 import { ADVANCE, NORMAL, NOVICE, type Profile } from './profiles';
 import { initialState } from './runner';
 
@@ -117,4 +117,22 @@ test('Normal prices earlier advanced access only when growth crosses the gate; A
   expect(nodeValue(at(s, profile), 'government-1')).toBe(locked);
   s.G.standard!.choices = [{ id: 2, kind: 'draw', playerId: '0', budget: 1 }];
   expect(scoreAction(at(s, ADVANCE), { move: 'resolveStandardChoice', args: [2, { pile: 'advanced' }] })).toBe(ADVANCE.weights.advancedDraw);
+});
+
+
+test('maintenance discounts the rounds spent finishing cards and live projects', () => {
+  const s = state('v2-maintenance');
+  const profile = { ...NORMAL, planner: { ...NORMAL.planner!, focus: 1 } };
+  const card = { name: 'slow', difficulty: 4, requirements: { 工程師: 20 } };
+  const before = cardValue(at(s, profile), card, 4);
+  s.G.standard!.grown = ['government-2'];
+  const delta = cardValue(at(s, profile), card, 4) - before;
+  expect(delta).toBeGreaterThan(0);
+  expect(delta).toBeLessThanOrEqual(2);
+  const slot = project(s, '0', 4);
+  slot.card!.requirements = { 法務: 28 };
+  const p = { ...at(s, profile), roundsLeft: 4 };
+  expect(contractBonus(p, slot)).toBe(1); // 27 points / 3 per AP / 3 AP per round
+  slot.contributions[0].value = 28;
+  expect(contractBonus(p, slot)).toBe(4);
 });

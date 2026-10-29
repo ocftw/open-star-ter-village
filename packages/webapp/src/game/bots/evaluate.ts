@@ -54,18 +54,27 @@ const filledShare = (slot: ProjectSlot) => {
 /** Expected points `me` gets from a project: settled value if it completes, half-value at game end if not. */
 function projectValue(p: Position, slot: ProjectSlot, pc?: Pace): number {
   const mine = ProjectSlotSelector.getPlayerContribution(slot, p.me);
-  if (isComplete(slot)) return mine + (slot.owner === p.me ? ownerBonus(p, slot) : 0) + contractBonus(p, slot);
+  if (isComplete(slot)) return mine + (slot.owner === p.me ? ownerBonus(p, slot) : 0) + contractBonus(p, slot, pc);
   const horizon = p.roundsLeft >= 3 ? 1 : p.roundsLeft === 2 ? 0.75 : 0.4;
   const base = p.profile.weights.baseCompletionChance;
   const chance = p.profile.planner ? finishChance(p, slot, pc) : Math.min(0.95, (base + (1 - base) * filledShare(slot)) * horizon);
-  const stake = mine + (slot.owner === p.me ? ownerBonus(p, slot) : 0) + contractBonus(p, slot);
+  const stake = mine + (slot.owner === p.me ? ownerBonus(p, slot) : 0) + contractBonus(p, slot, pc);
   return chance * stake + (1 - chance) * 0.5 * mine;
 }
 
 /** Expected contract points for this completion; existing contracts are already sunk value. */
-function contractBonus(p: Position, slot: ProjectSlot): number {
+export function contractBonus(p: Position, slot: ProjectSlot, pc = pace(p)): number {
   if (!hasNode(p.view, 'government-2') || slot.card!.difficulty < 3) return 0;
-  if (treeRules(p.view) === 'v2-maintenance') return slot.owner === p.me ? p.roundsLeft : 0;
+  if (treeRules(p.view) === 'v2-maintenance') {
+    if (slot.owner !== p.me) return 0;
+    if (isComplete(slot)) return p.roundsLeft;
+    const open = Object.entries(slot.card!.requirements).map(([job, need]) => [job, Math.max(0, need - ProjectSlotSelector.getJobContribution(slot, job))] as const);
+    const missing = open.filter(([job, n]) => n > 0 && !ProjectSlotSelector.hasWorker(slot, job, p.me));
+    const recruited = missing.reduce((sum, [, n]) => sum + Math.min(pc.recruit, n), 0);
+    const unfilled = open.reduce((sum, [, n]) => sum + n, 0);
+    const need = missing.length + Math.ceil(Math.max(0, unfilled - recruited) / pc.owned);
+    return Math.max(0, p.roundsLeft - need / pc.apPerRound);
+  }
   if (treeRules(p.view) === 'v2-collab') return slot.owner !== p.me && slot.contributions.some(c => c.worker === p.me) ? 2 : 0;
   return 0;
 }
@@ -146,7 +155,7 @@ export function cardValue(p: Position, card: CardSpec, rounds: number, pc = pace
   const experiments = p.view.standard?.experiments;
   const rewards = completionReward(experiments, card.difficulty, rules.settlement.projectOwnerVictoryPoints)
     + completionReward(experiments, card.difficulty, rules.settlement.lastContributorVictoryPoints);
-  const contract = treeRules(p.view) === 'v2-maintenance' && hasNode(p.view, 'government-2') && card.difficulty >= 3 ? rounds : 0;
+  const contract = treeRules(p.view) === 'v2-maintenance' && hasNode(p.view, 'government-2') && card.difficulty >= 3 ? Math.max(0, rounds - need / pc.apPerRound) : 0;
   const expected = chance * (total + rewards + contract) + (1 - chance) * 0.5 * total * (spent / need);
   return (expected + rules.action.createProject.victoryPoints - apValue * spent) * p.profile.weights.points;
 }
