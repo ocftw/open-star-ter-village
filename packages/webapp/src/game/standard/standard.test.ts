@@ -10,7 +10,7 @@ import { roomSetupError } from './config';
 import { normalizeStandardOptions, TREE_PRESETS, type TreeRules } from './options';
 import { standardState } from './state';
 import { predecessors, growthReason, NODES } from './tree';
-import { advanceStandard, beginStandardEvent, choiceOptions, enqueue, growTree, resolveStandardChoice, syncTreeRules } from './engine';
+import { advanceStandard, beginStandardEvent, choiceOptions, endStandardRound, enqueue, growTree, resolveStandardChoice, syncTreeRules } from './engine';
 import { playerView } from '../core/playerView';
 import type { FnContext } from 'boardgame.io';
 import { createProject } from '../core/stage/action/move/createProject';
@@ -578,5 +578,50 @@ describe('tree v2', () => {
     project(v1, 'complete', '0', 5, 5, '美術設計'); project(v1, 'target', '0', 1, 4, '文字工作者');
     v1.standard!.phase = 'settlement'; advanceStandard(context(v1));
     expect(v1.standard!.choices).toEqual([]);
+  });
+
+  function completeBigProject(G: GameState, difficulty = 3) {
+    const slot = project(G, 'big', '0', 3, 6);
+    slot.card!.difficulty = difficulty;
+    slot.contributions.push({ jobName: '工程師', worker: '1', value: 2 }, { jobName: '工程師', worker: '1', value: 1 });
+    G.standard!.phase = 'settlement'; advanceStandard(context(G));
+    return G.standard!.log.filter(l => l.kind === 'score' && (l.target === '協作合約' || l.target === '維運合約'));
+  }
+  test('協作合約 pays each helper +2 once on a 3★+ completion', () => {
+    const G = v2('v2-collab'); G.standard!.grown = ['government-2'];
+    expect(completeBigProject(G).map(l => [l.playerId, l.scoreDelta])).toEqual([['1', 2]]);
+    for (const [rules, grown, difficulty] of [['v2-collab', ['government-2'], 2], ['v2-collab', [], 3], ['v1', ['government-2'], 3]] as const) {
+      const other = v2(rules as TreeRules); other.standard!.grown = [...grown];
+      expect(completeBigProject(other, difficulty)).toEqual([]);
+    }
+  });
+  test('維運合約 pays the owner +1 per contract at every round end', () => {
+    const G = v2('v2-maintenance'); G.standard!.grown = ['government-2'];
+    expect(completeBigProject(G)).toEqual([]);
+    expect(G.standard!.maintenance).toEqual({ '0': 1 });
+    const before = G.table.scoreBoard['0'];
+    endStandardRound(G); endStandardRound(G);
+    expect(G.table.scoreBoard['0']).toBe(before + 2);
+    const v1 = state(); v1.standard!.grown = ['government-2'];
+    completeBigProject(v1);
+    expect(v1.standard!.maintenance).toBeUndefined();
+  });
+  test('維運合約 is paid at the end of the round the project completes in', () => {
+    const client = Client({ game: { ...OpenStarTerVillage, playerView: ({ G }) => G, seed: 'maintenance', setup: ctx => {
+      const G = setup(ctx, { ruleset: 'tree-poc-v1', standardOptions: { treeRules: 'v2-maintenance' }, forcedFirstEvent: 'digital_minister' });
+      G.standard!.maintenance = { '1': 2 }; return G;
+    } }, numPlayers: 2 });
+    client.start();
+    const paid = () => client.getState()!.G.standard!.log.filter(l => l.target === '維運合約').map(l => [l.playerId, l.scoreDelta]);
+    for (let turn = 0; turn < 2; turn++) {
+      const s = client.getState()!;
+      client.updatePlayerID(s.ctx.currentPlayer); client.moves.endActionTurn();
+      while (client.getState()!.G.standard!.choices.length) {
+        const c = client.getState()!.G.standard!.choices[0];
+        client.updatePlayerID(c.playerId); client.moves.resolveStandardChoice(c.id, c.kind === 'draw' ? choiceOptions(client.getState()!.G, c)[0].target : null);
+      }
+      expect(paid()).toEqual(turn === 0 ? [] : [['1', 2]]);
+    }
+    client.stop();
   });
 });

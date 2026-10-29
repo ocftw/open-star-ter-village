@@ -178,6 +178,12 @@ function settleStandard(G: GameState) {
     scoreWithHistory(G, slot.owner, ownerReward, '發起獎勵', snapshot);
     scoreWithHistory(G, slot.owner, G.rules.event?.extraOwnerVictoryPoints ?? 0, '年度結算發起獎勵', snapshot);
     scoreWithHistory(G, slot.lastContributor, finisherReward, '結案獎勵', snapshot);
+    // v2 Government 2 contracts cover 3★ and 4★ projects completed while it is grown.
+    const contract = hasNode(G, 'government-2') && slot.card!.difficulty >= 3 ? treeRules(G) : 'v1';
+    if (contract === 'v2-collab') {
+      for (const helper of Array.from(new Set(slot.contributions.map(c => c.worker))).filter(w => w !== slot.owner)) scoreWithHistory(G, helper, 2, '協作合約', snapshot);
+    }
+    if (contract === 'v2-maintenance') s.maintenance = { ...s.maintenance, [slot.owner]: (s.maintenance?.[slot.owner] ?? 0) + 1 };
     PlayersMutator.addWorkerTokens(G.players, slot.owner, slot.ownerToken);
     s.completedProjectIds.push(slot.card!.id);
     s.completedComplexity = (s.completedComplexity ?? 0) + slot.card!.difficulty;
@@ -187,6 +193,10 @@ function settleStandard(G: GameState) {
     if (hasNode(G, 'government-5') && ownerContribution >= 2) enqueue(G, 'government5', slot.owner, slot.card!.id, Math.floor(ownerContribution / 2));
   }
   ProjectBoardMutator.remove(G.table.projectBoard, completed);
+}
+/** Round-end income from v2 維運合約, paid from the round the project completed in. */
+export function endStandardRound(G: GameState) {
+  for (const [playerId, contracts] of Object.entries(G.standard?.maintenance ?? {})) scoreWithHistory(G, playerId, contracts, '維運合約');
 }
 export function beginStandardEvent(G: GameState) {
   if (!G.standard) return;

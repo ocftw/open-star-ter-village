@@ -1,4 +1,4 @@
-import { advanceStandard, beginStandardEvent, resetStandardTurn, resolveStandardChoice } from './standard/engine';
+import { advanceStandard, beginStandardEvent, endStandardRound, resetStandardTurn, resolveStandardChoice } from './standard/engine';
 import { roomSetupError } from './standard/config';
 import { Game } from 'boardgame.io';
 import { TurnOrder } from 'boardgame.io/core';
@@ -73,6 +73,7 @@ export const OpenStarTerVillage: Game<GameState, Record<string, unknown>, GameSe
       if (context.G.standard) resetStandardTurn(context.G, ctx.currentPlayer);
       else refill(context);
       if (ctx.playOrderPos === ctx.numPlayers - 1) {
+        if (context.G.standard) endStandardRound(context.G);
         if (context.G.standard && context.G.table.eventSlot?.type === 'last_round') context.G.standard.finishedAt = Date.now();
         removeEventCard(context);
 

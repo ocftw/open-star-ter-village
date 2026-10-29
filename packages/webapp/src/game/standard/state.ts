@@ -36,6 +36,8 @@ export interface StandardState {
   log: PublicLog[];
   nextEvent?: EventCard;
   extraRecruitUsed?: Record<string, boolean>;
+  /** v2 維運合約: 3★+ projects each owner completed while Government 2 was grown; each pays +1 per round end. */
+  maintenance?: Record<string, number>;
   /** Server-only balance data; stripped by playerView. */
   telemetry?: StandardTelemetry;
 }
