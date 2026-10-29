@@ -264,10 +264,14 @@ out of the v1 profiles.
 - **開源 3 — 主力職能發起:** initiation and Normal's pace model use the card's
   largest required job, including ties; wildcard initiation uses its assigned
   job. V1 retains its engineer-specific estimate.
-- **開源 4 — 經驗傳承:** the expanded impact estimate covers any job. Choice
-  scoring evaluates the actual target player's cube, the bot's own expected
-  contribution and owner points, and the advanced cube owner's finisher
-  credit. Helping somebody else is not credited to the bot as its own cube.
+- **開源 4 — 經驗傳承:** the finisher may advance one of their own existing
+  cubes, of any job, on another project. Choice scoring values that cube's
+  contribution, owner points and finisher credit; other players' cubes and
+  creating new cubes are excluded. Both v2 variants use an initial impact
+  of 0.5 AP per round, reduced from 0.6 after checking the own-cubes rule.
+  This remains above v1's 0.4 because every completion and any job can qualify,
+  but still requires an eligible own cube elsewhere. It is a conservative
+  heuristic, not a calibrated balance result.
 - **政府 1 — 開放標案:** Normal compares unseen entry and advanced cards when
   growth (including its reward) newly puts the bot above the lower gate.
   It values only a positive improvement over entry; Advance retains its flat
