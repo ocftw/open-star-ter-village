@@ -8,6 +8,10 @@ bots/
 ├── seats/                 Host-managed bot seats in a real room (any profile)
 ├── novice/                新手型 Novice, profile NOVICE
 │   └── baseline-100/      Milestone 1: 100 games per player count, Novice in every seat
+├── normal/                一般型 Normal, profile NORMAL (recorded as Strategist)
+│   ├── sweep72/           648,000 games, Normal in every seat, all 72 room-option scenarios
+│   ├── vs-advance/        36,000 games: Normal in each seat, Advance in the others
+│   └── vs-novice/         112,000 games: every seat assignment of Novice and Normal
 └── advance/               進階型 Advance, profile ADVANCE
     ├── vs-novice-1000/    36,000 paired games: Advance in seat 1 or 2, Novice elsewhere
     └── sweep72/           648,000 games, Advance in every seat, all 72 room-option scenarios
