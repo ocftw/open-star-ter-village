@@ -44,6 +44,7 @@ const { values } = parseArgs({ options: {
   tables: { type: 'string', default: 'all' },
   // `all`, `default` (the default room: scenario 0) or comma-separated indexes and ranges into the 72, e.g. `0-7`.
   scenarios: { type: 'string', default: 'all' },
+  'tree-rules': { type: 'string', default: 'v1' },
   jobs: { type: 'string', default: String(availableParallelism()) },
   out: { type: 'string', default: 'bot-runs/sweep72' },
   child: { type: 'boolean', default: false },
@@ -61,19 +62,29 @@ assert.ok(['all', 'advance', 'normal', 'normal-seat', 'novice-normal'].includes(
 const ROTATIONS = ['none', 'clockwise', 'counterclockwise'] as const;
 const REWARDS = ['fixed', 'difficulty'] as const;
 interface Scenario { id: string; standardOptions: StandardOptions; experiments: StandardExperiments }
-const SCENARIOS: Scenario[] = ROTATIONS.flatMap(starterRotation => ([0, 1, 2] as const).flatMap(extraRounds =>
+const BASE_SCENARIOS: Scenario[] = ROTATIONS.flatMap(starterRotation => ([0, 1, 2] as const).flatMap(extraRounds =>
   (Object.keys(TREE_PRESETS) as (keyof typeof TREE_PRESETS)[]).flatMap(treePreset => REWARDS.map(completionRewards => ({
     id: `${starterRotation}|x${extraRounds}|${treePreset}|${completionRewards}`,
     standardOptions: normalizeStandardOptions({ starterRotation, extraRounds, treePreset }),
     experiments: { government5: 'any', completionRewards },
   })))));
-assert.equal(SCENARIOS.length, 72);
-const scenarioIndexes = values.scenarios === 'all' ? SCENARIOS.map((_, i) => i)
+assert.equal(BASE_SCENARIOS.length, 72);
+const TREE_RULES = ['v1', 'v2-collab', 'v2-maintenance'] as const;
+const selectedRules = values['tree-rules'] === 'all' ? [...TREE_RULES] : values['tree-rules']!.split(',');
+assert.ok(selectedRules.length && new Set(selectedRules).size === selectedRules.length && selectedRules.every(r => TREE_RULES.includes(r as typeof TREE_RULES[number])), 'tree-rules must be v1,v2-collab,v2-maintenance or all');
+// Stable blocks of 72: a v2-only run has the same IDs/indexes as an all-rules run.
+const SCENARIOS: Scenario[] = TREE_RULES.flatMap(treeRules => BASE_SCENARIOS.map(s => ({
+  ...s,
+  id: treeRules === 'v1' ? s.id : `${s.id}|${treeRules}`,
+  standardOptions: { ...s.standardOptions, treeRules },
+})));
+const baseIndexes = values.scenarios === 'all' ? BASE_SCENARIOS.map((_, i) => i)
   : values.scenarios === 'default' ? [0] : values.scenarios!.split(',').flatMap(part => {
     const [from, to = from] = part.split('-').map(Number);
     return Array.from({ length: to - from + 1 }, (_, i) => from + i);
   });
-assert.ok(scenarioIndexes.length && scenarioIndexes.every(i => Number.isInteger(i) && i >= 0 && i < SCENARIOS.length), 'scenarios must be all, default or indexes 0-71');
+assert.ok(baseIndexes.length && baseIndexes.every(i => Number.isInteger(i) && i >= 0 && i < 72), 'scenarios must be all, default or indexes 0-71');
+const scenarioIndexes = TREE_RULES.flatMap((rule, offset) => selectedRules.includes(rule) ? baseIndexes.map(i => i + offset * 72) : []);
 
 /** Seat assignments as strings, seat 1 first: N = Novice, M = Normal, A = Advance. */
 const combos = (n: number): string[] => {
@@ -111,6 +122,7 @@ function playGame(scenario: Scenario, numPlayers: number, combo: string, seed: s
     p: Object.values(t.projects).map(p => [p.difficulty, Number(p.initiator), p.initiatedRound, p.finisher === undefined ? -1 : Number(p.finisher), p.completedRound ?? -1]),
     ad: seats.map(id => t.advancedDraws[id] ?? 0),
     f20: seats.map(id => t.firstOver20Round[id] ?? -1),
+    ...(scenario.standardOptions.treeRules !== 'v1' ? { fg: seats.map(id => run.firstAdvancedGateRound[id] ?? -1) } : {}),
     g5: [t.government5.budget, t.government5.used],
     bd: breakdown,
     ev: s.log.filter(l => l.kind === 'event').map(l => l.target),
@@ -161,12 +173,12 @@ async function main() {
   const dirty = execFileSync('git', ['status', '--porcelain', '--', 'src'], { encoding: 'utf8' }).trim() !== '';
   const gamesPerJob = runs * playerCounts.reduce((sum, n) => sum + combos(n).length, 0);
   writeFileSync(join(out, 'manifest.json'), JSON.stringify({ build, uncommittedSrcChanges: dirty, nodeEnv: process.env.NODE_ENV,
-    tables: values.tables, seedPrefix: values.seed, seeds: `${values.seed}-b<1..${batches}>-<players>p-r<0..${runs - 1}>`, batches, runsPerBatch: runs,
+    treeRules: selectedRules, tables: values.tables, seedPrefix: values.seed, seeds: `${values.seed}-b<1..${batches}>-<players>p-r<0..${runs - 1}>`, batches, runsPerBatch: runs,
     playerCounts, combos: Object.fromEntries(playerCounts.map(n => [n, combos(n)])), scenarios: SCENARIOS, scenarioIndexes,
     gamesPerJob, totalGames: gamesPerJob * batches * scenarioIndexes.length,
     strategies: { N: { profile: 'novice', weights: NOVICE.weights }, A: { profile: 'advance', weights: ADVANCE.weights },
       M: { profile: 'normal', weights: NORMAL.weights, planner: NORMAL.planner } },
-    method: 'Authoritative headless reducer; bots see only their own player view. Every seed is played under all 72 scenarios and every seat assignment. Government 5 is the current new-room rule (any).' }, null, 2));
+    method: 'Authoritative headless reducer; bots see only their own player view. Each selected tree rule uses paired seeds across the selected room scenarios and seat assignments. Government 5 is the current new-room rule (any).' }, null, 2));
 
   // Batch-major order: early batches complete across all scenarios first, so partial results are balanced.
   const queue: { batch: number; scenario: number }[] = [];
