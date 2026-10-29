@@ -106,20 +106,20 @@ export const ADVANCE: Profile = {
 };
 
 /**
- * Strategist: Advance's weights plus pace planning. It judges whether a
+ * Normal: Advance's weights plus pace planning. It judges whether a
  * project can still be finished from the AP it and the project's other
  * contributors have left under the current rules (tree abilities included),
  * chooses the project pile whose cards are worth most in the rounds left, and
  * values a tree ability by its AP at `apValue` plus what it speeds up in the
  * bot's own projects, without Advance's 0.6 tree discount.
  */
-export const STRATEGIST: Profile = {
+export const NORMAL: Profile = {
   ...withWeights(ADVANCE, { tree: 1 }),
-  name: 'strategist',
+  name: 'normal',
   planner: { focus: 0.6, helperShare: 0.25, apValue: 2 },
 };
 
-export const PROFILES: Record<string, Profile> = { novice: NOVICE, advance: ADVANCE, strategist: STRATEGIST };
+export const PROFILES: Record<string, Profile> = { novice: NOVICE, normal: NORMAL, advance: ADVANCE };
 
 /** A profile with some weights overridden, e.g. from CLI JSON. */
 export function withWeights(profile: Profile, overrides: Partial<Weights>): Profile {

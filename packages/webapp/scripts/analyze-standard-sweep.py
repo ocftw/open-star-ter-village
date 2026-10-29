@@ -17,9 +17,10 @@ NODES = [f'{b}{t}' for b in 'sdg' for t in range(1, 6)]
 NODE_INDEX = {node: i for i, node in enumerate(NODES)}
 MAX_ROUNDS = 10
 # Runs from before the rename wrote Balanced/Counter as B/C.
-LEGACY_SEATS = str.maketrans('BC', 'NA')
-# Seat letters in a combo: N = Novice, A = Advance, S = Strategist.
-STRATEGIES = 'NAS'
+# Older runs used B = Balanced, C = Counter and S = Strategist for today's Novice, Advance and Normal.
+LEGACY_SEATS = str.maketrans('BCS', 'NAM')
+# Seat letters in a combo: N = Novice, M = Normal, A = Advance.
+STRATEGIES = 'NMA'
 
 
 def new_cell(n):

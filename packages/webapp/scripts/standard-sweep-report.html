@@ -172,7 +172,7 @@ const pp = (v, d = 1) => (v >= 0 ? '+' : '−') + Math.abs(v * 100).toFixed(d) +
 const f = (v, d = 2) => v == null || Number.isNaN(v) ? '–' : v.toFixed(d);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
-const STRATS = { N: 'Novice', A: 'Advance', S: 'Strategist' };
+const STRATS = { N: 'Novice', M: 'Normal', A: 'Advance' };
 const present = Object.keys(STRATS).filter(k => A.scenarios.some(s => s.seatGames[k] > 0));
 const mixed = present.length > 1;
 // Strongest minus weakest seat, each seat's win rate averaged over the games first. Pooled player
