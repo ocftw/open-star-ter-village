@@ -6,11 +6,11 @@ import type { ContributionAction } from '@/game/core/ContributionAction';
 import type { ActionExecutionOptions } from '@/game/core/stage/action/validate';
 import type { ChoiceTarget } from '@/game/standard/engine';
 import type { NodeId } from '@/game/standard/state';
-import { hasNode, NODES, predecessors, REWARDS, treeProgress } from '@/game/standard/tree';
+import { advancedScoreGate, hasNode, isConnected, mainJobs, nodesConnectedBy, REWARDS, treeProgress, treeRules } from '@/game/standard/tree';
 import type { ProjectSlot } from '@/game/store/slice/projectSlot/projectSlot';
 import { ProjectSlotSelector } from '@/game/store/slice/projectSlot/projectSlot';
 import { RuleSelector } from '@/game/store/slice/rule';
-import type { Profile } from './profiles';
+import { V2_NODE_IMPACT, type Profile } from './profiles';
 import type { BotAction } from './types';
 import rawProjectCards from '@/game/data/card/projects.json';
 
@@ -54,12 +54,29 @@ const filledShare = (slot: ProjectSlot) => {
 /** Expected points `me` gets from a project: settled value if it completes, half-value at game end if not. */
 function projectValue(p: Position, slot: ProjectSlot, pc?: Pace): number {
   const mine = ProjectSlotSelector.getPlayerContribution(slot, p.me);
-  if (isComplete(slot)) return mine + (slot.owner === p.me ? ownerBonus(p, slot) : 0);
+  if (isComplete(slot)) return mine + (slot.owner === p.me ? ownerBonus(p, slot) : 0) + contractBonus(p, slot, pc);
   const horizon = p.roundsLeft >= 3 ? 1 : p.roundsLeft === 2 ? 0.75 : 0.4;
   const base = p.profile.weights.baseCompletionChance;
   const chance = p.profile.planner ? finishChance(p, slot, pc) : Math.min(0.95, (base + (1 - base) * filledShare(slot)) * horizon);
-  const stake = mine + (slot.owner === p.me ? ownerBonus(p, slot) : 0);
+  const stake = mine + (slot.owner === p.me ? ownerBonus(p, slot) : 0) + contractBonus(p, slot, pc);
   return chance * stake + (1 - chance) * 0.5 * mine;
+}
+
+/** Expected contract points for this completion; existing contracts are already sunk value. */
+export function contractBonus(p: Position, slot: ProjectSlot, pc = pace(p)): number {
+  if (!hasNode(p.view, 'government-2') || slot.card!.difficulty < 3) return 0;
+  if (treeRules(p.view) === 'v2-maintenance') {
+    if (slot.owner !== p.me) return 0;
+    if (isComplete(slot)) return p.roundsLeft;
+    const open = Object.entries(slot.card!.requirements).map(([job, need]) => [job, Math.max(0, need - ProjectSlotSelector.getJobContribution(slot, job))] as const);
+    const missing = open.filter(([job, n]) => n > 0 && !ProjectSlotSelector.hasWorker(slot, job, p.me));
+    const recruited = missing.reduce((sum, [, n]) => sum + Math.min(pc.recruit, n), 0);
+    const unfilled = open.reduce((sum, [, n]) => sum + n, 0);
+    const need = missing.length + Math.ceil(Math.max(0, unfilled - recruited) / pc.owned);
+    return Math.max(0, p.roundsLeft - need / pc.apPerRound);
+  }
+  if (treeRules(p.view) === 'v2-collab') return slot.owner !== p.me && slot.contributions.some(c => c.worker === p.me) ? 2 : 0;
+  return 0;
 }
 
 /** The rules that set how fast a project fills: contribution caps, recruit value, start cost and AP per round. */
@@ -69,8 +86,8 @@ export interface Pace {
   recruit: number;
   createCost: number;
   apPerRound: number;
-  /** First contribution when a project is started with an engineer. */
-  engineerStart: number;
+  /** First contribution for an engineer (v1) or a main job (v2 Source 3). */
+  boostedStart: number;
 }
 
 /** The pace under the current rules, or as it would be with `node` grown. */
@@ -82,7 +99,7 @@ export function pace(p: Position, node?: NodeId): Pace {
     recruit: node === 'data-2' ? 2 : action.recruit.initialContributionValue,
     createCost: node === 'source-5' ? 1 : RuleSelector.getActionTokenCost(p.view.rules, 'createProject'),
     apPerRound: player.maxActionTokens + (node === 'data-3' ? 1 : 0),
-    engineerStart: node === 'source-3' || hasNode(p.view, 'source-3') ? 3 : action.createProject.initialContributionValue,
+    boostedStart: node === 'source-3' || hasNode(p.view, 'source-3') ? 3 : action.createProject.initialContributionValue,
   };
 }
 
@@ -127,8 +144,9 @@ export function cardValue(p: Position, card: CardSpec, rounds: number, pc = pace
   const rules = p.view.rules;
   const jobs = Object.entries(card.requirements);
   const total = jobs.reduce((sum, [, n]) => sum + n, 0);
-  const startJob = card.requirements['工程師'] ? '工程師' : jobs[0][0];
-  const start = Math.min(startJob === '工程師' ? pc.engineerStart : rules.action.createProject.initialContributionValue, card.requirements[startJob]);
+  const v2 = treeRules(p.view) !== 'v1';
+  const startJob = v2 && pc.boostedStart > rules.action.createProject.initialContributionValue ? mainJobs(card)[0] : card.requirements['工程師'] ? '工程師' : jobs[0][0];
+  const start = Math.min((v2 || startJob === '工程師') ? pc.boostedStart : rules.action.createProject.initialContributionValue, card.requirements[startJob]);
   const recruited = jobs.filter(([job]) => job !== startJob).reduce((sum, [, n]) => sum + Math.min(pc.recruit, n), 0);
   const need = pc.createCost + jobs.length - 1 + Math.ceil(Math.max(0, total - start - recruited) / pc.owned);
   const budget = focus * rounds * pc.apPerRound;
@@ -137,7 +155,8 @@ export function cardValue(p: Position, card: CardSpec, rounds: number, pc = pace
   const experiments = p.view.standard?.experiments;
   const rewards = completionReward(experiments, card.difficulty, rules.settlement.projectOwnerVictoryPoints)
     + completionReward(experiments, card.difficulty, rules.settlement.lastContributorVictoryPoints);
-  const expected = chance * (total + rewards) + (1 - chance) * 0.5 * total * (spent / need);
+  const contract = treeRules(p.view) === 'v2-maintenance' && hasNode(p.view, 'government-2') && card.difficulty >= 3 ? Math.max(0, rounds - need / pc.apPerRound) : 0;
+  const expected = chance * (total + rewards + contract) + (1 - chance) * 0.5 * total * (spent / need);
   return (expected + rules.action.createProject.victoryPoints - apValue * spent) * p.profile.weights.points;
 }
 
@@ -190,10 +209,23 @@ const overtimeCost = (p: Position, options?: ActionExecutionOptions) => (options
  */
 function paceGain(p: Position, node: NodeId): number {
   const after = pace(p, node);
+  const next = treeRules(p.view) !== 'v1' ? { ...p, view: { ...p.view, standard: { ...p.view.standard!, grown: [...p.view.standard!.grown, node] } } } : p;
   const live = p.view.table.projectBoard.filter(slot => slot.card && !isComplete(slot) && slot.contributions.some(c => c.worker === p.me));
   const hand = p.view.players[p.me].hand?.projects ?? [];
-  return live.reduce((sum, slot) => sum + projectValue(p, slot, after) - projectValue(p, slot), 0)
-    + hand.reduce((sum, card) => sum + cardValue(p, card, p.roundsLeft, after) - cardValue(p, card, p.roundsLeft), 0);
+  return live.reduce((sum, slot) => sum + projectValue(next, slot, after) - projectValue(p, slot), 0)
+    + hand.reduce((sum, card) => sum + cardValue(next, card, p.roundsLeft, after) - cardValue(p, card, p.roundsLeft), 0);
+}
+
+function advancedAccessValue(p: Position, node: NodeId): number {
+  if (node !== 'government-1' || treeRules(p.view) === 'v1' || !p.profile.planner || p.roundsLeft <= 1) return 0;
+  const next = { ...p.view, standard: { ...p.view.standard!, grown: [...p.view.standard!.grown, node] } };
+  const score = p.view.table.scoreBoard[p.me] + REWARDS[0];
+  if (score <= advancedScoreGate(next) || score > advancedScoreGate(p.view)) return 0;
+  const value = (advanced: boolean) => {
+    const cards = unseenCards(p, advanced);
+    return cards.reduce((sum, card) => sum + cardValue(p, card, p.roundsLeft - 1), 0) / cards.length;
+  };
+  return Math.max(0, value(true) - value(false));
 }
 
 /**
@@ -206,12 +238,15 @@ export function nodeValue(p: Position, node: NodeId): number {
   const tier = Number(node.split('-')[1]);
   const beneficiaries = 1 + w.village * (p.ctx.numPlayers - 1);
   const perAp = p.profile.planner?.apValue ?? w.pointsPerAP;
-  const consequence = p.profile.nodeImpact[node] * Math.max(0, p.roundsLeft - 0.5) * beneficiaries * perAp
-    + (p.profile.planner ? paceGain(p, node) : 0);
+  const variant = treeRules(p.view);
+  const impact = variant === 'v1' ? p.profile.nodeImpact : V2_NODE_IMPACT[variant];
+  const flatImpact = variant !== 'v1' && p.profile.planner && (node === 'government-1' || node === 'government-2') ? 0 : impact[node];
+  const consequence = flatImpact * Math.max(0, p.roundsLeft - 0.5) * beneficiaries * perAp
+    + (p.profile.planner ? paceGain(p, node) : 0) + advancedAccessValue(p, node);
   const grown = p.view.standard?.grown ?? [];
   const progress = treeProgress(p.view);
-  const unlock = tier === 5 ? 0 : NODES
-    .filter(next => predecessors(next).includes(node) && !grown.includes(next) && !predecessors(next).some(n => grown.includes(n)))
+  const unlock = tier === 5 ? 0 : nodesConnectedBy(p.view, node)
+    .filter(next => !grown.includes(next) && !isConnected(p.view, next))
     .reduce((sum, next) => sum + REWARDS[tier] * (progress.value >= progress.thresholds[tier] ? 1 : 0.5), 0) * w.unlock;
   return (REWARDS[tier - 1] * w.points + consequence + unlock) * w.tree;
 }
@@ -285,7 +320,7 @@ export function scoreAction(p: Position, action: BotAction): number {
       const job = view.table.jobSlots.find((j: JobCard) => j.id === jobId);
       if (!card || !job) return -Infinity;
       const jobName = Object.keys(card.requirements).includes(job.name) ? job.name : target!;
-      const start = hasNode(view, 'source-3') && job.name === '工程師' ? 3 : view.rules.action.createProject.initialContributionValue;
+      const start = hasNode(view, 'source-3') && (treeRules(view) === 'v1' ? job.name === '工程師' : mainJobs(card).includes(jobName)) ? 3 : view.rules.action.createProject.initialContributionValue;
       const ownerTokens = view.rules.action.createProject.projectOwnerWorkerCost;
       const slot: ProjectSlot = { id: 'new', card, owner: me, ownerToken: ownerTokens, contributions: [], lastContributor: me };
       const after = applyChanges(slot, [{ jobName, worker: me, value: Math.min(start, card.requirements[jobName]) }]);

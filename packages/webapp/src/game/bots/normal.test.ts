@@ -66,7 +66,7 @@ describe('normal profile', () => {
   test('pace reflects grown abilities from the rules', () => {
     const state = actionState();
     const base = pace(at(state));
-    expect(base).toEqual({ owned: 3, joined: 4, recruit: 1, createCost: 2, apPerRound: 3, engineerStart: 1 });
+    expect(base).toEqual({ owned: 3, joined: 4, recruit: 1, createCost: 2, apPerRound: 3, boostedStart: 1 });
     expect(pace(at(state), 'source-5').createCost).toBe(1);
     expect(pace(at(state), 'data-3').apPerRound).toBe(4);
   });

@@ -5,6 +5,7 @@ import { CreateGameReducer, InitializeGame } from 'boardgame.io/internal';
 import { OpenStarTerVillage } from '@/game/game';
 import { playerView } from '@/game/core/playerView';
 import type { GameState } from '@/game/store/store';
+import { advancedScoreGate } from '@/game/standard/tree';
 import { seededRandom } from './random';
 import type { Bot, BotAction } from './types';
 
@@ -35,6 +36,8 @@ export interface GameRun {
   numPlayers: number;
   state: State<GameState>;
   moves: MoveRecord[];
+  /** First observed in-play round above the current advanced gate; excludes final scoring. */
+  firstAdvancedGateRound: Record<PlayerID, number>;
 }
 
 /** A bot game that could not continue; carries enough to replay it. */
@@ -72,6 +75,15 @@ export function gameReducer(seed: string) {
     reducer(state, { type: 'MAKE_MOVE', payload: { type: action.move, args: action.args, playerID } }) as State<GameState>;
 }
 
+/** Observe eligibility after a move, labelled with the round that produced it. */
+export function recordAdvancedAccess(state: State<GameState>, round: number, first: Record<PlayerID, number>): void {
+  if (state.ctx.gameover) return;
+  const gate = advancedScoreGate(state.G);
+  for (const [seat, score] of Object.entries(state.G.table.scoreBoard)) {
+    if (score > gate && first[seat] === undefined) first[seat] = round;
+  }
+}
+
 /**
  * Plays one Standard game headless with the authoritative game reducer.
  * Each bot sees only its own player view. A move the game rejects fails the
@@ -82,6 +94,7 @@ export function runGame({ numPlayers, seed, bots, stepLimit = 2000, experiments,
   let state = initialState(numPlayers, seed, experiments, standardOptions, forcedFirstEvent, legacyExperiments);
   const seatRandom: Record<PlayerID, () => number> = {};
   const moves: MoveRecord[] = [];
+  const firstAdvancedGateRound: Record<PlayerID, number> = {};
 
   for (let step = 0; !state.ctx.gameover; step++) {
     if (step >= stepLimit) throw new BotGameError(`Game did not end within ${stepLimit} moves`, seed, step);
@@ -93,7 +106,8 @@ export function runGame({ numPlayers, seed, bots, stepLimit = 2000, experiments,
     const next = reduce(state, playerID, action);
     if (next._stateID === state._stateID) throw new BotGameError('Move rejected', seed, step, { ...action, playerID });
     moves.push({ step, round: state.G.standard?.round ?? 0, playerID, move: action.move, args: action.args });
+    recordAdvancedAccess(next, state.G.standard!.round, firstAdvancedGateRound);
     state = next;
   }
-  return { seed, numPlayers, state, moves };
+  return { seed, numPlayers, state, moves, firstAdvancedGateRound };
 }

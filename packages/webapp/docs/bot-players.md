@@ -249,3 +249,45 @@ how Novice plays, not how humans or other strategies would. Advance is tuned
 against Novice only; its win rates say nothing about how it fares against
 humans. Advanced
 projects in particular need a strategy that wants them (milestone 2).
+
+## Tree v2 valuations
+
+Sweep with `--tree-rules v1`, `v2-collab`, `v2-maintenance`, a comma-separated
+selection, or `all` (see [bot testing](bot-testing.md)). The default is v1.
+V1 node impacts, action scores and tie breaking stay unchanged.
+
+Both v2 variants use the shared connection helpers: any grown node one tier
+below connects all three next-tier nodes. Unlock value counts only nodes not
+already connected. Separate v2 `nodeImpact` tables keep experimental tuning
+out of the v1 profiles.
+
+- **開源 3 — 主力職能發起:** initiation and Normal's pace model use the card's
+  largest required job, including ties; wildcard initiation uses its assigned
+  job. V1 retains its engineer-specific estimate.
+- **開源 4 — 經驗傳承:** the finisher may advance one of their own existing
+  cubes, of any job, on another project. Choice scoring values that cube's
+  contribution, owner points and finisher credit using the engine's legal
+  choices, which already exclude other players' cubes and new cubes. Both v2 variants use an initial impact
+  of 0.5 AP per round, reduced from 0.6 after checking the own-cubes rule.
+  This remains above v1's 0.4 because every completion and any job can qualify,
+  but still requires an eligible own cube elsewhere. It is a conservative
+  heuristic, not a calibrated balance result.
+- **政府 1 — 開放標案:** Normal compares unseen entry and advanced cards when
+  growth (including its reward) newly puts the bot above the lower gate.
+  It values only a positive improvement over entry; Advance retains its flat
+  `advancedDraw` preference. Access is strictly above 10, not at 10.
+- **政府 2 — 協作合約:** the project model adds +2 for a non-owner with at least
+  one cube on a 3★/4★ project, weighted by completion probability. Multiple
+  cubes do not multiply the contract.
+- **政府 2 — 維運合約:** maintenance value discounts the time needed to finish.
+  For a hand card it uses `max(0, rounds - requiredAP / APperRound)` payouts;
+  for a live project it estimates recruit and contribution AP from unfilled
+  requirements and the current pace. An already complete project receives
+  all remaining round ends, including the current one. Normal uses its
+  explicit contract/access gains for Government 1/2 without adding flat v2
+  impact; non-planner profiles retain the flat estimates.
+
+Contract estimates require Government 2 already grown (or its hypothetical
+growth when Normal evaluates that node). Entry projects receive neither
+contract. These are initial heuristics, not measured balance claims. Before
+the engine PR merges, rely on valuation unit tests rather than v2 game scores.

@@ -33,7 +33,7 @@ def new_cell(n):
         'playedBy': {k: [0] * 5 for k in STRATEGIES}, 'completedBy': {k: [0] * 5 for k in STRATEGIES},
         'finishedBy': {k: [0] * 5 for k in STRATEGIES},
         'breakdown': {k: defaultdict(int) for k in STRATEGIES}, 'residual': 0,
-        'advancedDraws': {k: 0 for k in STRATEGIES}, 'g5': [0, 0], 'f20': [0] * n, 'f20n': [0] * n,
+        'advancedDraws': {k: 0 for k in STRATEGIES}, 'g5': [0, 0], 'f20': [0] * n, 'f20n': [0] * n, 'fg': [0] * n, 'fgn': [0] * n,
     }
 
 
@@ -77,6 +77,10 @@ def read_file(path):
                 if r >= 0:
                     cell['f20'][seat] += r
                     cell['f20n'][seat] += 1
+            for seat, r in enumerate(g['fg']):
+                if r >= 0:
+                    cell['fg'][seat] += r
+                    cell['fgn'][seat] += 1
             grows = g['g']
             cell['grownHist'][len(grows)] += 1
             cell['tierHist'][max((int(node[1]) for _, _, node in grows), default=0)] += 1
@@ -196,7 +200,7 @@ def main():
             per = lambda k, x: x / games_by[k] if games_by[k] else None
             out['scenarios'].append({
                 'index': scenario, 'id': scenarios[scenario]['id'], 'n': n, 'games': g, 'failures': total['failures'],
-                'options': scenarios[scenario]['standardOptions'], 'rewards': scenarios[scenario]['experiments']['completionRewards'],
+                'options': {'treeRules': 'v1', **scenarios[scenario]['standardOptions']}, 'rewards': scenarios[scenario]['experiments']['completionRewards'],
                 'seatWin': seats, 'seatWinSE': seat_se, 'seatImbalance': max(abs(w - 1 / n) for w in seats),
                 'seatScore': [s / g for s in total['score']],
                 'scoreSD': math.sqrt(max(0, sum(total['score2']) / (g * n) - (sum(total['score']) / (g * n)) ** 2)),
@@ -221,6 +225,8 @@ def main():
                 'government5': [x / g for x in total['g5']],
                 'firstOver20Round': [r / m if m else None for r, m in zip(total['f20'], total['f20n'])],
                 'firstOver20Rate': [m / g for m in total['f20n']],
+                'firstAdvancedGateRound': [r / m if m else None for r, m in zip(total['fg'], total['fgn'])],
+                'firstAdvancedGateRate': [m / g for m in total['fgn']],
             })
     target = args.run / 'analysis.json'
     target.write_text(json.dumps(out, ensure_ascii=False, separators=(',', ':')))
