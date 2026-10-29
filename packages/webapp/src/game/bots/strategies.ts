@@ -1,4 +1,4 @@
-import { NOVICE, ADVANCE, type Profile } from './profiles';
+import { NOVICE, NORMAL, ADVANCE, type Profile } from './profiles';
 
 /** A bot strategy players can seat in a room. Add new strategies here. */
 export interface BotStrategy {
@@ -17,6 +17,13 @@ export const BOT_STRATEGIES: Record<string, BotStrategy> = {
     description: '每一步選擇預期得分最高的行動，兼顧專案與星源樹。',
     names: ['小新', '菜菜', '嫩嫩', '初初', '萌萌', '阿學'],
     profile: NOVICE,
+  },
+  normal: {
+    id: 'normal',
+    label: '一般型 Normal',
+    description: '估算剩餘回合與星源樹帶來的加速，判斷專案能否完成、該抽哪一疊專案，也會投資共享的星源樹。',
+    names: ['阿明', '小華', '中中', '平平', '阿正', '小安'],
+    profile: NORMAL,
   },
   advance: {
     id: 'advance',
