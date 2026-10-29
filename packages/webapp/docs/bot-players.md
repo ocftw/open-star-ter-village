@@ -2,8 +2,9 @@
 
 Bots play complete 星源樹測試版 v1 games headless, so a rule change can be tested
 over hundreds of seeded games in seconds instead of 60–90 minute human sessions.
-Two strategies ship: **Novice**, the reference that plays every seat in batch
-runs, and **Advance**, a Novice variant tuned to beat Novice when it acts
+Three strategies ship: **Novice**, the reference that plays every seat in batch
+runs; **Normal**, which plans from the rounds left and the tree's effect on
+pace; and **Advance**, a Novice variant tuned to beat Novice when it acts
 early.
 
 ## Run a batch
@@ -98,6 +99,32 @@ more often. Ablations show that the tree weights and the opening cost each
 fail alone. In rooms a bot never takes seat 1, which is the host's, so the
 evidence also covers seats 3 and 4. See
 [the Advance evidence](evidence/bots/advance/README.md).
+
+### Normal
+
+Normal is the `NORMAL` profile (一般型, strategy id `normal`, seat names 阿明,
+小華, 中中, 平平, 阿正, 小安): Advance's weights with `tree` back at 1 and a
+`planner` block. Earlier runs called it Strategist (seat letter `S`; the
+analyzer reads it as `M`). The planner replaces three guesses with estimates
+from the current rules and the rounds left:
+
+- **Finishing a project.** Instead of a completion chance that grows as
+  positions fill, it counts the AP the bot still needs (one recruit per open
+  job it has no cube on, then contributions at its cap), subtracts what the
+  project's other contributors fill with `helperShare` of their AP, and
+  compares that with `focus` of the bot's own remaining AP. The chance is
+  about half when the two match and near 0.95 with a few AP to spare.
+- **Drawing a project.** Each pile is worth the average, over the cards the bot
+  has not seen, of starting the card next round and working it alone: points
+  if it completes, half the contributions if not, the start reward, minus
+  `apValue` for every AP it ties up. In the last round it keeps the entry pile.
+- **Growing the tree.** An ability's AP per round is priced at `apValue`
+  instead of 1, and the bot adds what the ability changes in its own live
+  projects and hand cards, e.g. a 3★ that becomes finishable.
+
+Caps, recruit value, start cost and AP per round come from the rules in play,
+so grown abilities and events count. The planner does not yet predict whether
+other players will join a new project or weigh its score against theirs.
 
 ### Compare a profile with Novice
 
