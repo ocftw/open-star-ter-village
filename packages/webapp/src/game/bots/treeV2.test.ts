@@ -148,3 +148,12 @@ test('Normal values v2 government nodes through explicit gains without flat impa
   expect(nodeValue(p, 'government-1')).toBe(1); // score below the access gate
   expect(nodeValue(at(s, ADVANCE), 'government-1')).toBeGreaterThan(ADVANCE.weights.tree);
 });
+
+
+test('without Source 3, v2 keeps the v1 engineer-first hand valuation', () => {
+  const s = state();
+  const card = { name: 'unboosted', difficulty: 2, requirements: { 工程師: 2, 法務: 6 } };
+  const v2 = cardValue(at(s, NORMAL), card, 4);
+  s.G.standard!.options!.treeRules = 'v1';
+  expect(cardValue(at(s, NORMAL), card, 4)).toBe(v2);
+});

@@ -145,7 +145,7 @@ export function cardValue(p: Position, card: CardSpec, rounds: number, pc = pace
   const jobs = Object.entries(card.requirements);
   const total = jobs.reduce((sum, [, n]) => sum + n, 0);
   const v2 = treeRules(p.view) !== 'v1';
-  const startJob = v2 ? mainJobs(card)[0] : card.requirements['工程師'] ? '工程師' : jobs[0][0];
+  const startJob = v2 && pc.boostedStart > rules.action.createProject.initialContributionValue ? mainJobs(card)[0] : card.requirements['工程師'] ? '工程師' : jobs[0][0];
   const start = Math.min((v2 || startJob === '工程師') ? pc.boostedStart : rules.action.createProject.initialContributionValue, card.requirements[startJob]);
   const recruited = jobs.filter(([job]) => job !== startJob).reduce((sum, [, n]) => sum + Math.min(pc.recruit, n), 0);
   const need = pc.createCost + jobs.length - 1 + Math.ceil(Math.max(0, total - start - recruited) / pc.owned);
