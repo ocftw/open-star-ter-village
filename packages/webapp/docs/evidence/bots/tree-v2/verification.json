@@ -1,0 +1,17 @@
+{
+  "build": "3ab8ae7a1cc8253a663663684b00f45c44571608",
+  "dirtySource": false,
+  "scenarios": 216,
+  "records": 1296,
+  "v1IDs": "all 72 equal recorded baseline",
+  "recordSchema": "v1 unchanged; v2 adds fg only",
+  "seedPairing": "same player count, seating and seed across all three rule variants",
+  "v1CandidateComparison": {
+    "games": 9,
+    "decisions": 513,
+    "candidates": 6068,
+    "baseline": "026d974e",
+    "result": "exact equality across Novice, Normal and Advance"
+  },
+  "limitation": "Compatibility checks only; v2 engine not integrated."
+}
