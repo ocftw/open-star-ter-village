@@ -28,6 +28,7 @@ clockwise or counterclockwise; extra rounds 0 (default), 1 or 2; and tree preset
 count 0/0/2/4/6 (default), CC 0/0/2/4/6, CC 0/0/3/6/9 or CC 0/1/3/6/10.
 CC is the village-wide sum of printed difficulty on uniquely completed projects.
 Rotation changes the first seat each round, while within-round direction stays unchanged.
+Tree rules: v1 (default), v2 · 協作合約 or v2 · 維運合約; see [Tree rules v2](#tree-rules-v2-prototype).
 
 ## Explicit test interpretations
 
@@ -51,6 +52,24 @@ Rotation changes the first seat each round, while within-round direction stays u
   returns discarded cards to the bottom of the matching difficulty pile.
 - Choice IDs prevent duplicate submissions. Only the designated player can
   resolve a choice. Refresh/reconnect retains the pending choice.
+
+## Tree rules v2 (prototype)
+
+The `treeRules` room option selects the tree. `v1` is everything above. Both v2
+variants share these changes and differ only in Government 2. Matches created
+before the option existed play v1.
+
+| Ability | v1 | v2 |
+| --- | --- | --- |
+| Connections | Own branch upward, other branches along the diagonal arrows | Any grown ability one tier down connects every ability of the next tier |
+| Source 3 | An engineer card starts its project at 3 | A card filling one of the project's main jobs (largest requirement; ties all count) starts at 3; under Data 5 the filled job counts, not the card |
+| Source 4 | After a project with an engineer completes, the finisher advances their engineer cube elsewhere | After every completion, the finisher advances one of their cubes of any job elsewhere |
+| Government 1 | Discard one project card at restoration and redraw | 開放標案: the advanced pile opens above 10 influence instead of 20; no discard |
+| Government 2 | Preview the next event | `v2-collab` 協作合約: when a 3★ or 4★ project completes, every player other than the initiator with a cube on it gains +2, once each. `v2-maintenance` 維運合約: the initiator of a completed 3★ or 4★ project gains +1 at every round end, from the round it completed in; each such project pays separately. No preview |
+
+Thresholds, two abilities per tier, ten hearts and the 1 AP cost are unchanged.
+Government 2 contracts apply only to projects completed while it is grown.
+Contract points appear in the score history as 協作合約 and 維運合約.
 
 ## Local verification
 
