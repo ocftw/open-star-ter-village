@@ -12,6 +12,10 @@ import { ProjectSlotSelector } from '@/game/store/slice/projectSlot/projectSlot'
 import { RuleSelector } from '@/game/store/slice/rule';
 import type { Profile } from './profiles';
 import type { BotAction } from './types';
+import rawProjectCards from '@/game/data/card/projects.json';
+
+type CardSpec = Pick<ProjectCard, 'name' | 'difficulty' | 'requirements'>;
+const PROJECT_CARDS = rawProjectCards as unknown as CardSpec[];
 
 /** Everything a scorer needs about the position, derived once per decision. */
 export interface Position {
@@ -48,14 +52,105 @@ const filledShare = (slot: ProjectSlot) => {
 };
 
 /** Expected points `me` gets from a project: settled value if it completes, half-value at game end if not. */
-function projectValue(p: Position, slot: ProjectSlot): number {
+function projectValue(p: Position, slot: ProjectSlot, pc?: Pace): number {
   const mine = ProjectSlotSelector.getPlayerContribution(slot, p.me);
   if (isComplete(slot)) return mine + (slot.owner === p.me ? ownerBonus(p, slot) : 0);
   const horizon = p.roundsLeft >= 3 ? 1 : p.roundsLeft === 2 ? 0.75 : 0.4;
   const base = p.profile.weights.baseCompletionChance;
-  const chance = Math.min(0.95, (base + (1 - base) * filledShare(slot)) * horizon);
+  const chance = p.profile.planner ? finishChance(p, slot, pc) : Math.min(0.95, (base + (1 - base) * filledShare(slot)) * horizon);
   const stake = mine + (slot.owner === p.me ? ownerBonus(p, slot) : 0);
   return chance * stake + (1 - chance) * 0.5 * mine;
+}
+
+/** The rules that set how fast a project fills: contribution caps, recruit value, start cost and AP per round. */
+export interface Pace {
+  owned: number;
+  joined: number;
+  recruit: number;
+  createCost: number;
+  apPerRound: number;
+  /** First contribution when a project is started with an engineer. */
+  engineerStart: number;
+}
+
+/** The pace under the current rules, or as it would be with `node` grown. */
+export function pace(p: Position, node?: NodeId): Pace {
+  const { action, player } = p.view.rules;
+  return {
+    owned: action.contributeOwnedProjects.maxContributionValue + (node === 'data-4' ? 1 : 0),
+    joined: action.contributeJoinedProjects.maxContributionValue + (node === 'source-2' ? 1 : 0),
+    recruit: node === 'data-2' ? 2 : action.recruit.initialContributionValue,
+    createCost: node === 'source-5' ? 1 : RuleSelector.getActionTokenCost(p.view.rules, 'createProject'),
+    apPerRound: player.maxActionTokens + (node === 'data-3' ? 1 : 0),
+    engineerStart: node === 'source-3' || hasNode(p.view, 'source-3') ? 3 : action.createProject.initialContributionValue,
+  };
+}
+
+/** AP of slack over which finishing goes from unlikely to likely; the planner's pace estimate is rough. */
+const PACE_SPREAD = 1.5;
+/** Chance a plan with `budget` AP covers `need` AP: about half when they match, near 0.95 with a few AP to spare. */
+const paceChance = (budget: number, need: number) => 0.95 / (1 + Math.exp(-(budget - need) / PACE_SPREAD));
+
+/**
+ * Planner: chance to finish a project, from the AP `me` still needs against
+ * the AP it has left. Other contributors first fill the jobs they hold cubes
+ * on with their planned share of AP; `me` then needs one recruit per open job
+ * it has no cube on and contributions at its cap for the rest.
+ */
+export function finishChance(p: Position, slot: ProjectSlot, pc = pace(p)): number {
+  const { focus, helperShare } = p.profile.planner!;
+  const open = Object.entries(slot.card!.requirements).map(([job, need]) => [job, Math.max(0, need - ProjectSlotSelector.getJobContribution(slot, job))] as const);
+  let left = open.reduce((sum, [, n]) => sum + n, 0);
+  if (left === 0) return 1;
+  for (const worker of Array.from(new Set(slot.contributions.map(c => c.worker).filter(worker => worker !== p.me)))) {
+    const room = open.filter(([job]) => ProjectSlotSelector.hasWorker(slot, job, worker)).reduce((sum, [, n]) => sum + n, 0);
+    left -= Math.min(room, (slot.owner === worker ? pc.owned : pc.joined) * helperShare * pc.apPerRound * p.roundsLeft);
+  }
+  if (left <= 0) return 0.95;
+  const missing = open.filter(([job, n]) => n > 0 && !ProjectSlotSelector.hasWorker(slot, job, p.me));
+  const recruited = missing.reduce((sum, [, n]) => sum + Math.min(pc.recruit, n), 0);
+  const need = missing.length + Math.ceil(Math.max(0, left - recruited) / (slot.owner === p.me ? pc.owned : pc.joined));
+  const budget = focus * (p.view.players[p.me].token.actions + (p.roundsLeft - 1) * pc.apPerRound);
+  return paceChance(budget, need);
+}
+
+/**
+ * Planner: expected net points of starting `card` alone and working it for
+ * `rounds` rounds: the AP the project needs, the chance the planned AP covers
+ * it, the points if it completes (contributions, owner and finisher rewards)
+ * or half the contributions made if not, plus the start reward, minus
+ * `apValue` for every AP it ties up.
+ */
+export function cardValue(p: Position, card: CardSpec, rounds: number, pc = pace(p)): number {
+  if (rounds <= 0) return 0;
+  const { focus, apValue } = p.profile.planner!;
+  const rules = p.view.rules;
+  const jobs = Object.entries(card.requirements);
+  const total = jobs.reduce((sum, [, n]) => sum + n, 0);
+  const startJob = card.requirements['工程師'] ? '工程師' : jobs[0][0];
+  const start = Math.min(startJob === '工程師' ? pc.engineerStart : rules.action.createProject.initialContributionValue, card.requirements[startJob]);
+  const recruited = jobs.filter(([job]) => job !== startJob).reduce((sum, [, n]) => sum + Math.min(pc.recruit, n), 0);
+  const need = pc.createCost + jobs.length - 1 + Math.ceil(Math.max(0, total - start - recruited) / pc.owned);
+  const budget = focus * rounds * pc.apPerRound;
+  const chance = paceChance(budget, need);
+  const spent = Math.min(need, budget);
+  const experiments = p.view.standard?.experiments;
+  const rewards = completionReward(experiments, card.difficulty, rules.settlement.projectOwnerVictoryPoints)
+    + completionReward(experiments, card.difficulty, rules.settlement.lastContributorVictoryPoints);
+  const expected = chance * (total + rewards) + (1 - chance) * 0.5 * total * (spent / need);
+  return (expected + rules.action.createProject.victoryPoints - apValue * spent) * p.profile.weights.points;
+}
+
+/** Cards of a pile `me` has not seen on the board, in its hand or completed; the whole pile if it has seen them all. */
+function unseenCards(p: Position, advanced: boolean): CardSpec[] {
+  const seen = new Set([
+    ...p.view.table.projectBoard.flatMap(slot => (slot.card ? [slot.card.name] : [])),
+    ...(p.view.players[p.me].hand?.projects ?? []).map(card => card.name),
+    ...(p.view.standard?.log ?? []).filter(entry => entry.kind === 'complete').map(entry => entry.target),
+  ]);
+  const pile = PROJECT_CARDS.filter(card => (card.difficulty > 2) === advanced);
+  const unseen = pile.filter(card => !seen.has(card.name));
+  return unseen.length ? unseen : pile;
 }
 
 const ownerBonus = (p: Position, slot: ProjectSlot) => completionReward(p.view.standard?.experiments, slot.card!.difficulty, p.view.rules.settlement.projectOwnerVictoryPoints) + (p.view.rules.event?.extraOwnerVictoryPoints ?? 0);
@@ -89,12 +184,30 @@ const slotByProject = (p: Position, projectId: string) => p.view.table.projectBo
 const remaining = (slot: ProjectSlot, jobName: string) => slot.card!.requirements[jobName] - ProjectSlotSelector.getJobContribution(slot, jobName);
 const overtimeCost = (p: Position, options?: ActionExecutionOptions) => (options?.useOvertime ? p.profile.weights.overtime : 0);
 
-/** Value of a tree node: its reward, the consequence of its ability for the rest of the game, and what it unlocks. */
+/**
+ * Planner: what growing `node` adds to `me`'s live projects and hand cards
+ * through faster pace, e.g. a 3★ that becomes finishable in the rounds left.
+ */
+function paceGain(p: Position, node: NodeId): number {
+  const after = pace(p, node);
+  const live = p.view.table.projectBoard.filter(slot => slot.card && !isComplete(slot) && slot.contributions.some(c => c.worker === p.me));
+  const hand = p.view.players[p.me].hand?.projects ?? [];
+  return live.reduce((sum, slot) => sum + projectValue(p, slot, after) - projectValue(p, slot), 0)
+    + hand.reduce((sum, card) => sum + cardValue(p, card, p.roundsLeft, after) - cardValue(p, card, p.roundsLeft), 0);
+}
+
+/**
+ * Value of a tree node: its reward, the consequence of its ability for the
+ * rest of the game, and what it unlocks. A planner prices the ability's AP at
+ * `apValue` and adds its pace gain on the bot's own projects.
+ */
 export function nodeValue(p: Position, node: NodeId): number {
   const w = p.profile.weights;
   const tier = Number(node.split('-')[1]);
   const beneficiaries = 1 + w.village * (p.ctx.numPlayers - 1);
-  const consequence = p.profile.nodeImpact[node] * Math.max(0, p.roundsLeft - 0.5) * beneficiaries * w.pointsPerAP;
+  const perAp = p.profile.planner?.apValue ?? w.pointsPerAP;
+  const consequence = p.profile.nodeImpact[node] * Math.max(0, p.roundsLeft - 0.5) * beneficiaries * perAp
+    + (p.profile.planner ? paceGain(p, node) : 0);
   const grown = p.view.standard?.grown ?? [];
   const progress = treeProgress(p.view);
   const unlock = tier === 5 ? 0 : NODES
@@ -133,10 +246,16 @@ function choiceValue(p: Position, target: ChoiceTarget | null): number {
   const choice = p.view.standard!.choices[0];
   const w = p.profile.weights;
   if (target === null) return 0;
-  if (choice.kind === 'draw') return target.pile === 'advanced' ? w.advancedDraw : 0;
+  // A drawn or kept card can first be started next round.
+  if (choice.kind === 'draw') {
+    if (!p.profile.planner || p.roundsLeft <= 1) return target.pile === 'advanced' ? w.advancedDraw : 0;
+    const pile = unseenCards(p, target.pile === 'advanced');
+    return pile.reduce((sum, card) => sum + cardValue(p, card, p.roundsLeft - 1), 0) / pile.length;
+  }
   if (choice.kind === 'discard') {
     const card = p.view.players[p.me].hand?.projects.find(c => c.id === target.cardId);
     if (!card) return 0;
+    if (p.profile.planner) return -cardValue(p, card, p.roundsLeft - 1);
     const market = new Set(p.view.table.jobSlots.map(j => j.name));
     const playable = Object.keys(card.requirements).some(job => market.has(job));
     return (card.difficulty - 2) * 0.5 + (playable ? 0 : 0.5);
