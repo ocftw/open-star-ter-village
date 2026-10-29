@@ -1,4 +1,4 @@
-import { DEFAULT_STANDARD_OPTIONS, normalizeStandardOptions, standardOptionsLabel, standardRoundCount, TREE_PRESETS, TREE_RULES } from './options';
+import { DEFAULT_STANDARD_OPTIONS, FEATURE_KEYS, normalizeStandardOptions, PROTOTYPE_FEATURES, standardOptionsLabel, standardRoundCount, TREE_PRESETS } from './options';
 import { roomSetupError } from './config';
 
 describe('Standard room options', () => {
@@ -16,7 +16,7 @@ describe('Standard room options', () => {
 
   test.each([null, [], 'none', { extraRounds: -1 }, { extraRounds: 3 }, { extraRounds: 0.5 },
     { extraRounds: '1' }, { extraRounds: undefined }, { starterRotation: 'reverse' },
-    { treePreset: 'toString' }, { treePreset: 'unknown' }, { treeRules: 'v3' }, { treeRules: 'toString' }, { extra: true }])('rejects malformed options: %j', input => {
+    { treePreset: 'toString' }, { treePreset: 'unknown' }, { treeConnections: 'v3' }, { government1: 'toString' }, { government2: 'contract' }, { sources: '' }, { treeRules: 'v2-collab' }, { extra: true }])('rejects malformed options: %j', input => {
     expect(() => normalizeStandardOptions(input)).toThrow();
   });
 
@@ -33,14 +33,23 @@ describe('Standard room options', () => {
     expect(count).toBe(108);
   });
 
-  test('tree rules default to v1 and only v2 variants appear in the label', () => {
-    expect(normalizeStandardOptions({}).treeRules).toBe('v1');
-    expect(standardOptionsLabel(normalizeStandardOptions({}))).toBe('先手不輪替 · 額外 0 輪 · 結案數 0／0／2／4／6');
-    for (const treeRules of Object.keys(TREE_RULES).filter(r => r !== 'v1')) {
-      expect(standardOptionsLabel(normalizeStandardOptions({ treeRules }))).toContain(TREE_RULES[treeRules as keyof typeof TREE_RULES]);
+  test('each prototype feature defaults to its original rule and is chosen on its own', () => {
+    const base = '先手不輪替 · 額外 0 輪 · 結案數 0／0／2／4／6';
+    expect(normalizeStandardOptions({})).toMatchObject({ treeConnections: 'arrows', government1: 'redraw', government2: 'preview', sources: 'engineer' });
+    expect(standardOptionsLabel(normalizeStandardOptions({}))).toBe(base);
+    for (const key of FEATURE_KEYS) {
+      const values = PROTOTYPE_FEATURES[key].values as Record<string, string>;
+      for (const value of Object.keys(values).filter(v => v !== DEFAULT_STANDARD_OPTIONS[key])) {
+        const options = normalizeStandardOptions({ [key]: value });
+        expect(FEATURE_KEYS.filter(other => options[other] !== DEFAULT_STANDARD_OPTIONS[other])).toEqual([key]);
+        expect(standardOptionsLabel(options)).toBe(`${base} · ${PROTOTYPE_FEATURES[key].label}：${values[value]}`);
+      }
     }
-    // Rooms created before tree rules existed keep the v1 label.
-    const { treeRules: _omitted, ...legacy } = DEFAULT_STANDARD_OPTIONS;
-    expect(standardOptionsLabel(legacy as typeof DEFAULT_STANDARD_OPTIONS)).toBe('先手不輪替 · 額外 0 輪 · 結案數 0／0／2／4／6');
+    // Rooms created before the features existed keep the original label.
+    const { treeConnections: _a, government1: _b, government2: _c, sources: _d, ...older } = DEFAULT_STANDARD_OPTIONS;
+    expect(standardOptionsLabel(older as typeof DEFAULT_STANDARD_OPTIONS)).toBe(base);
+    // Rooms created with a treeRules bundle list the bundle's features.
+    expect(standardOptionsLabel({ ...older, treeRules: 'v2-maintenance' } as unknown as typeof DEFAULT_STANDARD_OPTIONS))
+      .toBe(`${base} · 星源樹連線：依層級 · 政府 1：開放標案 · 政府 2：維運合約 · 開源 3／4：主力職能`);
   });
 });

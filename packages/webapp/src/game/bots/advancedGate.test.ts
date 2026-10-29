@@ -1,6 +1,6 @@
-import { normalizeStandardOptions } from '@/game/standard/options';
+import { FEATURE_BUNDLES, normalizeStandardOptions } from '@/game/standard/options';
 import { initialState, recordAdvancedAccess } from './runner';
-const state = () => structuredClone(initialState(2, 'gate-observation', undefined, normalizeStandardOptions({ treeRules: 'v2-collab' })));
+const state = () => structuredClone(initialState(2, 'gate-observation', undefined, normalizeStandardOptions(FEATURE_BUNDLES['v2-collab'])));
 
 
 test('gate observation records the drop in play, uses a strict boundary and excludes final scoring', () => {

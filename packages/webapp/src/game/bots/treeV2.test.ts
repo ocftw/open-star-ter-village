@@ -1,15 +1,14 @@
 import { choiceOptions } from '@/game/standard/engine';
 import type { State } from 'boardgame.io';
 import type { GameState } from '@/game/store/store';
-import type { TreeRules } from '@/game/standard/options';
-import { normalizeStandardOptions } from '@/game/standard/options';
+import { FEATURE_BUNDLES, normalizeStandardOptions, type FeatureBundle } from '@/game/standard/options';
 import { playerView } from '@/game/core/playerView';
 import { cardValue, contractBonus, finishChance, nodeValue, position, scoreAction } from './evaluate';
 import { ADVANCE, NORMAL, NOVICE, type Profile } from './profiles';
 import { initialState } from './runner';
 
-function state(rule: TreeRules = 'v2-collab') {
-  const s = structuredClone(initialState(2, 'v2-values', undefined, normalizeStandardOptions({ treeRules: rule })));
+function state(rule: FeatureBundle = 'v2-collab') {
+  const s = structuredClone(initialState(2, 'v2-values', undefined, normalizeStandardOptions(FEATURE_BUNDLES[rule])));
   s.G.standard!.phase = 'action';
   s.G.standard!.choices = [];
   return s;
@@ -53,7 +52,7 @@ test('Normal models main-job initiation in hand values, while v1 keeps engineer 
   const card = { name: 'main', difficulty: 3, requirements: { 工程師: 1, 法務: 8 } };
   s.G.standard!.grown = ['source-3'];
   const v2 = cardValue(at(s, NORMAL), card, 3);
-  s.G.standard!.options!.treeRules = 'v1';
+  s.G.standard!.options = normalizeStandardOptions({});
   expect(v2).toBeGreaterThan(cardValue(at(s, NORMAL), card, 3));
 });
 
@@ -159,6 +158,6 @@ test('without Source 3, v2 keeps the v1 engineer-first hand valuation', () => {
   const s = state();
   const card = { name: 'unboosted', difficulty: 2, requirements: { 工程師: 2, 法務: 6 } };
   const v2 = cardValue(at(s, NORMAL), card, 4);
-  s.G.standard!.options!.treeRules = 'v1';
+  s.G.standard!.options = normalizeStandardOptions({});
   expect(cardValue(at(s, NORMAL), card, 4)).toBe(v2);
 });

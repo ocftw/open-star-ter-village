@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { DEFAULT_STANDARD_OPTIONS, StandardOptions, TREE_PRESETS, TREE_RULES, standardOptionsLabel, standardRoundCount } from '@/game/standard/options';
+import { DEFAULT_STANDARD_OPTIONS, FEATURE_KEYS, PROTOTYPE_FEATURES, StandardOptions, TREE_PRESETS, standardOptionsLabel, standardRoundCount } from '@/game/standard/options';
 import { STANDARD_RULES_ENABLED, Ruleset, StandardExperiments, DEFAULT_EXPERIMENTS } from '@/game/standard/config';
 import { useRouter } from 'next/navigation';
 import { Alert, Snackbar } from '@mui/material';
@@ -261,10 +261,14 @@ export default function LobbyPage() {
                   <legend>星源樹門檻 · 第 1～5 層</legend>
                   {(Object.keys(TREE_PRESETS) as StandardOptions['treePreset'][]).map(value => <label key={value} style={{ display: 'block', padding: 8 }}><input type="radio" name="treePreset" value={value} checked={standardOptions.treePreset === value} onChange={() => setStandardOptions({...standardOptions, treePreset: value})} />{TREE_PRESETS[value].metric === 'cc' ? '結案複雜度 CC' : '結案數'} {TREE_PRESETS[value].thresholds.join('／')}</label>)}
                 </fieldset>
-                <fieldset disabled={isCreating}>
-                  <legend>星源樹規則</legend>
-                  {(Object.keys(TREE_RULES) as StandardOptions['treeRules'][]).map(value => <label key={value} style={{ display: 'block', padding: 8 }}><input type="radio" name="treeRules" value={value} checked={standardOptions.treeRules === value} onChange={() => setStandardOptions({...standardOptions, treeRules: value})} />{TREE_RULES[value]}{value === 'v1' ? '（原規則）' : '（實驗）'}</label>)}
-                </fieldset>
+                {FEATURE_KEYS.map(key => {
+                  const values = PROTOTYPE_FEATURES[key].values as Record<string, string>;
+                  return <fieldset key={key} disabled={isCreating}>
+                    <legend>{PROTOTYPE_FEATURES[key].label}</legend>
+                    {Object.keys(values).map(value => <label key={value} style={{ display: 'inline-block', padding: 8 }}><input type="radio" name={key} value={value} checked={standardOptions[key] === value} onChange={() => setStandardOptions({...standardOptions, [key]: value})} />{values[value]}{value === DEFAULT_STANDARD_OPTIONS[key] ? '（原規則）' : '（實驗）'}</label>)}
+                    <p style={{ margin: '0 8px 8px' }}>{PROTOTYPE_FEATURES[key].hint}</p>
+                  </fieldset>;
+                })}
                 <p>政府 5：可新增自己的方塊。每個新方塊消耗 1 個庫存人力方塊，不消耗人力卡或 AP；增加既有方塊貢獻不再消耗庫存。</p>
                 <label>發起／結案獎勵
                   <select style={{ display: 'block', width: '100%', minWidth: 0, marginTop: 6, padding: 8 }} aria-label="發起／結案獎勵" disabled={isCreating} value={experiments.completionRewards} onChange={e => setExperiments({...experiments, completionRewards:e.target.value as StandardExperiments['completionRewards']})}>

@@ -6,11 +6,12 @@ import type { ContributionAction } from '@/game/core/ContributionAction';
 import type { ActionExecutionOptions } from '@/game/core/stage/action/validate';
 import type { ChoiceTarget } from '@/game/standard/engine';
 import type { NodeId } from '@/game/standard/state';
-import { advancedScoreGate, hasNode, isConnected, mainJobs, nodesConnectedBy, REWARDS, treeProgress, treeRules } from '@/game/standard/tree';
+import { FEATURE_KEYS } from '@/game/standard/options';
+import { advancedScoreGate, feature, hasNode, isConnected, mainJobs, nodesConnectedBy, REWARDS, treeProgress } from '@/game/standard/tree';
 import type { ProjectSlot } from '@/game/store/slice/projectSlot/projectSlot';
 import { ProjectSlotSelector } from '@/game/store/slice/projectSlot/projectSlot';
 import { RuleSelector } from '@/game/store/slice/rule';
-import { V2_NODE_IMPACT, type Profile } from './profiles';
+import { FEATURE_NODE_IMPACT, type Profile } from './profiles';
 import type { BotAction } from './types';
 import rawProjectCards from '@/game/data/card/projects.json';
 
@@ -65,7 +66,7 @@ function projectValue(p: Position, slot: ProjectSlot, pc?: Pace): number {
 /** Expected contract points for this completion; existing contracts are already sunk value. */
 export function contractBonus(p: Position, slot: ProjectSlot, pc = pace(p)): number {
   if (!hasNode(p.view, 'government-2') || slot.card!.difficulty < 3) return 0;
-  if (treeRules(p.view) === 'v2-maintenance') {
+  if (feature(p.view, 'government2') === 'maintenance') {
     if (slot.owner !== p.me) return 0;
     if (isComplete(slot)) return p.roundsLeft;
     const open = Object.entries(slot.card!.requirements).map(([job, need]) => [job, Math.max(0, need - ProjectSlotSelector.getJobContribution(slot, job))] as const);
@@ -75,7 +76,7 @@ export function contractBonus(p: Position, slot: ProjectSlot, pc = pace(p)): num
     const need = missing.length + Math.ceil(Math.max(0, unfilled - recruited) / pc.owned);
     return Math.max(0, p.roundsLeft - need / pc.apPerRound);
   }
-  if (treeRules(p.view) === 'v2-collab') return slot.owner !== p.me && slot.contributions.some(c => c.worker === p.me) ? 2 : 0;
+  if (feature(p.view, 'government2') === 'collab') return slot.owner !== p.me && slot.contributions.some(c => c.worker === p.me) ? 2 : 0;
   return 0;
 }
 
@@ -144,9 +145,9 @@ export function cardValue(p: Position, card: CardSpec, rounds: number, pc = pace
   const rules = p.view.rules;
   const jobs = Object.entries(card.requirements);
   const total = jobs.reduce((sum, [, n]) => sum + n, 0);
-  const v2 = treeRules(p.view) !== 'v1';
-  const startJob = v2 && pc.boostedStart > rules.action.createProject.initialContributionValue ? mainJobs(card)[0] : card.requirements['工程師'] ? '工程師' : jobs[0][0];
-  const start = Math.min((v2 || startJob === '工程師') ? pc.boostedStart : rules.action.createProject.initialContributionValue, card.requirements[startJob]);
+  const mainJob = feature(p.view, 'sources') === 'main-job';
+  const startJob = mainJob && pc.boostedStart > rules.action.createProject.initialContributionValue ? mainJobs(card)[0] : card.requirements['工程師'] ? '工程師' : jobs[0][0];
+  const start = Math.min((mainJob || startJob === '工程師') ? pc.boostedStart : rules.action.createProject.initialContributionValue, card.requirements[startJob]);
   const recruited = jobs.filter(([job]) => job !== startJob).reduce((sum, [, n]) => sum + Math.min(pc.recruit, n), 0);
   const need = pc.createCost + jobs.length - 1 + Math.ceil(Math.max(0, total - start - recruited) / pc.owned);
   const budget = focus * rounds * pc.apPerRound;
@@ -155,7 +156,7 @@ export function cardValue(p: Position, card: CardSpec, rounds: number, pc = pace
   const experiments = p.view.standard?.experiments;
   const rewards = completionReward(experiments, card.difficulty, rules.settlement.projectOwnerVictoryPoints)
     + completionReward(experiments, card.difficulty, rules.settlement.lastContributorVictoryPoints);
-  const contract = treeRules(p.view) === 'v2-maintenance' && hasNode(p.view, 'government-2') && card.difficulty >= 3 ? Math.max(0, rounds - need / pc.apPerRound) : 0;
+  const contract = feature(p.view, 'government2') === 'maintenance' && hasNode(p.view, 'government-2') && card.difficulty >= 3 ? Math.max(0, rounds - need / pc.apPerRound) : 0;
   const expected = chance * (total + rewards + contract) + (1 - chance) * 0.5 * total * (spent / need);
   return (expected + rules.action.createProject.victoryPoints - apValue * spent) * p.profile.weights.points;
 }
@@ -209,7 +210,8 @@ const overtimeCost = (p: Position, options?: ActionExecutionOptions) => (options
  */
 function paceGain(p: Position, node: NodeId): number {
   const after = pace(p, node);
-  const next = treeRules(p.view) !== 'v1' ? { ...p, view: { ...p.view, standard: { ...p.view.standard!, grown: [...p.view.standard!.grown, node] } } } : p;
+  // A contract counts only while Government 2 is grown, so score the projects as if `node` were.
+  const next = feature(p.view, 'government2') !== 'preview' ? { ...p, view: { ...p.view, standard: { ...p.view.standard!, grown: [...p.view.standard!.grown, node] } } } : p;
   const live = p.view.table.projectBoard.filter(slot => slot.card && !isComplete(slot) && slot.contributions.some(c => c.worker === p.me));
   const hand = p.view.players[p.me].hand?.projects ?? [];
   return live.reduce((sum, slot) => sum + projectValue(next, slot, after) - projectValue(p, slot), 0)
@@ -217,7 +219,7 @@ function paceGain(p: Position, node: NodeId): number {
 }
 
 function advancedAccessValue(p: Position, node: NodeId): number {
-  if (node !== 'government-1' || treeRules(p.view) === 'v1' || !p.profile.planner || p.roundsLeft <= 1) return 0;
+  if (node !== 'government-1' || feature(p.view, 'government1') !== 'open-tender' || !p.profile.planner || p.roundsLeft <= 1) return 0;
   const next = { ...p.view, standard: { ...p.view.standard!, grown: [...p.view.standard!.grown, node] } };
   const score = p.view.table.scoreBoard[p.me] + REWARDS[0];
   if (score <= advancedScoreGate(next) || score > advancedScoreGate(p.view)) return 0;
@@ -226,6 +228,11 @@ function advancedAccessValue(p: Position, node: NodeId): number {
     return cards.reduce((sum, card) => sum + cardValue(p, card, p.roundsLeft - 1), 0) / cards.length;
   };
   return Math.max(0, value(true) - value(false));
+}
+
+/** Node impact estimates of the prototype features this match plays; empty under the original rules. */
+function featureImpact(p: Position): Partial<Record<NodeId, number>> {
+  return Object.assign({}, ...FEATURE_KEYS.map(key => (FEATURE_NODE_IMPACT[key] as Record<string, Partial<Record<NodeId, number>>> | undefined)?.[feature(p.view, key)]));
 }
 
 /**
@@ -238,9 +245,10 @@ export function nodeValue(p: Position, node: NodeId): number {
   const tier = Number(node.split('-')[1]);
   const beneficiaries = 1 + w.village * (p.ctx.numPlayers - 1);
   const perAp = p.profile.planner?.apValue ?? w.pointsPerAP;
-  const variant = treeRules(p.view);
-  const impact = variant === 'v1' ? p.profile.nodeImpact : V2_NODE_IMPACT[variant];
-  const flatImpact = variant !== 'v1' && p.profile.planner && (node === 'government-1' || node === 'government-2') ? 0 : impact[node];
+  const impact = featureImpact(p)[node] ?? p.profile.nodeImpact[node];
+  // A planner prices the prototype Government abilities through paceGain and advancedAccessValue instead.
+  const explicit = (node === 'government-1' && feature(p.view, 'government1') === 'open-tender') || (node === 'government-2' && feature(p.view, 'government2') !== 'preview');
+  const flatImpact = p.profile.planner && explicit ? 0 : impact;
   const consequence = flatImpact * Math.max(0, p.roundsLeft - 0.5) * beneficiaries * perAp
     + (p.profile.planner ? paceGain(p, node) : 0) + advancedAccessValue(p, node);
   const grown = p.view.standard?.grown ?? [];
@@ -320,7 +328,7 @@ export function scoreAction(p: Position, action: BotAction): number {
       const job = view.table.jobSlots.find((j: JobCard) => j.id === jobId);
       if (!card || !job) return -Infinity;
       const jobName = Object.keys(card.requirements).includes(job.name) ? job.name : target!;
-      const start = hasNode(view, 'source-3') && (treeRules(view) === 'v1' ? job.name === '工程師' : mainJobs(card).includes(jobName)) ? 3 : view.rules.action.createProject.initialContributionValue;
+      const start = hasNode(view, 'source-3') && (feature(view, 'sources') === 'engineer' ? job.name === '工程師' : mainJobs(card).includes(jobName)) ? 3 : view.rules.action.createProject.initialContributionValue;
       const ownerTokens = view.rules.action.createProject.projectOwnerWorkerCost;
       const slot: ProjectSlot = { id: 'new', card, owner: me, ownerToken: ownerTokens, contributions: [], lastContributor: me };
       const after = applyChanges(slot, [{ jobName, worker: me, value: Math.min(start, card.requirements[jobName]) }]);
