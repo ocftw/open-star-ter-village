@@ -92,6 +92,7 @@ td.num { font-family: var(--mono); }
 
   <div class="controls" role="toolbar" aria-label="Figure controls">
     <label class="ctl">Players <span class="seg" id="ctl-n"></span></label>
+    <label class="ctl" for="ctl-tree-rules">Tree rules <select id="ctl-tree-rules"></select></label>
     <label class="ctl" for="ctl-metric">Heat map metric <select id="ctl-metric"></select></label>
   </div>
 
@@ -217,6 +218,8 @@ const METRICS = [
 const M = Object.fromEntries(METRICS.map(m => [m.id, m]));
 const state = { n: A.manifest.playerCounts.includes(4) ? 4 : 'all', metric: 'spread', preset: 'all', reward: 'all' };
 const counts = A.manifest.playerCounts;
+const allScenarios = A.scenarios;
+const availableTreeRules = [...new Set(allScenarios.map(s => s.options.treeRules ?? 'v1'))];
 
 // Pool scenario rows of the selected player counts: every row has the same game count, so pooling is a mean.
 const rows = (filter = () => true) => A.scenarios.filter(s => (state.n === 'all' || s.n === state.n) && filter(s));
@@ -287,6 +290,9 @@ function findings() {
 
 // ---------- controls ----------
 function controls() {
+  const treeRules = document.getElementById('ctl-tree-rules');
+  treeRules.innerHTML = availableTreeRules.map(rule => `<option value="${esc(rule)}">${esc(rule)}</option>`).join('');
+  treeRules.onchange = () => { selectTreeRules(treeRules.value); findings(); render(); };
   const seg = document.getElementById('ctl-n');
   seg.innerHTML = ['all', ...counts].map(v => `<button type="button" data-v="${v}" aria-pressed="${state.n === v}">${v === 'all' ? 'All' : v + 'p'}</button>`).join('');
   seg.onclick = e => { const b = e.target.closest('button'); if (!b) return; state.n = b.dataset.v === 'all' ? 'all' : Number(b.dataset.v); render(); };
@@ -506,7 +512,7 @@ function renderProjects() {
 }
 
 // ---------- breakdown ----------
-const CAT = { '結案貢獻': 'Contribution on completion 結案貢獻', '未結案專案貢獻折半': 'Unfinished projects, half 未結案折半', '行動獎勵': 'Action rewards 行動獎勵', 'tree': 'Tree growth 星源樹成長', '發起獎勵': 'Initiation reward 發起獎勵', '結案獎勵': 'Finisher reward 結案獎勵', '年度結算發起獎勵': 'Yearly initiation 年度結算發起', '最終回合剩餘行動點': 'Leftover AP 剩餘行動點' };
+const CAT = { '協作合約': 'Collaboration contract 協作合約', '維運合約': 'Maintenance contract 維運合約', '結案貢獻': 'Contribution on completion 結案貢獻', '未結案專案貢獻折半': 'Unfinished projects, half 未結案折半', '行動獎勵': 'Action rewards 行動獎勵', 'tree': 'Tree growth 星源樹成長', '發起獎勵': 'Initiation reward 發起獎勵', '結案獎勵': 'Finisher reward 結案獎勵', '年度結算發起獎勵': 'Yearly initiation 年度結算發起', '最終回合剩餘行動點': 'Leftover AP 剩餘行動點' };
 function renderBreakdown() {
   const list = rows();
   const cats = [...new Set(list.flatMap(s => present.flatMap(k => Object.keys(s.breakdown[k]))))];
@@ -536,6 +542,10 @@ function render() {
   document.querySelectorAll('#ctl-n button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === String(state.n))));
   renderHeat(); renderEffects(); renderSeats(); renderTree(); renderProjects(); renderBreakdown(); renderTable();
 }
+function selectTreeRules(rule) {
+  A.scenarios = allScenarios.filter(s => (s.options.treeRules ?? 'v1') === rule);
+}
+selectTreeRules(availableTreeRules[0]);
 header(); findings(); controls(); render();
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', render);
 new MutationObserver(render).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
