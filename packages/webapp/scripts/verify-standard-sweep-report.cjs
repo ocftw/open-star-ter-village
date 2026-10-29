@@ -10,10 +10,11 @@ const { pathToFileURL } = require('node:url');
   await page.goto(pathToFileURL(resolve(process.argv[2] || 'bot-runs/smoke/report.html')).href);
   for (const rule of ['v1', 'v2-collab', 'v2-maintenance']) {
     await page.selectOption('#ctl-tree-rules', rule);
-    const result = await page.evaluate(() => ({ rules: [...new Set(A.scenarios.map(s => s.options.treeRules))], rows: document.querySelectorAll('#all-table tbody tr').length, gate: A.scenarios.every(s => s.firstAdvancedGateRound.length === s.n) }));
+    const result = await page.evaluate(() => ({ rules: [...new Set(A.scenarios.map(s => s.options.treeRules))], rows: document.querySelectorAll('#all-table tbody tr').length, gate: A.scenarios.every(s => s.firstAdvancedGateRound.length === s.n), expectedFailed: A.scenarios.reduce((sum, s) => sum + s.failures, 0), failed: Number([...document.querySelectorAll('#facts span')].find(s => s.textContent.startsWith('failed ')).querySelector('b').textContent.replaceAll(',', '')) }));
     assert.deepEqual(result.rules, [rule]);
     assert.equal(result.rows, 72);
     assert.equal(result.gate, true);
+    assert.equal(result.failed, result.expectedFailed);
   }
   if (process.argv[3]) await page.screenshot({ path: process.argv[3], fullPage: false });
   assert.deepEqual(errors, []);

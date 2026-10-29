@@ -292,7 +292,7 @@ function findings() {
 function controls() {
   const treeRules = document.getElementById('ctl-tree-rules');
   treeRules.innerHTML = availableTreeRules.map(rule => `<option value="${esc(rule)}">${esc(rule)}</option>`).join('');
-  treeRules.onchange = () => { selectTreeRules(treeRules.value); findings(); render(); };
+  treeRules.onchange = () => { selectTreeRules(treeRules.value); header(); findings(); render(); };
   const seg = document.getElementById('ctl-n');
   seg.innerHTML = ['all', ...counts].map(v => `<button type="button" data-v="${v}" aria-pressed="${state.n === v}">${v === 'all' ? 'All' : v + 'p'}</button>`).join('');
   seg.onclick = e => { const b = e.target.closest('button'); if (!b) return; state.n = b.dataset.v === 'all' ? 'all' : Number(b.dataset.v); render(); };
