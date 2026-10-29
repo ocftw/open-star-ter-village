@@ -18,5 +18,7 @@ results from all-Novice runs as a property of this bot, not of the rules.
 | [baseline-100](baseline-100/README.md) | First batch runner check: 100 games per player count, completion and tree reach, debug panel |
 
 Rule experiments that used Novice in every seat:
-[balance-300](../../standard-experiments/balance-300/README.md) and
-[seed-batches-1-100](../../standard-experiments/seed-batches-1-100/).
+[balance-300](../../standard-experiments/balance-300/README.md). The larger
+`seed-batches-1-100` run was removed because the all-Advance
+[sweep72](../advance/sweep72/README.md) supersedes it; it is in git history at
+`068c6c4c`.
