@@ -64,14 +64,40 @@ balance estimates.
 
 - Base includes the interface PR #472, but not the engine PR #473. V2 smoke
   games therefore still exercise v1 engine mechanics with v2 bot estimates.
-- Engine PR #473 at `c6e2eb18` restricts Source 4 to the finisher's own cubes.
-  The supplied bots requirement says **any player's cube**. The bot scorer
-  handles either owner, and enumeration always uses the engine's legal
-  choices, but this rules mismatch must be resolved before claiming the
-  full requested v2 behavior is deployed. No engine code was changed here.
+- Source 4 follows the confirmed rule in #473: the finisher advances one of
+  their own existing cubes, of any job, on another project. The earlier
+  any-player wording was a drafting error; no engine change is needed.
 - Maintenance valuations assume completion this round and can overestimate
   delayed income. V2 node impact numbers are initial estimates.
 - Existing workflows run only for PRs targeting `main`. This PR targets
   `feat/standard-tree-poc`, so local checks are recorded above and the PR
   remains draft; no GitHub CI pass is claimed.
 - Deployment is pending the integrated, reviewed rules and bot branches.
+
+## Own-cubes correction
+
+The confirmed Source 4 rule is: the finisher may advance one of their own
+existing cubes, of any job, on another project. The scorer excludes other
+players' cubes and cannot create a new cube. The ownership tests cover both
+v2 variants with an own non-engineer cube, a foreign target, and a missing
+own cube.
+
+Both v2 node impacts were reduced from 0.6 to **0.5 AP per round**. V1 remains
+0.4: v2 removes the engineer/job and completion restrictions but still needs
+an eligible own cube elsewhere. This is an initial conservative heuristic,
+not a measured calibration. The earlier drafting error is resolved; #473
+already implements the confirmed rule. No engine files were changed.
+
+Reverified 2026-10-30 at `fbe51273` after the correction:
+
+| Command | Observed result |
+| --- | --- |
+| `pnpm webapp build` | Exit 0; production client and server build |
+| `pnpm webapp test` | 437 tests / 39 suites passed, including 13 focused v2 valuation/gate cases |
+| `pnpm webapp exec tsc --noEmit` | Exit 0 |
+| `pnpm webapp lint` | Exit 0; no warnings or errors |
+| `pnpm webapp bots:smoke` | 1,296 games / 216 scenarios, 0 failures |
+| `pnpm webapp bots:behaviour` | 9,000 games, 0 failures; all 3 cells exactly match the v1 baseline |
+
+The screenshots and original verification record above retain their explicitly
+identified earlier build; they demonstrate the unchanged report control.
