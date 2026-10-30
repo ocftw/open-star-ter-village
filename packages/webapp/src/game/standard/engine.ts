@@ -4,7 +4,7 @@ import type { FnContext } from 'boardgame.io';
 import { INVALID_MOVE } from 'boardgame.io/core';
 import type { GameState, ClientGameState } from '../store/store';
 import type { Choice, ChoiceKind, NodeId } from './state';
-import { advancedScoreGate, growthReason, hasNode, REWARDS, treeRules } from './tree';
+import { advancedScoreGate, feature, growthReason, hasNode, REWARDS } from './tree';
 import { ProjectBoardMutator, ProjectBoardSelector } from '../store/slice/projectBoard';
 import ProjectSlotSlice, { ProjectSlotSelector, ProjectSlotMutator } from '../store/slice/projectSlot/projectSlot';
 import { PlayersMutator } from '../store/slice/players';
@@ -45,7 +45,7 @@ export function syncTreeRules(G: GameState) {
   while (G.table.projectBoard.length < r.table.maxProjectSlots) {
     G.table.projectBoard.push(ProjectSlotSlice.initialState(`project-slot-${G.table.projectBoard.length}`));
   }
-  G.standard.nextEvent = hasNode(G, 'government-2') && treeRules(G) === 'v1' ? G.decks.events.drawPile[0] : undefined;
+  G.standard.nextEvent = hasNode(G, 'government-2') && feature(G, 'government2') === 'preview' ? G.decks.events.drawPile[0] : undefined;
 }
 export const growTree: GameMove<(node: NodeId, overtime?: boolean) => void> = ({ G, ctx, playerID }, node, overtime = false) => {
   if (playerID !== ctx.currentPlayer || growthReason(G, node, playerID, overtime)) return INVALID_MOVE;
@@ -97,7 +97,7 @@ export function choiceOptions(G: GameState | ClientGameState, c: Choice): Choice
     }
     for (const cube of slot.contributions) {
       if (c.kind !== 'digitalMinister' && cube.worker !== c.playerId) continue;
-      if (c.kind === 'source4' && treeRules(G) === 'v1' && cube.jobName !== '工程師') continue;
+      if (c.kind === 'source4' && feature(G, 'sources') === 'engineer' && cube.jobName !== '工程師') continue;
       if (ProjectSlotSelector.getJobContribution(slot, cube.jobName) >= slot.card!.requirements[cube.jobName]) continue;
       options.push({ label: `${slot.card!.name} / 玩家 ${Number(cube.worker) + 1} / ${cube.jobName} ${cube.value} → ${cube.value + 1}`, target: { projectId: slot.card!.id, worker: cube.worker, jobName: cube.jobName } });
     }
@@ -178,18 +178,18 @@ function settleStandard(G: GameState) {
     scoreWithHistory(G, slot.owner, ownerReward, '發起獎勵', snapshot);
     scoreWithHistory(G, slot.owner, G.rules.event?.extraOwnerVictoryPoints ?? 0, '年度結算發起獎勵', snapshot);
     scoreWithHistory(G, slot.lastContributor, finisherReward, '結案獎勵', snapshot);
-    // v2 Government 2 contracts cover 3★ and 4★ projects completed while it is grown.
-    const contract = hasNode(G, 'government-2') && slot.card!.difficulty >= 3 ? treeRules(G) : 'v1';
-    if (contract === 'v2-collab') {
+    // Government 2 contracts cover 3★ and 4★ projects completed while it is grown.
+    const contract = hasNode(G, 'government-2') && slot.card!.difficulty >= 3 ? feature(G, 'government2') : 'preview';
+    if (contract === 'collab') {
       for (const helper of Array.from(new Set(slot.contributions.map(c => c.worker))).filter(w => w !== slot.owner)) scoreWithHistory(G, helper, 2, '協作合約', snapshot);
     }
-    if (contract === 'v2-maintenance') s.maintenance = { ...s.maintenance, [slot.owner]: (s.maintenance?.[slot.owner] ?? 0) + 1 };
+    if (contract === 'maintenance') s.maintenance = { ...s.maintenance, [slot.owner]: (s.maintenance?.[slot.owner] ?? 0) + 1 };
     PlayersMutator.addWorkerTokens(G.players, slot.owner, slot.ownerToken);
     s.completedProjectIds.push(slot.card!.id);
     s.completedComplexity = (s.completedComplexity ?? 0) + slot.card!.difficulty;
     log(G, 'complete', slot.lastContributor, slot.card!.name);
     trackCompletion(G, slot);
-    if (hasNode(G, 'source-4') && (engineer || treeRules(G) !== 'v1')) enqueue(G, 'source4', slot.lastContributor, slot.card!.id);
+    if (hasNode(G, 'source-4') && (engineer || feature(G, 'sources') === 'main-job')) enqueue(G, 'source4', slot.lastContributor, slot.card!.id);
     if (hasNode(G, 'government-5') && ownerContribution >= 2) enqueue(G, 'government5', slot.owner, slot.card!.id, Math.floor(ownerContribution / 2));
   }
   ProjectBoardMutator.remove(G.table.projectBoard, completed);
@@ -252,7 +252,7 @@ export function advanceStandard(context: FnContext<GameState>) {
       if (s.choices.length) continue;
       if (s.phase === 'event') { s.phase = 'action'; continue; }
       s.phase = 'restore';
-      if (hasNode(G, 'government-1') && treeRules(G) === 'v1') enqueue(G, 'discard', ctx.currentPlayer);
+      if (hasNode(G, 'government-1') && feature(G, 'government1') === 'redraw') enqueue(G, 'discard', ctx.currentPlayer);
       continue;
     }
     if (s.phase === 'restore') {

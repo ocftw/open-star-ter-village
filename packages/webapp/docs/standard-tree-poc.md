@@ -28,7 +28,7 @@ clockwise or counterclockwise; extra rounds 0 (default), 1 or 2; and tree preset
 count 0/0/2/4/6 (default), CC 0/0/2/4/6, CC 0/0/3/6/9 or CC 0/1/3/6/10.
 CC is the village-wide sum of printed difficulty on uniquely completed projects.
 Rotation changes the first seat each round, while within-round direction stays unchanged.
-Tree rules: v1 (default), v2 · 協作合約 or v2 · 維運合約; see [Tree rules v2](#tree-rules-v2-prototype).
+Four prototype features, each chosen on its own (all default to the original rule): tree connections, Government 1, Government 2 and Source 3/4; see [Prototype features](#prototype-features).
 
 ## Explicit test interpretations
 
@@ -53,19 +53,23 @@ Tree rules: v1 (default), v2 · 協作合約 or v2 · 維運合約; see [Tree ru
 - Choice IDs prevent duplicate submissions. Only the designated player can
   resolve a choice. Refresh/reconnect retains the pending choice.
 
-## Tree rules v2 (prototype)
+## Prototype features
 
-The `treeRules` room option selects the tree. `v1` is everything above. Both v2
-variants share these changes and differ only in Government 2. Matches created
-before the option existed play v1.
+Four room options each switch one prototype on, independently of the others.
+Each defaults to the original rule described above; matches created before an
+option existed play its original rule.
 
-| Ability | v1 | v2 |
+| Option | Original (default) | Prototype |
 | --- | --- | --- |
-| Connections | Own branch upward, other branches along the diagonal arrows | Any grown ability one tier down connects every ability of the next tier |
-| Source 3 | An engineer card starts its project at 3 | A card filling one of the project's main jobs (largest requirement; ties all count) starts at 3; under Data 5 the filled job counts, not the card |
-| Source 4 | After a project with an engineer completes, the finisher advances their engineer cube elsewhere | After every completion, the finisher advances one of their cubes of any job elsewhere |
-| Government 1 | Discard one project card at restoration and redraw | 開放標案: the advanced pile opens above 10 influence instead of 20; no discard |
-| Government 2 | Preview the next event | `v2-collab` 協作合約: when a 3★ or 4★ project completes, every player other than the initiator with a cube on it gains +2, once each. `v2-maintenance` 維運合約: the initiator of a completed 3★ or 4★ project gains +1 at every round end, from the round it completed in; each such project pays separately. No preview |
+| `treeConnections` 星源樹連線 | `arrows`: own branch upward, other branches along the diagonal arrows | `tiers`: any grown ability one tier down connects every ability of the next tier |
+| `government1` 政府 1 | `redraw`: discard one project card at restoration and redraw | `open-tender` 開放標案: the advanced pile opens above 10 influence instead of 20; no discard |
+| `government2` 政府 2 | `preview`: preview the next event | `collab` 協作合約: when a 3★ or 4★ project completes, every player other than the initiator with a cube on it gains +2, once each. `maintenance` 維運合約: the initiator of a completed 3★ or 4★ project gains +1 at every round end, from the round it completed in; each such project pays separately. No preview |
+| `sources` 開源 3／4 | `engineer`: an engineer card starts its project at 3 (Source 3); after a project with an engineer completes, the finisher advances their engineer cube elsewhere (Source 4) | `main-job` 主力職能: a card filling one of the project's main jobs (largest requirement; ties all count) starts at 3, and under Data 5 the filled job counts, not the card (Source 3); after every completion, the finisher advances one of their own cubes of any job elsewhere (Source 4 經驗傳承) |
+
+The first tree v2 prototype bundled these as `treeRules`; `FEATURE_BUNDLES`
+keeps those bundles for sweeps, and matches created with `treeRules` play the
+features of their bundle: `v2-collab` is `tiers` + `open-tender` + `collab` +
+`main-job`, and `v2-maintenance` is the same with `maintenance`.
 
 Thresholds, two abilities per tier, ten hearts and the 1 AP cost are unchanged.
 Government 2 contracts apply only to projects completed while it is grown.

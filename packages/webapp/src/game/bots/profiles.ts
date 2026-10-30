@@ -1,3 +1,4 @@
+import type { FeatureValue, PrototypeFeature } from '@/game/standard/options';
 import type { NodeId } from '@/game/standard/state';
 
 /** Tunable weights for a scoring bot. A strategy is a named set of these. */
@@ -72,23 +73,18 @@ export const DEFAULT_NODE_IMPACT: Record<NodeId, number> = {
   'government-5': 0.5, // redistribute half the owner's contribution
 };
 
-/** V2 estimates are separate so tuning them cannot change any v1 profile. */
-export const V2_NODE_IMPACT = {
-  'v2-collab': {
-    ...DEFAULT_NODE_IMPACT,
+/** Estimates for prototype features' abilities, separate so tuning them cannot change the original rules' values. */
+export const FEATURE_NODE_IMPACT: { [F in PrototypeFeature]?: { [V in FeatureValue<F>]?: Partial<Record<NodeId, number>> } } = {
+  sources: { 'main-job': {
     'source-3': 0.5, // any main job starts at 3
-    'source-4': 0.5, // own cubes, any job; broader than v1's engineer-only benefit
-    'government-1': 0.2, // earlier advanced access
-    'government-2': 0.3, // helpers earn a contract on advanced projects
+    'source-4': 0.5, // own cubes, any job; broader than the engineer-only benefit
+  } },
+  government1: { 'open-tender': { 'government-1': 0.2 } }, // earlier advanced access
+  government2: {
+    collab: { 'government-2': 0.3 }, // helpers earn a contract on advanced projects
+    maintenance: { 'government-2': 0.4 }, // recurring owner income after advanced completions
   },
-  'v2-maintenance': {
-    ...DEFAULT_NODE_IMPACT,
-    'source-3': 0.5,
-    'source-4': 0.5, // own cubes, any job
-    'government-1': 0.2,
-    'government-2': 0.4, // recurring owner income after advanced completions
-  },
-} satisfies Record<'v2-collab' | 'v2-maintenance', Record<NodeId, number>>;
+};
 
 export const NOVICE: Profile = {
   name: 'novice',

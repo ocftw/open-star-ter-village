@@ -7,7 +7,7 @@ import { OpenStarTerVillage } from '../game';
 import { setup } from '../core/setup';
 import { GameState } from '../store/store';
 import { roomSetupError } from './config';
-import { normalizeStandardOptions, TREE_PRESETS, type TreeRules } from './options';
+import { FEATURE_BUNDLES, normalizeStandardOptions, TREE_PRESETS, type FeatureBundle, type StandardOptions } from './options';
 import { standardState } from './state';
 import { predecessors, growthReason, NODES } from './tree';
 import { advanceStandard, beginStandardEvent, choiceOptions, endStandardRound, enqueue, growTree, resolveStandardChoice, syncTreeRules } from './engine';
@@ -513,9 +513,9 @@ describe('Government 5 new-cube experiment', () => {
   });
 });
 
-describe('tree v2', () => {
-  function v2(treeRules: TreeRules = 'v2-collab') {
-    const G = state(); G.standard!.options = normalizeStandardOptions({ treeRules }); return G;
+describe('prototype features', () => {
+  function v2(bundle: FeatureBundle = 'v2-collab') {
+    const G = state(); G.standard!.options = normalizeStandardOptions(FEATURE_BUNDLES[bundle]); return G;
   }
   test('a node connects to any grown node one tier down', () => {
     const v1 = state(), next = v2(); v1.standard!.grown = ['source-1']; next.standard!.grown = ['source-1'];
@@ -580,6 +580,34 @@ describe('tree v2', () => {
     expect(v1.standard!.choices).toEqual([]);
   });
 
+  test('each feature switches on alone, leaving the others at their original rules', () => {
+    const only = (features: Partial<StandardOptions>) => { const G = state(); G.standard!.options = normalizeStandardOptions(features); return G; };
+    // Tier connections alone: Government 1 still discards, Government 2 still previews.
+    const tiers = only({ treeConnections: 'tiers' }); tiers.standard!.grown = ['source-1'];
+    expect(growthReason(tiers, 'government-2', '0')).toBeUndefined();
+    tiers.standard!.grown = ['source-1', 'government-2']; syncTreeRules(tiers);
+    expect(tiers.standard!.nextEvent).toBeDefined();
+    tiers.standard!.grown = ['government-1']; tiers.standard!.phase = 'settlement'; tiers.table.scoreBoard['0'] = 15;
+    tiers.players['0'].hand.projects = [{ id: 'kept', name: 'kept', type: 'ignored', difficulty: 1, description: '', requirements: { 工程師: 2 } }];
+    advanceStandard(context(tiers));
+    expect(tiers.standard!.choices.map(c => c.kind)).toEqual(['discard']);
+    // 開放標案 alone: the gate drops on the arrow tree; Government 2 still previews.
+    const tender = only({ government1: 'open-tender' });
+    tender.standard!.grown = ['source-1']; expect(growthReason(tender, 'government-2', '0')).toBe('沒有相連下層能力');
+    tender.standard!.grown = ['government-1']; tender.standard!.phase = 'restore'; tender.players['0'].hand.projects = []; tender.table.scoreBoard['0'] = 11;
+    advanceStandard(context(tender));
+    expect(tender.standard!.choices.map(c => c.kind)).toEqual(['draw']);
+    // A contract alone pays on the arrow tree.
+    const collab = only({ government2: 'collab' }); collab.standard!.grown = ['government-2'];
+    expect(completeBigProject(collab).map(l => [l.playerId, l.scoreDelta])).toEqual([['1', 2]]);
+    // 主力職能 alone starts the main job at 3.
+    const sources = only({ sources: 'main-job' }); sources.standard!.grown = ['source-3'];
+    sources.players['0'].hand.projects = [{ id: 'hand', name: 'test', type: 'ignored', difficulty: 3, description: '', requirements: { 法務專家: 6, 工程師: 2 } }];
+    sources.table.jobSlots = [{ id: 'job', name: '法務專家' }];
+    createProject(context(sources), 'hand', 'job');
+    expect(sources.table.projectBoard[0].contributions[0].value).toBe(3);
+  });
+
   function completeBigProject(G: GameState, difficulty = 3) {
     const slot = project(G, 'big', '0', 3, 6);
     slot.card!.difficulty = difficulty;
@@ -591,7 +619,7 @@ describe('tree v2', () => {
     const G = v2('v2-collab'); G.standard!.grown = ['government-2'];
     expect(completeBigProject(G).map(l => [l.playerId, l.scoreDelta])).toEqual([['1', 2]]);
     for (const [rules, grown, difficulty] of [['v2-collab', ['government-2'], 2], ['v2-collab', [], 3], ['v1', ['government-2'], 3]] as const) {
-      const other = v2(rules as TreeRules); other.standard!.grown = [...grown];
+      const other = v2(rules as FeatureBundle); other.standard!.grown = [...grown];
       expect(completeBigProject(other, difficulty)).toEqual([]);
     }
   });
@@ -608,7 +636,7 @@ describe('tree v2', () => {
   });
   test('維運合約 is paid at the end of the round the project completes in', () => {
     const client = Client({ game: { ...OpenStarTerVillage, playerView: ({ G }) => G, seed: 'maintenance', setup: ctx => {
-      const G = setup(ctx, { ruleset: 'tree-poc-v1', standardOptions: { treeRules: 'v2-maintenance' }, forcedFirstEvent: 'digital_minister' });
+      const G = setup(ctx, { ruleset: 'tree-poc-v1', standardOptions: FEATURE_BUNDLES['v2-maintenance'], forcedFirstEvent: 'digital_minister' });
       G.standard!.maintenance = { '1': 2 }; return G;
     } }, numPlayers: 2 });
     client.start();

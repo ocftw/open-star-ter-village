@@ -250,16 +250,19 @@ against Novice only; its win rates say nothing about how it fares against
 humans. Advanced
 projects in particular need a strategy that wants them (milestone 2).
 
-## Tree v2 valuations
+## Prototype feature valuations
 
-Sweep with `--tree-rules v1`, `v2-collab`, `v2-maintenance`, a comma-separated
-selection, or `all` (see [bot testing](bot-testing.md)). The default is v1.
-V1 node impacts, action scores and tie breaking stay unchanged.
+Each prototype feature is a separate room option (see
+[Prototype features](standard-tree-poc.md#prototype-features)); bots read each
+one with `feature(G, key)`. Sweeps select feature bundles with `--tree-rules v1`,
+`v2-collab`, `v2-maintenance`, a comma-separated selection, or `all` (see
+[bot testing](bot-testing.md)). The default is v1, where every feature plays its
+original rule and node impacts, action scores and tie breaking stay unchanged.
 
-Both v2 variants use the shared connection helpers: any grown node one tier
+Tier connections use the shared connection helpers: any grown node one tier
 below connects all three next-tier nodes. Unlock value counts only nodes not
-already connected. Separate v2 `nodeImpact` tables keep experimental tuning
-out of the v1 profiles.
+already connected. `FEATURE_NODE_IMPACT` holds each feature's impact estimates
+apart from the original profiles.
 
 - **開源 3 — 主力職能發起:** initiation and Normal's pace model use the card's
   largest required job, including ties; wildcard initiation uses its assigned
@@ -289,5 +292,4 @@ out of the v1 profiles.
 
 Contract estimates require Government 2 already grown (or its hypothetical
 growth when Normal evaluates that node). Entry projects receive neither
-contract. These are initial heuristics, not measured balance claims. Before
-the engine PR merges, rely on valuation unit tests rather than v2 game scores.
+contract. These are initial heuristics, not measured balance claims.

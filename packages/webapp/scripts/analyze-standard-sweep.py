@@ -200,7 +200,7 @@ def main():
             per = lambda k, x: x / games_by[k] if games_by[k] else None
             out['scenarios'].append({
                 'index': scenario, 'id': scenarios[scenario]['id'], 'n': n, 'games': g, 'failures': total['failures'],
-                'options': {'treeRules': 'v1', **scenarios[scenario]['standardOptions']}, 'rewards': scenarios[scenario]['experiments']['completionRewards'],
+                'options': {'treeRules': scenarios[scenario].get('treeRules', 'v1'), **scenarios[scenario]['standardOptions']}, 'rewards': scenarios[scenario]['experiments']['completionRewards'],
                 'seatWin': seats, 'seatWinSE': seat_se, 'seatImbalance': max(abs(w - 1 / n) for w in seats),
                 'seatScore': [s / g for s in total['score']],
                 'scoreSD': math.sqrt(max(0, sum(total['score2']) / (g * n) - (sum(total['score']) / (g * n)) ** 2)),

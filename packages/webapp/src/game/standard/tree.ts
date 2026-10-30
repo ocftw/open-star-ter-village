@@ -1,7 +1,7 @@
 import { standardEvent } from './events';
 import type { ClientGameState, GameState } from '../store/store';
 import type { Branch, NodeId } from './state';
-import { TREE_PRESETS, type TreeRules } from './options';
+import { DEFAULT_STANDARD_OPTIONS, FEATURE_BUNDLES, TREE_PRESETS, type FeatureBundle, type PrototypeFeature, type PrototypeFeatures, type StandardOptions } from './options';
 export const BRANCHES: Branch[] = ['source', 'data', 'government'];
 export const THRESHOLDS = [0, 0, 2, 4, 6];
 export function treeProgress(G: Pick<GameState, 'standard'>) {
@@ -27,44 +27,40 @@ export function hasNode(G: Pick<GameState, 'standard'>, node: NodeId): boolean {
   return G.standard?.grown.includes(node) ?? false;
 }
 
-// ---------- tree v2 ----------
-const V2_LABELS: Record<'source-3' | 'source-4' | 'government-1', string> = {
-  'source-3': '主力職能發起貢獻 1 → 3',
-  'source-4': '結案者推進任一方塊 1 點',
-  'government-1': '進階專案門檻 20 → 10',
-};
-const GOVERNMENT_2_LABELS: Record<Exclude<TreeRules, 'v1'>, string> = {
-  'v2-collab': '3★+ 結案協助者各 +2',
-  'v2-maintenance': '3★+ 結案後發起人每輪 +1',
+// ---------- prototype features ----------
+const FEATURE_LABELS: Partial<Record<NodeId, (G: Pick<GameState, 'standard'>) => string | undefined>> = {
+  'source-3': G => feature(G, 'sources') === 'main-job' ? '主力職能發起貢獻 1 → 3' : undefined,
+  'source-4': G => feature(G, 'sources') === 'main-job' ? '結案者推進任一職能方塊 1 點' : undefined,
+  'government-1': G => feature(G, 'government1') === 'open-tender' ? '進階專案門檻 20 → 10' : undefined,
+  'government-2': G => ({ preview: undefined, collab: '3★+ 結案協助者各 +2', maintenance: '3★+ 結案後發起人每輪 +1' })[feature(G, 'government2')],
 };
 const tierOf = (node: NodeId) => Number(node.split('-')[1]);
 
-/** Matches created before tree rules existed play v1. */
-export function treeRules(G: Pick<GameState, 'standard'>): TreeRules {
-  return G.standard?.options?.treeRules ?? 'v1';
+/** A match's choice for one prototype feature. Matches created with a `treeRules` bundle play its features; older ones the original rules. */
+export function feature<F extends PrototypeFeature>(G: Pick<GameState, 'standard'>, key: F): PrototypeFeatures[F] {
+  const options = G.standard?.options as (Partial<StandardOptions> & { treeRules?: FeatureBundle }) | undefined;
+  const bundle: Partial<StandardOptions> = (options?.treeRules && FEATURE_BUNDLES[options.treeRules]) || {};
+  return options?.[key] ?? bundle[key] ?? DEFAULT_STANDARD_OPTIONS[key];
 }
-/** Whether `node` is joined to a grown lower tier: v1 through its own predecessors, v2 through any node one tier down. */
+/** Whether `node` is joined to a grown lower tier: by arrows through its own predecessors, by tiers through any node one tier down. */
 export function isConnected(G: Pick<GameState, 'standard'>, node: NodeId): boolean {
   const tier = tierOf(node), grown = G.standard?.grown ?? [];
   if (tier === 1) return true;
-  if (treeRules(G) === 'v1') return predecessors(node).some(n => grown.includes(n));
+  if (feature(G, 'treeConnections') === 'arrows') return predecessors(node).some(n => grown.includes(n));
   return grown.some(n => tierOf(n) === tier - 1);
 }
 /** Nodes that growing `node` would join to the tree. */
 export function nodesConnectedBy(G: Pick<GameState, 'standard'>, node: NodeId): NodeId[] {
   const tier = tierOf(node);
-  if (treeRules(G) === 'v1') return NODES.filter(next => predecessors(next).includes(node));
+  if (feature(G, 'treeConnections') === 'arrows') return NODES.filter(next => predecessors(next).includes(node));
   return NODES.filter(next => tierOf(next) === tier + 1);
 }
 export function nodeLabels(G: Pick<GameState, 'standard'>): Record<Branch, string[]> {
-  const rules = treeRules(G);
-  if (rules === 'v1') return NODE_LABELS;
-  const label = (node: NodeId, fallback: string) => node === 'government-2' ? GOVERNMENT_2_LABELS[rules] : V2_LABELS[node as keyof typeof V2_LABELS] ?? fallback;
-  return Object.fromEntries(BRANCHES.map(branch => [branch, NODE_LABELS[branch].map((text, i) => label(`${branch}-${i + 1}` as NodeId, text))])) as Record<Branch, string[]>;
+  return Object.fromEntries(BRANCHES.map(branch => [branch, NODE_LABELS[branch].map((text, i) => FEATURE_LABELS[`${branch}-${i + 1}` as NodeId]?.(G) ?? text)])) as Record<Branch, string[]>;
 }
 /** The advanced pile is drawable by a player whose score is above this. */
 export function advancedScoreGate(G: Pick<GameState, 'standard'>): number {
-  return treeRules(G) !== 'v1' && hasNode(G, 'government-1') ? 10 : 20;
+  return feature(G, 'government1') === 'open-tender' && hasNode(G, 'government-1') ? 10 : 20;
 }
 /** The jobs a card needs most; every tied job counts. */
 export function mainJobs(card: { requirements: Record<string, number> }): string[] {

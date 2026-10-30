@@ -1,4 +1,4 @@
-import { hasNode, mainJobs, treeRules } from '@/game/standard/tree';
+import { feature, hasNode, mainJobs } from '@/game/standard/tree';
 import { enqueue, fillMarket } from '@/game/standard/engine';
 import { trackInitiation } from '@/game/standard/telemetry';
 import { ProjectBoardMutator, ProjectBoardSelector } from '@/game/store/slice/projectBoard';
@@ -58,7 +58,7 @@ export const createProject: GameMove<CreateProject> = ({ G, playerID }, projectC
   const matchesRequirement = Object.keys(projectCard.requirements).includes(jobCard.name);
   const effectiveJobName = matchesRequirement ? jobCard.name : assignedJobName!;
   // Source 3: v1 rewards an engineer card; v2 rewards filling one of the card's main jobs.
-  const source3 = hasNode(G, 'source-3') && (treeRules(G) === 'v1' ? jobCard.name === '工程師' : mainJobs(projectCard).includes(effectiveJobName));
+  const source3 = hasNode(G, 'source-3') && (feature(G, 'sources') === 'engineer' ? jobCard.name === '工程師' : mainJobs(projectCard).includes(effectiveJobName));
   const startValue = source3 ? 3 : initialContributionValue;
   ProjectSlotMutator.assignWorker(projectSlot, effectiveJobName, playerID, G.standard ? Math.min(startValue, projectCard.requirements[effectiveJobName]) : startValue);
 

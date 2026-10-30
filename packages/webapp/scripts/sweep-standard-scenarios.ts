@@ -30,7 +30,7 @@ import { ADVANCE, NORMAL, NOVICE } from '@/game/bots/profiles';
 import { runGame } from '@/game/bots/runner';
 import type { Bot } from '@/game/bots/types';
 import type { StandardExperiments } from '@/game/standard/config';
-import { normalizeStandardOptions, TREE_PRESETS, type StandardOptions } from '@/game/standard/options';
+import { FEATURE_BUNDLES, normalizeStandardOptions, TREE_PRESETS, type FeatureBundle, type StandardOptions } from '@/game/standard/options';
 import { treeProgress } from '@/game/standard/tree';
 
 const { values } = parseArgs({ options: {
@@ -61,7 +61,8 @@ assert.ok(['all', 'advance', 'normal', 'normal-seat', 'novice-normal'].includes(
 
 const ROTATIONS = ['none', 'clockwise', 'counterclockwise'] as const;
 const REWARDS = ['fixed', 'difficulty'] as const;
-interface Scenario { id: string; standardOptions: StandardOptions; experiments: StandardExperiments }
+/** `treeRules` names the prototype feature bundle a scenario plays (see FEATURE_BUNDLES). */
+interface Scenario { id: string; standardOptions: StandardOptions; experiments: StandardExperiments; treeRules?: FeatureBundle }
 const BASE_SCENARIOS: Scenario[] = ROTATIONS.flatMap(starterRotation => ([0, 1, 2] as const).flatMap(extraRounds =>
   (Object.keys(TREE_PRESETS) as (keyof typeof TREE_PRESETS)[]).flatMap(treePreset => REWARDS.map(completionRewards => ({
     id: `${starterRotation}|x${extraRounds}|${treePreset}|${completionRewards}`,
@@ -69,14 +70,15 @@ const BASE_SCENARIOS: Scenario[] = ROTATIONS.flatMap(starterRotation => ([0, 1, 
     experiments: { government5: 'any', completionRewards },
   })))));
 assert.equal(BASE_SCENARIOS.length, 72);
-const TREE_RULES = ['v1', 'v2-collab', 'v2-maintenance'] as const;
+const TREE_RULES = Object.keys(FEATURE_BUNDLES) as FeatureBundle[];
 const selectedRules = values['tree-rules'] === 'all' ? [...TREE_RULES] : values['tree-rules']!.split(',');
-assert.ok(selectedRules.length && new Set(selectedRules).size === selectedRules.length && selectedRules.every(r => TREE_RULES.includes(r as typeof TREE_RULES[number])), 'tree-rules must be v1,v2-collab,v2-maintenance or all');
+assert.ok(selectedRules.length && new Set(selectedRules).size === selectedRules.length && selectedRules.every(r => TREE_RULES.includes(r as FeatureBundle)), 'tree-rules must be v1,v2-collab,v2-maintenance or all');
 // Stable blocks of 72: a v2-only run has the same IDs/indexes as an all-rules run.
 const SCENARIOS: Scenario[] = TREE_RULES.flatMap(treeRules => BASE_SCENARIOS.map(s => ({
   ...s,
   id: treeRules === 'v1' ? s.id : `${s.id}|${treeRules}`,
-  standardOptions: { ...s.standardOptions, treeRules },
+  standardOptions: { ...s.standardOptions, ...FEATURE_BUNDLES[treeRules] },
+  treeRules,
 })));
 const baseIndexes = values.scenarios === 'all' ? BASE_SCENARIOS.map((_, i) => i)
   : values.scenarios === 'default' ? [0] : values.scenarios!.split(',').flatMap(part => {
