@@ -1,0 +1,32 @@
+{
+  "at": "2026-10-28T07:27:46.753Z",
+  "network": "One development host outside Fly; no cellular or multi-network claim",
+  "results": [
+    {
+      "url": "https://open-star-ter-village-tree-poc.fly.dev/",
+      "status": 200,
+      "elapsedMs": 156
+    },
+    {
+      "url": "https://open-star-ter-village-tree-poc.fly.dev/lobby",
+      "status": 200,
+      "elapsedMs": 48
+    },
+    {
+      "url": "https://open-star-ter-village-tree-poc.fly.dev:3001/health",
+      "status": 200,
+      "elapsedMs": 124,
+      "body": {
+        "status": "ok",
+        "uptime": 65.86723378,
+        "version": "0.1.0",
+        "gameName": "OpenStarTerVillage"
+      }
+    },
+    {
+      "url": "https://open-star-ter-village-tree-poc.fly.dev:3001/games/OpenStarTerVillage",
+      "status": 200,
+      "elapsedMs": 117
+    }
+  ]
+}

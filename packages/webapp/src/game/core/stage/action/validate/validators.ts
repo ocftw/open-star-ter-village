@@ -1,3 +1,5 @@
+import { standardEvent, eventActionBlocked } from '@/game/standard/events';
+import { hasNode } from '@/game/standard/tree';
 import { PlayerID } from 'boardgame.io';
 import { RuleSelector } from '@/game/store/slice/rule';
 import { ActionSlotSelector } from '@/game/store/slice/actionSlot';
@@ -23,6 +25,8 @@ const validateSlotAndActionTokens = (
   actionName: ActionMoveName,
   opts?: SlotOptions,
 ): ValidationResult => {
+  if (G.standard && (G.standard.choices.length || G.standard.phase !== 'action' || G.table.actionPhaseDone)) return invalid('ACTION_UNAVAILABLE');
+  if (eventActionBlocked(G, actionName)) return invalid('ACTION_UNAVAILABLE');
   if (!RuleSelector.isActionSlotAvailable(G.rules, actionName)) {
     return invalid('ACTION_UNAVAILABLE');
   }
@@ -80,7 +84,7 @@ export const validateCreateProject = (
   }
 
   // Mismatched card: only valid through 斜槓青年, and it must name a target position.
-  if (!RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, playerID)) {
+  if (!RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, playerID) && !hasNode(G, 'data-5')) {
     return invalid('PROJECT_JOB_NOT_REQUIRED', { jobName: jobCard.name });
   }
   if (!assignedJobName) {
@@ -120,8 +124,8 @@ export const validateRecruit = (
     return invalid('PROJECT_SLOT_NOT_FOUND');
   }
 
-  // Matching cards use their own profession; assignedJobName is ignored.
-  if (Object.keys(activeProject.card.requirements).includes(jobCard.name)) {
+  // An explicit wildcard target takes precedence over the printed profession.
+  if (!(assignedJobName && RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, playerID)) && Object.keys(activeProject.card.requirements).includes(jobCard.name)) {
     if (ProjectSlotSelector.hasWorker(activeProject, jobCard.name, playerID)) {
       return invalid('WORKER_ALREADY_ASSIGNED', { jobName: jobCard.name });
     }
@@ -132,7 +136,7 @@ export const validateRecruit = (
     return VALID;
   }
 
-  // Mismatched card: only valid through 斜槓青年, targeting a chosen position.
+  // Wildcard assignment validates the chosen position, not the printed profession.
   if (!RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, playerID)) {
     return invalid('PROJECT_JOB_NOT_REQUIRED', { jobName: jobCard.name });
   }
@@ -185,6 +189,16 @@ const validateContributions = (
     }
   }
 
+  if (G.standard) {
+    const totals = new Map<string, number>();
+    for (const c of contributions) {
+      if (!Number.isInteger(c.value) || c.value <= 0) return invalid('CONTRIBUTION_EMPTY');
+      const key = `${c.projectSlotId}:${c.jobName}`;
+      totals.set(key, (totals.get(key) ?? 0) + c.value);
+      const slot = ProjectBoardSelector.getBySlotId(G.table.projectBoard, c.projectSlotId)!;
+      if (ProjectSlotSelector.getJobContribution(slot, c.jobName) + totals.get(key)! > slot.card!.requirements[c.jobName]) return invalid('JOB_REQUIREMENT_FULFILLED');
+    }
+  }
   const totalContributions = getTotalContributionValue(contributions);
   const limit = RuleSelector.getMaxContributionValue(G.rules, actionName);
   if (totalContributions > limit) {
@@ -236,7 +250,7 @@ export const validateDiscardExcessJobCards = (
   if (G.table.fourFreedomsPendingDiscards.length === 0) {
     return invalid('NO_PENDING_DISCARDS');
   }
-  if (cardIds.length !== 2) {
+  if (cardIds.length !== 2 || (G.standard && new Set(cardIds).size !== 2)) {
     return invalid('DISCARD_COUNT_INVALID', { required: 2, selected: cardIds.length });
   }
   for (const id of cardIds) {
@@ -258,6 +272,9 @@ export const validateOvertime = (
   playerID: PlayerID,
   actionName: ActionMoveName,
 ): ValidationResult => {
+  if (standardEvent(G, 'no_overtime')) return invalid('OVERTIME_UNAVAILABLE');
+  if (G.standard && (G.standard.choices.length || G.standard.phase !== 'action' || G.table.actionPhaseDone)) return invalid('ACTION_UNAVAILABLE');
+  if (eventActionBlocked(G, actionName)) return invalid('ACTION_UNAVAILABLE');
   if (!RuleSelector.isActionSlotAvailable(G.rules, actionName)) {
     return invalid('ACTION_UNAVAILABLE');
   }

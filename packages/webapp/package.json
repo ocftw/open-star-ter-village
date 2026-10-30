@@ -16,6 +16,9 @@
     "start:server": "node -r ./register-dist-alias.js dist/src/server.js",
     "lint": "next lint",
     "test": "jest",
+    "bots": "tsx scripts/simulate-bots.ts",
+    "bots:smoke": "rm -rf bot-runs/smoke && NODE_ENV=production tsx scripts/sweep-standard-scenarios.ts --tables advance --tree-rules all --batches 1 --runs 2 --out bot-runs/smoke && python3 scripts/analyze-standard-sweep.py bot-runs/smoke",
+    "bots:behaviour": "rm -rf bot-runs/behaviour && NODE_ENV=production tsx scripts/sweep-standard-scenarios.ts --tables advance --scenarios default --batches 30 --runs 100 --out bot-runs/behaviour && python3 scripts/analyze-standard-sweep.py bot-runs/behaviour && python3 scripts/check-bot-baseline.py bot-runs/behaviour docs/evidence/bots/advance/sweep72/analysis.json",
     "e2e": "PLAYWRIGHT_BROWSERS_PATH=/tmp/pw-browsers playwright test",
     "e2e:production": "pnpm run build && cp -R .next/static .next/standalone/packages/webapp/.next/ && cp -R public .next/standalone/packages/webapp/ && PLAYWRIGHT_BROWSERS_PATH=/tmp/pw-browsers playwright test --config playwright.production.config.ts",
     "e2e:report": "PLAYWRIGHT_BROWSERS_PATH=/tmp/pw-browsers playwright show-report"
@@ -54,6 +57,7 @@
     "ts-jest": "^29.4.0",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
+    "tsx": "^4.19.2",
     "typescript": "^5.4.5"
   }
 }

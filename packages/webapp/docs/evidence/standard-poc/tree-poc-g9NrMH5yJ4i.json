@@ -1,0 +1,215 @@
+{
+  "ruleset": "tree-poc-v1",
+  "build": "670e576f7f39463f161da3fd3c5777c038960dd8",
+  "players": 4,
+  "rounds": 5,
+  "completedProjectIds": [
+    "52s8cfg",
+    "gl8ej5o",
+    "0rpe02",
+    "g9nsif8",
+    "6tlm8fg",
+    "o3lt9hg",
+    "uta5p6"
+  ],
+  "grown": [
+    "source-1",
+    "data-1",
+    "data-2",
+    "source-2",
+    "data-3",
+    "source-3",
+    "data-4",
+    "data-5",
+    "source-4",
+    "source-5"
+  ],
+  "remainingHearts": 0,
+  "scores": {
+    "0": 47,
+    "1": 36,
+    "2": 35,
+    "3": 52
+  },
+  "outcome": "星源樹繁盛",
+  "finished": true,
+  "log": [
+    {
+      "round": 1,
+      "kind": "event",
+      "target": "四大自由"
+    },
+    {
+      "round": 1,
+      "kind": "grow",
+      "playerId": "0",
+      "target": "source-1"
+    },
+    {
+      "round": 1,
+      "kind": "grow",
+      "playerId": "2",
+      "target": "data-1"
+    },
+    {
+      "round": 1,
+      "kind": "grow",
+      "playerId": "2",
+      "target": "data-2"
+    },
+    {
+      "round": 2,
+      "kind": "event",
+      "target": "會計年度結算"
+    },
+    {
+      "round": 2,
+      "kind": "grow",
+      "playerId": "1",
+      "target": "source-2"
+    },
+    {
+      "round": 2,
+      "kind": "complete",
+      "playerId": "3",
+      "target": "洋蔥瀏覽器"
+    },
+    {
+      "round": 3,
+      "kind": "event",
+      "target": "人力釋出"
+    },
+    {
+      "round": 3,
+      "kind": "complete",
+      "playerId": "1",
+      "target": "Inkscape"
+    },
+    {
+      "round": 3,
+      "kind": "grow",
+      "playerId": "2",
+      "target": "data-3"
+    },
+    {
+      "round": 3,
+      "kind": "complete",
+      "playerId": "2",
+      "target": "真的假的"
+    },
+    {
+      "round": 3,
+      "kind": "grow",
+      "playerId": "3",
+      "target": "source-3"
+    },
+    {
+      "round": 3,
+      "kind": "draw",
+      "playerId": "3",
+      "target": "{\"projectId\":\"\",\"pile\":\"advanced\"}"
+    },
+    {
+      "round": 4,
+      "kind": "event",
+      "target": "番茄醬工作法"
+    },
+    {
+      "round": 4,
+      "kind": "complete",
+      "playerId": "0",
+      "target": "求職天眼通"
+    },
+    {
+      "round": 4,
+      "kind": "draw",
+      "playerId": "0",
+      "target": "{\"projectId\":\"\",\"pile\":\"advanced\"}"
+    },
+    {
+      "round": 4,
+      "kind": "complete",
+      "playerId": "1",
+      "target": "Notepad++"
+    },
+    {
+      "round": 4,
+      "kind": "draw",
+      "playerId": "1",
+      "target": "{\"projectId\":\"\",\"pile\":\"advanced\"}"
+    },
+    {
+      "round": 4,
+      "kind": "grow",
+      "playerId": "2",
+      "target": "data-4"
+    },
+    {
+      "round": 4,
+      "kind": "complete",
+      "playerId": "2",
+      "target": "國民法官"
+    },
+    {
+      "round": 4,
+      "kind": "grow",
+      "playerId": "3",
+      "target": "data-5"
+    },
+    {
+      "round": 4,
+      "kind": "draw",
+      "playerId": "3",
+      "target": "{\"projectId\":\"\",\"pile\":\"advanced\"}"
+    },
+    {
+      "round": 5,
+      "kind": "event",
+      "target": "是芥末日"
+    },
+    {
+      "round": 5,
+      "kind": "grow",
+      "playerId": "0",
+      "target": "source-4"
+    },
+    {
+      "round": 5,
+      "kind": "grow",
+      "playerId": "0",
+      "target": "source-5"
+    },
+    {
+      "round": 5,
+      "kind": "draw",
+      "playerId": "0",
+      "target": "{\"projectId\":\"\",\"pile\":\"advanced\"}"
+    },
+    {
+      "round": 5,
+      "kind": "draw",
+      "playerId": "1",
+      "target": "{\"projectId\":\"\",\"pile\":\"advanced\"}"
+    },
+    {
+      "round": 5,
+      "kind": "draw",
+      "playerId": "1",
+      "target": "{\"projectId\":\"\",\"pile\":\"advanced\"}"
+    },
+    {
+      "round": 5,
+      "kind": "complete",
+      "playerId": "3",
+      "target": "OCF Lab"
+    },
+    {
+      "round": 5,
+      "kind": "draw",
+      "playerId": "3",
+      "target": "{\"projectId\":\"\",\"pile\":\"advanced\"}"
+    }
+  ],
+  "exportedAt": "2026-10-27T03:20:27.516Z",
+  "durationSeconds": 1846
+}

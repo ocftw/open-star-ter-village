@@ -2,6 +2,8 @@ import { defineConfig, devices } from '@playwright/test';
 
 const webPort = process.env.PLAYWRIGHT_WEB_PORT ?? '3000';
 const gameServerPort = process.env.PLAYWRIGHT_GAME_SERVER_PORT ?? '3001';
+// Specs that call the game server directly (e2e/standard.spec.ts) read the port from the environment.
+process.env.PLAYWRIGHT_GAME_SERVER_PORT = gameServerPort;
 const webURL = `http://localhost:${webPort}`;
 const gameServerURL = `http://localhost:${gameServerPort}`;
 

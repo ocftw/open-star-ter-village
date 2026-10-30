@@ -2,6 +2,10 @@ export interface WebappEnv {
   gameServerOrigins: string[];
   isProduction: boolean;
   port: number;
+  /** Exposes the telemetry debug endpoint; for test deployments only. */
+  debugTelemetry: boolean;
+  /** Pause before each bot move, in milliseconds. */
+  botMoveDelayMs: number;
 }
 
 const DEFAULT_GAME_SERVER_PORT = 3001;
@@ -42,6 +46,18 @@ function parseGameServerOrigins(value: string | undefined, isProduction: boolean
   return origins;
 }
 
+const DEFAULT_BOT_MOVE_DELAY_MS = 800;
+
+function parseBotMoveDelay(value: string | undefined, isProduction: boolean): number {
+  if (!value) return DEFAULT_BOT_MOVE_DELAY_MS;
+  const delay = Number(value);
+  if (!Number.isInteger(delay) || delay < 0) {
+    reportConfigIssue(`BOT_MOVE_DELAY_MS must be a non-negative integer; received "${value}".`, isProduction);
+    return DEFAULT_BOT_MOVE_DELAY_MS;
+  }
+  return delay;
+}
+
 export function loadWebappEnv(env: NodeJS.ProcessEnv = process.env): WebappEnv {
   const isProduction = env.NODE_ENV === 'production';
 
@@ -56,5 +72,7 @@ export function loadWebappEnv(env: NodeJS.ProcessEnv = process.env): WebappEnv {
     gameServerOrigins: parseGameServerOrigins(env.GAME_SERVER_ORIGINS, isProduction),
     isProduction,
     port: parsePort(env.PORT, isProduction),
+    debugTelemetry: env.DEBUG_TELEMETRY === '1',
+    botMoveDelayMs: parseBotMoveDelay(env.BOT_MOVE_DELAY_MS, isProduction),
   };
 }

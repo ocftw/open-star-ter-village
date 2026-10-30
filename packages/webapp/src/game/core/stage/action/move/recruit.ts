@@ -1,3 +1,6 @@
+import { standardEvent } from '@/game/standard/events';
+import { fillMarket, enqueue } from '@/game/standard/engine';
+import { ProjectSlotSelector } from '@/game/store/slice/projectSlot/projectSlot';
 import { ProjectBoardSelector } from '@/game/store/slice/projectBoard';
 import { DeckMutator, DeckSelector } from '@/game/store/slice/deck';
 import { ProjectSlotMutator } from '@/game/store/slice/projectSlot/projectSlot';
@@ -45,8 +48,8 @@ export const recruit: GameMove<Recruit> = ({ G, playerID }, jobCardId, projectSl
   // 斜槓青年: a mismatched card records its contribution under the
   // player-chosen required position, never under an unrequired profession.
   const matchesRequirement = Object.keys(activeProject.card!.requirements).includes(jobCard.name);
-  const effectiveJobName = matchesRequirement ? jobCard.name : assignedJobName!;
-  ProjectSlotMutator.assignWorker(activeProject, effectiveJobName, playerID, initialContributionValue);
+  const effectiveJobName = ignoreRequirement && assignedJobName ? assignedJobName : matchesRequirement ? jobCard.name : assignedJobName!;
+  ProjectSlotMutator.assignWorker(activeProject, effectiveJobName, playerID, G.standard ? Math.min(initialContributionValue, activeProject.card!.requirements[effectiveJobName] - ProjectSlotSelector.getJobContribution(activeProject, effectiveJobName)) : initialContributionValue);
 
   // Refill job card
   const maxJobSlots = RuleSelector.getTableMaxJobSlots(G.rules);
@@ -54,4 +57,10 @@ export const recruit: GameMove<Recruit> = ({ G, playerID }, jobCardId, projectSl
   const jobCards = DeckSelector.peek(G.decks.jobs, refillCardNumber);
   DeckMutator.draw(G.decks.jobs, refillCardNumber);
   JobSlotsMutator.addJobCards(G.table.jobSlots, jobCards);
+  if (G.standard) fillMarket(G);
+  if (standardEvent(G, 'extra_recruit') && !G.standard!.extraRecruitUsed?.[playerID]) {
+    G.standard!.extraRecruitUsed ??= {};
+    G.standard!.extraRecruitUsed[playerID] = true;
+    enqueue(G, 'extraRecruit', playerID);
+  }
 };

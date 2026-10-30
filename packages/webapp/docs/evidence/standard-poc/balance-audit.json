@@ -1,0 +1,77 @@
+{
+  "catalog": [
+    {
+      "difficulty": 1,
+      "count": 15,
+      "contribution_min": 8,
+      "contribution_max": 8,
+      "fixed_bonuses": 4,
+      "candidate_bonuses": 2
+    },
+    {
+      "difficulty": 2,
+      "count": 14,
+      "contribution_min": 16,
+      "contribution_max": 16,
+      "fixed_bonuses": 4,
+      "candidate_bonuses": 4
+    },
+    {
+      "difficulty": 3,
+      "count": 7,
+      "contribution_min": 22,
+      "contribution_max": 22,
+      "fixed_bonuses": 4,
+      "candidate_bonuses": 6
+    },
+    {
+      "difficulty": 4,
+      "count": 3,
+      "contribution_min": 24,
+      "contribution_max": 24,
+      "fixed_bonuses": 4,
+      "candidate_bonuses": 8
+    }
+  ],
+  "games": [
+    {
+      "file": "tree-poc-4RB5svw1lwj.json",
+      "players": 4,
+      "completed": 7,
+      "completion_difficulties": {
+        "1": 6,
+        "2": 1
+      },
+      "unmatched_names": [],
+      "remaining_hearts": 4,
+      "government5_grown": false,
+      "candidate_total_bonus_delta": -12
+    },
+    {
+      "file": "tree-poc-6I8jBAdrvAv.json",
+      "players": 2,
+      "completed": 6,
+      "completion_difficulties": {
+        "1": 3,
+        "2": 3
+      },
+      "unmatched_names": [],
+      "remaining_hearts": 4,
+      "government5_grown": false,
+      "candidate_total_bonus_delta": -6
+    },
+    {
+      "file": "tree-poc-g9NrMH5yJ4i.json",
+      "players": 4,
+      "completed": 7,
+      "completion_difficulties": {
+        "2": 3,
+        "1": 4
+      },
+      "unmatched_names": [],
+      "remaining_hearts": 0,
+      "government5_grown": false,
+      "candidate_total_bonus_delta": -8
+    }
+  ]
+}

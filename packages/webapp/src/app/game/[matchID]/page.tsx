@@ -1,4 +1,6 @@
 'use client';
+import { experimentLabel } from '@/game/standard/config';
+import { standardOptionsLabel } from '@/game/standard/options';
 
 import React from 'react';
 import Link from 'next/link';
@@ -12,19 +14,25 @@ import SeatCard from '@/components/lobby/SeatCard';
 import { clearCredentials, loadCredentials, type MatchCredentials } from '@/lib/matchCredentials';
 import { usePolling } from '@/lib/usePolling';
 import { useSnackbar } from '@/lib/useSnackbar';
+import { getBotStrategy } from '@/game/bots/seat';
+import { BOT_STRATEGIES } from '@/game/bots/strategies';
 import {
+  addBot,
   getFilledSeatCount,
   getLobbyErrorMessage,
   getMatch,
   hasHostStarted,
   hasPlayerName,
+  isAbandonedMatch,
   isMatchNotFoundError,
   leaveRoom,
+  removeBot,
   startRoom,
   type LobbyMatch,
 } from '@/app/lobby/actions';
 
 const MATCH_EXPIRED_MESSAGE = '房間不存在或已過期 · Match not found or expired';
+const BOT_STRATEGY_OPTIONS = Object.values(BOT_STRATEGIES).map(({ id, label }) => ({ id, label }));
 
 /** Full-screen non-dismissible notice: a player released their seat, ending the match (#420). */
 function MatchTerminatedOverlay() {
@@ -67,6 +75,7 @@ export default function GameRoomPage() {
   const [isLeaving, setIsLeaving] = React.useState(false);
   const [isStarting, setIsStarting] = React.useState(false);
   const [isRefreshing, setIsRefreshing] = React.useState(false);
+  const [isUpdatingBots, setIsUpdatingBots] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
   const [isExpired, setIsExpired] = React.useState(false);
   const { snackbar, showSnackbar, closeSnackbar } = useSnackbar();
@@ -136,10 +145,10 @@ export default function GameRoomPage() {
 
   const allSeatsFilled = match ? getFilledSeatCount(match) === match.players.length : false;
   const hasStarted = match ? hasHostStarted(match) : false;
-  const isAbandoned = match
-    ? match.players.every((player) => !player.name?.trim() || player.isConnected === false)
-    : false;
+  const isAbandoned = match ? isAbandonedMatch(match.players) : false;
   const isHost = credentials?.playerID === '0';
+  // Bots only play Standard rules; the host seats them before starting.
+  const canManageBots = isHost && Boolean(credentials) && !hasStarted && match?.setupData?.ruleset === 'tree-poc-v1';
   // A vacated seat in a started match means someone chose 離開座位 — the
   // game is terminated for everyone (#420). Detected from authoritative
   // lobby metadata (the socket does not push metadata changes mid-game).
@@ -149,7 +158,7 @@ export default function GameRoomPage() {
   // A completed match can have released seats. Keep mounting its final board
   // and result instead of treating a post-game departure as early termination.
   const shouldShowBoard = Boolean(match) && (allSeatsFilled || isFinished) && hasStarted && !isExpired;
-  const isMutating = isStarting || isLeaving || isRefreshing;
+  const isMutating = isStarting || isLeaving || isRefreshing || isUpdatingBots;
 
   // Poll for the whole room lifetime (not just the waiting room): mid-game it
   // detects leave-termination, and after game over it detects the TTL purge so
@@ -192,6 +201,26 @@ export default function GameRoomPage() {
       setIsStarting(false);
     }
   };
+
+  /** Runs a bot seat change, then moves focus to the control that replaced the clicked one. */
+  const updateBots = async (update: () => Promise<void>, failure: string, focusTestId: string) => {
+    setIsUpdatingBots(true);
+    try {
+      await update();
+      await pollMatch();
+      requestAnimationFrame(() => document.querySelector<HTMLElement>(`[data-testid="${focusTestId}"]`)?.focus());
+    } catch (error) {
+      showSnackbar(getLobbyErrorMessage(error, failure), 'error');
+    } finally {
+      setIsUpdatingBots(false);
+    }
+  };
+
+  const handleAddBot = (seat: number, strategy: string) =>
+    void updateBots(() => addBot(matchID, credentials!, seat, strategy), 'Unable to add a bot.', `seat-${seat}-remove-bot`);
+
+  const handleRemoveBot = (seat: number) =>
+    void updateBots(() => removeBot(matchID, credentials!, seat), 'Unable to remove the bot.', `seat-${seat}-add-bot`);
 
   const handleRefreshNow = async () => {
     setIsRefreshing(true);
@@ -303,6 +332,7 @@ export default function GameRoomPage() {
               <h1 style={{ display: 'flex', flexDirection: 'column', gap: 2, fontSize: 22, fontWeight: 800 }}>
                 等待玩家加入 <span className="en-cap">Waiting room</span>
               </h1>
+              {match?.setupData?.ruleset === 'tree-poc-v1' && <p>標準模式 · 星源樹測試版 v1 · 2–4 人 · {experimentLabel(match.setupData?.experiments)} · {standardOptionsLabel(match.setupData?.standardOptions)}</p>}
               <span
                 className="sticker"
                 style={{ background: 'var(--orange-soft)', borderColor: 'var(--orange)' }}
@@ -362,15 +392,24 @@ export default function GameRoomPage() {
             </div>
 
             <div className="grid-seats" style={{ marginTop: 24 }} data-testid="seat-grid">
-              {match?.players.map((player) => (
-                <SeatCard
-                  key={player.id}
-                  seatIndex={player.id}
-                  playerName={hasPlayerName(player) ? player.name : undefined}
-                  isHost={player.id === 0 && hasPlayerName(player)}
-                  isYou={credentials?.playerID === String(player.id)}
-                />
-              ))}
+              {match?.players.map((player) => {
+                const botStrategy = getBotStrategy(player.data);
+                const seated = hasPlayerName(player);
+                return (
+                  <SeatCard
+                    key={player.id}
+                    seatIndex={player.id}
+                    playerName={seated ? player.name : undefined}
+                    isHost={player.id === 0 && seated}
+                    isYou={credentials?.playerID === String(player.id)}
+                    botLabel={botStrategy?.label}
+                    botStrategies={BOT_STRATEGY_OPTIONS}
+                    onAddBot={canManageBots && !seated && player.id !== 0 ? (strategy) => handleAddBot(player.id, strategy) : undefined}
+                    onRemoveBot={canManageBots && botStrategy ? () => handleRemoveBot(player.id) : undefined}
+                    busy={isMutating}
+                  />
+                );
+              })}
             </div>
             <div style={{ marginTop: 10, fontSize: 12, color: 'var(--ink-mute)' }}>
               {match
@@ -406,6 +445,14 @@ export default function GameRoomPage() {
                 <span className="en-cap" style={{ marginLeft: 6 }}>
                   Host can start once every seat is filled.
                 </span>
+                {canManageBots && (
+                  <div style={{ marginTop: 4 }}>
+                    * 空位可加入電腦玩家，開始前可隨時移除。
+                    <span className="en-cap" style={{ marginLeft: 6 }}>
+                      Fill empty seats with bots; remove them any time before starting.
+                    </span>
+                  </div>
+                )}
               </div>
             )}
           </div>

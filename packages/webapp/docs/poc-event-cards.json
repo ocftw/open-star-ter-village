@@ -1,0 +1,104 @@
+{
+  "ordinary": 13,
+  "final": 1,
+  "cards": [
+    {
+      "name": "是芥末日",
+      "description": "翻開此卡，本輪結束後，遊戲結束。在回合中可不將行動點用完，剩餘一個行動點數 +1 分",
+      "function_name": "end_game_after_this_round",
+      "type": "last_round",
+      "source": "basic/legacy JSON"
+    },
+    {
+      "name": "人力釋出",
+      "description": "立即將人力資源區的人力卡全部棄掉，並重新補滿",
+      "function_name": "discard_and_refill_all_worker_slots",
+      "type": "basic",
+      "source": "basic/legacy JSON"
+    },
+    {
+      "name": "斜槓青年",
+      "description": "本輪所有玩家在發起專案行動或招募人力行動時，使用的第一張人力卡可以無視人力需求招募至專案",
+      "function_name": "ignore_first_worker_requirement",
+      "type": "basic",
+      "source": "basic/legacy JSON"
+    },
+    {
+      "name": "四大自由",
+      "description": "立即多翻開兩張人力卡至人力資源區，即人力資源區上限 +2。本輪結束時由尾家選擇兩張棄掉",
+      "function_name": "add_two_worker_slots",
+      "type": "basic",
+      "source": "basic/legacy JSON"
+    },
+    {
+      "name": "會計年度結算",
+      "description": "本輪結案的專案，發起者額外獲得 2分",
+      "function_name": "project_owner_gets_two_points",
+      "type": "basic",
+      "source": "basic/legacy JSON"
+    },
+    {
+      "name": "青年補助",
+      "description": "本輪目前影響力分數最低的玩家，可多使用一個灰色行動點指示物，若最低分不只一位，則無人可以使用",
+      "function_name": "the_only_player_with_the_lowest_victory_points_gets_one_extra_action_token",
+      "type": "basic",
+      "source": "basic/legacy JSON"
+    },
+    {
+      "name": "番茄醬工作法",
+      "description": "本輪執行發起人貢獻時可分配的貢獻值 +1",
+      "function_name": "increase_one_owned_project_contribution_value",
+      "type": "basic",
+      "source": "basic/legacy JSON"
+    },
+    {
+      "name": "又老又窮啊",
+      "description": "本輪所有玩家皆不可成長星源樹。",
+      "function_name": "no_tree_growth",
+      "type": "standard",
+      "source": "Standard event implementation"
+    },
+    {
+      "name": "GitHub 當機了",
+      "description": "本輪所有玩家皆不可執行發起人貢獻。",
+      "function_name": "no_owner_contribution",
+      "type": "standard",
+      "source": "Standard event implementation"
+    },
+    {
+      "name": "猛漢肺炎來襲",
+      "description": "所有專案上的貢獻方塊後退 1 格，最低為 1。",
+      "function_name": "retreat_contributions",
+      "type": "standard",
+      "source": "Standard event implementation"
+    },
+    {
+      "name": "鯊魚咬斷海底電纜",
+      "description": "場上已有 2 個以上專案時，本輪不可發起專案。",
+      "function_name": "limit_initiation",
+      "type": "standard",
+      "source": "Standard event implementation"
+    },
+    {
+      "name": "抱歉了我的肝",
+      "description": "本輪每位玩家第一次執行招募後，可不花行動點再招募一次，仍須消耗人力卡與貢獻方塊。",
+      "function_name": "extra_recruit",
+      "type": "standard",
+      "source": "Standard event implementation"
+    },
+    {
+      "name": "減薪休假啊",
+      "description": "本輪所有玩家皆不可加班。",
+      "function_name": "no_overtime",
+      "type": "standard",
+      "source": "Standard event implementation"
+    },
+    {
+      "name": "數位政委",
+      "description": "場內每個專案的發起人，可選擇該專案上任一玩家的 1 個貢獻方塊前進 1 格，不可超過專案需求。",
+      "function_name": "digital_minister",
+      "type": "basic",
+      "source": "POC revised Digital Minister"
+    }
+  ]
+}

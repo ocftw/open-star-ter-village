@@ -421,3 +421,21 @@ describe('recruit move with 斜槓青年 target', () => {
     expect(G.table.jobSlots.some((c) => c.id === 'j2')).toBe(true);
   });
 });
+
+ describe('wildcard recruitment of a required printed profession', () => {
+  it.each([1, 4])('uses chosen target when printed profession is occupied at %i', (value) => {
+    const G = makeG();
+    RuleMutator.setEventIgnoreFirstWorkerRequirement(G.rules, ['0'], true);
+    const slot = withActiveProject(G);
+    slot.contributions[0].value = value;
+    expect(validateRecruit(G, '0', 'j1', slot.id, '美術設計').valid).toBe(true);
+    recruit({ G, playerID: '0' } as never, 'j1', slot.id, '美術設計');
+    expect(slot.contributions).toContainEqual({jobName:'美術設計',worker:'0',value:2});
+    expect(slot.contributions.find(c => c.jobName === '工程師')!.value).toBe(value);
+    expect(RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, '0')).toBe(false);
+  });
+  it('does not allow a target to bypass normal restrictions without the event', () => {
+    const G = makeG(); const slot = withActiveProject(G);
+    expectReason(validateRecruit(G, '0', 'j1', slot.id, '美術設計'), 'WORKER_ALREADY_ASSIGNED');
+  });
+});

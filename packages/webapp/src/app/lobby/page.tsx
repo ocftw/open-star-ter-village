@@ -1,6 +1,8 @@
 'use client';
 
 import React from 'react';
+import { DEFAULT_STANDARD_OPTIONS, FEATURE_KEYS, PROTOTYPE_FEATURES, StandardOptions, TREE_PRESETS, standardOptionsLabel, standardRoundCount } from '@/game/standard/options';
+import { STANDARD_RULES_ENABLED, Ruleset, StandardExperiments, DEFAULT_EXPERIMENTS } from '@/game/standard/config';
 import { useRouter } from 'next/navigation';
 import { Alert, Snackbar } from '@mui/material';
 import { PaperCard, StickerButton } from '@/components/design';
@@ -72,6 +74,10 @@ function CardHeading({
 export default function LobbyPage() {
   const router = useRouter();
   const [playerName, setPlayerName] = React.useState('');
+  const [ruleset, setRuleset] = React.useState<Ruleset>('simple');
+  const [experiments, setExperiments] = React.useState<StandardExperiments>({...DEFAULT_EXPERIMENTS, government5: 'any'});
+  const [standardOptions, setStandardOptions] = React.useState<StandardOptions>({...DEFAULT_STANDARD_OPTIONS});
+  const playerCounts = ruleset === 'tree-poc-v1' ? [2, 3, 4] : PLAYER_COUNT_OPTIONS;
   const [numPlayers, setNumPlayers] = React.useState<number>(3);
   const [matches, setMatches] = React.useState<VisibleMatch[]>([]);
   const [mySeatMatchIDs, setMySeatMatchIDs] = React.useState<Record<string, boolean>>({});
@@ -90,7 +96,7 @@ export default function LobbyPage() {
   const fetchMatches = React.useCallback(async (silent = false): Promise<boolean> => {
     const requestSequence = ++fetchSequence.current;
     try {
-      const nextMatches = await listPublicMatches();
+      const nextMatches = await listPublicMatches((matchID) => loadCredentials(matchID) !== null);
       if (requestSequence !== fetchSequence.current) return false;
       hasSuccessfulFetch.current = true;
       setMatches(nextMatches);
@@ -158,7 +164,7 @@ export default function LobbyPage() {
     setIsCreating(true);
 
     try {
-      const credentials = await createRoom(trimmedPlayerName, numPlayers);
+      const credentials = await createRoom(trimmedPlayerName, numPlayers, ruleset, ruleset === 'tree-poc-v1' ? experiments : undefined, ruleset === 'tree-poc-v1' ? standardOptions : undefined);
       saveCredentials(credentials);
       router.push(`/game/${credentials.matchID}`);
     } catch (error) {
@@ -234,10 +240,48 @@ export default function LobbyPage() {
                 error={playerName.length > 0 && !playerNameIsValid}
                 helper="1 到 20 個字 · Use 1 to 20 visible characters."
               />
+              {STANDARD_RULES_ENABLED && <label>遊戲規則 · Rules
+                <select style={{ display: 'block', width: '100%', minWidth: 0, marginTop: 6, padding: 8 }} aria-label="遊戲規則" value={ruleset} disabled={isCreating} onChange={e => {
+                  setRuleset(e.target.value as Ruleset); setNumPlayers(3);
+                }}>
+                  <option value="simple">簡易模式 · Simplified</option>
+                  <option value="tree-poc-v1">標準模式 — 星源樹測試版 v1</option>
+                </select>
+              </label>}
+              {ruleset === 'tree-poc-v1' && <>
+                <fieldset disabled={isCreating}>
+                  <legend>先手輪替</legend>
+                  {(['none', 'clockwise', 'counterclockwise'] as const).map(value => <label key={value} style={{ display: 'inline-block', padding: 8 }}><input type="radio" name="starterRotation" value={value} checked={standardOptions.starterRotation === value} onChange={() => setStandardOptions({...standardOptions, starterRotation: value})} />{{none:'不輪替',clockwise:'順時針',counterclockwise:'逆時針'}[value]}</label>)}
+                </fieldset>
+                <fieldset disabled={isCreating}>
+                  <legend>額外回合</legend>
+                  {([0, 1, 2] as const).map(value => <label key={value} style={{ display: 'inline-block', padding: 8 }}><input type="radio" name="extraRounds" value={value} checked={standardOptions.extraRounds === value} onChange={() => setStandardOptions({...standardOptions, extraRounds: value})} />+{value} 輪</label>)}
+                </fieldset>
+                <fieldset disabled={isCreating}>
+                  <legend>星源樹門檻 · 第 1～5 層</legend>
+                  {(Object.keys(TREE_PRESETS) as StandardOptions['treePreset'][]).map(value => <label key={value} style={{ display: 'block', padding: 8 }}><input type="radio" name="treePreset" value={value} checked={standardOptions.treePreset === value} onChange={() => setStandardOptions({...standardOptions, treePreset: value})} />{TREE_PRESETS[value].metric === 'cc' ? '結案複雜度 CC' : '結案數'} {TREE_PRESETS[value].thresholds.join('／')}</label>)}
+                </fieldset>
+                {FEATURE_KEYS.map(key => {
+                  const values = PROTOTYPE_FEATURES[key].values as Record<string, string>;
+                  return <fieldset key={key} disabled={isCreating}>
+                    <legend>{PROTOTYPE_FEATURES[key].label}</legend>
+                    {Object.keys(values).map(value => <label key={value} style={{ display: 'inline-block', padding: 8 }}><input type="radio" name={key} value={value} checked={standardOptions[key] === value} onChange={() => setStandardOptions({...standardOptions, [key]: value})} />{values[value]}{value === DEFAULT_STANDARD_OPTIONS[key] ? '（原規則）' : '（實驗）'}</label>)}
+                    <p style={{ margin: '0 8px 8px' }}>{PROTOTYPE_FEATURES[key].hint}</p>
+                  </fieldset>;
+                })}
+                <p>政府 5：可新增自己的方塊。每個新方塊消耗 1 個庫存人力方塊，不消耗人力卡或 AP；增加既有方塊貢獻不再消耗庫存。</p>
+                <label>發起／結案獎勵
+                  <select style={{ display: 'block', width: '100%', minWidth: 0, marginTop: 6, padding: 8 }} aria-label="發起／結案獎勵" disabled={isCreating} value={experiments.completionRewards} onChange={e => setExperiments({...experiments, completionRewards:e.target.value as StandardExperiments['completionRewards']})}>
+                    <option value="fixed">各 +2（原規則）</option>
+                    <option value="difficulty">各依專案星數 +1～+4（實驗）</option>
+                  </select>
+                </label>
+                <p aria-live="polite">共 {standardRoundCount(numPlayers, standardOptions)} 輪（含最終事件） · {standardOptionsLabel(standardOptions)}。建立後固定，再來一局沿用設定。年度結算的發起人額外 +2 仍照常加計。</p>
+              </>}
               <Segmented
                 label="玩家人數 · Players"
-                options={PLAYER_COUNT_OPTIONS}
-                value={numPlayers as (typeof PLAYER_COUNT_OPTIONS)[number]}
+                options={playerCounts}
+                value={numPlayers}
                 onChange={(count) => setNumPlayers(count)}
                 disabled={isCreating}
               />

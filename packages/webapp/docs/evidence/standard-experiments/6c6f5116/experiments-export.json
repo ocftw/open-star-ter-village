@@ -1,0 +1,28 @@
+{
+  "ruleset": "tree-poc-v1",
+  "experiments": {
+    "government5": "any",
+    "completionRewards": "difficulty"
+  },
+  "build": "6c6f5116dbf61a10af3ec4d611028074c159199f",
+  "players": 2,
+  "rounds": 1,
+  "completedProjectIds": [],
+  "grown": [],
+  "remainingHearts": 10,
+  "scores": {
+    "0": 0,
+    "1": 0
+  },
+  "outcome": "星源樹枯萎",
+  "finished": false,
+  "log": [
+    {
+      "round": 1,
+      "kind": "event",
+      "target": "青年補助"
+    }
+  ],
+  "exportedAt": "2026-10-27T23:49:27.532Z",
+  "durationSeconds": 5
+}

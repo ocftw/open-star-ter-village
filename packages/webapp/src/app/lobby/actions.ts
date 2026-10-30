@@ -1,5 +1,7 @@
+import type { Ruleset, StandardExperiments } from '@/game/standard/config';
 import { LobbyClientError } from 'boardgame.io/client';
-import { GAME_NAME, lobbyClient } from '@/lib/lobbyClient';
+import { GAME_NAME, GAME_SERVER_URL, lobbyClient } from '@/lib/lobbyClient';
+import { isBotSeat } from '@/game/bots/seat';
 import type { MatchCredentials } from '@/lib/matchCredentials';
 
 export type LobbyMatch = Awaited<ReturnType<typeof lobbyClient.getMatch>>;
@@ -61,12 +63,21 @@ export function hasHostStarted(match: Pick<LobbyMatch, 'players'>): boolean {
   );
 }
 
-function isAbandonedMatch(players: LobbyMatch['players']): boolean {
-  // A match is abandoned if every player either has no name or is disconnected.
-  return players.length > 0 && players.every((player) => !player.name?.trim() || player.isConnected === false);
+/** A match is abandoned once no human is seated and connected; bot seats keep no room alive. */
+export function isAbandonedMatch(players: LobbyMatch['players']): boolean {
+  return players.length > 0 && players.every((player) => !player.name?.trim() || player.isConnected === false || isBotSeat(player));
 }
 
-export function getLobbyStatus(match: LobbyMatch): LobbyStatus {
+export interface LobbyViewer {
+  /**
+   * The viewing browser still holds a seat credential for the room. In a room
+   * with bots that player may just be disconnected (a solo human who opened the
+   * lobby), so the nobody-connected rule must not hide it from them.
+   */
+  holdsSeat?: boolean;
+}
+
+export function getLobbyStatus(match: LobbyMatch, { holdsSeat = false }: LobbyViewer = {}): LobbyStatus {
   const seatsFilled = getFilledSeatCount(match);
   const totalSeats = match.players.length;
 
@@ -74,7 +85,7 @@ export function getLobbyStatus(match: LobbyMatch): LobbyStatus {
     return 'Finished';
   }
 
-  if (isAbandonedMatch(match.players)) {
+  if (isAbandonedMatch(match.players) && !(holdsSeat && match.players.some(isBotSeat))) {
     return 'Abandoned';
   }
 
@@ -97,8 +108,8 @@ export function getLobbyStatus(match: LobbyMatch): LobbyStatus {
   return 'In Progress';
 }
 
-export function toVisibleMatch(match: LobbyMatch): VisibleMatch | null {
-  const status = getLobbyStatus(match);
+export function toVisibleMatch(match: LobbyMatch, viewer: LobbyViewer = {}): VisibleMatch | null {
+  const status = getLobbyStatus(match, viewer);
   if (status === 'Finished' || status === 'Abandoned') {
     return null;
   }
@@ -112,11 +123,11 @@ export function toVisibleMatch(match: LobbyMatch): VisibleMatch | null {
   };
 }
 
-export async function listPublicMatches(): Promise<VisibleMatch[]> {
+export async function listPublicMatches(holdsSeat: (matchID: string) => boolean = () => false): Promise<VisibleMatch[]> {
   const response = await lobbyClient.listMatches(GAME_NAME);
 
   return response.matches
-    .map(toVisibleMatch)
+    .map((match) => toVisibleMatch(match, { holdsSeat: holdsSeat(match.matchID) }))
     .filter((match): match is VisibleMatch => match !== null)
     .sort((left, right) => right.match.updatedAt - left.match.updatedAt);
 }
@@ -125,8 +136,8 @@ export async function getMatch(matchID: string): Promise<LobbyMatch> {
   return lobbyClient.getMatch(GAME_NAME, matchID);
 }
 
-export async function createRoom(playerName: string, numPlayers: number): Promise<MatchCredentials> {
-  const { matchID } = await lobbyClient.createMatch(GAME_NAME, { numPlayers });
+export async function createRoom(playerName: string, numPlayers: number, ruleset: Ruleset = 'simple', experiments?: StandardExperiments, standardOptions?: import('@/game/standard/options').StandardOptions): Promise<MatchCredentials> {
+  const { matchID } = await lobbyClient.createMatch(GAME_NAME, { numPlayers, ...(ruleset === 'simple' ? {} : { setupData: { ruleset, ...(experiments ? {experiments} : {}), ...(standardOptions ? { standardOptions } : {}) } }) });
   try {
     return await joinRoom(matchID, playerName, '0');
   } catch (error) {
@@ -191,6 +202,28 @@ export async function startRoom(matchID: string, playerID: string, credential: s
         .find((player) => String(player.id) === playerID)?.data?.displayName,
     },
   });
+}
+
+async function postBotSeat(path: string, body: Record<string, unknown>): Promise<void> {
+  const response = await fetch(`${GAME_SERVER_URL}/games/${GAME_NAME}/${path}`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!response.ok) {
+    const { error } = (await response.json().catch(() => ({}))) as { error?: string };
+    throw new Error(error ?? `Request failed (${response.status})`);
+  }
+}
+
+/** Host only, before the game starts: seat a server-run bot of `strategy` in an empty seat. */
+export async function addBot(matchID: string, host: MatchCredentials, seat: number, strategy: string): Promise<void> {
+  await postBotSeat(`${matchID}/bots`, { playerID: host.playerID, credentials: host.credential, seat, strategy });
+}
+
+/** Host only, before the game starts: free a bot seat. */
+export async function removeBot(matchID: string, host: MatchCredentials, seat: number): Promise<void> {
+  await postBotSeat(`${matchID}/bots/${seat}/remove`, { playerID: host.playerID, credentials: host.credential });
 }
 
 /** True when the server says the match does not exist (deleted, expired, or never created). */

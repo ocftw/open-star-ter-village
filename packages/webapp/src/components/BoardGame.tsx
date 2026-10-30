@@ -1,3 +1,4 @@
+import StandardPanel from './board/StandardPanel';
 import { Client, BoardProps } from 'boardgame.io/react';
 import { SocketIO, Local } from 'boardgame.io/multiplayer'
 import game from '@/game';
@@ -42,7 +43,7 @@ const Board: React.FC<GameContext> = (gameContext) => {
   const { G, playerID, ctx, matchData } = gameContext;
   const dispatch = useAppDispatch();
   const currentAction = useAppSelector(getCurrentAction);
-  const isMyTurn = playerID === ctx.currentPlayer;
+  const isMyTurn = playerID === ctx.currentPlayer && !G.standard?.choices.length;
   const gameover = ctx.gameover as { winners: string[] } | undefined;
 
   const [showGameOver, setShowGameOver] = React.useState(true);
@@ -74,7 +75,6 @@ const Board: React.FC<GameContext> = (gameContext) => {
     if (currentAction !== UserActionMoves.Recruit) return undefined;
     if (!overrideAvailable || !selectedJobCard || !slot.card) return undefined;
     if (!projectSelectionMap[slot.id]) return undefined;
-    if (Object.keys(slot.card.requirements).includes(selectedJobCard.name)) return undefined;
     return {
       eligibleJobNames: getEligibleTargetJobNames(slot, playerID!),
       selectedJobName: assignedJobName,
@@ -182,6 +182,8 @@ const Board: React.FC<GameContext> = (gameContext) => {
             <BoardProjectSlot
               key={slot.id}
               slot={slot}
+              contributionLimit={RuleSelector.getMaxContributionValue(G.rules, slot.owner === playerID ? 'contributeOwnedProjects' : 'contributeJoinedProjects')}
+              hideProjectType={!!G.standard}
               playerID={playerID}
               matchData={matchData}
               idle={idle}
@@ -223,6 +225,7 @@ const Board: React.FC<GameContext> = (gameContext) => {
       }}
     >
       <GameHeader gameContext={gameContext} compact />
+      <StandardPanel gameContext={gameContext} />
       <div
         style={{
           flex: 1,
@@ -256,6 +259,7 @@ const Board: React.FC<GameContext> = (gameContext) => {
       }}
     >
       <GameHeader gameContext={gameContext} />
+      <StandardPanel gameContext={gameContext} />
 
       <div
         style={{
@@ -338,6 +342,7 @@ export function GameOverDialog({
       const { nextMatchID } = await lobbyClient.playAgain(GAME_NAME, matchID, {
         playerID: savedCredentials.playerID,
         credentials: savedCredentials.credential,
+        ...(G.standard ? { setupData: { ruleset: G.standard.version, experiments: G.standard.experiments, standardOptions: G.standard.options } } : {}),
       });
       const playerName = savedCredentials.playerName ?? getPlayerName(matchData, savedCredentials.playerID);
       const existingCredentials = loadCredentials(nextMatchID);

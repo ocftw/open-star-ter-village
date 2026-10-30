@@ -1,3 +1,6 @@
+import { feature, hasNode, mainJobs } from '@/game/standard/tree';
+import { enqueue, fillMarket } from '@/game/standard/engine';
+import { trackInitiation } from '@/game/standard/telemetry';
 import { ProjectBoardMutator, ProjectBoardSelector } from '@/game/store/slice/projectBoard';
 import { DeckMutator, DeckSelector } from '@/game/store/slice/deck';
 import { ProjectSlotMutator } from '@/game/store/slice/projectSlot/projectSlot';
@@ -54,7 +57,10 @@ export const createProject: GameMove<CreateProject> = ({ G, playerID }, projectC
   // player-chosen required position, never under an unrequired profession.
   const matchesRequirement = Object.keys(projectCard.requirements).includes(jobCard.name);
   const effectiveJobName = matchesRequirement ? jobCard.name : assignedJobName!;
-  ProjectSlotMutator.assignWorker(projectSlot, effectiveJobName, playerID, initialContributionValue);
+  // Source 3: v1 rewards an engineer card; v2 rewards filling one of the card's main jobs.
+  const source3 = hasNode(G, 'source-3') && (feature(G, 'sources') === 'engineer' ? jobCard.name === '工程師' : mainJobs(projectCard).includes(effectiveJobName));
+  const startValue = source3 ? 3 : initialContributionValue;
+  ProjectSlotMutator.assignWorker(projectSlot, effectiveJobName, playerID, G.standard ? Math.min(startValue, projectCard.requirements[effectiveJobName]) : startValue);
 
   // Refill job card
   const maxJobSlots = RuleSelector.getTableMaxJobSlots(G.rules);
@@ -63,6 +69,9 @@ export const createProject: GameMove<CreateProject> = ({ G, playerID }, projectC
   DeckMutator.draw(G.decks.jobs, refillCardNumber);
   JobSlotsMutator.addJobCards(G.table.jobSlots, jobCards);
 
+  if (G.standard) fillMarket(G);
+  trackInitiation(G, projectCard, playerID);
+  if (hasNode(G, 'government-4')) enqueue(G, 'government4', playerID, projectCard.id);
   const victoryPoints = RuleSelector.getActionVictoryPoints(G.rules, 'createProject');
   ScoreBoardMutator.add(G.table.scoreBoard, playerID, victoryPoints);
 

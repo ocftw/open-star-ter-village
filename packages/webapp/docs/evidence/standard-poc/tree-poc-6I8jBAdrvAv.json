@@ -1,0 +1,170 @@
+{
+  "ruleset": "tree-poc-v1",
+  "build": "56860bbb",
+  "players": 2,
+  "rounds": 7,
+  "completedProjectIds": [
+    "e5n9la8",
+    "ge30q5g",
+    "1dqb4e8",
+    "uh882co",
+    "pipang",
+    "coh08ao"
+  ],
+  "grown": [
+    "data-1",
+    "data-2",
+    "source-1",
+    "data-3",
+    "government-3",
+    "source-2"
+  ],
+  "remainingHearts": 4,
+  "scores": {
+    "0": 58,
+    "1": 63
+  },
+  "outcome": "星源樹甦醒中",
+  "finished": true,
+  "log": [
+    {
+      "round": 1,
+      "kind": "event",
+      "target": "人力釋出"
+    },
+    {
+      "round": 1,
+      "kind": "grow",
+      "playerId": "0",
+      "target": "data-1"
+    },
+    {
+      "round": 2,
+      "kind": "event",
+      "target": "四大自由"
+    },
+    {
+      "round": 2,
+      "kind": "grow",
+      "playerId": "0",
+      "target": "data-2"
+    },
+    {
+      "round": 2,
+      "kind": "complete",
+      "playerId": "1",
+      "target": "了解開源授權"
+    },
+    {
+      "round": 3,
+      "kind": "event",
+      "target": "數位政委"
+    },
+    {
+      "round": 3,
+      "kind": "digitalMinister",
+      "playerId": "1",
+      "target": "{\"projectId\":\"ge30q5g\",\"worker\":\"1\",\"jobName\":\"工程師\"}"
+    },
+    {
+      "round": 3,
+      "kind": "digitalMinister",
+      "playerId": "0",
+      "target": "{\"projectId\":\"1dqb4e8\",\"worker\":\"0\",\"jobName\":\"法務專家\"}"
+    },
+    {
+      "round": 3,
+      "kind": "grow",
+      "playerId": "1",
+      "target": "source-1"
+    },
+    {
+      "round": 4,
+      "kind": "event",
+      "target": "青年補助"
+    },
+    {
+      "round": 4,
+      "kind": "complete",
+      "playerId": "0",
+      "target": "口罩地圖"
+    },
+    {
+      "round": 4,
+      "kind": "complete",
+      "playerId": "1",
+      "target": "公共政策網路參與平台"
+    },
+    {
+      "round": 5,
+      "kind": "event",
+      "target": "斜槓青年"
+    },
+    {
+      "round": 5,
+      "kind": "grow",
+      "playerId": "0",
+      "target": "data-3"
+    },
+    {
+      "round": 5,
+      "kind": "grow",
+      "playerId": "0",
+      "target": "government-3"
+    },
+    {
+      "round": 5,
+      "kind": "complete",
+      "playerId": "1",
+      "target": "Open Hack Farm"
+    },
+    {
+      "round": 5,
+      "kind": "draw",
+      "playerId": "1",
+      "target": "{\"projectId\":\"\",\"pile\":\"advanced\"}"
+    },
+    {
+      "round": 6,
+      "kind": "event",
+      "target": "番茄醬工作法"
+    },
+    {
+      "round": 6,
+      "kind": "draw",
+      "playerId": "0",
+      "target": "{\"projectId\":\"\",\"pile\":\"advanced\"}"
+    },
+    {
+      "round": 6,
+      "kind": "grow",
+      "playerId": "1",
+      "target": "source-2"
+    },
+    {
+      "round": 7,
+      "kind": "event",
+      "target": "是芥末日"
+    },
+    {
+      "round": 7,
+      "kind": "complete",
+      "playerId": "0",
+      "target": "新酷音輸入法"
+    },
+    {
+      "round": 7,
+      "kind": "draw",
+      "playerId": "0",
+      "target": "{\"projectId\":\"\",\"pile\":\"advanced\"}"
+    },
+    {
+      "round": 7,
+      "kind": "complete",
+      "playerId": "1",
+      "target": "實價登錄到門牌"
+    }
+  ],
+  "exportedAt": "2026-10-26T03:39:47.671Z",
+  "durationSeconds": 1324
+}

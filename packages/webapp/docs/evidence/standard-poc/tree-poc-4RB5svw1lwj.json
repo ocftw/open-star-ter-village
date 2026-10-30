@@ -1,0 +1,169 @@
+{
+  "ruleset": "tree-poc-v1",
+  "build": "56860bbb",
+  "players": 4,
+  "rounds": 5,
+  "completedProjectIds": [
+    "qe3lecg",
+    "6tf9bk",
+    "49hprug",
+    "uo2b318",
+    "v4vdo18",
+    "gtu9seo",
+    "kst1tgg"
+  ],
+  "grown": [
+    "source-1",
+    "source-2",
+    "data-3",
+    "source-3",
+    "data-1",
+    "data-4"
+  ],
+  "remainingHearts": 4,
+  "scores": {
+    "0": 29,
+    "1": 37,
+    "2": 33,
+    "3": 36
+  },
+  "outcome": "星源樹甦醒中",
+  "finished": true,
+  "log": [
+    {
+      "round": 1,
+      "kind": "event",
+      "target": "番茄醬工作法"
+    },
+    {
+      "round": 1,
+      "kind": "grow",
+      "playerId": "0",
+      "target": "source-1"
+    },
+    {
+      "round": 1,
+      "kind": "grow",
+      "playerId": "1",
+      "target": "source-2"
+    },
+    {
+      "round": 1,
+      "kind": "complete",
+      "playerId": "3",
+      "target": "立法院會議直播"
+    },
+    {
+      "round": 2,
+      "kind": "event",
+      "target": "數位政委"
+    },
+    {
+      "round": 2,
+      "kind": "digitalMinister",
+      "playerId": "1",
+      "target": "{\"projectId\":\"v4vdo18\",\"worker\":\"1\",\"jobName\":\"議題工作者\"}"
+    },
+    {
+      "round": 3,
+      "kind": "event",
+      "target": "斜槓青年"
+    },
+    {
+      "round": 3,
+      "kind": "complete",
+      "playerId": "1",
+      "target": "OCF Lab"
+    },
+    {
+      "round": 3,
+      "kind": "complete",
+      "playerId": "2",
+      "target": "Notepad++"
+    },
+    {
+      "round": 4,
+      "kind": "event",
+      "target": "青年補助"
+    },
+    {
+      "round": 4,
+      "kind": "complete",
+      "playerId": "0",
+      "target": "資料申請小幫手"
+    },
+    {
+      "round": 4,
+      "kind": "draw",
+      "playerId": "0",
+      "target": "{\"projectId\":\"\",\"pile\":\"advanced\"}"
+    },
+    {
+      "round": 4,
+      "kind": "grow",
+      "playerId": "1",
+      "target": "data-3"
+    },
+    {
+      "round": 5,
+      "kind": "event",
+      "target": "是芥末日"
+    },
+    {
+      "round": 5,
+      "kind": "grow",
+      "playerId": "0",
+      "target": "source-3"
+    },
+    {
+      "round": 5,
+      "kind": "draw",
+      "playerId": "0",
+      "target": "{\"projectId\":\"\",\"pile\":\"advanced\"}"
+    },
+    {
+      "round": 5,
+      "kind": "complete",
+      "playerId": "1",
+      "target": "民意代表投票指南"
+    },
+    {
+      "round": 5,
+      "kind": "grow",
+      "playerId": "2",
+      "target": "data-1"
+    },
+    {
+      "round": 5,
+      "kind": "complete",
+      "playerId": "2",
+      "target": "口罩地圖"
+    },
+    {
+      "round": 5,
+      "kind": "draw",
+      "playerId": "2",
+      "target": "{\"projectId\":\"\",\"pile\":\"advanced\"}"
+    },
+    {
+      "round": 5,
+      "kind": "grow",
+      "playerId": "3",
+      "target": "data-4"
+    },
+    {
+      "round": 5,
+      "kind": "complete",
+      "playerId": "3",
+      "target": "政府資料開放平臺"
+    },
+    {
+      "round": 5,
+      "kind": "draw",
+      "playerId": "3",
+      "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+    }
+  ],
+  "exportedAt": "2026-10-26T03:01:39.496Z",
+  "durationSeconds": 2902
+}

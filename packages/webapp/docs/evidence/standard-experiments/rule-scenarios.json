@@ -1,0 +1,2646 @@
+{
+  "scenarios": [
+    {
+      "experiments": {
+        "government5": "existing",
+        "completionRewards": "fixed"
+      },
+      "options": [],
+      "reserves": {
+        "before": 1,
+        "afterAllocation": 1,
+        "afterSettlement": 1
+      },
+      "scores": {
+        "0": 0,
+        "1": 0
+      },
+      "completed": []
+    },
+    {
+      "experiments": {
+        "government5": "existing",
+        "completionRewards": "difficulty"
+      },
+      "options": [],
+      "reserves": {
+        "before": 1,
+        "afterAllocation": 1,
+        "afterSettlement": 1
+      },
+      "scores": {
+        "0": 0,
+        "1": 0
+      },
+      "completed": []
+    },
+    {
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "options": [
+        {
+          "label": "驗證專案 / 工程師 新增自己的方塊 · 庫存 −1",
+          "target": {
+            "projectId": "target",
+            "worker": "0",
+            "jobName": "工程師"
+          }
+        }
+      ],
+      "reserves": {
+        "before": 1,
+        "afterAllocation": 0,
+        "afterSettlement": 1
+      },
+      "scores": {
+        "0": 3,
+        "1": 3
+      },
+      "completed": [
+        "target"
+      ]
+    },
+    {
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      },
+      "options": [
+        {
+          "label": "驗證專案 / 工程師 新增自己的方塊 · 庫存 −1",
+          "target": {
+            "projectId": "target",
+            "worker": "0",
+            "jobName": "工程師"
+          }
+        }
+      ],
+      "reserves": {
+        "before": 1,
+        "afterAllocation": 0,
+        "afterSettlement": 1
+      },
+      "scores": {
+        "0": 5,
+        "1": 5
+      },
+      "completed": [
+        "target"
+      ]
+    }
+  ],
+  "games": [
+    {
+      "ruleset": "tree-poc-v1",
+      "experiments": {
+        "government5": "existing",
+        "completionRewards": "fixed"
+      },
+      "build": "local-experiments",
+      "players": 2,
+      "rounds": 7,
+      "completedProjectIds": [
+        "b6l2apo",
+        "9kvduag",
+        "2s9jbto",
+        "jgjba4o",
+        "g08fjlg"
+      ],
+      "grown": [
+        "data-1",
+        "data-2",
+        "source-2",
+        "source-1",
+        "data-3",
+        "source-4",
+        "data-4",
+        "government-3"
+      ],
+      "remainingHearts": 2,
+      "scores": {
+        "0": 52,
+        "1": 54
+      },
+      "outcome": "星源樹發光",
+      "finished": true,
+      "log": [
+        {
+          "round": 1,
+          "kind": "event",
+          "target": "番茄醬工作法"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "data-1"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "data-2"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "source-2"
+        },
+        {
+          "round": 2,
+          "kind": "event",
+          "target": "四大自由"
+        },
+        {
+          "round": 2,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "source-1"
+        },
+        {
+          "round": 3,
+          "kind": "event",
+          "target": "減薪休假啊"
+        },
+        {
+          "round": 4,
+          "kind": "event",
+          "target": "人力釋出"
+        },
+        {
+          "round": 4,
+          "kind": "complete",
+          "playerId": "1",
+          "target": "資料申請小幫手"
+        },
+        {
+          "round": 5,
+          "kind": "event",
+          "target": "抱歉了我的肝"
+        },
+        {
+          "round": 5,
+          "kind": "extraRecruit",
+          "playerId": "0",
+          "target": "{\"projectId\":\"2s9jbto\",\"jobName\":\"工程師\",\"jobCardId\":\"b3qs388\"}"
+        },
+        {
+          "round": 5,
+          "kind": "extraRecruit",
+          "playerId": "1",
+          "target": "{\"projectId\":\"jgjba4o\",\"jobName\":\"工程師\",\"jobCardId\":\"6kr44co\"}"
+        },
+        {
+          "round": 5,
+          "kind": "complete",
+          "playerId": "1",
+          "target": "來跟立委吃一碗"
+        },
+        {
+          "round": 6,
+          "kind": "event",
+          "target": "會計年度結算"
+        },
+        {
+          "round": 6,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "data-3"
+        },
+        {
+          "round": 6,
+          "kind": "complete",
+          "playerId": "0",
+          "target": "求職天眼通"
+        },
+        {
+          "round": 6,
+          "kind": "complete",
+          "playerId": "0",
+          "target": "開放館藏"
+        },
+        {
+          "round": 6,
+          "kind": "complete",
+          "playerId": "0",
+          "target": "新酷音輸入法"
+        },
+        {
+          "round": 6,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "source-4"
+        },
+        {
+          "round": 6,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "data-4"
+        },
+        {
+          "round": 6,
+          "kind": "draw",
+          "playerId": "1",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        },
+        {
+          "round": 7,
+          "kind": "event",
+          "target": "是芥末日"
+        },
+        {
+          "round": 7,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "government-3"
+        },
+        {
+          "round": 7,
+          "kind": "draw",
+          "playerId": "0",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        },
+        {
+          "round": 7,
+          "kind": "draw",
+          "playerId": "1",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        }
+      ],
+      "exportedAt": "2026-10-27T14:55:38.944Z",
+      "durationSeconds": 0,
+      "moves": 42
+    },
+    {
+      "ruleset": "tree-poc-v1",
+      "experiments": {
+        "government5": "existing",
+        "completionRewards": "fixed"
+      },
+      "build": "local-experiments",
+      "players": 3,
+      "rounds": 6,
+      "completedProjectIds": [
+        "s217el8",
+        "90kctsg",
+        "d8spe8",
+        "oqk61kg",
+        "dqpo2e",
+        "q5qhiu8",
+        "hre75lg",
+        "0l2do7g"
+      ],
+      "grown": [
+        "data-1",
+        "data-2",
+        "source-2",
+        "source-1",
+        "data-3",
+        "source-3",
+        "source-4",
+        "data-4",
+        "source-5",
+        "government-5"
+      ],
+      "remainingHearts": 0,
+      "scores": {
+        "0": 46,
+        "1": 50,
+        "2": 53
+      },
+      "outcome": "星源樹繁盛",
+      "finished": true,
+      "log": [
+        {
+          "round": 1,
+          "kind": "event",
+          "target": "GitHub 當機了"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "data-1"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "data-2"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "source-2"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "2",
+          "target": "source-1"
+        },
+        {
+          "round": 2,
+          "kind": "event",
+          "target": "會計年度結算"
+        },
+        {
+          "round": 3,
+          "kind": "event",
+          "target": "四大自由"
+        },
+        {
+          "round": 3,
+          "kind": "complete",
+          "playerId": "0",
+          "target": "Notepad++"
+        },
+        {
+          "round": 4,
+          "kind": "event",
+          "target": "人力釋出"
+        },
+        {
+          "round": 4,
+          "kind": "complete",
+          "playerId": "0",
+          "target": "新酷音輸入法"
+        },
+        {
+          "round": 4,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "data-3"
+        },
+        {
+          "round": 4,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "source-3"
+        },
+        {
+          "round": 4,
+          "kind": "complete",
+          "playerId": "1",
+          "target": "資料申請小幫手"
+        },
+        {
+          "round": 5,
+          "kind": "event",
+          "target": "斜槓青年"
+        },
+        {
+          "round": 5,
+          "kind": "complete",
+          "playerId": "0",
+          "target": "口罩地圖"
+        },
+        {
+          "round": 5,
+          "kind": "draw",
+          "playerId": "0",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        },
+        {
+          "round": 5,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "source-4"
+        },
+        {
+          "round": 5,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "data-4"
+        },
+        {
+          "round": 5,
+          "kind": "draw",
+          "playerId": "1",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        },
+        {
+          "round": 5,
+          "kind": "complete",
+          "playerId": "2",
+          "target": "立法院會議直播"
+        },
+        {
+          "round": 6,
+          "kind": "event",
+          "target": "是芥末日"
+        },
+        {
+          "round": 6,
+          "kind": "complete",
+          "playerId": "0",
+          "target": "了解開源授權"
+        },
+        {
+          "round": 6,
+          "kind": "draw",
+          "playerId": "0",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        },
+        {
+          "round": 6,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "source-5"
+        },
+        {
+          "round": 6,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "government-5"
+        },
+        {
+          "round": 6,
+          "kind": "draw",
+          "playerId": "1",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        },
+        {
+          "round": 6,
+          "kind": "complete",
+          "playerId": "2",
+          "target": "OPass"
+        },
+        {
+          "round": 6,
+          "kind": "complete",
+          "playerId": "2",
+          "target": "國民法官"
+        },
+        {
+          "round": 6,
+          "kind": "government5",
+          "playerId": "1",
+          "target": "{\"projectId\":\"0gq6gt\",\"worker\":\"1\",\"jobName\":\"文字工作者\"}"
+        },
+        {
+          "round": 6,
+          "kind": "government5",
+          "playerId": "1",
+          "target": "{\"projectId\":\"0gq6gt\",\"worker\":\"1\",\"jobName\":\"文字工作者\"}"
+        }
+      ],
+      "exportedAt": "2026-10-27T14:55:38.968Z",
+      "durationSeconds": 0,
+      "moves": 58
+    },
+    {
+      "ruleset": "tree-poc-v1",
+      "experiments": {
+        "government5": "existing",
+        "completionRewards": "fixed"
+      },
+      "build": "local-experiments",
+      "players": 4,
+      "rounds": 5,
+      "completedProjectIds": [
+        "c8k3org",
+        "o9glasg",
+        "msar8m8",
+        "cl5dtm8",
+        "vpa3mrg",
+        "g7g1bh",
+        "7hkejmg",
+        "2guh9m",
+        "14ca4uo"
+      ],
+      "grown": [
+        "data-1",
+        "data-2",
+        "source-2",
+        "source-1",
+        "data-3",
+        "source-3",
+        "source-4",
+        "data-4",
+        "source-5",
+        "government-5"
+      ],
+      "remainingHearts": 0,
+      "scores": {
+        "0": 34,
+        "1": 52,
+        "2": 41,
+        "3": 52
+      },
+      "outcome": "星源樹繁盛",
+      "finished": true,
+      "log": [
+        {
+          "round": 1,
+          "kind": "event",
+          "target": "GitHub 當機了"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "data-1"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "data-2"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "source-2"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "2",
+          "target": "source-1"
+        },
+        {
+          "round": 2,
+          "kind": "event",
+          "target": "數位政委"
+        },
+        {
+          "round": 2,
+          "kind": "digitalMinister",
+          "playerId": "1",
+          "target": "{\"projectId\":\"o9glasg\",\"worker\":\"1\",\"jobName\":\"工程師\"}"
+        },
+        {
+          "round": 2,
+          "kind": "digitalMinister",
+          "playerId": "2",
+          "target": "{\"projectId\":\"msar8m8\",\"worker\":\"2\",\"jobName\":\"美術設計\"}"
+        },
+        {
+          "round": 2,
+          "kind": "digitalMinister",
+          "playerId": "3",
+          "target": "{\"projectId\":\"c8k3org\",\"worker\":\"3\",\"jobName\":\"議題工作者\"}"
+        },
+        {
+          "round": 2,
+          "kind": "complete",
+          "playerId": "3",
+          "target": "求職天眼通"
+        },
+        {
+          "round": 3,
+          "kind": "event",
+          "target": "青年補助"
+        },
+        {
+          "round": 3,
+          "kind": "complete",
+          "playerId": "0",
+          "target": "環境感測器網路系統"
+        },
+        {
+          "round": 3,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "data-3"
+        },
+        {
+          "round": 3,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "source-3"
+        },
+        {
+          "round": 3,
+          "kind": "complete",
+          "playerId": "3",
+          "target": "OCF Lab"
+        },
+        {
+          "round": 3,
+          "kind": "complete",
+          "playerId": "3",
+          "target": "資料申請小幫手"
+        },
+        {
+          "round": 4,
+          "kind": "event",
+          "target": "又老又窮啊"
+        },
+        {
+          "round": 4,
+          "kind": "complete",
+          "playerId": "1",
+          "target": "Notepad++"
+        },
+        {
+          "round": 4,
+          "kind": "draw",
+          "playerId": "1",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        },
+        {
+          "round": 4,
+          "kind": "draw",
+          "playerId": "2",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        },
+        {
+          "round": 5,
+          "kind": "event",
+          "target": "是芥末日"
+        },
+        {
+          "round": 5,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "source-4"
+        },
+        {
+          "round": 5,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "data-4"
+        },
+        {
+          "round": 5,
+          "kind": "complete",
+          "playerId": "0",
+          "target": "Common Voice"
+        },
+        {
+          "round": 5,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "source-5"
+        },
+        {
+          "round": 5,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "government-5"
+        },
+        {
+          "round": 5,
+          "kind": "draw",
+          "playerId": "1",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        },
+        {
+          "round": 5,
+          "kind": "complete",
+          "playerId": "2",
+          "target": "新酷音輸入法"
+        },
+        {
+          "round": 5,
+          "kind": "complete",
+          "playerId": "2",
+          "target": "OPass"
+        },
+        {
+          "round": 5,
+          "kind": "government5",
+          "playerId": "1",
+          "target": "{\"projectId\":\"9g25rvg\",\"worker\":\"1\",\"jobName\":\"美術設計\"}"
+        },
+        {
+          "round": 5,
+          "kind": "government5",
+          "playerId": "1",
+          "target": "{\"projectId\":\"9g25rvg\",\"worker\":\"1\",\"jobName\":\"美術設計\"}"
+        },
+        {
+          "round": 5,
+          "kind": "government5",
+          "playerId": "1",
+          "target": "{\"projectId\":\"9g25rvg\",\"worker\":\"1\",\"jobName\":\"美術設計\"}"
+        },
+        {
+          "round": 5,
+          "kind": "complete",
+          "playerId": "3",
+          "target": "口罩地圖"
+        },
+        {
+          "round": 5,
+          "kind": "government5",
+          "playerId": "3",
+          "target": "{\"projectId\":\"ak100kg\",\"worker\":\"3\",\"jobName\":\"文字工作者\"}"
+        },
+        {
+          "round": 5,
+          "kind": "government5",
+          "playerId": "3",
+          "target": "{\"projectId\":\"ak100kg\",\"worker\":\"3\",\"jobName\":\"文字工作者\"}"
+        },
+        {
+          "round": 5,
+          "kind": "draw",
+          "playerId": "3",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        },
+        {
+          "round": 5,
+          "kind": "draw",
+          "playerId": "3",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        }
+      ],
+      "exportedAt": "2026-10-27T14:55:38.993Z",
+      "durationSeconds": 0,
+      "moves": 73
+    },
+    {
+      "ruleset": "tree-poc-v1",
+      "experiments": {
+        "government5": "existing",
+        "completionRewards": "difficulty"
+      },
+      "build": "local-experiments",
+      "players": 2,
+      "rounds": 7,
+      "completedProjectIds": [
+        "b6l2apo",
+        "tekjarg",
+        "2s9jbto"
+      ],
+      "grown": [
+        "data-1",
+        "data-2",
+        "source-2",
+        "source-1",
+        "data-3",
+        "government-3"
+      ],
+      "remainingHearts": 4,
+      "scores": {
+        "0": 51,
+        "1": 35
+      },
+      "outcome": "星源樹甦醒中",
+      "finished": true,
+      "log": [
+        {
+          "round": 1,
+          "kind": "event",
+          "target": "番茄醬工作法"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "data-1"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "data-2"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "source-2"
+        },
+        {
+          "round": 2,
+          "kind": "event",
+          "target": "四大自由"
+        },
+        {
+          "round": 2,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "source-1"
+        },
+        {
+          "round": 3,
+          "kind": "event",
+          "target": "減薪休假啊"
+        },
+        {
+          "round": 4,
+          "kind": "event",
+          "target": "人力釋出"
+        },
+        {
+          "round": 4,
+          "kind": "complete",
+          "playerId": "0",
+          "target": "資料申請小幫手"
+        },
+        {
+          "round": 5,
+          "kind": "event",
+          "target": "抱歉了我的肝"
+        },
+        {
+          "round": 5,
+          "kind": "extraRecruit",
+          "playerId": "0",
+          "target": "{\"projectId\":\"tekjarg\",\"jobName\":\"工程師\",\"jobCardId\":\"6kr44co\"}"
+        },
+        {
+          "round": 5,
+          "kind": "extraRecruit",
+          "playerId": "1",
+          "target": "{\"projectId\":\"vinhv1o\",\"jobName\":\"美術設計\",\"jobCardId\":\"og0s7\"}"
+        },
+        {
+          "round": 6,
+          "kind": "event",
+          "target": "會計年度結算"
+        },
+        {
+          "round": 6,
+          "kind": "complete",
+          "playerId": "0",
+          "target": "真的假的"
+        },
+        {
+          "round": 6,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "data-3"
+        },
+        {
+          "round": 7,
+          "kind": "event",
+          "target": "是芥末日"
+        },
+        {
+          "round": 7,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "government-3"
+        },
+        {
+          "round": 7,
+          "kind": "complete",
+          "playerId": "0",
+          "target": "求職天眼通"
+        },
+        {
+          "round": 7,
+          "kind": "draw",
+          "playerId": "1",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        }
+      ],
+      "exportedAt": "2026-10-27T14:55:39.010Z",
+      "durationSeconds": 0,
+      "moves": 40
+    },
+    {
+      "ruleset": "tree-poc-v1",
+      "experiments": {
+        "government5": "existing",
+        "completionRewards": "difficulty"
+      },
+      "build": "local-experiments",
+      "players": 3,
+      "rounds": 6,
+      "completedProjectIds": [
+        "s217el8",
+        "1fkebgg",
+        "i080th",
+        "s1lerug",
+        "90kctsg"
+      ],
+      "grown": [
+        "data-1",
+        "data-2",
+        "source-2",
+        "source-1",
+        "data-3",
+        "government-3",
+        "source-4",
+        "government-4"
+      ],
+      "remainingHearts": 2,
+      "scores": {
+        "0": 44,
+        "1": 37,
+        "2": 45
+      },
+      "outcome": "星源樹發光",
+      "finished": true,
+      "log": [
+        {
+          "round": 1,
+          "kind": "event",
+          "target": "GitHub 當機了"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "data-1"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "data-2"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "source-2"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "2",
+          "target": "source-1"
+        },
+        {
+          "round": 2,
+          "kind": "event",
+          "target": "會計年度結算"
+        },
+        {
+          "round": 3,
+          "kind": "event",
+          "target": "四大自由"
+        },
+        {
+          "round": 4,
+          "kind": "event",
+          "target": "人力釋出"
+        },
+        {
+          "round": 4,
+          "kind": "complete",
+          "playerId": "0",
+          "target": "Notepad++"
+        },
+        {
+          "round": 4,
+          "kind": "complete",
+          "playerId": "2",
+          "target": "Democracy OS"
+        },
+        {
+          "round": 5,
+          "kind": "event",
+          "target": "斜槓青年"
+        },
+        {
+          "round": 5,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "data-3"
+        },
+        {
+          "round": 5,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "government-3"
+        },
+        {
+          "round": 5,
+          "kind": "complete",
+          "playerId": "1",
+          "target": "台灣賄選實價登錄地圖"
+        },
+        {
+          "round": 5,
+          "kind": "draw",
+          "playerId": "1",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        },
+        {
+          "round": 5,
+          "kind": "draw",
+          "playerId": "2",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        },
+        {
+          "round": 6,
+          "kind": "event",
+          "target": "是芥末日"
+        },
+        {
+          "round": 6,
+          "kind": "complete",
+          "playerId": "0",
+          "target": "Inkscape"
+        },
+        {
+          "round": 6,
+          "kind": "draw",
+          "playerId": "0",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        },
+        {
+          "round": 6,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "source-4"
+        },
+        {
+          "round": 6,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "government-4"
+        },
+        {
+          "round": 6,
+          "kind": "government4",
+          "playerId": "2",
+          "target": "{\"projectId\":\"s0ihohg\",\"jobName\":\"美術設計\",\"jobCardId\":\"8hqitq\"}"
+        },
+        {
+          "round": 6,
+          "kind": "complete",
+          "playerId": "2",
+          "target": "新酷音輸入法"
+        },
+        {
+          "round": 6,
+          "kind": "draw",
+          "playerId": "2",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        }
+      ],
+      "exportedAt": "2026-10-27T14:55:39.031Z",
+      "durationSeconds": 0,
+      "moves": 55
+    },
+    {
+      "ruleset": "tree-poc-v1",
+      "experiments": {
+        "government5": "existing",
+        "completionRewards": "difficulty"
+      },
+      "build": "local-experiments",
+      "players": 4,
+      "rounds": 5,
+      "completedProjectIds": [
+        "msar8m8",
+        "ehn5788",
+        "i92fvqg",
+        "g7g1bh",
+        "mmtg2ko"
+      ],
+      "grown": [
+        "data-1",
+        "data-2",
+        "source-2",
+        "source-1",
+        "data-3",
+        "government-3",
+        "source-4",
+        "government-4"
+      ],
+      "remainingHearts": 2,
+      "scores": {
+        "0": 34,
+        "1": 32,
+        "2": 38,
+        "3": 37
+      },
+      "outcome": "星源樹發光",
+      "finished": true,
+      "log": [
+        {
+          "round": 1,
+          "kind": "event",
+          "target": "GitHub 當機了"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "data-1"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "data-2"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "source-2"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "2",
+          "target": "source-1"
+        },
+        {
+          "round": 2,
+          "kind": "event",
+          "target": "數位政委"
+        },
+        {
+          "round": 2,
+          "kind": "digitalMinister",
+          "playerId": "1",
+          "target": "{\"projectId\":\"i92fvqg\",\"worker\":\"1\",\"jobName\":\"工程師\"}"
+        },
+        {
+          "round": 2,
+          "kind": "digitalMinister",
+          "playerId": "2",
+          "target": "{\"projectId\":\"msar8m8\",\"worker\":\"2\",\"jobName\":\"美術設計\"}"
+        },
+        {
+          "round": 2,
+          "kind": "digitalMinister",
+          "playerId": "3",
+          "target": "{\"projectId\":\"ehn5788\",\"worker\":\"3\",\"jobName\":\"美術設計\"}"
+        },
+        {
+          "round": 3,
+          "kind": "event",
+          "target": "青年補助"
+        },
+        {
+          "round": 3,
+          "kind": "complete",
+          "playerId": "2",
+          "target": "OCF Lab"
+        },
+        {
+          "round": 3,
+          "kind": "complete",
+          "playerId": "3",
+          "target": "洋蔥瀏覽器"
+        },
+        {
+          "round": 3,
+          "kind": "draw",
+          "playerId": "3",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        },
+        {
+          "round": 4,
+          "kind": "event",
+          "target": "又老又窮啊"
+        },
+        {
+          "round": 4,
+          "kind": "complete",
+          "playerId": "2",
+          "target": "台灣賄選實價登錄地圖"
+        },
+        {
+          "round": 4,
+          "kind": "draw",
+          "playerId": "3",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        },
+        {
+          "round": 5,
+          "kind": "event",
+          "target": "是芥末日"
+        },
+        {
+          "round": 5,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "data-3"
+        },
+        {
+          "round": 5,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "government-3"
+        },
+        {
+          "round": 5,
+          "kind": "complete",
+          "playerId": "0",
+          "target": "Common Voice"
+        },
+        {
+          "round": 5,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "source-4"
+        },
+        {
+          "round": 5,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "government-4"
+        },
+        {
+          "round": 5,
+          "kind": "government4",
+          "playerId": "1",
+          "target": "{\"projectId\":\"mmtg2ko\",\"jobName\":\"文字工作者\",\"jobCardId\":\"teu2hso\"}"
+        },
+        {
+          "round": 5,
+          "kind": "draw",
+          "playerId": "1",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        },
+        {
+          "round": 5,
+          "kind": "government4",
+          "playerId": "2",
+          "target": "{\"projectId\":\"ms7ko6\",\"jobName\":\"議題工作者\",\"jobCardId\":\"nip9nuo\"}"
+        },
+        {
+          "round": 5,
+          "kind": "complete",
+          "playerId": "2",
+          "target": "實價登錄到門牌"
+        },
+        {
+          "round": 5,
+          "kind": "draw",
+          "playerId": "2",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        },
+        {
+          "round": 5,
+          "kind": "government4",
+          "playerId": "3",
+          "target": "{\"projectId\":\"ms7ko6\",\"jobName\":\"公務人員\",\"jobCardId\":\"hkersb8\"}"
+        },
+        {
+          "round": 5,
+          "kind": "draw",
+          "playerId": "3",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        }
+      ],
+      "exportedAt": "2026-10-27T14:55:39.054Z",
+      "durationSeconds": 0,
+      "moves": 64
+    },
+    {
+      "ruleset": "tree-poc-v1",
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "build": "local-experiments",
+      "players": 2,
+      "rounds": 7,
+      "completedProjectIds": [
+        "b6l2apo",
+        "9kvduag",
+        "2s9jbto",
+        "jgjba4o",
+        "g08fjlg"
+      ],
+      "grown": [
+        "data-1",
+        "data-2",
+        "source-2",
+        "source-1",
+        "data-3",
+        "source-4",
+        "data-4",
+        "government-3"
+      ],
+      "remainingHearts": 2,
+      "scores": {
+        "0": 52,
+        "1": 54
+      },
+      "outcome": "星源樹發光",
+      "finished": true,
+      "log": [
+        {
+          "round": 1,
+          "kind": "event",
+          "target": "番茄醬工作法"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "data-1"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "data-2"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "source-2"
+        },
+        {
+          "round": 2,
+          "kind": "event",
+          "target": "四大自由"
+        },
+        {
+          "round": 2,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "source-1"
+        },
+        {
+          "round": 3,
+          "kind": "event",
+          "target": "減薪休假啊"
+        },
+        {
+          "round": 4,
+          "kind": "event",
+          "target": "人力釋出"
+        },
+        {
+          "round": 4,
+          "kind": "complete",
+          "playerId": "1",
+          "target": "資料申請小幫手"
+        },
+        {
+          "round": 5,
+          "kind": "event",
+          "target": "抱歉了我的肝"
+        },
+        {
+          "round": 5,
+          "kind": "extraRecruit",
+          "playerId": "0",
+          "target": "{\"projectId\":\"2s9jbto\",\"jobName\":\"工程師\",\"jobCardId\":\"b3qs388\"}"
+        },
+        {
+          "round": 5,
+          "kind": "extraRecruit",
+          "playerId": "1",
+          "target": "{\"projectId\":\"jgjba4o\",\"jobName\":\"工程師\",\"jobCardId\":\"6kr44co\"}"
+        },
+        {
+          "round": 5,
+          "kind": "complete",
+          "playerId": "1",
+          "target": "來跟立委吃一碗"
+        },
+        {
+          "round": 6,
+          "kind": "event",
+          "target": "會計年度結算"
+        },
+        {
+          "round": 6,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "data-3"
+        },
+        {
+          "round": 6,
+          "kind": "complete",
+          "playerId": "0",
+          "target": "求職天眼通"
+        },
+        {
+          "round": 6,
+          "kind": "complete",
+          "playerId": "0",
+          "target": "開放館藏"
+        },
+        {
+          "round": 6,
+          "kind": "complete",
+          "playerId": "0",
+          "target": "新酷音輸入法"
+        },
+        {
+          "round": 6,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "source-4"
+        },
+        {
+          "round": 6,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "data-4"
+        },
+        {
+          "round": 6,
+          "kind": "draw",
+          "playerId": "1",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        },
+        {
+          "round": 7,
+          "kind": "event",
+          "target": "是芥末日"
+        },
+        {
+          "round": 7,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "government-3"
+        },
+        {
+          "round": 7,
+          "kind": "draw",
+          "playerId": "0",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        },
+        {
+          "round": 7,
+          "kind": "draw",
+          "playerId": "1",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        }
+      ],
+      "exportedAt": "2026-10-27T14:55:39.070Z",
+      "durationSeconds": 0,
+      "moves": 42
+    },
+    {
+      "ruleset": "tree-poc-v1",
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "build": "local-experiments",
+      "players": 3,
+      "rounds": 6,
+      "completedProjectIds": [
+        "s217el8",
+        "90kctsg",
+        "d8spe8",
+        "oqk61kg",
+        "dqpo2e",
+        "q5qhiu8",
+        "hre75lg",
+        "0l2do7g",
+        "0gq6gt"
+      ],
+      "grown": [
+        "data-1",
+        "data-2",
+        "source-2",
+        "source-1",
+        "data-3",
+        "source-3",
+        "source-4",
+        "data-4",
+        "source-5",
+        "government-5"
+      ],
+      "remainingHearts": 0,
+      "scores": {
+        "0": 46,
+        "1": 56,
+        "2": 58
+      },
+      "outcome": "星源樹繁盛",
+      "finished": true,
+      "log": [
+        {
+          "round": 1,
+          "kind": "event",
+          "target": "GitHub 當機了"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "data-1"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "data-2"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "source-2"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "2",
+          "target": "source-1"
+        },
+        {
+          "round": 2,
+          "kind": "event",
+          "target": "會計年度結算"
+        },
+        {
+          "round": 3,
+          "kind": "event",
+          "target": "四大自由"
+        },
+        {
+          "round": 3,
+          "kind": "complete",
+          "playerId": "0",
+          "target": "Notepad++"
+        },
+        {
+          "round": 4,
+          "kind": "event",
+          "target": "人力釋出"
+        },
+        {
+          "round": 4,
+          "kind": "complete",
+          "playerId": "0",
+          "target": "新酷音輸入法"
+        },
+        {
+          "round": 4,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "data-3"
+        },
+        {
+          "round": 4,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "source-3"
+        },
+        {
+          "round": 4,
+          "kind": "complete",
+          "playerId": "1",
+          "target": "資料申請小幫手"
+        },
+        {
+          "round": 5,
+          "kind": "event",
+          "target": "斜槓青年"
+        },
+        {
+          "round": 5,
+          "kind": "complete",
+          "playerId": "0",
+          "target": "口罩地圖"
+        },
+        {
+          "round": 5,
+          "kind": "draw",
+          "playerId": "0",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        },
+        {
+          "round": 5,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "source-4"
+        },
+        {
+          "round": 5,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "data-4"
+        },
+        {
+          "round": 5,
+          "kind": "draw",
+          "playerId": "1",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        },
+        {
+          "round": 5,
+          "kind": "complete",
+          "playerId": "2",
+          "target": "立法院會議直播"
+        },
+        {
+          "round": 6,
+          "kind": "event",
+          "target": "是芥末日"
+        },
+        {
+          "round": 6,
+          "kind": "complete",
+          "playerId": "0",
+          "target": "了解開源授權"
+        },
+        {
+          "round": 6,
+          "kind": "draw",
+          "playerId": "0",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        },
+        {
+          "round": 6,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "source-5"
+        },
+        {
+          "round": 6,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "government-5"
+        },
+        {
+          "round": 6,
+          "kind": "draw",
+          "playerId": "1",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        },
+        {
+          "round": 6,
+          "kind": "complete",
+          "playerId": "2",
+          "target": "OPass"
+        },
+        {
+          "round": 6,
+          "kind": "complete",
+          "playerId": "2",
+          "target": "國民法官"
+        },
+        {
+          "round": 6,
+          "kind": "government5",
+          "playerId": "1",
+          "target": "{\"projectId\":\"0gq6gt\",\"worker\":\"1\",\"jobName\":\"文字工作者\"}"
+        },
+        {
+          "round": 6,
+          "kind": "government5",
+          "playerId": "1",
+          "target": "{\"projectId\":\"0gq6gt\",\"worker\":\"1\",\"jobName\":\"文字工作者\"}"
+        },
+        {
+          "round": 6,
+          "kind": "government5",
+          "playerId": "1",
+          "target": "{\"projectId\":\"0gq6gt\",\"worker\":\"1\",\"jobName\":\"工程師\"}"
+        },
+        {
+          "round": 6,
+          "kind": "government5",
+          "playerId": "2",
+          "target": "{\"projectId\":\"0gq6gt\",\"worker\":\"2\",\"jobName\":\"工程師\"}"
+        },
+        {
+          "round": 6,
+          "kind": "government5",
+          "playerId": "2",
+          "target": "{\"projectId\":\"0gq6gt\",\"worker\":\"2\",\"jobName\":\"議題工作者\"}"
+        },
+        {
+          "round": 6,
+          "kind": "government5",
+          "playerId": "2",
+          "target": "{\"projectId\":\"0gq6gt\",\"worker\":\"2\",\"jobName\":\"議題工作者\"}"
+        },
+        {
+          "round": 6,
+          "kind": "government5",
+          "playerId": "2",
+          "target": "{\"projectId\":\"247fq7o\",\"worker\":\"2\",\"jobName\":\"公務人員\"}"
+        },
+        {
+          "round": 6,
+          "kind": "complete",
+          "playerId": "2",
+          "target": "國家寶藏"
+        },
+        {
+          "round": 6,
+          "kind": "government5",
+          "playerId": "1",
+          "target": "{\"projectId\":\"247fq7o\",\"worker\":\"1\",\"jobName\":\"議題工作者\"}"
+        },
+        {
+          "round": 6,
+          "kind": "government5",
+          "playerId": "1",
+          "target": "{\"projectId\":\"247fq7o\",\"worker\":\"1\",\"jobName\":\"議題工作者\"}"
+        }
+      ],
+      "exportedAt": "2026-10-27T14:55:39.092Z",
+      "durationSeconds": 0,
+      "moves": 65
+    },
+    {
+      "ruleset": "tree-poc-v1",
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "fixed"
+      },
+      "build": "local-experiments",
+      "players": 4,
+      "rounds": 5,
+      "completedProjectIds": [
+        "c8k3org",
+        "o9glasg",
+        "msar8m8",
+        "cl5dtm8",
+        "vpa3mrg",
+        "g7g1bh",
+        "7hkejmg",
+        "2guh9m",
+        "a3dj0jo",
+        "lgpihgo",
+        "9g25rvg",
+        "14ca4uo"
+      ],
+      "grown": [
+        "data-1",
+        "data-2",
+        "source-2",
+        "source-1",
+        "data-3",
+        "source-3",
+        "source-4",
+        "data-4",
+        "source-5",
+        "government-5"
+      ],
+      "remainingHearts": 0,
+      "scores": {
+        "0": 41,
+        "1": 58,
+        "2": 60,
+        "3": 53
+      },
+      "outcome": "星源樹繁盛",
+      "finished": true,
+      "log": [
+        {
+          "round": 1,
+          "kind": "event",
+          "target": "GitHub 當機了"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "data-1"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "data-2"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "source-2"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "2",
+          "target": "source-1"
+        },
+        {
+          "round": 2,
+          "kind": "event",
+          "target": "數位政委"
+        },
+        {
+          "round": 2,
+          "kind": "digitalMinister",
+          "playerId": "1",
+          "target": "{\"projectId\":\"o9glasg\",\"worker\":\"1\",\"jobName\":\"工程師\"}"
+        },
+        {
+          "round": 2,
+          "kind": "digitalMinister",
+          "playerId": "2",
+          "target": "{\"projectId\":\"msar8m8\",\"worker\":\"2\",\"jobName\":\"美術設計\"}"
+        },
+        {
+          "round": 2,
+          "kind": "digitalMinister",
+          "playerId": "3",
+          "target": "{\"projectId\":\"c8k3org\",\"worker\":\"3\",\"jobName\":\"議題工作者\"}"
+        },
+        {
+          "round": 2,
+          "kind": "complete",
+          "playerId": "3",
+          "target": "求職天眼通"
+        },
+        {
+          "round": 3,
+          "kind": "event",
+          "target": "青年補助"
+        },
+        {
+          "round": 3,
+          "kind": "complete",
+          "playerId": "0",
+          "target": "環境感測器網路系統"
+        },
+        {
+          "round": 3,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "data-3"
+        },
+        {
+          "round": 3,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "source-3"
+        },
+        {
+          "round": 3,
+          "kind": "complete",
+          "playerId": "3",
+          "target": "OCF Lab"
+        },
+        {
+          "round": 3,
+          "kind": "complete",
+          "playerId": "3",
+          "target": "資料申請小幫手"
+        },
+        {
+          "round": 4,
+          "kind": "event",
+          "target": "又老又窮啊"
+        },
+        {
+          "round": 4,
+          "kind": "complete",
+          "playerId": "1",
+          "target": "Notepad++"
+        },
+        {
+          "round": 4,
+          "kind": "draw",
+          "playerId": "1",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        },
+        {
+          "round": 4,
+          "kind": "draw",
+          "playerId": "2",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        },
+        {
+          "round": 5,
+          "kind": "event",
+          "target": "是芥末日"
+        },
+        {
+          "round": 5,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "source-4"
+        },
+        {
+          "round": 5,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "data-4"
+        },
+        {
+          "round": 5,
+          "kind": "complete",
+          "playerId": "0",
+          "target": "Common Voice"
+        },
+        {
+          "round": 5,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "source-5"
+        },
+        {
+          "round": 5,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "government-5"
+        },
+        {
+          "round": 5,
+          "kind": "draw",
+          "playerId": "1",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        },
+        {
+          "round": 5,
+          "kind": "complete",
+          "playerId": "2",
+          "target": "新酷音輸入法"
+        },
+        {
+          "round": 5,
+          "kind": "complete",
+          "playerId": "2",
+          "target": "OPass"
+        },
+        {
+          "round": 5,
+          "kind": "government5",
+          "playerId": "2",
+          "target": "{\"projectId\":\"a3dj0jo\",\"worker\":\"2\",\"jobName\":\"工程師\"}"
+        },
+        {
+          "round": 5,
+          "kind": "government5",
+          "playerId": "2",
+          "target": "{\"projectId\":\"a3dj0jo\",\"worker\":\"2\",\"jobName\":\"工程師\"}"
+        },
+        {
+          "round": 5,
+          "kind": "government5",
+          "playerId": "2",
+          "target": "{\"projectId\":\"a3dj0jo\",\"worker\":\"2\",\"jobName\":\"工程師\"}"
+        },
+        {
+          "round": 5,
+          "kind": "government5",
+          "playerId": "2",
+          "target": "{\"projectId\":\"a3dj0jo\",\"worker\":\"2\",\"jobName\":\"工程師\"}"
+        },
+        {
+          "round": 5,
+          "kind": "source4",
+          "playerId": "2",
+          "target": "{\"projectId\":\"a3dj0jo\",\"worker\":\"2\",\"jobName\":\"工程師\"}"
+        },
+        {
+          "round": 5,
+          "kind": "government5",
+          "playerId": "1",
+          "target": "{\"projectId\":\"9g25rvg\",\"worker\":\"1\",\"jobName\":\"美術設計\"}"
+        },
+        {
+          "round": 5,
+          "kind": "government5",
+          "playerId": "1",
+          "target": "{\"projectId\":\"9g25rvg\",\"worker\":\"1\",\"jobName\":\"美術設計\"}"
+        },
+        {
+          "round": 5,
+          "kind": "government5",
+          "playerId": "1",
+          "target": "{\"projectId\":\"9g25rvg\",\"worker\":\"1\",\"jobName\":\"美術設計\"}"
+        },
+        {
+          "round": 5,
+          "kind": "complete",
+          "playerId": "2",
+          "target": "政府資料開放平臺"
+        },
+        {
+          "round": 5,
+          "kind": "government5",
+          "playerId": "2",
+          "target": "{\"projectId\":\"lgpihgo\",\"worker\":\"2\",\"jobName\":\"工程師\"}"
+        },
+        {
+          "round": 5,
+          "kind": "government5",
+          "playerId": "2",
+          "target": "{\"projectId\":\"lgpihgo\",\"worker\":\"2\",\"jobName\":\"工程師\"}"
+        },
+        {
+          "round": 5,
+          "kind": "government5",
+          "playerId": "2",
+          "target": "{\"projectId\":\"lgpihgo\",\"worker\":\"2\",\"jobName\":\"工程師\"}"
+        },
+        {
+          "round": 5,
+          "kind": "government5",
+          "playerId": "2",
+          "target": "{\"projectId\":\"9g25rvg\",\"worker\":\"2\",\"jobName\":\"工程師\"}"
+        },
+        {
+          "round": 5,
+          "kind": "complete",
+          "playerId": "2",
+          "target": "開放館藏"
+        },
+        {
+          "round": 5,
+          "kind": "source4",
+          "playerId": "2",
+          "target": "{\"projectId\":\"9g25rvg\",\"worker\":\"2\",\"jobName\":\"工程師\"}"
+        },
+        {
+          "round": 5,
+          "kind": "government5",
+          "playerId": "0",
+          "target": "{\"projectId\":\"9g25rvg\",\"worker\":\"0\",\"jobName\":\"工程師\"}"
+        },
+        {
+          "round": 5,
+          "kind": "complete",
+          "playerId": "0",
+          "target": "來跟立委吃一碗"
+        },
+        {
+          "round": 5,
+          "kind": "government5",
+          "playerId": "1",
+          "target": "{\"projectId\":\"omg19j8\",\"worker\":\"1\",\"jobName\":\"美術設計\"}"
+        },
+        {
+          "round": 5,
+          "kind": "government5",
+          "playerId": "1",
+          "target": "{\"projectId\":\"omg19j8\",\"worker\":\"1\",\"jobName\":\"美術設計\"}"
+        },
+        {
+          "round": 5,
+          "kind": "complete",
+          "playerId": "3",
+          "target": "口罩地圖"
+        },
+        {
+          "round": 5,
+          "kind": "government5",
+          "playerId": "3",
+          "target": "{\"projectId\":\"ak100kg\",\"worker\":\"3\",\"jobName\":\"文字工作者\"}"
+        },
+        {
+          "round": 5,
+          "kind": "government5",
+          "playerId": "3",
+          "target": "{\"projectId\":\"ak100kg\",\"worker\":\"3\",\"jobName\":\"文字工作者\"}"
+        },
+        {
+          "round": 5,
+          "kind": "government5",
+          "playerId": "3",
+          "target": "{\"projectId\":\"ak100kg\",\"worker\":\"3\",\"jobName\":\"工程師\"}"
+        },
+        {
+          "round": 5,
+          "kind": "government5",
+          "playerId": "3",
+          "target": "{\"projectId\":\"ak100kg\",\"worker\":\"3\",\"jobName\":\"工程師\"}"
+        },
+        {
+          "round": 5,
+          "kind": "draw",
+          "playerId": "3",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        },
+        {
+          "round": 5,
+          "kind": "draw",
+          "playerId": "3",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        }
+      ],
+      "exportedAt": "2026-10-27T14:55:39.119Z",
+      "durationSeconds": 0,
+      "moves": 88
+    },
+    {
+      "ruleset": "tree-poc-v1",
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      },
+      "build": "local-experiments",
+      "players": 2,
+      "rounds": 7,
+      "completedProjectIds": [
+        "b6l2apo",
+        "tekjarg",
+        "2s9jbto"
+      ],
+      "grown": [
+        "data-1",
+        "data-2",
+        "source-2",
+        "source-1",
+        "data-3",
+        "government-3"
+      ],
+      "remainingHearts": 4,
+      "scores": {
+        "0": 51,
+        "1": 35
+      },
+      "outcome": "星源樹甦醒中",
+      "finished": true,
+      "log": [
+        {
+          "round": 1,
+          "kind": "event",
+          "target": "番茄醬工作法"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "data-1"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "data-2"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "source-2"
+        },
+        {
+          "round": 2,
+          "kind": "event",
+          "target": "四大自由"
+        },
+        {
+          "round": 2,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "source-1"
+        },
+        {
+          "round": 3,
+          "kind": "event",
+          "target": "減薪休假啊"
+        },
+        {
+          "round": 4,
+          "kind": "event",
+          "target": "人力釋出"
+        },
+        {
+          "round": 4,
+          "kind": "complete",
+          "playerId": "0",
+          "target": "資料申請小幫手"
+        },
+        {
+          "round": 5,
+          "kind": "event",
+          "target": "抱歉了我的肝"
+        },
+        {
+          "round": 5,
+          "kind": "extraRecruit",
+          "playerId": "0",
+          "target": "{\"projectId\":\"tekjarg\",\"jobName\":\"工程師\",\"jobCardId\":\"6kr44co\"}"
+        },
+        {
+          "round": 5,
+          "kind": "extraRecruit",
+          "playerId": "1",
+          "target": "{\"projectId\":\"vinhv1o\",\"jobName\":\"美術設計\",\"jobCardId\":\"og0s7\"}"
+        },
+        {
+          "round": 6,
+          "kind": "event",
+          "target": "會計年度結算"
+        },
+        {
+          "round": 6,
+          "kind": "complete",
+          "playerId": "0",
+          "target": "真的假的"
+        },
+        {
+          "round": 6,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "data-3"
+        },
+        {
+          "round": 7,
+          "kind": "event",
+          "target": "是芥末日"
+        },
+        {
+          "round": 7,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "government-3"
+        },
+        {
+          "round": 7,
+          "kind": "complete",
+          "playerId": "0",
+          "target": "求職天眼通"
+        },
+        {
+          "round": 7,
+          "kind": "draw",
+          "playerId": "1",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        }
+      ],
+      "exportedAt": "2026-10-27T14:55:39.134Z",
+      "durationSeconds": 0,
+      "moves": 40
+    },
+    {
+      "ruleset": "tree-poc-v1",
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      },
+      "build": "local-experiments",
+      "players": 3,
+      "rounds": 6,
+      "completedProjectIds": [
+        "s217el8",
+        "1fkebgg",
+        "i080th",
+        "s1lerug",
+        "90kctsg"
+      ],
+      "grown": [
+        "data-1",
+        "data-2",
+        "source-2",
+        "source-1",
+        "data-3",
+        "government-3",
+        "source-4",
+        "government-4"
+      ],
+      "remainingHearts": 2,
+      "scores": {
+        "0": 44,
+        "1": 37,
+        "2": 45
+      },
+      "outcome": "星源樹發光",
+      "finished": true,
+      "log": [
+        {
+          "round": 1,
+          "kind": "event",
+          "target": "GitHub 當機了"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "data-1"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "data-2"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "source-2"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "2",
+          "target": "source-1"
+        },
+        {
+          "round": 2,
+          "kind": "event",
+          "target": "會計年度結算"
+        },
+        {
+          "round": 3,
+          "kind": "event",
+          "target": "四大自由"
+        },
+        {
+          "round": 4,
+          "kind": "event",
+          "target": "人力釋出"
+        },
+        {
+          "round": 4,
+          "kind": "complete",
+          "playerId": "0",
+          "target": "Notepad++"
+        },
+        {
+          "round": 4,
+          "kind": "complete",
+          "playerId": "2",
+          "target": "Democracy OS"
+        },
+        {
+          "round": 5,
+          "kind": "event",
+          "target": "斜槓青年"
+        },
+        {
+          "round": 5,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "data-3"
+        },
+        {
+          "round": 5,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "government-3"
+        },
+        {
+          "round": 5,
+          "kind": "complete",
+          "playerId": "1",
+          "target": "台灣賄選實價登錄地圖"
+        },
+        {
+          "round": 5,
+          "kind": "draw",
+          "playerId": "1",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        },
+        {
+          "round": 5,
+          "kind": "draw",
+          "playerId": "2",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        },
+        {
+          "round": 6,
+          "kind": "event",
+          "target": "是芥末日"
+        },
+        {
+          "round": 6,
+          "kind": "complete",
+          "playerId": "0",
+          "target": "Inkscape"
+        },
+        {
+          "round": 6,
+          "kind": "draw",
+          "playerId": "0",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        },
+        {
+          "round": 6,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "source-4"
+        },
+        {
+          "round": 6,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "government-4"
+        },
+        {
+          "round": 6,
+          "kind": "government4",
+          "playerId": "2",
+          "target": "{\"projectId\":\"s0ihohg\",\"jobName\":\"美術設計\",\"jobCardId\":\"8hqitq\"}"
+        },
+        {
+          "round": 6,
+          "kind": "complete",
+          "playerId": "2",
+          "target": "新酷音輸入法"
+        },
+        {
+          "round": 6,
+          "kind": "draw",
+          "playerId": "2",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        }
+      ],
+      "exportedAt": "2026-10-27T14:55:39.153Z",
+      "durationSeconds": 0,
+      "moves": 55
+    },
+    {
+      "ruleset": "tree-poc-v1",
+      "experiments": {
+        "government5": "any",
+        "completionRewards": "difficulty"
+      },
+      "build": "local-experiments",
+      "players": 4,
+      "rounds": 5,
+      "completedProjectIds": [
+        "msar8m8",
+        "ehn5788",
+        "i92fvqg",
+        "g7g1bh",
+        "mmtg2ko"
+      ],
+      "grown": [
+        "data-1",
+        "data-2",
+        "source-2",
+        "source-1",
+        "data-3",
+        "government-3",
+        "source-4",
+        "government-4"
+      ],
+      "remainingHearts": 2,
+      "scores": {
+        "0": 34,
+        "1": 32,
+        "2": 38,
+        "3": 37
+      },
+      "outcome": "星源樹發光",
+      "finished": true,
+      "log": [
+        {
+          "round": 1,
+          "kind": "event",
+          "target": "GitHub 當機了"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "data-1"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "data-2"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "source-2"
+        },
+        {
+          "round": 1,
+          "kind": "grow",
+          "playerId": "2",
+          "target": "source-1"
+        },
+        {
+          "round": 2,
+          "kind": "event",
+          "target": "數位政委"
+        },
+        {
+          "round": 2,
+          "kind": "digitalMinister",
+          "playerId": "1",
+          "target": "{\"projectId\":\"i92fvqg\",\"worker\":\"1\",\"jobName\":\"工程師\"}"
+        },
+        {
+          "round": 2,
+          "kind": "digitalMinister",
+          "playerId": "2",
+          "target": "{\"projectId\":\"msar8m8\",\"worker\":\"2\",\"jobName\":\"美術設計\"}"
+        },
+        {
+          "round": 2,
+          "kind": "digitalMinister",
+          "playerId": "3",
+          "target": "{\"projectId\":\"ehn5788\",\"worker\":\"3\",\"jobName\":\"美術設計\"}"
+        },
+        {
+          "round": 3,
+          "kind": "event",
+          "target": "青年補助"
+        },
+        {
+          "round": 3,
+          "kind": "complete",
+          "playerId": "2",
+          "target": "OCF Lab"
+        },
+        {
+          "round": 3,
+          "kind": "complete",
+          "playerId": "3",
+          "target": "洋蔥瀏覽器"
+        },
+        {
+          "round": 3,
+          "kind": "draw",
+          "playerId": "3",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        },
+        {
+          "round": 4,
+          "kind": "event",
+          "target": "又老又窮啊"
+        },
+        {
+          "round": 4,
+          "kind": "complete",
+          "playerId": "2",
+          "target": "台灣賄選實價登錄地圖"
+        },
+        {
+          "round": 4,
+          "kind": "draw",
+          "playerId": "3",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        },
+        {
+          "round": 5,
+          "kind": "event",
+          "target": "是芥末日"
+        },
+        {
+          "round": 5,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "data-3"
+        },
+        {
+          "round": 5,
+          "kind": "grow",
+          "playerId": "0",
+          "target": "government-3"
+        },
+        {
+          "round": 5,
+          "kind": "complete",
+          "playerId": "0",
+          "target": "Common Voice"
+        },
+        {
+          "round": 5,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "source-4"
+        },
+        {
+          "round": 5,
+          "kind": "grow",
+          "playerId": "1",
+          "target": "government-4"
+        },
+        {
+          "round": 5,
+          "kind": "government4",
+          "playerId": "1",
+          "target": "{\"projectId\":\"mmtg2ko\",\"jobName\":\"文字工作者\",\"jobCardId\":\"teu2hso\"}"
+        },
+        {
+          "round": 5,
+          "kind": "draw",
+          "playerId": "1",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        },
+        {
+          "round": 5,
+          "kind": "government4",
+          "playerId": "2",
+          "target": "{\"projectId\":\"ms7ko6\",\"jobName\":\"議題工作者\",\"jobCardId\":\"nip9nuo\"}"
+        },
+        {
+          "round": 5,
+          "kind": "complete",
+          "playerId": "2",
+          "target": "實價登錄到門牌"
+        },
+        {
+          "round": 5,
+          "kind": "draw",
+          "playerId": "2",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        },
+        {
+          "round": 5,
+          "kind": "government4",
+          "playerId": "3",
+          "target": "{\"projectId\":\"ms7ko6\",\"jobName\":\"公務人員\",\"jobCardId\":\"hkersb8\"}"
+        },
+        {
+          "round": 5,
+          "kind": "draw",
+          "playerId": "3",
+          "target": "{\"projectId\":\"\",\"pile\":\"entry\"}"
+        }
+      ],
+      "exportedAt": "2026-10-27T14:55:39.174Z",
+      "durationSeconds": 0,
+      "moves": 64
+    }
+  ]
+}

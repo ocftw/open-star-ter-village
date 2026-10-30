@@ -1,0 +1,15 @@
+$ pnpm --filter @open-star-ter-village/webapp exec playwright test --config playwright.standard.config.ts --reporter=line
+
+Running 6 tests using 1 worker
+
+
+(node:60347) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+[1/6] [chromium] › e2e/standard.spec.ts:14:5 › lobby offers Standard with only 2/3/4 seats and rejects forged room requests
+[2/6] [chromium] › e2e/standard.spec.ts:28:34 › Socket.IO 2-player game completes, synchronizes and reconnects
+[3/6] [chromium] › e2e/standard.spec.ts:28:34 › Socket.IO 3-player game completes, synchronizes and reconnects
+[4/6] [chromium] › e2e/standard.spec.ts:28:34 › Socket.IO 4-player game completes, synchronizes and reconnects
+[5/6] [chromium] › e2e/standard.spec.ts:86:5 › Standard board renders and survives a browser refresh
+[6/6] [chromium] › e2e/standard.spec.ts:113:5 › room experiments persist from creation through waiting room, board, refresh and export
+  6 passed (31.1s)

@@ -22,6 +22,11 @@ const contributionSlice = createSlice({
   reducers: {
     updateContribute: (state, action: PayloadAction<UpdateContributePayload>) => {
       const { slotId, jobName, diffAmount } = action.payload;
+      if (!Number.isInteger(diffAmount) || diffAmount < 0) return;
+      if (diffAmount === 0) {
+        state.contributions = state.contributions.filter(c => c.projectSlotId !== slotId || c.jobName !== jobName);
+        return;
+      }
       const contribution = state.contributions.find((c) => c.projectSlotId === slotId && c.jobName === jobName);
       if (contribution) {
         contribution.value = diffAmount;

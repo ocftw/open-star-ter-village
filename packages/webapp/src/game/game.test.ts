@@ -405,6 +405,30 @@ describe('scoreUnfinishedProjects', () => {
     expect(ScoreBoardSelector.getPlayerPoints(ctx.G.table.scoreBoard, 'alice')).toBe(0);
   });
 
+  it('combines professions within a project but excludes completed projects', () => {
+    const ctx = makeCtx();
+    ProjectBoardMutator.add(ctx.G.table.projectBoard, makeProjectCard('open', { Engineer: 5, Advocator: 5 }));
+    ProjectBoardMutator.add(ctx.G.table.projectBoard, makeProjectCard('done', { Engineer: 2 }));
+    ProjectSlotMutator.pushWorker(ctx.G.table.projectBoard[0], 'Engineer', 'alice', 1);
+    ProjectSlotMutator.pushWorker(ctx.G.table.projectBoard[0], 'Advocator', 'alice', 1);
+    ProjectSlotMutator.pushWorker(ctx.G.table.projectBoard[1], 'Engineer', 'alice', 2);
+    scoreUnfinishedProjects(ctx);
+    expect(ScoreBoardSelector.getPlayerPoints(ctx.G.table.scoreBoard, 'alice')).toBe(1);
+  });
+
+  it('uses per-project final-event scoring before selecting winners', () => {
+    const ctx = makeCtx();
+    ProjectBoardMutator.add(ctx.G.table.projectBoard, makeProjectCard('first', { Engineer: 10 }));
+    ProjectBoardMutator.add(ctx.G.table.projectBoard, makeProjectCard('second', { Engineer: 10 }));
+    ProjectSlotMutator.pushWorker(ctx.G.table.projectBoard[0], 'Engineer', 'alice', 3);
+    ProjectSlotMutator.pushWorker(ctx.G.table.projectBoard[1], 'Engineer', 'alice', 1);
+    ProjectSlotMutator.pushWorker(ctx.G.table.projectBoard[0], 'Engineer', 'bob', 4);
+    eventCardHandlers.end_game_after_this_round.end!(ctx);
+    expect(ctx.G.table.scoreBoard).toEqual({ alice: 1, bob: 2, charlie: 0 });
+    expect(ctx.events.endGame).toHaveBeenCalledWith({ winners: ['bob'] });
+    expect(ctx.events.endGame).toHaveBeenCalledTimes(1);
+  });
+
   it('scores floor(contributionPoints / 2) VP per player', () => {
     const ctx = makeCtx();
     // requirement is 12 so project stays unfinished (alice 4 + bob 3 = 7 < 12)
@@ -433,7 +457,7 @@ describe('scoreUnfinishedProjects', () => {
     expect(ScoreBoardSelector.getPlayerPoints(ctx.G.table.scoreBoard, 'charlie')).toBe(0);
   });
 
-  it('accumulates points across multiple unfinished projects', () => {
+  it.each([[1, 1, 0], [3, 1, 1], [3, 3, 2]])('floors separate project contributions %i + %i to %i VP', (first, second, expected) => {
     const ctx = makeCtx();
     const card1 = makeProjectCard('p3', { Engineer: 5 });
     const card2 = makeProjectCard('p4', { Advocator: 5 });
@@ -441,13 +465,12 @@ describe('scoreUnfinishedProjects', () => {
     ProjectBoardMutator.add(ctx.G.table.projectBoard, card2);
     const slot1 = ctx.G.table.projectBoard[0];
     const slot2 = ctx.G.table.projectBoard[1];
-    // alice has 3 pts on project1 and 1 pt on project2 = 4 total → 2 VP
-    ProjectSlotMutator.pushWorker(slot1, 'Engineer', 'alice', 3);
-    ProjectSlotMutator.pushWorker(slot2, 'Advocator', 'alice', 1);
+    ProjectSlotMutator.pushWorker(slot1, 'Engineer', 'alice', first);
+    ProjectSlotMutator.pushWorker(slot2, 'Advocator', 'alice', second);
 
     scoreUnfinishedProjects(ctx);
 
-    expect(ScoreBoardSelector.getPlayerPoints(ctx.G.table.scoreBoard, 'alice')).toBe(2);
+    expect(ScoreBoardSelector.getPlayerPoints(ctx.G.table.scoreBoard, 'alice')).toBe(expected);
   });
 });
 
