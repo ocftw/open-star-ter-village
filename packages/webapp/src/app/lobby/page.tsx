@@ -222,7 +222,7 @@ export default function LobbyPage() {
             <p style={{ fontSize: 13, color: 'var(--ink-soft)', lineHeight: 1.5, marginTop: 10 }}>
               當村長，邀請朋友加入，人到齊後開始遊戲。
               <br />
-              <span className="en-cap">Host a match — invite 2 to 4 players.</span>
+              <span className="en-cap">Host a match for 2 to 4 players.</span>
             </p>
 
             <div style={{ marginTop: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>
