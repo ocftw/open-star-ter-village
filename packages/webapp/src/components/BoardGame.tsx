@@ -7,7 +7,7 @@ import { Game } from 'boardgame.io';
 import { GameState, ProjectSlotState } from '@/game';
 import { GameContext } from './GameContextHelpers';
 import { GAME_NAME, GAME_SERVER_URL, lobbyClient } from '@/lib/lobbyClient';
-import { LobbyError, getLobbyErrorMessage, getMatch, hasPlayerName, joinPublicMatch, joinRoom } from '@/app/lobby/actions';
+import { LobbyError, getLobbyErrorMessage, getMatch, hasHostStarted, hasPlayerName, joinPublicMatch, joinRoom } from '@/app/lobby/actions';
 import { usePolling } from '@/lib/usePolling';
 import { loadCredentials, saveCredentials, type MatchCredentials } from '@/lib/matchCredentials';
 import { PLAYER_NAME_STORAGE_KEY, isValidPlayerName } from '@/lib/playerName';
@@ -281,6 +281,23 @@ const Board: React.FC<GameContext> = (gameContext) => {
   );
 };
 
+// Offline dev games run on Local(), where boardgame.io still reports
+// isMultiplayer; the observer join (#373) needs the lobby server.
+const LocalGameContext = React.createContext(false);
+
+// playAgain publishes nextMatchID before its caller has taken a seat, and the
+// opener can leave again; observers (#373) may only join while the host seat is
+// held, so they never take it. Like the lobby, a started room (a vacated seat
+// there means it was terminated, #420) or a deleted one is not joinable.
+async function isNextRoomJoinable(matchID: string): Promise<boolean> {
+  try {
+    const match = await getMatch(matchID);
+    return match.players.some(player => player.id === 0 && hasPlayerName(player)) && !hasHostStarted(match);
+  } catch {
+    return false;
+  }
+}
+
 export function GameOverDialog({
   gameContext,
   open,
@@ -305,9 +322,11 @@ export function GameOverDialog({
   const hasFinished = gameover !== undefined;
   // Observers (#373) cannot playAgain without a seat; they 加入遊戲 once a
   // seated player has opened the next room, through the lobby's join flow.
-  const isObserver = isMultiplayer && playerID === null;
+  const isLocalGame = React.useContext(LocalGameContext);
+  const isObserver = isMultiplayer && !isLocalGame && playerID === null;
   const [observerName, setObserverName] = React.useState('');
   const observerNameValid = isValidPlayerName(observerName);
+  const observerHintID = React.useId();
   React.useEffect(() => {
     setSavedCredentials(isMultiplayer && hasFinished ? loadCredentials(matchID) : null);
     setNextMatchID(null);
@@ -323,12 +342,7 @@ export function GameOverDialog({
   usePolling(async () => {
     const metadata = await getMatch(matchID);
     let invitation = metadata.nextMatchID ?? null;
-    // playAgain publishes nextMatchID before its caller has taken a seat; hold
-    // observers back until the opener sits in the host seat so they cannot take it.
-    if (invitation && isObserver && invitation !== nextMatchID) {
-      const nextMatch = await getMatch(invitation);
-      if (!nextMatch.players.some(player => player.id === 0 && hasPlayerName(player))) invitation = null;
-    }
+    if (invitation && isObserver && !(await isNextRoomJoinable(invitation))) invitation = null;
     if (invitation !== nextMatchID) setNextMatchID(invitation);
   }, 3_000, isMultiplayer && hasFinished && (savedCredentials !== null || isObserver));
   const invitationVisible = nextMatchID !== null && dismissedInvitation !== nextMatchID;
@@ -374,6 +388,12 @@ export function GameOverDialog({
     setIsRematching(true);
     setRematchError(null);
     try {
+      // The room may have changed since the last poll.
+      if (!(await isNextRoomJoinable(nextMatchID))) {
+        setNextMatchID(null);
+        setIsRematching(false);
+        return;
+      }
       saveCredentials(await joinPublicMatch(nextMatchID, playerName));
       router.push(`/game/${nextMatchID}`);
     } catch (error) {
@@ -459,9 +479,11 @@ export function GameOverDialog({
                   onChange={(event) => setObserverName(event.target.value)}
                   error={observerName.length > 0 && !observerNameValid}
                   helper={
-                    nextMatchID
-                      ? '下一局房間已開好，可以加入了。 · The next room is open.'
-                      : '等待玩家開啟下一局房間後才能加入。 · Waiting for a player to open the next room.'
+                    <span id={observerHintID}>
+                      {nextMatchID
+                        ? '下一局房間已開好，可以加入了。 · The next room is open.'
+                        : '等待玩家開啟下一局房間後才能加入。 · Waiting for a player to open the next room.'}
+                    </span>
                   }
                   data-testid="observer-name"
                 />
@@ -490,6 +512,7 @@ export function GameOverDialog({
                 <StickerButton
                   onClick={() => void handleObserverJoin()}
                   disabled={!nextMatchID || !observerNameValid || isRematching}
+                  aria-describedby={observerHintID}
                   style={{ flex: 1 }}
                   data-testid="observer-join"
                 >
@@ -551,7 +574,11 @@ const Boardgame: React.FC<Props> = ({ isLocal, gameConfig, numPlayers, ...props 
     });
   }, [isLocal, gameConfig, numPlayers]);
 
-  return <BoardgameComponent {...props} />;
+  return (
+    <LocalGameContext.Provider value={isLocal}>
+      <BoardgameComponent {...props} />
+    </LocalGameContext.Provider>
+  );
 }
 
 export default Boardgame;
