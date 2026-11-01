@@ -413,3 +413,55 @@ test.describe('Simplified Mode — Action Flow', () => {
     await expectActions(page, 'Alice', INITIAL_ACTION_TOKENS - RECRUIT_COST - CONTRIBUTE_JOIN_COST);
   });
 });
+
+test.describe('四大自由 — pending discard is visible to everyone (#373)', () => {
+  test('other players see who owes the discard until it is done', async ({ page }) => {
+    await page.goto('/dev?seed=e2e-2&demo=four-freedoms');
+    await waitForGameReady(page);
+    await expect(page.locator('[data-testid="event-card-banner"]')).toContainText('四大自由');
+
+    // Alice and Bob end their turns; neither is last, so no discard is owed.
+    await performEndTurn(page);
+    await selectDevPerspective(page, 'player2');
+    await waitForGameReady(page);
+    await performEndTurn(page);
+
+    // Charlie is last: spending all his AP (create 2 + recruit 1 + 換人力 1) opens the
+    // discard panel for him only. Running out of AP, unlike ending early, leaves
+    // actionPhaseDone unset, so other clients must read Charlie's AP, not their own.
+    await selectDevPerspective(page, 'player3');
+    await waitForGameReady(page);
+    const ownerJobName = await selectCompatibleHandAndJobCard(page, true);
+    await confirmButton(page).click();
+    await waitForGameReady(page);
+    await selectCompatibleJobAndProjectSlot(page, ownerJobName);
+    await confirmButton(page).click();
+    await waitForGameReady(page);
+    await page.locator('[data-testid="refill-jobs"]').click();
+    await page.locator('[data-testid^="job-card-"]').first().click();
+    await confirmButton(page).click();
+    await expectActions(page, 'Charlie', 0);
+    const discardPanel = page.locator('[data-testid="discard-job-cards-panel"]');
+    await expect(discardPanel).toBeVisible();
+
+    const waitingAlert = page.locator('[data-testid="waiting-for-player-alert"]');
+    for (const perspective of ['player1', 'player2'] as const) {
+      await selectDevPerspective(page, perspective);
+      await expect(discardPanel).toHaveCount(0);
+      await expect(waitingAlert).toHaveAttribute('data-pending-discard', 'true');
+      await expect(waitingAlert).toContainText('等待 Charlie 移除 2 張人力卡（四大自由）');
+    }
+
+    // Once Charlie discards, the round ends and the note goes back to normal.
+    await selectDevPerspective(page, 'player3');
+    const jobCards = page.locator('[data-testid^="job-card-"]');
+    await jobCards.nth(0).click();
+    await jobCards.nth(1).click();
+    await page.locator('[data-testid="discard-confirm"]').click();
+    await expect(discardPanel).toHaveCount(0);
+
+    // Charlie is not first in round 2 whichever seat holds the start player token.
+    await expect(waitingAlert).toHaveAttribute('data-pending-discard', 'false');
+    await expect(waitingAlert).not.toContainText('四大自由');
+  });
+});
