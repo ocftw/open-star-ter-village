@@ -481,7 +481,7 @@ const Boardgame: React.FC<Props> = ({ isLocal, gameConfig, numPlayers, ...props 
   // type, unmounting and remounting — which resets the game state.
   const BoardgameComponent = React.useMemo(() => {
     const multiplayer = isLocal ? Local() : SocketIO({ server: GAME_SERVER_URL });
-    const resolvedNumPlayers = isLocal ? (numPlayers ?? 3) : numPlayers;
+    const resolvedNumPlayers = isLocal ? (numPlayers ?? 4) : numPlayers;
     // Board expects ClientGameState (after playerView strips decks), but Client() couples
     // game + board generics to GameState. The cast is safe because boardgame.io always runs
     // playerView before passing state to the board component.

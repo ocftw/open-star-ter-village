@@ -1,7 +1,7 @@
 # Open StarTer Village Web App
 
 Open StarTer Village Web App is the online version of the Open StarTer Village
-board game. It supports 3-6 players, approximately 60 minutes per session, and
+board game. It supports 2-4 players, approximately 60 minutes per session, and
 Traditional Chinese / English content.
 
 Rulebook: [Rulebook of Open StarTer Village](https://drive.google.com/file/d/1gBGKhavLdDQ-J1elxQNN6E7Sdz0ZBTeO/view?usp=drive_link)

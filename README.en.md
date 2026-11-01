@@ -22,7 +22,7 @@ Through playing the game, players will come to understand:
 
 ### Game Specifications
 
-- **Number of Players:** 3-6 players
+- **Number of Players:** 2-4 players
 - **Game Duration:** Approximately 60 minutes
 
 ## How to Get Started

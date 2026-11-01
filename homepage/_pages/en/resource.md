@@ -108,7 +108,7 @@ layout_list:
     image: /images/uploads/boardgame.jpg
   - type: layout_cta_banner
     title: Play Online Together!
-    text: No download needed. Join or create a 3–6 player game and experience
+    text: No download needed. Join or create a 2–4 player game and experience
       open-source collaboration with friends.
     cta_label: Play Online
     cta_url: https://open-star-ter-village.fly.dev/
