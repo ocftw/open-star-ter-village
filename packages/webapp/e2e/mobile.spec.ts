@@ -71,6 +71,18 @@ test.describe('Mobile layout', () => {
     expect(overflow).toBeLessThanOrEqual(0);
   });
 
+  test('observer sees the waiting note in the bottom sheet (#478)', async ({ page }) => {
+    await page.goto('/dev?user=observer&mode=offline');
+    const sheet = page.locator('[data-testid="mobile-sheet"]');
+    await sheet.waitFor({ state: 'visible', timeout: 20000 });
+    await expect(page.getByTestId('observer-mode-banner')).toBeVisible();
+
+    const waitingAlert = sheet.locator('[data-testid="waiting-for-player-alert"]');
+    await expect(waitingAlert).toContainText(/Waiting for Alice/i);
+    await expect(waitingAlert).toHaveAttribute('data-pending-discard', 'false');
+    await expect(sheet.locator('[data-testid="context-action"]')).toHaveCount(0);
+  });
+
   test('compact header ⋯ menu opens the exit-choice dialog (#420)', async ({ page }) => {
     await page.goto('/dev');
     await page.locator('[data-testid="mobile-sheet"]').waitFor({ state: 'visible', timeout: 20000 });

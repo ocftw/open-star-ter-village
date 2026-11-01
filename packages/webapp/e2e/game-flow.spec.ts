@@ -445,7 +445,8 @@ test.describe('四大自由 — pending discard is visible to everyone (#373)', 
     await expect(discardPanel).toBeVisible();
 
     const waitingAlert = page.locator('[data-testid="waiting-for-player-alert"]');
-    for (const perspective of ['player1', 'player2'] as const) {
+    // Observers (no seat) get the same note (#478).
+    for (const perspective of ['player1', 'player2', 'observer'] as const) {
       await selectDevPerspective(page, perspective);
       await expect(discardPanel).toHaveCount(0);
       await expect(waitingAlert).toHaveAttribute('data-pending-discard', 'true');

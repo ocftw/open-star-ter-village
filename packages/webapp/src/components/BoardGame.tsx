@@ -33,6 +33,7 @@ import ContextAction from './board/ContextAction';
 import DiscardPanel from './board/DiscardPanel';
 import WaitingForPlayerAlert from './board/WaitingForPlayerAlert';
 import { isFourFreedomsDiscardPending } from './board/fourFreedomsDiscard';
+import { getActionAreaView } from './board/actionAreaView';
 import BoardProjectSlot from './board/BoardProjectSlot';
 import EventBanner from './board/EventBanner';
 import MobileSheet from './board/MobileSheet';
@@ -49,7 +50,7 @@ const Board: React.FC<GameContext> = (gameContext) => {
 
   const [showGameOver, setShowGameOver] = React.useState(true);
   // 四大自由: the last player owes a 2-card discard. They get the discard panel instead of
-  // the action bar; everyone else sees who the round is waiting on.
+  // the action bar; everyone else, observers included, sees who the round is waiting on.
   const discardPending = isFourFreedomsDiscardPending(G, ctx);
   const showDiscardPanel = isMyTurn && discardPending;
 
@@ -93,20 +94,18 @@ const Board: React.FC<GameContext> = (gameContext) => {
   };
 
   // Shared between the desktop layout and the mobile bottom sheet.
-  const actionArea = isMyTurn ? (
-    showDiscardPanel ? (
+  const actionAreaView = getActionAreaView(playerID, ctx.currentPlayer, discardPending);
+  const actionArea =
+    actionAreaView === 'discard' ? (
       <DiscardPanel gameContext={gameContext} />
-    ) : (
+    ) : actionAreaView === 'context' ? (
       <ContextAction gameContext={gameContext} />
-    )
-  ) : (
-    playerID !== null && (
+    ) : (
       <WaitingForPlayerAlert
         playerName={getPlayerName(matchData, ctx.currentPlayer)}
         pendingDiscard={discardPending}
       />
-    )
-  );
+    );
 
   // Only occupied slots take card space; capacity is one compact indicator (F-003).
   const occupiedSlots = G.table.projectBoard.filter((slot) => slot.card);
