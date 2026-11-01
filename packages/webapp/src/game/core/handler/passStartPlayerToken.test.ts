@@ -21,8 +21,8 @@ describe('passStartPlayerToken', () => {
     expect(starters).toEqual(['1', '2', '0', '1']);
   });
 
-  it('rotates a reduced play order (e.g. after a player leaves) without gaps', () => {
-    // Seat '1' left mid-game: only the remaining seats rotate.
+  it('rotates any play order (non-contiguous seat ids) without gaps', () => {
+    // Seat ids need not be contiguous: only the listed seats rotate.
     const G = { playOrder: ['0', '2', '3'] };
     pass(G);
     expect(G.playOrder).toEqual(['2', '3', '0']);
