@@ -15,6 +15,7 @@ import {
   UserActionMoves,
   getAssignedJobName,
   getCurrentAction,
+  resetAction,
   setAssignedJobName,
   setCurrentAction,
 } from '@/lib/reducers/actionStepSlice';
@@ -32,6 +33,7 @@ import JobMarket from './board/JobMarket';
 import ContextAction from './board/ContextAction';
 import DiscardPanel from './board/DiscardPanel';
 import WaitingForPlayerAlert from './board/WaitingForPlayerAlert';
+import GameOverNote from './board/GameOverNote';
 import { isFourFreedomsDiscardPending } from './board/fourFreedomsDiscard';
 import { getActionAreaView } from './board/actionAreaView';
 import BoardProjectSlot from './board/BoardProjectSlot';
@@ -50,11 +52,21 @@ const Board: React.FC<GameContext> = (gameContext) => {
   const [showGameOver, setShowGameOver] = React.useState(true);
   // 四大自由: the last player owes a 2-card discard. They get the discard panel instead of
   // the action bar; everyone else, observers included, sees who the round is waiting on.
+  // After game over everyone gets the game-over note instead.
   const discardPending = isFourFreedomsDiscardPending(G, ctx);
-  const actionAreaView = getActionAreaView(playerID, ctx.currentPlayer, discardPending);
+  const actionAreaView = getActionAreaView(playerID, ctx.currentPlayer, {
+    discardPending,
+    gameOver: !!gameover,
+  });
   const showDiscardPanel = actionAreaView === 'discard';
 
   const idle = actionAreaView === 'context' && currentAction === null && !gameover;
+  // The game-over note replaces ContextAction and its 取消 button, so drop any
+  // half-built action rather than leave its cards selectable.
+  const hasEnded = gameover !== undefined;
+  React.useEffect(() => {
+    if (hasEnded) dispatch(resetAction());
+  }, [hasEnded, dispatch]);
   const isMobile = useIsMobile();
 
   // 斜槓青年 target-position picker: during Recruit with a mismatched
@@ -99,6 +111,8 @@ const Board: React.FC<GameContext> = (gameContext) => {
       <DiscardPanel gameContext={gameContext} />
     ) : actionAreaView === 'context' ? (
       <ContextAction gameContext={gameContext} />
+    ) : actionAreaView === 'gameover' ? (
+      <GameOverNote onShowResults={() => setShowGameOver(true)} />
     ) : (
       <WaitingForPlayerAlert
         playerName={getPlayerName(matchData, ctx.currentPlayer)}
