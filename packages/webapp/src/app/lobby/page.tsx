@@ -9,9 +9,10 @@ import LobbyNav from '@/components/lobby/LobbyNav';
 import MatchRow from '@/components/lobby/MatchRow';
 import Note from '@/components/lobby/Note';
 import Segmented from '@/components/lobby/Segmented';
-import { loadCredentials, saveCredentials, type MatchCredentials } from '@/lib/matchCredentials';
+import { loadCredentials, saveCredentials } from '@/lib/matchCredentials';
 import { useLobbyUpdates } from '@/lib/useLobbyUpdates';
 import { useSnackbar } from '@/lib/useSnackbar';
+import { PLAYER_NAME_STORAGE_KEY, isValidPlayerName } from '@/lib/playerName';
 import GameIntentTracker from '@/components/GameIntentTracker';
 import {
   createRoom,
@@ -22,13 +23,7 @@ import {
   type VisibleMatch,
 } from './actions';
 
-const PLAYER_NAME_STORAGE_KEY = 'open-star-ter-village.player-name';
 const PLAYER_COUNT_OPTIONS = [3, 4, 5, 6] as const;
-
-function isValidPlayerName(value: string): boolean {
-  const trimmedValue = value.trim();
-  return trimmedValue.length >= 1 && trimmedValue.length <= 20;
-}
 
 function CardHeading({
   icon,
@@ -183,14 +178,7 @@ export default function LobbyPage() {
     setJoiningMatchID(matchID);
 
     try {
-      const joinedMatch = await joinPublicMatch(matchID, trimmedPlayerName);
-      const credentials: MatchCredentials = {
-        matchID,
-        playerID: joinedMatch.playerID,
-        credential: joinedMatch.credentials,
-        playerName: trimmedPlayerName,
-      };
-      saveCredentials(credentials);
+      saveCredentials(await joinPublicMatch(matchID, trimmedPlayerName));
       router.push(`/game/${matchID}`);
     } catch (error) {
       if (error instanceof LobbyError && error.code === 'MATCH_FULL') {

@@ -20,7 +20,13 @@ jest.mock('@/lib/lobbyClient', () => ({
 
 const joinRoomMock = jest.fn();
 const getMatchMock = jest.fn();
+const joinPublicMatchMock = jest.fn();
 jest.mock('@/app/lobby/actions', () => ({
+  LobbyError: class LobbyError extends Error {
+    constructor(public code: string) { super(code); }
+  },
+  joinPublicMatch: (...args: unknown[]) => joinPublicMatchMock(...args),
+  hasPlayerName: (player: { name?: string }) => Boolean(player.name),
   joinRoom: (...args: unknown[]) => joinRoomMock(...args),
   getMatch: (...args: unknown[]) => getMatchMock(...args),
   getLobbyErrorMessage: (_e: unknown, fallback: string) => fallback,
@@ -28,11 +34,11 @@ jest.mock('@/app/lobby/actions', () => ({
 
 const CREDS_KEY = 'open-star-ter-village.match-credentials.room-1';
 
-const makeContext = (overrides?: { isMultiplayer?: boolean; gameover?: unknown }) =>
+const makeContext = (overrides?: { isMultiplayer?: boolean; gameover?: unknown; playerID?: string | null }) =>
   ({
     G: { table: { scoreBoard: { '0': 12, '1': 9, '2': 12 } } },
     ctx: { gameover: overrides?.gameover ?? { winners: ['0', '2'] } },
-    playerID: '0',
+    playerID: overrides?.playerID === undefined ? '0' : overrides.playerID,
     matchID: 'room-1',
     isMultiplayer: overrides?.isMultiplayer ?? true,
     matchData: [
@@ -208,5 +214,75 @@ describe('rematch invitation (#459)', () => {
     fireEvent.click(view.getByTestId('play-again'));
     await waitFor(() => expect(pushMock).toHaveBeenCalledWith('/game/room-2'));
     expect(joinRoomMock).not.toHaveBeenCalled();
+  });
+});
+
+describe('observer 加入遊戲 (#373)', () => {
+  const observer = () => makeContext({ playerID: null });
+  const nextRoomOpenedBy = (host?: string) => getMatchMock.mockImplementation(async (id: string) =>
+    id === 'room-1' ? { nextMatchID: 'room-2', players: [] } : { players: [{ id: 0, name: host }, { id: 1 }, { id: 2 }] });
+  beforeEach(() => {
+    localStorage.clear();
+    pushMock.mockReset();
+    joinPublicMatchMock.mockReset();
+    getMatchMock.mockReset();
+    localStorage.setItem('open-star-ter-village.player-name', 'Dana');
+  });
+
+  it('is disabled with a waiting hint until the next room is open', async () => {
+    getMatchMock.mockResolvedValue({ players: [] });
+    const view = render(<GameOverDialog gameContext={observer()} open onClose={jest.fn()} />);
+    await waitFor(() => expect(getMatchMock).toHaveBeenCalledWith('room-1'));
+    expect(view.queryByTestId('play-again')).toBeNull();
+    expect((view.getByTestId('observer-join') as HTMLButtonElement).disabled).toBe(true);
+    expect(view.getByText(/等待玩家開啟下一局房間/)).toBeTruthy();
+    expect((view.getByTestId('observer-name') as HTMLInputElement).value).toBe('Dana');
+  });
+
+  it('enables once a player opens the next room and joins it through the lobby flow', async () => {
+    nextRoomOpenedBy('Alice');
+    joinPublicMatchMock.mockResolvedValue({ matchID: 'room-2', playerID: '2', credential: 'obs-secret', playerName: 'Dana' });
+    const view = render(<GameOverDialog gameContext={observer()} open onClose={jest.fn()} />);
+    await waitFor(() => expect((view.getByTestId('observer-join') as HTMLButtonElement).disabled).toBe(false));
+    fireEvent.click(view.getByTestId('observer-join'));
+    await waitFor(() => expect(pushMock).toHaveBeenCalledWith('/game/room-2'));
+    expect(joinPublicMatchMock).toHaveBeenCalledWith('room-2', 'Dana');
+    expect(localStorage.getItem('open-star-ter-village.match-credentials.room-2')).toContain('obs-secret');
+  });
+
+  it('stays disabled until the player who opened the next room holds its host seat', async () => {
+    nextRoomOpenedBy(undefined);
+    const view = render(<GameOverDialog gameContext={observer()} open onClose={jest.fn()} />);
+    await waitFor(() => expect(getMatchMock).toHaveBeenCalledWith('room-2'));
+    expect((view.getByTestId('observer-join') as HTMLButtonElement).disabled).toBe(true);
+    expect(view.getByText(/等待玩家開啟下一局房間/)).toBeTruthy();
+  });
+
+  it('reports a full next room and stays on the results', async () => {
+    const { LobbyError } = jest.requireMock('@/app/lobby/actions');
+    nextRoomOpenedBy('Alice');
+    joinPublicMatchMock.mockRejectedValue(new LobbyError('MATCH_FULL'));
+    const view = render(<GameOverDialog gameContext={observer()} open onClose={jest.fn()} />);
+    await waitFor(() => expect((view.getByTestId('observer-join') as HTMLButtonElement).disabled).toBe(false));
+    fireEvent.click(view.getByTestId('observer-join'));
+    await waitFor(() => expect(view.getByRole('alert').textContent).toContain('下一局已經坐滿了'));
+    expect(pushMock).not.toHaveBeenCalled();
+  });
+
+  it('needs a valid name before joining', async () => {
+    localStorage.clear();
+    nextRoomOpenedBy('Alice');
+    const view = render(<GameOverDialog gameContext={observer()} open onClose={jest.fn()} />);
+    await waitFor(() => expect(view.getByTestId('rematch-invitation')).toBeTruthy());
+    expect((view.getByTestId('observer-join') as HTMLButtonElement).disabled).toBe(true);
+    fireEvent.change(view.getByTestId('observer-name'), { target: { value: 'Eve' } });
+    expect((view.getByTestId('observer-join') as HTMLButtonElement).disabled).toBe(false);
+  });
+
+  it('is not offered in local / hot-seat games', () => {
+    const view = render(
+      <GameOverDialog gameContext={makeContext({ playerID: null, isMultiplayer: false })} open onClose={jest.fn()} />,
+    );
+    expect(view.queryByTestId('observer-join')).toBeNull();
   });
 });
