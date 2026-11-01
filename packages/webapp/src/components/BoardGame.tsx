@@ -31,6 +31,8 @@ import HandPanel from './board/HandPanel';
 import JobMarket from './board/JobMarket';
 import ContextAction from './board/ContextAction';
 import DiscardPanel from './board/DiscardPanel';
+import WaitingForPlayerAlert from './board/WaitingForPlayerAlert';
+import { isFourFreedomsDiscardPending } from './board/fourFreedomsDiscard';
 import BoardProjectSlot from './board/BoardProjectSlot';
 import EventBanner from './board/EventBanner';
 import MobileSheet from './board/MobileSheet';
@@ -46,14 +48,10 @@ const Board: React.FC<GameContext> = (gameContext) => {
   const gameover = ctx.gameover as { winners: string[] } | undefined;
 
   const [showGameOver, setShowGameOver] = React.useState(true);
-  const isLastPlayer = ctx.playOrderPos === ctx.numPlayers - 1;
-  const hasPendingDiscard = G.table.fourFreedomsPendingDiscards.length > 0;
-  const outOfAP = playerID != null && (G.players[playerID]?.token?.actions ?? 1) === 0;
-  // Show the discard panel instead of the action bar when it's the last player's turn and
-  // they need to remove 2 job cards (四大自由), either because AP is exhausted or they have
-  // explicitly signalled they are done with their action phase (actionPhaseDone).
-  const showDiscardPanel = isMyTurn && isLastPlayer && hasPendingDiscard &&
-    (outOfAP || G.table.actionPhaseDone);
+  // 四大自由: the last player owes a 2-card discard. They get the discard panel instead of
+  // the action bar; everyone else sees who the round is waiting on.
+  const discardPending = isFourFreedomsDiscardPending(G, ctx);
+  const showDiscardPanel = isMyTurn && discardPending;
 
   const idle = isMyTurn && currentAction === null && !showDiscardPanel && !gameover;
   const isMobile = useIsMobile();
@@ -103,30 +101,10 @@ const Board: React.FC<GameContext> = (gameContext) => {
     )
   ) : (
     playerID !== null && (
-      <div
-        data-testid="waiting-for-player-alert"
-        className="paper-card"
-        style={{
-          padding: '10px 16px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 10,
-          fontSize: 13,
-          color: 'var(--ink-soft)',
-        }}
-      >
-        <span
-          style={{
-            width: 8,
-            height: 8,
-            borderRadius: 999,
-            background: 'var(--orange)',
-            flexShrink: 0,
-          }}
-        />
-        等待 {getPlayerName(matchData, ctx.currentPlayer)} 行動中… Waiting for{' '}
-        {getPlayerName(matchData, ctx.currentPlayer)}…
-      </div>
+      <WaitingForPlayerAlert
+        playerName={getPlayerName(matchData, ctx.currentPlayer)}
+        pendingDiscard={discardPending}
+      />
     )
   );
 
