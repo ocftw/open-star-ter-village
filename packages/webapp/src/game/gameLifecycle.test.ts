@@ -2,11 +2,6 @@ import { Client } from 'boardgame.io/client';
 import { OpenStarTerVillage } from './game';
 import { setup } from './core/setup';
 
-test('allows 2 to 4 players per the rulebook', () => {
-  expect(OpenStarTerVillage.minPlayers).toBe(2);
-  expect(OpenStarTerVillage.maxPlayers).toBe(4);
-});
-
 test('the final round commits results without drawing beyond the last event', () => {
   const client = Client({
     game: {

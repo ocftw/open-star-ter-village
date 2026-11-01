@@ -162,6 +162,13 @@ test.describe('Lobby page', () => {
     await expect(page.getByLabel(/player name/i)).toBeVisible();
   });
 
+  test('offers 2 to 4 players with 4 selected by default (#455)', async ({ page }) => {
+    await page.goto('/lobby');
+    const playerCount = page.getByRole('group', { name: /players/i });
+    await expect(playerCount.getByRole('button')).toHaveText(['2', '3', '4']);
+    await expect(playerCount.getByRole('button', { name: '4', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  });
+
   test('shows error on empty player name submit', async ({ page }) => {
     await page.goto('/lobby');
     await page.getByRole('button', { name: /建立房間/ }).click();
@@ -207,7 +214,7 @@ test.describe('Full multiplayer flow', () => {
   test('Alice creates a 3-player match', async () => {
     await alicePage.goto('/lobby');
     await alicePage.getByLabel(/player name/i).fill('Alice');
-    // Select 3 players (should already be default)
+    await alicePage.getByRole('group', { name: /players/i }).getByRole('button', { name: '3', exact: true }).click();
     await alicePage.getByRole('button', { name: /建立房間/ }).click();
 
     // Should redirect to /game/[matchID]
