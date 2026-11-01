@@ -45,16 +45,16 @@ const Board: React.FC<GameContext> = (gameContext) => {
   const { G, playerID, ctx, matchData } = gameContext;
   const dispatch = useAppDispatch();
   const currentAction = useAppSelector(getCurrentAction);
-  const isMyTurn = playerID === ctx.currentPlayer;
   const gameover = ctx.gameover as { winners: string[] } | undefined;
 
   const [showGameOver, setShowGameOver] = React.useState(true);
   // 四大自由: the last player owes a 2-card discard. They get the discard panel instead of
   // the action bar; everyone else, observers included, sees who the round is waiting on.
   const discardPending = isFourFreedomsDiscardPending(G, ctx);
-  const showDiscardPanel = isMyTurn && discardPending;
+  const actionAreaView = getActionAreaView(playerID, ctx.currentPlayer, discardPending);
+  const showDiscardPanel = actionAreaView === 'discard';
 
-  const idle = isMyTurn && currentAction === null && !showDiscardPanel && !gameover;
+  const idle = actionAreaView === 'context' && currentAction === null && !gameover;
   const isMobile = useIsMobile();
 
   // 斜槓青年 target-position picker: during Recruit with a mismatched
@@ -94,7 +94,6 @@ const Board: React.FC<GameContext> = (gameContext) => {
   };
 
   // Shared between the desktop layout and the mobile bottom sheet.
-  const actionAreaView = getActionAreaView(playerID, ctx.currentPlayer, discardPending);
   const actionArea =
     actionAreaView === 'discard' ? (
       <DiscardPanel gameContext={gameContext} />
