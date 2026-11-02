@@ -5,6 +5,9 @@ type SeatCardProps = {
   playerName?: string;
   isHost?: boolean;
   isYou?: boolean;
+  /** Offers an empty seat to a seatless visitor (#373). */
+  onSit?: () => void;
+  sitDisabled?: boolean;
 };
 
 export default function SeatCard({
@@ -12,7 +15,40 @@ export default function SeatCard({
   playerName,
   isHost = false,
   isYou = false,
+  onSit,
+  sitDisabled = false,
 }: SeatCardProps) {
+  if (!playerName && onSit) {
+    return (
+      <button
+        type="button"
+        className="hatch"
+        data-testid={`seat-${seatIndex}-sit`}
+        onClick={onSit}
+        disabled={sitDisabled}
+        style={{
+          height: 108,
+          width: '100%',
+          border: '2px dashed var(--orange-deep)',
+          borderRadius: 16,
+          display: 'grid',
+          placeItems: 'center',
+          color: 'var(--orange-deep)',
+          fontSize: 12,
+          fontFamily: 'var(--font-mono)',
+          background: 'var(--orange-soft)',
+          cursor: sitDisabled ? 'not-allowed' : 'pointer',
+          opacity: sitDisabled ? 0.6 : 1,
+        }}
+      >
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: 15, fontWeight: 800, fontFamily: 'var(--font-zh)' }}>坐這裡</div>
+          <div>Sit in seat {seatIndex}</div>
+        </div>
+      </button>
+    );
+  }
+
   if (!playerName) {
     return (
       <div

@@ -7,11 +7,9 @@ import { Game } from 'boardgame.io';
 import { GameState, ProjectSlotState } from '@/game';
 import { GameContext } from './GameContextHelpers';
 import { GAME_NAME, GAME_SERVER_URL, lobbyClient } from '@/lib/lobbyClient';
-import { LobbyError, getLobbyErrorMessage, getMatch, hasHostStarted, hasPlayerName, joinPublicMatch, joinRoom } from '@/app/lobby/actions';
+import { getLobbyErrorMessage, getMatch, hasHostStarted, hasPlayerName, joinRoom } from '@/app/lobby/actions';
 import { usePolling } from '@/lib/usePolling';
 import { loadCredentials, saveCredentials, type MatchCredentials } from '@/lib/matchCredentials';
-import { PLAYER_NAME_STORAGE_KEY, isValidPlayerName } from '@/lib/playerName';
-import Field from '@/components/lobby/Field';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import {
   UserActionMoves,
@@ -282,17 +280,19 @@ const Board: React.FC<GameContext> = (gameContext) => {
 };
 
 // Offline dev games run on Local(), where boardgame.io still reports
-// isMultiplayer; the observer join (#373) needs the lobby server.
+// isMultiplayer; observers following the next room (#373) need the lobby server.
 const LocalGameContext = React.createContext(false);
 
 // playAgain publishes nextMatchID before its caller has taken a seat, and the
-// opener can leave again; observers (#373) may only join while the host seat is
-// held, so they never take it. Like the lobby, a started room (a vacated seat
-// there means it was terminated, #420) or a deleted one is not joinable.
-async function isNextRoomJoinable(matchID: string): Promise<boolean> {
+// opener can leave again; the next room only counts as open for observers
+// (#373) once its host seat is held — an empty room reads as abandoned. A
+// started room with a vacated seat was terminated (#420); a deleted one is gone.
+async function isNextRoomOpen(matchID: string): Promise<boolean> {
   try {
     const match = await getMatch(matchID);
-    return match.players.some(player => player.id === 0 && hasPlayerName(player)) && !hasHostStarted(match);
+    const hostSeated = match.players.some(player => player.id === 0 && hasPlayerName(player));
+    const terminated = !match.gameover && hasHostStarted(match) && match.players.some(player => !hasPlayerName(player));
+    return hostSeated && !terminated;
   } catch {
     return false;
   }
@@ -320,13 +320,14 @@ export function GameOverDialog({
   const [nextMatchID, setNextMatchID] = React.useState<string | null>(null);
   const [dismissedInvitation, setDismissedInvitation] = React.useState<string | null>(null);
   const hasFinished = gameover !== undefined;
-  // Observers (#373) cannot playAgain without a seat; they 加入遊戲 once a
-  // seated player has opened the next room, through the lobby's join flow.
+  // Observers (#373) cannot playAgain without a seat. 繼續觀戰 arms a move
+  // into the next room as a spectator as soon as a player opens it; once it
+  // is open the button becomes 加入觀戰. Seats are picked in that room.
   const isLocalGame = React.useContext(LocalGameContext);
   const isObserver = isMultiplayer && !isLocalGame && playerID === null;
-  const [observerName, setObserverName] = React.useState('');
-  const observerNameValid = isValidPlayerName(observerName);
-  const observerHintID = React.useId();
+  // Kept per tab in sessionStorage so a remount or refresh stays armed.
+  const keepWatchingKey = `open-star-ter-village.keep-watching.${matchID}`;
+  const [keepWatching, setKeepWatching] = React.useState(false);
   React.useEffect(() => {
     setSavedCredentials(isMultiplayer && hasFinished ? loadCredentials(matchID) : null);
     setNextMatchID(null);
@@ -334,18 +335,23 @@ export function GameOverDialog({
     setRematchError(null);
   }, [isMultiplayer, matchID, hasFinished]);
   React.useEffect(() => {
-    if (isObserver) setObserverName(localStorage.getItem(PLAYER_NAME_STORAGE_KEY) ?? '');
-  }, [isObserver]);
+    setKeepWatching(sessionStorage.getItem(keepWatchingKey) === 'true');
+  }, [keepWatchingKey]);
 
   // playAgain persists this on the completed match, so peers recover the
   // invitation after refresh/reconnect even if they closed the result dialog.
   usePolling(async () => {
     const metadata = await getMatch(matchID);
     let invitation = metadata.nextMatchID ?? null;
-    if (invitation && isObserver && !(await isNextRoomJoinable(invitation))) invitation = null;
+    if (invitation && isObserver && !(await isNextRoomOpen(invitation))) invitation = null;
     if (invitation !== nextMatchID) setNextMatchID(invitation);
   }, 3_000, isMultiplayer && hasFinished && (savedCredentials !== null || isObserver));
   const invitationVisible = nextMatchID !== null && dismissedInvitation !== nextMatchID;
+  React.useEffect(() => {
+    if (!isObserver || !keepWatching || !nextMatchID) return;
+    sessionStorage.removeItem(keepWatchingKey);
+    router.push(`/game/${nextMatchID}`);
+  }, [isObserver, keepWatching, keepWatchingKey, nextMatchID, router]);
   const handleClose = () => {
     setDismissedInvitation(nextMatchID);
     onClose();
@@ -377,34 +383,15 @@ export function GameOverDialog({
     }
   };
 
-  const handleObserverJoin = async () => {
-    if (!nextMatchID || !observerNameValid) return;
-    if (loadCredentials(nextMatchID)) {
-      router.push(`/game/${nextMatchID}`);
-      return;
-    }
-    const playerName = observerName.trim();
-    localStorage.setItem(PLAYER_NAME_STORAGE_KEY, playerName);
-    setIsRematching(true);
-    setRematchError(null);
-    try {
-      // The room may have changed since the last poll.
-      if (!(await isNextRoomJoinable(nextMatchID))) {
-        setNextMatchID(null);
-        setIsRematching(false);
-        return;
-      }
-      saveCredentials(await joinPublicMatch(nextMatchID, playerName));
-      router.push(`/game/${nextMatchID}`);
-    } catch (error) {
-      setRematchError(
-        error instanceof LobbyError && error.code === 'MATCH_FULL'
-          ? '下一局已經坐滿了。 · The next game is already full.'
-          : getLobbyErrorMessage(error, '無法加入下一局，請稍後再試。 · Could not join the next game.'),
-      );
-      setIsRematching(false);
+  const handleObserverWatch = () => {
+    if (nextMatchID) router.push(`/game/${nextMatchID}`);
+    else {
+      if (keepWatching) sessionStorage.removeItem(keepWatchingKey);
+      else sessionStorage.setItem(keepWatchingKey, 'true');
+      setKeepWatching(!keepWatching);
     }
   };
+  const waitingForNextRoom = keepWatching && !nextMatchID;
 
   return (
     <Modal open={open || invitationVisible} onClose={handleClose} ariaLabel="遊戲結束" width="min(440px, 100%)">
@@ -412,8 +399,8 @@ export function GameOverDialog({
         <div>
           {invitationVisible && (
             <div role="status" data-testid="rematch-invitation" style={{ background: 'var(--teal-soft)', borderRadius: 12, padding: 12, marginBottom: 14 }}>
-              <strong>{isObserver ? '下一局房間已開好，可以加入遊戲了！' : '下一局已開好，一起再玩一局吧！'}</strong>
-              <div className="en-cap">{isObserver ? 'The next room is open — you can join' : 'The next game is ready — join your group'}</div>
+              <strong>{isObserver ? '下一局房間已開好，可以加入觀戰了！' : '下一局已開好，一起再玩一局吧！'}</strong>
+              <div className="en-cap">{isObserver ? 'The next room is open — you can watch it' : 'The next game is ready — join your group'}</div>
             </div>
           )}
           <div style={{ textAlign: 'center' }}>
@@ -470,25 +457,6 @@ export function GameOverDialog({
                   );
                 })}
             </div>
-            {isObserver && (
-              <div style={{ marginTop: 18 }}>
-                <Field
-                  label="玩家名稱 · Player name"
-                  placeholder="你的暱稱"
-                  value={observerName}
-                  onChange={(event) => setObserverName(event.target.value)}
-                  error={observerName.length > 0 && !observerNameValid}
-                  helper={
-                    <span id={observerHintID}>
-                      {nextMatchID
-                        ? '下一局房間已開好，可以加入了。 · The next room is open.'
-                        : '等待玩家開啟下一局房間後才能加入。 · Waiting for a player to open the next room.'}
-                    </span>
-                  }
-                  data-testid="observer-name"
-                />
-              </div>
-            )}
             {rematchError && (
               <div
                 role="alert"
@@ -510,13 +478,17 @@ export function GameOverDialog({
               )}
               {isObserver && (
                 <StickerButton
-                  onClick={() => void handleObserverJoin()}
-                  disabled={!nextMatchID || !observerNameValid || isRematching}
-                  aria-describedby={observerHintID}
+                  onClick={handleObserverWatch}
+                  aria-pressed={nextMatchID ? undefined : keepWatching}
+                  className={waitingForNextRoom ? 'armed' : undefined}
                   style={{ flex: 1 }}
-                  data-testid="observer-join"
+                  data-testid="observer-watch"
                 >
-                  {isRematching ? '加入中…' : '加入遊戲'} <span className="tag-en" style={{ color: 'rgba(255,255,255,0.85)' }}>Join game</span>
+                  {nextMatchID ? (
+                    <>加入觀戰 <span className="tag-en" style={{ color: 'rgba(255,255,255,0.85)' }}>Watch next</span></>
+                  ) : (
+                    <>繼續觀戰 <span className="tag-en" style={{ color: 'rgba(255,255,255,0.85)' }}>Watch on</span></>
+                  )}
                 </StickerButton>
               )}
               <StickerButton
@@ -528,6 +500,16 @@ export function GameOverDialog({
                 回大廳 <span className="tag-en">Lobby</span>
               </StickerButton>
             </div>
+            {waitingForNextRoom && (
+              <div
+                role="status"
+                data-testid="observer-waiting"
+                style={{ marginTop: 10, textAlign: 'center', fontSize: 13, fontWeight: 700, color: 'var(--ink-soft)' }}
+              >
+                ⏳ 等待玩家開啟下一局房間
+                <div className="en-cap">Waiting for a player to open the next room</div>
+              </div>
+            )}
             <StickerButton variant="ghost" size="sm" onClick={handleClose} style={{ width: '100%', marginTop: 10 }}>
               關閉，查看最終盤面 · Close and inspect the board
             </StickerButton>

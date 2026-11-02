@@ -20,7 +20,7 @@ jest.mock('@/app/lobby/actions', () => ({
 }));
 
 // Offline dev games run on Local(), where boardgame.io still reports isMultiplayer.
-it('offers no observer 加入遊戲 and polls no lobby in an offline game (#373)', async () => {
+it('offers no observer 繼續觀戰 and polls no lobby in an offline game (#373)', async () => {
   window.matchMedia = window.matchMedia ?? ((query: string) => ({
     matches: false, media: query, addEventListener() {}, removeEventListener() {}, addListener() {}, removeListener() {},
   }) as unknown as MediaQueryList);
@@ -31,6 +31,6 @@ it('offers no observer 加入遊戲 and polls no lobby in an offline game (#373)
     </StoreProvider>,
   );
   await waitFor(() => expect(screen.getByText('遊戲結束', { selector: 'h2' })).toBeTruthy());
-  expect(screen.queryByTestId('observer-join')).toBeNull();
+  expect(screen.queryByTestId('observer-watch')).toBeNull();
   expect(getMatchMock).not.toHaveBeenCalled();
 });

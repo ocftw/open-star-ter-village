@@ -1,4 +1,4 @@
-/** The lobby's remembered display name, shared with the post-game 加入遊戲 join. */
+/** The lobby's remembered display name, shared with picking a seat in a room (#373). */
 export const PLAYER_NAME_STORAGE_KEY = 'open-star-ter-village.player-name';
 
 export function isValidPlayerName(value: string): boolean {

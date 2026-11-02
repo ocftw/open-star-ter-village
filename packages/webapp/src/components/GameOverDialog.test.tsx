@@ -20,12 +20,7 @@ jest.mock('@/lib/lobbyClient', () => ({
 
 const joinRoomMock = jest.fn();
 const getMatchMock = jest.fn();
-const joinPublicMatchMock = jest.fn();
 jest.mock('@/app/lobby/actions', () => ({
-  LobbyError: class LobbyError extends Error {
-    constructor(public code: string) { super(code); }
-  },
-  joinPublicMatch: (...args: unknown[]) => joinPublicMatchMock(...args),
   hasPlayerName: (player: { name?: string }) => Boolean(player.name),
   hasHostStarted: (match: { players: { id: number; data?: { started?: boolean } }[] }) =>
     Boolean(match.players.find(player => player.id === 0)?.data?.started),
@@ -219,123 +214,119 @@ describe('rematch invitation (#459)', () => {
   });
 });
 
-describe('observer 加入遊戲 (#373)', () => {
+describe('observer 繼續觀戰 (#373)', () => {
   const observer = () => makeContext({ playerID: null });
-  const nextRoomOpenedBy = (host?: string) => getMatchMock.mockImplementation(async (id: string) =>
-    id === 'room-1' ? { nextMatchID: 'room-2', players: [] } : { players: [{ id: 0, name: host }, { id: 1 }, { id: 2 }] });
+  const watchButton = (view: ReturnType<typeof render>) => view.getByTestId('observer-watch');
+  const noNextRoom = () => getMatchMock.mockResolvedValue({ players: [] });
+  const nextRoom = (players: unknown[]) => getMatchMock.mockImplementation(async (id: string) =>
+    id === 'room-1' ? { nextMatchID: 'room-2', players: [] } : { players });
+  const nextRoomOpenedBy = (host?: string) => nextRoom([{ id: 0, name: host }, { id: 1 }, { id: 2 }]);
   beforeEach(() => {
     localStorage.clear();
+    sessionStorage.clear();
     pushMock.mockReset();
-    joinPublicMatchMock.mockReset();
+    joinRoomMock.mockReset();
     getMatchMock.mockReset();
-    localStorage.setItem('open-star-ter-village.player-name', 'Dana');
   });
 
-  it('is disabled with a waiting hint until the next room is open', async () => {
-    getMatchMock.mockResolvedValue({ players: [] });
+  it('replaces 再玩一次 with 繼續觀戰 next to 回大廳', async () => {
+    noNextRoom();
     const view = render(<GameOverDialog gameContext={observer()} open onClose={jest.fn()} />);
     await waitFor(() => expect(getMatchMock).toHaveBeenCalledWith('room-1'));
     expect(view.queryByTestId('play-again')).toBeNull();
-    expect((view.getByTestId('observer-join') as HTMLButtonElement).disabled).toBe(true);
-    expect(view.getByText(/等待玩家開啟下一局房間/)).toBeTruthy();
-    expect((view.getByTestId('observer-name') as HTMLInputElement).value).toBe('Dana');
+    expect(watchButton(view).textContent).toContain('繼續觀戰');
+    expect(watchButton(view).getAttribute('aria-pressed')).toBe('false');
+    expect(view.getByRole('button', { name: /回大廳/ })).toBeTruthy();
   });
 
-  it('enables once a player opens the next room and joins it through the lobby flow', async () => {
-    nextRoomOpenedBy('Alice');
-    joinPublicMatchMock.mockResolvedValue({ matchID: 'room-2', playerID: '2', credential: 'obs-secret', playerName: 'Dana' });
-    const view = render(<GameOverDialog gameContext={observer()} open onClose={jest.fn()} />);
-    await waitFor(() => expect((view.getByTestId('observer-join') as HTMLButtonElement).disabled).toBe(false));
-    fireEvent.click(view.getByTestId('observer-join'));
-    await waitFor(() => expect(pushMock).toHaveBeenCalledWith('/game/room-2'));
-    expect(joinPublicMatchMock).toHaveBeenCalledWith('room-2', 'Dana');
-    expect(localStorage.getItem('open-star-ter-village.match-credentials.room-2')).toContain('obs-secret');
-  });
-
-  it('stays disabled until the player who opened the next room holds its host seat', async () => {
-    nextRoomOpenedBy(undefined);
-    const view = render(<GameOverDialog gameContext={observer()} open onClose={jest.fn()} />);
-    await waitFor(() => expect(getMatchMock).toHaveBeenCalledWith('room-2'));
-    expect((view.getByTestId('observer-join') as HTMLButtonElement).disabled).toBe(true);
-    expect(view.getByText(/等待玩家開啟下一局房間/)).toBeTruthy();
-  });
-
-  it('goes back to waiting when the host leaves or the next room is deleted', async () => {
+  it('stays armed and shows the waiting state until the next room opens, then moves in as an observer', async () => {
     jest.useFakeTimers();
     try {
-      nextRoomOpenedBy('Alice');
+      noNextRoom();
       const view = render(<GameOverDialog gameContext={observer()} open onClose={jest.fn()} />);
-      await waitFor(() => expect((view.getByTestId('observer-join') as HTMLButtonElement).disabled).toBe(false));
-      nextRoomOpenedBy(undefined);
+      await act(async () => {});
+      fireEvent.click(watchButton(view));
+      expect(watchButton(view).getAttribute('aria-pressed')).toBe('true');
+      expect(watchButton(view).className).toContain('armed');
+      expect(view.getByTestId('observer-waiting').textContent).toContain('等待玩家開啟下一局房間');
       await act(async () => { await jest.advanceTimersByTimeAsync(3_000); });
-      expect((view.getByTestId('observer-join') as HTMLButtonElement).disabled).toBe(true);
+      expect(view.getByTestId('observer-waiting').textContent).toContain('等待玩家開啟下一局房間');
+      expect(pushMock).not.toHaveBeenCalled();
+
       nextRoomOpenedBy('Alice');
       await act(async () => { await jest.advanceTimersByTimeAsync(3_000); });
-      expect((view.getByTestId('observer-join') as HTMLButtonElement).disabled).toBe(false);
-      getMatchMock.mockImplementation(async (id: string) => {
-        if (id === 'room-1') return { nextMatchID: 'room-2', players: [] };
-        throw new Error('Match room-2 not found');
-      });
-      await act(async () => { await jest.advanceTimersByTimeAsync(3_000); });
-      expect((view.getByTestId('observer-join') as HTMLButtonElement).disabled).toBe(true);
-      expect(view.getByText(/等待玩家開啟下一局房間/)).toBeTruthy();
+      expect(pushMock).toHaveBeenCalledWith('/game/room-2');
+      expect(joinRoomMock).not.toHaveBeenCalled();
     } finally {
       jest.useRealTimers();
     }
   });
 
-  it('stays disabled once the next game has started (a free seat there means it was terminated)', async () => {
-    getMatchMock.mockImplementation(async (id: string) => id === 'room-1'
-      ? { nextMatchID: 'room-2', players: [] }
-      : { players: [{ id: 0, name: 'Alice', data: { started: true } }, { id: 1 }, { id: 2, name: 'Carol' }] });
-    const view = render(<GameOverDialog gameContext={observer()} open onClose={jest.fn()} />);
-    await waitFor(() => expect(getMatchMock).toHaveBeenCalledWith('room-2'));
-    expect((view.getByTestId('observer-join') as HTMLButtonElement).disabled).toBe(true);
+  it('stays armed across a remount or refresh of the results', async () => {
+    noNextRoom();
+    const first = render(<GameOverDialog gameContext={observer()} open onClose={jest.fn()} />);
+    fireEvent.click(watchButton(first));
+    first.unmount();
+    const refreshed = render(<GameOverDialog gameContext={observer()} open onClose={jest.fn()} />);
+    await waitFor(() => expect(watchButton(refreshed).getAttribute('aria-pressed')).toBe('true'));
+    expect(refreshed.getByTestId('observer-waiting').textContent).toContain('等待玩家開啟下一局房間');
   });
 
-  it('re-checks the host seat when clicked and never takes seat 0', async () => {
+  it('can be disarmed before the next room opens', async () => {
+    noNextRoom();
+    const view = render(<GameOverDialog gameContext={observer()} open onClose={jest.fn()} />);
+    fireEvent.click(watchButton(view));
+    fireEvent.click(watchButton(view));
+    expect(watchButton(view).getAttribute('aria-pressed')).toBe('false');
+    expect(view.queryByTestId('observer-waiting')).toBeNull();
+  });
+
+  it('turns into 加入觀戰 when the next room opens without being armed, and moves in on click', async () => {
     nextRoomOpenedBy('Alice');
     const view = render(<GameOverDialog gameContext={observer()} open onClose={jest.fn()} />);
-    await waitFor(() => expect((view.getByTestId('observer-join') as HTMLButtonElement).disabled).toBe(false));
+    await waitFor(() => expect(watchButton(view).textContent).toContain('加入觀戰'));
+    expect(view.getByTestId('rematch-invitation').textContent).toContain('可以加入觀戰了');
+    expect(pushMock).not.toHaveBeenCalled();
+    fireEvent.click(watchButton(view));
+    expect(pushMock).toHaveBeenCalledWith('/game/room-2');
+    expect(joinRoomMock).not.toHaveBeenCalled();
+  });
+
+  it('waits until the player who opened the next room holds its host seat', async () => {
     nextRoomOpenedBy(undefined);
-    fireEvent.click(view.getByTestId('observer-join'));
-    await waitFor(() => expect((view.getByTestId('observer-join') as HTMLButtonElement).disabled).toBe(true));
-    expect(joinPublicMatchMock).not.toHaveBeenCalled();
+    const view = render(<GameOverDialog gameContext={observer()} open onClose={jest.fn()} />);
+    fireEvent.click(watchButton(view));
+    await waitFor(() => expect(getMatchMock).toHaveBeenCalledWith('room-2'));
+    expect(view.getByTestId('observer-waiting')).toBeTruthy();
     expect(pushMock).not.toHaveBeenCalled();
   });
 
-  it('describes the disabled button with the waiting hint', async () => {
-    getMatchMock.mockResolvedValue({ players: [] });
-    const view = render(<GameOverDialog gameContext={observer()} open onClose={jest.fn()} />);
-    const describedBy = view.getByTestId('observer-join').getAttribute('aria-describedby');
-    expect(document.getElementById(describedBy!)?.textContent).toMatch(/等待玩家開啟下一局房間/);
-  });
+  it('still offers a next game that already started, but not a terminated or deleted one', async () => {
+    nextRoom([{ id: 0, name: 'Alice', data: { started: true } }, { id: 1, name: 'Bob' }, { id: 2, name: 'Carol' }]);
+    const started = render(<GameOverDialog gameContext={observer()} open onClose={jest.fn()} />);
+    await waitFor(() => expect(watchButton(started).textContent).toContain('加入觀戰'));
+    started.unmount();
 
-  it('reports a full next room and stays on the results', async () => {
-    const { LobbyError } = jest.requireMock('@/app/lobby/actions');
-    nextRoomOpenedBy('Alice');
-    joinPublicMatchMock.mockRejectedValue(new LobbyError('MATCH_FULL'));
-    const view = render(<GameOverDialog gameContext={observer()} open onClose={jest.fn()} />);
-    await waitFor(() => expect((view.getByTestId('observer-join') as HTMLButtonElement).disabled).toBe(false));
-    fireEvent.click(view.getByTestId('observer-join'));
-    await waitFor(() => expect(view.getByRole('alert').textContent).toContain('下一局已經坐滿了'));
-    expect(pushMock).not.toHaveBeenCalled();
-  });
+    nextRoom([{ id: 0, name: 'Alice', data: { started: true } }, { id: 1 }, { id: 2, name: 'Carol' }]);
+    const terminated = render(<GameOverDialog gameContext={observer()} open onClose={jest.fn()} />);
+    await waitFor(() => expect(getMatchMock).toHaveBeenCalledWith('room-2'));
+    expect(watchButton(terminated).textContent).toContain('繼續觀戰');
+    terminated.unmount();
 
-  it('needs a valid name before joining', async () => {
-    localStorage.clear();
-    nextRoomOpenedBy('Alice');
-    const view = render(<GameOverDialog gameContext={observer()} open onClose={jest.fn()} />);
-    await waitFor(() => expect(view.getByTestId('rematch-invitation')).toBeTruthy());
-    expect((view.getByTestId('observer-join') as HTMLButtonElement).disabled).toBe(true);
-    fireEvent.change(view.getByTestId('observer-name'), { target: { value: 'Eve' } });
-    expect((view.getByTestId('observer-join') as HTMLButtonElement).disabled).toBe(false);
+    getMatchMock.mockReset();
+    getMatchMock.mockImplementation(async (id: string) => {
+      if (id === 'room-1') return { nextMatchID: 'room-2', players: [] };
+      throw new Error('Match room-2 not found');
+    });
+    const deleted = render(<GameOverDialog gameContext={observer()} open onClose={jest.fn()} />);
+    await waitFor(() => expect(getMatchMock).toHaveBeenCalledWith('room-2'));
+    expect(watchButton(deleted).textContent).toContain('繼續觀戰');
   });
 
   it('is not offered in local / hot-seat games', () => {
     const view = render(
       <GameOverDialog gameContext={makeContext({ playerID: null, isMultiplayer: false })} open onClose={jest.fn()} />,
     );
-    expect(view.queryByTestId('observer-join')).toBeNull();
+    expect(view.queryByTestId('observer-watch')).toBeNull();
   });
 });
