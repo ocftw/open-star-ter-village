@@ -383,9 +383,12 @@ export function GameOverDialog({
     }
   };
 
-  const handleObserverWatch = () => {
-    if (nextMatchID) router.push(`/game/${nextMatchID}`);
-    else {
+  const handleObserverWatch = async () => {
+    if (nextMatchID) {
+      // The room may have closed since the last poll.
+      if (await isNextRoomOpen(nextMatchID)) router.push(`/game/${nextMatchID}`);
+      else setNextMatchID(null);
+    } else {
       if (keepWatching) sessionStorage.removeItem(keepWatchingKey);
       else sessionStorage.setItem(keepWatchingKey, 'true');
       setKeepWatching(!keepWatching);
@@ -478,7 +481,7 @@ export function GameOverDialog({
               )}
               {isObserver && (
                 <StickerButton
-                  onClick={handleObserverWatch}
+                  onClick={() => void handleObserverWatch()}
                   aria-pressed={nextMatchID ? undefined : keepWatching}
                   className={waitingForNextRoom ? 'armed' : undefined}
                   style={{ flex: 1 }}
@@ -493,7 +496,11 @@ export function GameOverDialog({
               )}
               <StickerButton
                 variant="ghost"
-                onClick={() => router.push('/lobby')}
+                onClick={() => {
+                  // Leaving for the lobby drops 繼續觀戰 so Back cannot pull the observer onward.
+                  sessionStorage.removeItem(keepWatchingKey);
+                  router.push('/lobby');
+                }}
                 disabled={isRematching}
                 style={{ flex: 1 }}
               >

@@ -118,6 +118,7 @@ describe('seatless visitors picking an open seat (#373)', () => {
     expect(view.getByText(/選一個空位坐下/)).toBeTruthy();
     expect((view.getByTestId('seat-name') as HTMLInputElement).value).toBe('Dana');
 
+    mockGetMatch.mockResolvedValueOnce(openRoom());
     mockGetMatch.mockResolvedValue(waitingRoom([{ id: 0, name: 'Alice' }, { id: 1, name: 'Dana' }, { id: 2, name: 'Carol' }]));
     fireEvent.click(view.getByTestId('seat-1-sit'));
 
@@ -143,6 +144,31 @@ describe('seatless visitors picking an open seat (#373)', () => {
     expect((view.getByTestId('seat-1-sit') as HTMLButtonElement).disabled).toBe(true);
     fireEvent.change(view.getByTestId('seat-name'), { target: { value: 'Eve' } });
     expect((view.getByTestId('seat-1-sit') as HTMLButtonElement).disabled).toBe(false);
+  });
+
+  it.each([
+    ['the host left', waitingRoom([{ id: 0 }, { id: 1 }, { id: 2, name: 'Carol' }])],
+    ['the game started', waitingRoom([{ id: 0, name: 'Alice', data: { started: true } }, { id: 1 }, { id: 2, name: 'Carol' }])],
+    ['someone took the seat', waitingRoom([{ id: 0, name: 'Alice' }, { id: 1, name: 'Bob' }, { id: 2, name: 'Carol' }])],
+  ])('re-checks the room before sitting and does not join once %s', async (_label, changedRoom) => {
+    mockGetMatch.mockResolvedValue(openRoom());
+    const view = render(<GameRoomPage />);
+    await waitFor(() => expect(view.getByTestId('seat-1-sit')).toBeTruthy());
+    mockGetMatch.mockResolvedValue(changedRoom);
+    const callsBeforeClick = mockGetMatch.mock.calls.length;
+    fireEvent.click(view.getByTestId('seat-1-sit'));
+    // One re-check before joining, then the refresh after the attempt.
+    await waitFor(() => expect(mockGetMatch.mock.calls.length).toBeGreaterThanOrEqual(callsBeforeClick + 2));
+    expect(mockJoinRoom).not.toHaveBeenCalled();
+    expect(localStorage.getItem('open-star-ter-village.match-credentials.room-1')).toBeNull();
+  });
+
+  it('does not tell a visitor to pick a seat when every seat is taken', async () => {
+    mockGetMatch.mockResolvedValue(waitingRoom([{ id: 0, name: 'Alice' }, { id: 1, name: 'Bob' }, { id: 2, name: 'Carol' }]));
+    const view = render(<GameRoomPage />);
+    await waitFor(() => expect(view.getByTestId('seat-grid')).toBeTruthy());
+    expect(view.queryByText(/選一個空位坐下/)).toBeNull();
+    expect(view.queryByTestId('seat-name')).toBeNull();
   });
 
   it('does not offer seats to a visitor who already holds one', async () => {

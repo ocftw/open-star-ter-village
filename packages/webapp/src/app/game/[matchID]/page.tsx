@@ -163,7 +163,8 @@ export default function GameRoomPage() {
   // with whoever opened the room: until it is held the room may still be
   // mid-playAgain, and only a seated host can start.
   const hostSeated = Boolean(match?.players.some((player) => player.id === 0 && hasPlayerName(player)));
-  const canPickSeat = !credentials && !hasStarted && hostSeated;
+  const hasOpenSeat = Boolean(match?.players.some((player) => player.id !== 0 && !hasPlayerName(player)));
+  const canPickSeat = !credentials && !hasStarted && hostSeated && hasOpenSeat;
 
   // Poll for the whole room lifetime (not just the waiting room): mid-game it
   // detects leave-termination, and after game over it detects the TTL purge so
@@ -217,6 +218,15 @@ export default function GameRoomPage() {
     setSittingSeatID(seatID);
 
     try {
+      // The room may have changed since the last poll; the join endpoint does
+      // not check that the host is seated or the game has not started.
+      const latest = await getMatch(matchID);
+      const seatStillOpen = latest.players.some((player) => String(player.id) === seatID && !hasPlayerName(player));
+      const hostStillSeated = latest.players.some((player) => player.id === 0 && hasPlayerName(player));
+      if (hasHostStarted(latest) || !hostStillSeated || !seatStillOpen) {
+        showSnackbar('That seat is no longer open.', 'error');
+        return;
+      }
       const joined = await joinRoom(matchID, playerName, seatID);
       saveCredentials(joined);
       setCredentials(joined);

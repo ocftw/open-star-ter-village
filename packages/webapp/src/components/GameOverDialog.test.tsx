@@ -288,8 +288,31 @@ describe('observer 繼續觀戰 (#373)', () => {
     expect(view.getByTestId('rematch-invitation').textContent).toContain('可以加入觀戰了');
     expect(pushMock).not.toHaveBeenCalled();
     fireEvent.click(watchButton(view));
-    expect(pushMock).toHaveBeenCalledWith('/game/room-2');
+    await waitFor(() => expect(pushMock).toHaveBeenCalledWith('/game/room-2'));
     expect(joinRoomMock).not.toHaveBeenCalled();
+  });
+
+  it('re-checks the next room on 加入觀戰 and stays when it was deleted since the last poll', async () => {
+    nextRoomOpenedBy('Alice');
+    const view = render(<GameOverDialog gameContext={observer()} open onClose={jest.fn()} />);
+    await waitFor(() => expect(watchButton(view).textContent).toContain('加入觀戰'));
+    getMatchMock.mockImplementation(async (id: string) => {
+      if (id === 'room-1') return { nextMatchID: 'room-2', players: [] };
+      throw new Error('Match room-2 not found');
+    });
+    fireEvent.click(watchButton(view));
+    await waitFor(() => expect(watchButton(view).textContent).toContain('繼續觀戰'));
+    expect(pushMock).not.toHaveBeenCalled();
+  });
+
+  it('drops the armed 繼續觀戰 when leaving for the lobby', async () => {
+    noNextRoom();
+    const view = render(<GameOverDialog gameContext={observer()} open onClose={jest.fn()} />);
+    fireEvent.click(watchButton(view));
+    expect(sessionStorage.getItem('open-star-ter-village.keep-watching.room-1')).toBe('true');
+    fireEvent.click(view.getByRole('button', { name: /回大廳/ }));
+    expect(pushMock).toHaveBeenCalledWith('/lobby');
+    expect(sessionStorage.getItem('open-star-ter-village.keep-watching.room-1')).toBeNull();
   });
 
   it('waits until the player who opened the next room holds its host seat', async () => {
