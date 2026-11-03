@@ -9,7 +9,9 @@ import { Modal, StickerButton } from '@/components/design';
 import LobbyNav from '@/components/lobby/LobbyNav';
 import Note from '@/components/lobby/Note';
 import SeatCard from '@/components/lobby/SeatCard';
-import { clearCredentials, loadCredentials, type MatchCredentials } from '@/lib/matchCredentials';
+import Field from '@/components/lobby/Field';
+import { clearCredentials, loadCredentials, saveCredentials, type MatchCredentials } from '@/lib/matchCredentials';
+import { PLAYER_NAME_STORAGE_KEY, isValidPlayerName } from '@/lib/playerName';
 import { usePolling } from '@/lib/usePolling';
 import { useSnackbar } from '@/lib/useSnackbar';
 import {
@@ -19,6 +21,7 @@ import {
   hasHostStarted,
   hasPlayerName,
   isMatchNotFoundError,
+  joinRoom,
   leaveRoom,
   startRoom,
   type LobbyMatch,
@@ -70,6 +73,11 @@ export default function GameRoomPage() {
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
   const [isExpired, setIsExpired] = React.useState(false);
   const { snackbar, showSnackbar, closeSnackbar } = useSnackbar();
+  const [seatName, setSeatName] = React.useState('');
+  const [sittingSeatID, setSittingSeatID] = React.useState<string | null>(null);
+  React.useEffect(() => {
+    setSeatName(localStorage.getItem(PLAYER_NAME_STORAGE_KEY) ?? '');
+  }, []);
 
   const pollMatch = React.useCallback(async () => {
     try {
@@ -149,7 +157,14 @@ export default function GameRoomPage() {
   // A completed match can have released seats. Keep mounting its final board
   // and result instead of treating a post-game departure as early termination.
   const shouldShowBoard = Boolean(match) && (allSeatsFilled || isFinished) && hasStarted && !isExpired;
-  const isMutating = isStarting || isLeaving || isRefreshing;
+  const isMutating = isStarting || isLeaving || isRefreshing || sittingSeatID !== null;
+  // A seatless visitor — e.g. an observer who followed 繼續觀戰 here (#373) —
+  // can sit in a seat left open before the game starts. The host seat stays
+  // with whoever opened the room: until it is held the room may still be
+  // mid-playAgain, and only a seated host can start.
+  const hostSeated = Boolean(match?.players.some((player) => player.id === 0 && hasPlayerName(player)));
+  const hasOpenSeat = Boolean(match?.players.some((player) => player.id !== 0 && !hasPlayerName(player)));
+  const canPickSeat = !credentials && !hasStarted && hostSeated && hasOpenSeat;
 
   // Poll for the whole room lifetime (not just the waiting room): mid-game it
   // detects leave-termination, and after game over it detects the TTL purge so
@@ -190,6 +205,36 @@ export default function GameRoomPage() {
       showSnackbar(getLobbyErrorMessage(error, 'Unable to start the game.'), 'error');
     } finally {
       setIsStarting(false);
+    }
+  };
+
+  const handleSit = async (seatID: string) => {
+    if (!isValidPlayerName(seatName)) {
+      showSnackbar('Enter a player name between 1 and 20 characters before sitting down.', 'error');
+      return;
+    }
+    const playerName = seatName.trim();
+    localStorage.setItem(PLAYER_NAME_STORAGE_KEY, playerName);
+    setSittingSeatID(seatID);
+
+    try {
+      // The room may have changed since the last poll; the join endpoint does
+      // not check that the host is seated or the game has not started.
+      const latest = await getMatch(matchID);
+      const seatStillOpen = latest.players.some((player) => String(player.id) === seatID && !hasPlayerName(player));
+      const hostStillSeated = latest.players.some((player) => player.id === 0 && hasPlayerName(player));
+      if (hasHostStarted(latest) || !hostStillSeated || !seatStillOpen) {
+        showSnackbar('That seat is no longer open.', 'error');
+        return;
+      }
+      const joined = await joinRoom(matchID, playerName, seatID);
+      saveCredentials(joined);
+      setCredentials(joined);
+    } catch (error) {
+      showSnackbar(getLobbyErrorMessage(error, 'Unable to take that seat.'), 'error');
+    } finally {
+      await pollMatch();
+      setSittingSeatID(null);
     }
   };
 
@@ -345,11 +390,25 @@ export default function GameRoomPage() {
                   你的座位是 Seat {credentials.playerID}，等其他人加入中。 Seat {credentials.playerID} is
                   reserved in this browser. Waiting for everyone to join.
                 </Note>
+              ) : canPickSeat ? (
+                <Note tone="info">
+                  你正在觀戰。選一個空位坐下就能加入這局。 You are watching — pick an open seat to join this game.
+                </Note>
               ) : (
                 <Note tone="info">
                   這個瀏覽器沒有座位，想入座請從大廳加入。 This browser has no saved seat for the room —
                   join from the lobby to claim one.
                 </Note>
+              )}
+              {canPickSeat && (
+                <Field
+                  label="玩家名稱 · Player name"
+                  placeholder="你的暱稱"
+                  value={seatName}
+                  onChange={(event) => setSeatName(event.target.value)}
+                  error={seatName.length > 0 && !isValidPlayerName(seatName)}
+                  data-testid="seat-name"
+                />
               )}
 
               {allSeatsFilled && !hasStarted && (
@@ -369,6 +428,8 @@ export default function GameRoomPage() {
                   playerName={hasPlayerName(player) ? player.name : undefined}
                   isHost={player.id === 0 && hasPlayerName(player)}
                   isYou={credentials?.playerID === String(player.id)}
+                  onSit={canPickSeat && player.id !== 0 ? () => void handleSit(String(player.id)) : undefined}
+                  sitDisabled={isMutating || !isValidPlayerName(seatName)}
                 />
               ))}
             </div>

@@ -158,7 +158,7 @@ export async function joinRoom(
 export async function joinPublicMatch(
   matchID: string,
   playerName: string,
-): Promise<{ playerID: string; credentials: string }> {
+): Promise<MatchCredentials> {
   const match = await getMatch(matchID);
   const openSeatID = getOpenSeatID(match);
 
@@ -166,12 +166,7 @@ export async function joinPublicMatch(
     throw new LobbyError('MATCH_FULL');
   }
 
-  const credentials = await joinRoom(matchID, playerName, openSeatID);
-
-  return {
-    playerID: credentials.playerID,
-    credentials: credentials.credential,
-  };
+  return joinRoom(matchID, playerName, openSeatID);
 }
 
 export async function leaveRoom(matchID: string, playerID: string, credential: string): Promise<void> {
