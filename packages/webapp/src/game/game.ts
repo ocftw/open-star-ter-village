@@ -16,9 +16,12 @@ export const OpenStarTerVillage: Game<GameState, Record<string, unknown>, GameSe
   name: 'OpenStarTerVillage',
   minPlayers: 2,
   maxPlayers: 4,
-  // boardgame.io checks min/maxPlayers only on /create; this also covers playAgain.
+  // boardgame.io checks min/maxPlayers only on /create; this also covers playAgain
+  // and socket sync, which passes a client's raw (possibly fractional) numPlayers.
   validateSetupData: (_setupData, numPlayers) =>
-    numPlayers >= 2 && numPlayers <= 4 ? undefined : 'numPlayers must be 2 to 4',
+    Number.isInteger(numPlayers) && numPlayers >= 2 && numPlayers <= 4
+      ? undefined
+      : 'numPlayers must be 2 to 4',
   setup: setup,
   turn: {
     /**
