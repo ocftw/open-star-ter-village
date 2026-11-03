@@ -437,6 +437,27 @@ body:has(.modal[open]) {
   }
 }
 
+/* Armed toggle (observer 繼續觀戰, #373): stays pressed and breathes while waiting. */
+.btn-sticker.armed {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--ink);
+  animation: armed-pulse 1.6s ease-in-out infinite;
+}
+@keyframes armed-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn-sticker.armed {
+    animation: none;
+  }
+}
+
 /* 加班 Overtime token chip (ContextAction): pulses while the token is engaged. */
 @keyframes ot-pulse {
   0%,

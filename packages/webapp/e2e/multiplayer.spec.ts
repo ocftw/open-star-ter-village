@@ -118,6 +118,7 @@ test.describe('Developer widget', () => {
     await selectDevPerspective(page, 'observer');
     await expect(page).toHaveURL(/user=observer/);
     await expect(page.getByTestId('observer-mode-banner')).toBeVisible();
+    await expect(page.getByTestId('waiting-for-player-alert')).toContainText(/Waiting for Alice/i);
     await expect(page.locator('[data-testid="context-action"]')).toHaveCount(0);
     await expect(page.locator('[data-testid^="hand-card-"]')).toHaveCount(0);
 
@@ -265,6 +266,7 @@ test.describe('Full multiplayer flow', () => {
     // Should render the board in observer mode: banner + player chips, no hand/action controls
     await expect(observerPage.locator('[data-testid="observer-mode-banner"]')).toBeVisible({ timeout: 15_000 });
     await expect(observerPage.locator('[data-testid^="player-status-"]').first()).toBeVisible({ timeout: 15_000 });
+    await expect(observerPage.locator('[data-testid="waiting-for-player-alert"]')).toContainText(/Waiting for Alice/i);
     await expect(observerPage.locator('[data-testid="context-action"]')).toHaveCount(0);
     await observer.close();
   });

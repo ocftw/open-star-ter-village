@@ -7,7 +7,7 @@ import { Game } from 'boardgame.io';
 import { GameState, ProjectSlotState } from '@/game';
 import { GameContext } from './GameContextHelpers';
 import { GAME_NAME, GAME_SERVER_URL, lobbyClient } from '@/lib/lobbyClient';
-import { getLobbyErrorMessage, getMatch, joinRoom } from '@/app/lobby/actions';
+import { getLobbyErrorMessage, getMatch, hasHostStarted, hasPlayerName, joinRoom } from '@/app/lobby/actions';
 import { usePolling } from '@/lib/usePolling';
 import { loadCredentials, saveCredentials, type MatchCredentials } from '@/lib/matchCredentials';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
@@ -15,6 +15,7 @@ import {
   UserActionMoves,
   getAssignedJobName,
   getCurrentAction,
+  resetAction,
   setAssignedJobName,
   setCurrentAction,
 } from '@/lib/reducers/actionStepSlice';
@@ -31,6 +32,10 @@ import HandPanel from './board/HandPanel';
 import JobMarket from './board/JobMarket';
 import ContextAction from './board/ContextAction';
 import DiscardPanel from './board/DiscardPanel';
+import WaitingForPlayerAlert from './board/WaitingForPlayerAlert';
+import GameOverNote from './board/GameOverNote';
+import { isFourFreedomsDiscardPending } from './board/fourFreedomsDiscard';
+import { getActionAreaView } from './board/actionAreaView';
 import BoardProjectSlot from './board/BoardProjectSlot';
 import EventBanner from './board/EventBanner';
 import MobileSheet from './board/MobileSheet';
@@ -42,20 +47,26 @@ const Board: React.FC<GameContext> = (gameContext) => {
   const { G, playerID, ctx, matchData } = gameContext;
   const dispatch = useAppDispatch();
   const currentAction = useAppSelector(getCurrentAction);
-  const isMyTurn = playerID === ctx.currentPlayer;
   const gameover = ctx.gameover as { winners: string[] } | undefined;
 
   const [showGameOver, setShowGameOver] = React.useState(true);
-  const isLastPlayer = ctx.playOrderPos === ctx.numPlayers - 1;
-  const hasPendingDiscard = G.table.fourFreedomsPendingDiscards.length > 0;
-  const outOfAP = playerID != null && (G.players[playerID]?.token?.actions ?? 1) === 0;
-  // Show the discard panel instead of the action bar when it's the last player's turn and
-  // they need to remove 2 job cards (四大自由), either because AP is exhausted or they have
-  // explicitly signalled they are done with their action phase (actionPhaseDone).
-  const showDiscardPanel = isMyTurn && isLastPlayer && hasPendingDiscard &&
-    (outOfAP || G.table.actionPhaseDone);
+  // 四大自由: the last player owes a 2-card discard. They get the discard panel instead of
+  // the action bar; everyone else, observers included, sees who the round is waiting on.
+  // After game over everyone gets the game-over note instead.
+  const discardPending = isFourFreedomsDiscardPending(G, ctx);
+  const actionAreaView = getActionAreaView(playerID, ctx.currentPlayer, {
+    discardPending,
+    gameOver: !!gameover,
+  });
+  const showDiscardPanel = actionAreaView === 'discard';
 
-  const idle = isMyTurn && currentAction === null && !showDiscardPanel && !gameover;
+  const idle = actionAreaView === 'context' && currentAction === null && !gameover;
+  // The game-over note replaces ContextAction and its 取消 button, so drop any
+  // half-built action rather than leave its cards selectable.
+  const hasEnded = gameover !== undefined;
+  React.useEffect(() => {
+    if (hasEnded) dispatch(resetAction());
+  }, [hasEnded, dispatch]);
   const isMobile = useIsMobile();
 
   // 斜槓青年 target-position picker: during Recruit with a mismatched
@@ -95,40 +106,19 @@ const Board: React.FC<GameContext> = (gameContext) => {
   };
 
   // Shared between the desktop layout and the mobile bottom sheet.
-  const actionArea = isMyTurn ? (
-    showDiscardPanel ? (
+  const actionArea =
+    actionAreaView === 'discard' ? (
       <DiscardPanel gameContext={gameContext} />
-    ) : (
+    ) : actionAreaView === 'context' ? (
       <ContextAction gameContext={gameContext} />
-    )
-  ) : (
-    playerID !== null && (
-      <div
-        data-testid="waiting-for-player-alert"
-        className="paper-card"
-        style={{
-          padding: '10px 16px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 10,
-          fontSize: 13,
-          color: 'var(--ink-soft)',
-        }}
-      >
-        <span
-          style={{
-            width: 8,
-            height: 8,
-            borderRadius: 999,
-            background: 'var(--orange)',
-            flexShrink: 0,
-          }}
-        />
-        等待 {getPlayerName(matchData, ctx.currentPlayer)} 行動中… Waiting for{' '}
-        {getPlayerName(matchData, ctx.currentPlayer)}…
-      </div>
-    )
-  );
+    ) : actionAreaView === 'gameover' ? (
+      <GameOverNote onShowResults={() => setShowGameOver(true)} />
+    ) : (
+      <WaitingForPlayerAlert
+        playerName={getPlayerName(matchData, ctx.currentPlayer)}
+        pendingDiscard={discardPending}
+      />
+    );
 
   // Only occupied slots take card space; capacity is one compact indicator (F-003).
   const occupiedSlots = G.table.projectBoard.filter((slot) => slot.card);
@@ -289,6 +279,25 @@ const Board: React.FC<GameContext> = (gameContext) => {
   );
 };
 
+// Offline dev games run on Local(), where boardgame.io still reports
+// isMultiplayer; observers following the next room (#373) need the lobby server.
+const LocalGameContext = React.createContext(false);
+
+// playAgain publishes nextMatchID before its caller has taken a seat, and the
+// opener can leave again; the next room only counts as open for observers
+// (#373) once its host seat is held — an empty room reads as abandoned. A
+// started room with a vacated seat was terminated (#420); a deleted one is gone.
+async function isNextRoomOpen(matchID: string): Promise<boolean> {
+  try {
+    const match = await getMatch(matchID);
+    const hostSeated = match.players.some(player => player.id === 0 && hasPlayerName(player));
+    const terminated = !match.gameover && hasHostStarted(match) && match.players.some(player => !hasPlayerName(player));
+    return hostSeated && !terminated;
+  } catch {
+    return false;
+  }
+}
+
 export function GameOverDialog({
   gameContext,
   open,
@@ -298,7 +307,7 @@ export function GameOverDialog({
   open: boolean;
   onClose: () => void;
 }) {
-  const { G, ctx, matchData, matchID, isMultiplayer } = gameContext;
+  const { G, ctx, matchData, matchID, isMultiplayer, playerID } = gameContext;
   const gameover = ctx.gameover as { winners: string[] } | undefined;
   const router = useRouter();
 
@@ -311,20 +320,38 @@ export function GameOverDialog({
   const [nextMatchID, setNextMatchID] = React.useState<string | null>(null);
   const [dismissedInvitation, setDismissedInvitation] = React.useState<string | null>(null);
   const hasFinished = gameover !== undefined;
+  // Observers (#373) cannot playAgain without a seat. 繼續觀戰 arms a move
+  // into the next room as a spectator as soon as a player opens it; once it
+  // is open the button becomes 加入觀戰. Seats are picked in that room.
+  const isLocalGame = React.useContext(LocalGameContext);
+  const isObserver = isMultiplayer && !isLocalGame && playerID === null;
+  // Kept per tab in sessionStorage so a remount or refresh stays armed.
+  const keepWatchingKey = `open-star-ter-village.keep-watching.${matchID}`;
+  const [keepWatching, setKeepWatching] = React.useState(false);
   React.useEffect(() => {
     setSavedCredentials(isMultiplayer && hasFinished ? loadCredentials(matchID) : null);
     setNextMatchID(null);
     setDismissedInvitation(null);
+    setRematchError(null);
   }, [isMultiplayer, matchID, hasFinished]);
+  React.useEffect(() => {
+    setKeepWatching(sessionStorage.getItem(keepWatchingKey) === 'true');
+  }, [keepWatchingKey]);
 
   // playAgain persists this on the completed match, so peers recover the
   // invitation after refresh/reconnect even if they closed the result dialog.
   usePolling(async () => {
     const metadata = await getMatch(matchID);
-    const invitation = metadata.nextMatchID ?? null;
+    let invitation = metadata.nextMatchID ?? null;
+    if (invitation && isObserver && !(await isNextRoomOpen(invitation))) invitation = null;
     if (invitation !== nextMatchID) setNextMatchID(invitation);
-  }, 3_000, isMultiplayer && hasFinished && savedCredentials !== null);
+  }, 3_000, isMultiplayer && hasFinished && (savedCredentials !== null || isObserver));
   const invitationVisible = nextMatchID !== null && dismissedInvitation !== nextMatchID;
+  React.useEffect(() => {
+    if (!isObserver || !keepWatching || !nextMatchID) return;
+    sessionStorage.removeItem(keepWatchingKey);
+    router.push(`/game/${nextMatchID}`);
+  }, [isObserver, keepWatching, keepWatchingKey, nextMatchID, router]);
   const handleClose = () => {
     setDismissedInvitation(nextMatchID);
     onClose();
@@ -356,14 +383,27 @@ export function GameOverDialog({
     }
   };
 
+  const handleObserverWatch = async () => {
+    if (nextMatchID) {
+      // The room may have closed since the last poll.
+      if (await isNextRoomOpen(nextMatchID)) router.push(`/game/${nextMatchID}`);
+      else setNextMatchID(null);
+    } else {
+      if (keepWatching) sessionStorage.removeItem(keepWatchingKey);
+      else sessionStorage.setItem(keepWatchingKey, 'true');
+      setKeepWatching(!keepWatching);
+    }
+  };
+  const waitingForNextRoom = keepWatching && !nextMatchID;
+
   return (
     <Modal open={open || invitationVisible} onClose={handleClose} ariaLabel="遊戲結束" width="min(440px, 100%)">
       {gameover && (
         <div>
           {invitationVisible && (
             <div role="status" data-testid="rematch-invitation" style={{ background: 'var(--teal-soft)', borderRadius: 12, padding: 12, marginBottom: 14 }}>
-              <strong>下一局已開好，一起再玩一局吧！</strong>
-              <div className="en-cap">The next game is ready — join your group</div>
+              <strong>{isObserver ? '下一局房間已開好，可以加入觀戰了！' : '下一局已開好，一起再玩一局吧！'}</strong>
+              <div className="en-cap">{isObserver ? 'The next room is open — you can watch it' : 'The next game is ready — join your group'}</div>
             </div>
           )}
           <div style={{ textAlign: 'center' }}>
@@ -439,15 +479,44 @@ export function GameOverDialog({
                   {isRematching ? '加入中…' : nextMatchID ? '加入下一局' : '再玩一次'} <span className="tag-en" style={{ color: 'rgba(255,255,255,0.85)' }}>{nextMatchID ? 'Join next game' : 'Play again'}</span>
                 </StickerButton>
               )}
+              {isObserver && (
+                <StickerButton
+                  onClick={() => void handleObserverWatch()}
+                  aria-pressed={nextMatchID ? undefined : keepWatching}
+                  className={waitingForNextRoom ? 'armed' : undefined}
+                  style={{ flex: 1 }}
+                  data-testid="observer-watch"
+                >
+                  {nextMatchID ? (
+                    <>加入觀戰 <span className="tag-en" style={{ color: 'rgba(255,255,255,0.85)' }}>Watch next</span></>
+                  ) : (
+                    <>繼續觀戰 <span className="tag-en" style={{ color: 'rgba(255,255,255,0.85)' }}>Watch on</span></>
+                  )}
+                </StickerButton>
+              )}
               <StickerButton
                 variant="ghost"
-                onClick={() => router.push('/lobby')}
+                onClick={() => {
+                  // Leaving for the lobby drops 繼續觀戰 so Back cannot pull the observer onward.
+                  sessionStorage.removeItem(keepWatchingKey);
+                  router.push('/lobby');
+                }}
                 disabled={isRematching}
                 style={{ flex: 1 }}
               >
                 回大廳 <span className="tag-en">Lobby</span>
               </StickerButton>
             </div>
+            {waitingForNextRoom && (
+              <div
+                role="status"
+                data-testid="observer-waiting"
+                style={{ marginTop: 10, textAlign: 'center', fontSize: 13, fontWeight: 700, color: 'var(--ink-soft)' }}
+              >
+                ⏳ 等待玩家開啟下一局房間
+                <div className="en-cap">Waiting for a player to open the next room</div>
+              </div>
+            )}
             <StickerButton variant="ghost" size="sm" onClick={handleClose} style={{ width: '100%', marginTop: 10 }}>
               關閉，查看最終盤面 · Close and inspect the board
             </StickerButton>
@@ -494,7 +563,11 @@ const Boardgame: React.FC<Props> = ({ isLocal, gameConfig, numPlayers, ...props 
     });
   }, [isLocal, gameConfig, numPlayers]);
 
-  return <BoardgameComponent {...props} />;
+  return (
+    <LocalGameContext.Provider value={isLocal}>
+      <BoardgameComponent {...props} />
+    </LocalGameContext.Provider>
+  );
 }
 
 export default Boardgame;
