@@ -45,7 +45,7 @@
   --proj-data: #9b2123; /* 開放資料 */
   --proj-data-ink: #5a0d0e;
 
-  /* ——— Player seat colors (3-6 players) ——— */
+  /* ——— Player seat colors (online play seats 2-4; p4/p5 are spare) ——— */
   --p0: #ef5826;
   --p1: #1ea6b9;
   --p2: #6c688b;

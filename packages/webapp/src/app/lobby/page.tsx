@@ -23,7 +23,7 @@ import {
   type VisibleMatch,
 } from './actions';
 
-const PLAYER_COUNT_OPTIONS = [3, 4, 5, 6] as const;
+const PLAYER_COUNT_OPTIONS = [2, 3, 4] as const;
 
 function CardHeading({
   icon,
@@ -67,7 +67,7 @@ function CardHeading({
 export default function LobbyPage() {
   const router = useRouter();
   const [playerName, setPlayerName] = React.useState('');
-  const [numPlayers, setNumPlayers] = React.useState<number>(3);
+  const [numPlayers, setNumPlayers] = React.useState<number>(4);
   const [matches, setMatches] = React.useState<VisibleMatch[]>([]);
   const [mySeatMatchIDs, setMySeatMatchIDs] = React.useState<Record<string, boolean>>({});
   const [loadError, setLoadError] = React.useState(false);
@@ -210,7 +210,7 @@ export default function LobbyPage() {
             <p style={{ fontSize: 13, color: 'var(--ink-soft)', lineHeight: 1.5, marginTop: 10 }}>
               當村長，邀請朋友加入，人到齊後開始遊戲。
               <br />
-              <span className="en-cap">Host a match — invite up to 6 players.</span>
+              <span className="en-cap">Host a match for 2 to 4 players.</span>
             </p>
 
             <div style={{ marginTop: 20, display: 'flex', flexDirection: 'column', gap: 14 }}>

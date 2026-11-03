@@ -96,7 +96,7 @@ layout_list:
     image: /images/uploads/boardgame.jpg
   - type: layout_cta_banner
     title: 線上桌遊一起玩！
-    text: 免下載，直接加入或建立 3–6 人遊戲，和朋友一起體驗開源協作。
+    text: 免下載，直接加入或建立 2–4 人遊戲，和朋友一起體驗開源協作。
     cta_label: 來玩線上桌遊！
     cta_url: https://open-star-ter-village.fly.dev/
     analytics_id: resource_play_online

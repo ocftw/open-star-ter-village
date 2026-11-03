@@ -59,7 +59,7 @@ export default function RulesPage() {
             <a href="#turns" className="btn-sticker ghost">閱讀玩法 ↓</a>
           </div>
           <div className="rules-facts" aria-label="遊戲概要">
-            <span>👥 3–6 位玩家</span>
+            <span>👥 2–4 位玩家</span>
             <span>⏱ 約 60 分鐘</span>
             <span>⚡ 每回合 4 個行動點</span>
           </div>
@@ -77,7 +77,7 @@ export default function RulesPage() {
           <div className="rules-grid">
             <article className="rules-card">
               <h3>建立或加入房間</h3>
-              <p>到遊戲大廳建立房間，邀請朋友加入。3–6 人就座後即可開始。</p>
+              <p>到遊戲大廳建立房間，邀請朋友加入。2–4 人就座後即可開始。</p>
             </article>
             <article className="rules-card">
               <h3>認識桌面</h3>
