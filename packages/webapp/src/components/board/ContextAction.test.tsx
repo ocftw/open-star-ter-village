@@ -302,3 +302,19 @@ it('keeps mobile actions and the expandable hand accessible in a stack', () => {
   fireEvent.click(screen.getByRole('button', { name: '收合手牌 · Hide hand' }));
   expect(screen.queryByRole('button', { name: '手牌' })).toBeNull();
 });
+
+it('lets a spent 1-AP action start so the overtime prompt can appear', () => {
+  setup((G) => ActionSlotMutator.occupy(G.table.actionSlots.contributeOwnedProjects));
+  const button = actionButton(UserActionMoves.ContributeOwnedProjects);
+  expect(button.disabled).toBe(false);
+  fireEvent.click(button);
+  expect(screen.getByTestId('overtime-confirm')).toBeTruthy();
+});
+
+it('keeps a spent 1-AP action disabled when no overtime token remains', () => {
+  setup((G) => {
+    ActionSlotMutator.occupy(G.table.actionSlots.contributeOwnedProjects);
+    PlayersMutator.resetOvertimeTokens(G.players, '0', 0);
+  });
+  expect(actionButton(UserActionMoves.ContributeOwnedProjects).disabled).toBe(true);
+});

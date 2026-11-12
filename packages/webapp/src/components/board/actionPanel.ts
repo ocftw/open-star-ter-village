@@ -1,7 +1,9 @@
 import { PlayersSelector } from '@/game/store/slice/players';
 import { ProjectSlotSelector } from '@/game/store/slice/projectSlot/projectSlot';
 import {
+  ActionExecutionOptions,
   ValidatableState,
+  ValidationResult,
   validateContributeJoinedProjects,
   validateContributeOwnedProjects,
   validateCreateProject,
@@ -18,6 +20,12 @@ export const PANEL_ACTIONS = [
   { name: UserActionMoves.Recruit, title: '加入專案', en: 'JOIN' },
 ] as const;
 
+
+/** A move is selectable if it is legal now, or legal with an overtime token. */
+function canPass(check: (opts?: ActionExecutionOptions) => ValidationResult): boolean {
+  return check().valid || check({ useOvertime: true }).valid;
+}
+
 /** Offer an action only when at least one selection passes the server's validator. */
 export function canSelectAction(G: ValidatableState, playerID: string, name: ActionMoveName): boolean {
   switch (name) {
@@ -25,7 +33,7 @@ export function canSelectAction(G: ValidatableState, playerID: string, name: Act
       return PlayersSelector.getProjectCards(G.players, playerID).some((project) =>
         G.table.jobSlots.some((job) =>
           Object.keys(project.requirements).some((profession) =>
-            validateCreateProject(G, playerID, project.id, job.id, profession).valid,
+            canPass((opts) => validateCreateProject(G, playerID, project.id, job.id, profession, opts)),
           ),
         ),
       );
@@ -34,7 +42,7 @@ export function canSelectAction(G: ValidatableState, playerID: string, name: Act
         const card = slot.card;
         return card && G.table.jobSlots.some((job) =>
           Object.keys(card.requirements).some((profession) =>
-            validateRecruit(G, playerID, job.id, slot.id, profession).valid,
+            canPass((opts) => validateRecruit(G, playerID, job.id, slot.id, profession, opts)),
           ),
         );
       });
@@ -45,11 +53,13 @@ export function canSelectAction(G: ValidatableState, playerID: string, name: Act
       return G.table.projectBoard.some((slot) => slot.card &&
         Object.entries(slot.card.requirements).some(([jobName, required]) =>
           ProjectSlotSelector.getJobContribution(slot, jobName) < required &&
-          validate(G, playerID, [{ projectSlotId: slot.id, jobName, value: 1 }]).valid,
+          canPass((opts) => validate(G, playerID, [{ projectSlotId: slot.id, jobName, value: 1 }], opts)),
         ),
       );
     }
     case 'removeAndRefillJobs':
-      return G.table.jobSlots.some((job) => validateRemoveAndRefillJobs(G, playerID, [job.id]).valid);
+      return G.table.jobSlots.some((job) =>
+        canPass((opts) => validateRemoveAndRefillJobs(G, playerID, [job.id], opts)),
+      );
   }
 }
