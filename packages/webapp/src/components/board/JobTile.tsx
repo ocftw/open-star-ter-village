@@ -4,37 +4,42 @@ type JobTileProps = {
   id: string;
   name: string;
   selected?: boolean;
+  visualState?: 'default' | 'focused' | 'generalHint' | 'change';
   onClick?: () => void;
 };
 
-/** Compact job-market tile (design: JobCardB). */
-export default function JobTile({ id, name, selected = false, onClick }: JobTileProps) {
+/** JobCard: avatar + name. Selection remains owned by JobMarket. */
+export default function JobTile({
+  id,
+  name,
+  selected = false,
+  visualState,
+  onClick,
+}: JobTileProps) {
   const meta = getJobMetaByName(name);
+  const state = visualState ?? (selected ? 'focused' : 'default');
+  // Figma state annotations were unavailable: assume ring/lift for Focused,
+  // dashed warm hint for GeneralHint, muted swap cue for Change (visual only).
   return (
-    <div
+    <button
+      type="button"
+      className="job-tile"
       data-testid={`job-card-${id}`}
       data-job-name={name}
       data-selected={selected || undefined}
+      data-visual-state={state}
+      aria-label={name}
+      aria-pressed={selected}
+      disabled={!onClick}
       onClick={onClick}
-      style={{
-        background: 'white',
-        border: selected ? '2.5px solid var(--orange)' : '2px solid var(--ink)',
-        borderRadius: 14,
-        boxShadow: selected ? '0 4px 0 var(--orange)' : 'var(--shadow-soft)',
-        padding: 10,
-        cursor: onClick ? 'pointer' : 'default',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: 6,
-        transition: 'transform 0.1s',
-        transform: selected ? 'translateY(-3px)' : 'none',
-      }}
     >
       {meta && <CharacterAvatar role={meta.role} />}
-      <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--ink)', textAlign: 'center' }}>
-        {name}
-      </div>
-    </div>
+      <span className="job-tile-name">{name}</span>
+      {state === 'change' && (
+        <span className="job-tile-change" aria-hidden="true" title="即將更換">
+          ↻
+        </span>
+      )}
+    </button>
   );
 }

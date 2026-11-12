@@ -372,6 +372,95 @@ body:has(.modal[open]) {
   height: 88px;
 }
 
+/* JobCard (story 12): Figma desktop footprint is about 124 × 106. */
+.job-tile {
+  appearance: none;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  justify-self: center;
+  gap: 8px;
+  width: min(124px, 100%);
+  min-width: 0;
+  min-height: 106px;
+  padding: 12px 8px;
+  border: 2px solid var(--ink);
+  border-radius: var(--radius);
+  background: #fff9f0;
+  color: var(--ink);
+  box-shadow: var(--shadow-sticker);
+  font-family: var(--font-zh);
+  text-align: center;
+}
+.job-tile:disabled {
+  cursor: default;
+}
+.job-tile-name {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.job-tile[data-visual-state='focused'] {
+  border-color: var(--orange);
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
+  box-shadow: 0 4px 0 var(--orange);
+  transform: translateY(-3px);
+}
+.job-tile[data-visual-state='generalHint'] {
+  border-style: dashed;
+  border-color: var(--orange-deep);
+  background: #fff0e2;
+}
+.job-tile[data-visual-state='change'] {
+  border-style: dashed;
+  border-color: var(--ink-soft);
+  background: #f3e6d7;
+  box-shadow: none;
+}
+.job-tile[data-visual-state='change'] .job-char {
+  filter: grayscale(0.8);
+  opacity: 0.65;
+}
+.job-tile-change {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border: 1px dashed var(--ink-soft);
+  border-radius: 50%;
+  background: #fffdf8;
+  font-size: 16px;
+  line-height: 1;
+}
+.job-tile:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 3px;
+}
+
+/* Self-designed compact mobile sizing; Figma has no mobile frames yet. */
+@media (max-width: 600px) {
+  .job-tile {
+    width: min(104px, 100%);
+    min-height: 94px;
+    padding: 10px 6px;
+    gap: 6px;
+  }
+  .job-tile .job-char {
+    width: 40px;
+    height: 40px;
+  }
+  .job-tile-name {
+    font-size: 13px;
+  }
+}
+
 /* placeholder bg pattern */
 .hatch {
   background-image: repeating-linear-gradient(
