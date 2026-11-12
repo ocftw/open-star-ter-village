@@ -74,6 +74,7 @@ describe('Toast', () => {
     const region = screen.getByRole('status');
     expect(region.getAttribute('aria-live')).toBe('polite');
     expect(region.textContent).toBe('');
+    expect(screen.queryByRole('button', { name: '關閉提示' })).toBeNull();
   });
 
   it('shows the message and dismisses after 2 seconds', () => {
@@ -97,6 +98,32 @@ describe('Toast', () => {
     act(() => jest.advanceTimersByTime(500));
     expect(first).not.toHaveBeenCalled();
     expect(second).toHaveBeenCalledTimes(1);
+  });
+
+  it('dismisses immediately and cancels the auto-hide timer', () => {
+    const onClose = jest.fn();
+    render(<Toast open onClose={onClose}>已達到貢獻值上限</Toast>);
+    act(() => jest.advanceTimersByTime(1500));
+    fireEvent.click(screen.getByRole('button', { name: '關閉提示' }));
+    expect(onClose).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole('status').textContent).toBe('已達到貢獻值上限');
+
+    act(() => jest.advanceTimersByTime(TOAST_DURATION_MS));
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('restarts the 2-second timer when resetKey changes while open', () => {
+    const onClose = jest.fn();
+    const { rerender } = render(<Toast open resetKey={1} onClose={onClose}>msg</Toast>);
+    const region = screen.getByRole('status');
+    act(() => jest.advanceTimersByTime(1500));
+    rerender(<Toast open resetKey={2} onClose={onClose}>msg</Toast>);
+    expect(screen.getByRole('status')).toBe(region);
+    expect(region.textContent).toBe('msg');
+    act(() => jest.advanceTimersByTime(1500));
+    expect(onClose).not.toHaveBeenCalled();
+    act(() => jest.advanceTimersByTime(500));
+    expect(onClose).toHaveBeenCalledTimes(1);
   });
 
   it('cancels the timer when closed early or unmounted', () => {
