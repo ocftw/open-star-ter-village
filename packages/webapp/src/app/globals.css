@@ -596,3 +596,160 @@ body:has(.modal[open]) {
   .rules-steps li { display: block; }
   .rules-steps strong { display: block; }
 }
+
+/* ============================================================
+   Game-room primitives (revamp story 1, epic #481): Button,
+   IconButton, Toast in components/design/. Hexes come from the
+   Main1.1.1 Figma tokens; the Primary fill reuses --orange.
+   ============================================================ */
+:root {
+  --gr-ink: #2b2b2b; /* Border/Default, Text/Primary */
+  --gr-text-secondary: #8a8070;
+  --gr-bg-light: #fffdf8;
+  --gr-bg-dk: #fff0e2;
+}
+
+.gr-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 2px solid var(--gr-ink);
+  border-radius: 999px;
+  font-family: var(--font-zh);
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: transform 0.08s ease, box-shadow 0.08s ease, background-color 0.12s ease;
+}
+.gr-btn--large {
+  min-height: 48px;
+  padding: 10px 24px;
+  font-size: 16px;
+  box-shadow: 0 4px 0 var(--gr-ink);
+}
+.gr-btn--medium {
+  min-height: 40px;
+  padding: 8px 18px;
+  font-size: 14px;
+  box-shadow: 0 3px 0 var(--gr-ink);
+}
+.gr-btn--small {
+  min-height: 32px;
+  padding: 5px 12px;
+  font-size: 12px;
+  box-shadow: 0 2px 0 var(--gr-ink);
+}
+/* Small renders at 32px but keeps a 44px hit area for touch. */
+.gr-btn--small::after {
+  content: '';
+  position: absolute;
+  inset: -6px -2px;
+}
+
+.gr-btn--primary {
+  background: var(--orange);
+  color: #fff;
+}
+.gr-btn--sec {
+  background: var(--gr-bg-light);
+  color: var(--gr-ink);
+}
+.gr-btn--tri {
+  background: transparent;
+  color: var(--gr-ink);
+  border-color: transparent;
+  box-shadow: none;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.gr-btn:not(.gr-btn--tri):not(:disabled):hover {
+  transform: translateY(1px);
+}
+.gr-btn--primary:not(:disabled):hover {
+  background: var(--orange-deep);
+}
+.gr-btn--sec:not(:disabled):hover,
+.gr-btn--tri:not(:disabled):hover {
+  background: var(--gr-bg-dk);
+}
+.gr-btn:not(.gr-btn--tri):not(:disabled):active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--gr-ink);
+}
+.gr-btn:focus-visible,
+.gr-icon-btn:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 3px;
+}
+.gr-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.gr-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1.5px solid var(--gr-ink);
+  border-radius: 999px;
+  background: var(--gr-bg-light);
+  color: var(--gr-ink);
+  cursor: pointer;
+  transition: transform 0.08s ease, box-shadow 0.08s ease, background-color 0.12s ease;
+}
+.gr-icon-btn__icon {
+  display: inline-flex;
+  font-size: 22px;
+  line-height: 1;
+}
+.gr-icon-btn:not(:disabled):hover,
+.gr-icon-btn:focus-visible {
+  background: var(--gr-bg-dk);
+  box-shadow: 0 2px 0 var(--gr-ink);
+  transform: translateY(-1px);
+}
+.gr-icon-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.gr-toast {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 186px;
+  min-height: 48px;
+  padding: 12px 20px;
+  border: 1.5px solid var(--gr-ink);
+  border-radius: 12px;
+  background: var(--gr-bg-light);
+  color: var(--gr-ink);
+  font-family: var(--font-zh);
+  font-weight: 700;
+  font-size: 14px;
+  box-shadow: 0 3px 0 var(--gr-ink);
+  animation: gr-toast-in 0.16s ease-out;
+}
+@keyframes gr-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gr-btn,
+  .gr-icon-btn {
+    transition: none;
+  }
+  .gr-toast {
+    animation: none;
+  }
+}
