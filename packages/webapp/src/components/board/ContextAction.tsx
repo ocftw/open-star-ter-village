@@ -392,6 +392,7 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
           className="gr-action-panel__dots"
           data-testid="ap-dots"
           data-ap={actionTokens}
+          role="img"
           aria-label={`剩餘 ${actionTokens} AP`}
         >
           {Array.from({ length: Math.max(actionTokens, RuleSelector.getPlayerMaxActionTokens(G.rules)) }, (_, i) => (

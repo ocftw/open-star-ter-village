@@ -95,6 +95,7 @@ it('reads changed AP costs and contribution limits from the active rules', () =>
     G.rules.action.contributeJoinedProjects.maxContributionValue = 9;
     PlayersMutator.resetActionTokens(G.players, '0', 2);
   });
+  expect(screen.getByRole('img', { name: '剩餘 2 AP' })).toBe(screen.getByLabelText('剩餘 2 AP'));
   expect(screen.getByLabelText('剩餘 2 AP').children).toHaveLength(6);
   expect(within(actionButton(UserActionMoves.CreateProject)).getByLabelText('COST 3')).toBeTruthy();
   expect(actionButton(UserActionMoves.CreateProject).disabled).toBe(true);
