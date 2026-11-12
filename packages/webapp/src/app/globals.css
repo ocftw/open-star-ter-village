@@ -600,9 +600,10 @@ body:has(.modal[open]) {
 /* ============================================================
    Game-room primitives (revamp story 1, epic #481): Button,
    IconButton, Toast in components/design/. Hexes come from the
-   Main1.1.1 Figma tokens; the Primary fill reuses --orange.
+   Main1.1.1 Figma tokens; the Primary fill uses --orange-deep for contrast.
    ============================================================ */
 :root {
+  --orange-deeper: #b83208;
   --gr-ink: #2b2b2b; /* Border/Default, Text/Primary */
   --gr-text-secondary: #8a8070;
   --gr-bg-light: #fffdf8;
@@ -642,15 +643,23 @@ body:has(.modal[open]) {
   font-size: 12px;
   box-shadow: 0 2px 0 var(--gr-ink);
 }
-/* Small renders at 32px but keeps a 44px hit area for touch. */
+/* Medium and Small keep a 44px hit area without changing their visible size.
+   ::after is positioned against the padding box, which is 4px shorter than the
+   2px-bordered control, so the vertical inset is 4px more than the visual slop. */
+.gr-btn--medium::after,
 .gr-btn--small::after {
   content: '';
   position: absolute;
-  inset: -6px -2px;
+}
+.gr-btn--medium::after {
+  inset: -4px -2px;
+}
+.gr-btn--small::after {
+  inset: -8px -2px;
 }
 
 .gr-btn--primary {
-  background: var(--orange);
+  background: var(--orange-deep);
   color: #fff;
 }
 .gr-btn--sec {
@@ -670,7 +679,7 @@ body:has(.modal[open]) {
   transform: translateY(1px);
 }
 .gr-btn--primary:not(:disabled):hover {
-  background: var(--orange-deep);
+  background: var(--orange-deeper);
 }
 .gr-btn--sec:not(:disabled):hover,
 .gr-btn--tri:not(:disabled):hover {
@@ -682,7 +691,7 @@ body:has(.modal[open]) {
 }
 .gr-btn:focus-visible,
 .gr-icon-btn:focus-visible {
-  outline: 3px solid var(--teal);
+  outline: 3px solid var(--teal-deep);
   outline-offset: 3px;
 }
 .gr-btn:disabled {
@@ -724,9 +733,10 @@ body:has(.modal[open]) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 12px;
   min-width: 186px;
   min-height: 48px;
-  padding: 12px 20px;
+  padding: 0 12px 0 20px;
   border: 1.5px solid var(--gr-ink);
   border-radius: 12px;
   background: var(--gr-bg-light);
@@ -736,6 +746,9 @@ body:has(.modal[open]) {
   font-size: 14px;
   box-shadow: 0 3px 0 var(--gr-ink);
   animation: gr-toast-in 0.16s ease-out;
+}
+.gr-toast > .gr-icon-btn {
+  flex-shrink: 0;
 }
 @keyframes gr-toast-in {
   from {
