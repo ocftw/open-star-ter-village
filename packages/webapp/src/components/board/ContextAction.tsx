@@ -108,9 +108,10 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
   }, [ctx.numMoves, ctx.turn, showSnackbar]);
 
   // Entering an action enables the matching board elements; leaving it clears
-  // all selections.
+  // all selections and interactivity.
   useEffect(() => {
     if (!currentAction) {
+      dispatch(resetAction());
       resetSelections();
       return;
     }
