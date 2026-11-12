@@ -237,6 +237,170 @@ button {
   box-shadow: var(--shadow-sticker);
 }
 
+/* ProjectCard (story 10): shared paper, tag and type for in-play and hand faces. */
+.project-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  padding: 12px;
+  border: 2px solid var(--ink);
+  border-radius: var(--radius);
+  background: #fff9f0;
+  color: var(--ink);
+  font-family: var(--font-zh);
+  box-shadow: var(--shadow-sticker);
+  overflow-wrap: anywhere;
+  transition: transform 0.12s ease;
+}
+.project-card--in-play {
+  height: 100%;
+  min-height: 224px;
+}
+/* Figma state annotations were unavailable: assume a lifted orange focus ring,
+   a dashed peach GeneralHint, and a teal JobHint with one emphasized job row. */
+.project-card--focused {
+  border-color: var(--orange);
+  box-shadow: 0 0 0 2px var(--orange), var(--shadow-sticker);
+  transform: translateY(-3px);
+}
+.project-card--generalHint {
+  border-style: dashed;
+  border-color: #dd8664;
+  background: #fff0e2;
+}
+.project-card--jobHint {
+  border-color: var(--teal-deep);
+  box-shadow: 0 0 0 1px var(--teal-soft), var(--shadow-sticker);
+}
+.project-card__tag {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 8px;
+  padding: 4px 7px;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius-sm);
+  background: #fff0e2;
+  font-size: 10px;
+  font-weight: 700;
+}
+.project-card__type {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.project-card__type-dot {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+.project-card__stars {
+  color: var(--ink);
+  font-family: var(--font-en);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+.project-card__title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.project-card__heading {
+  min-width: 0;
+}
+.project-card__initiator {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 6px;
+  margin-bottom: 3px;
+  font-size: 10px;
+  color: var(--ink-soft);
+}
+.project-card__own {
+  color: var(--orange-deep);
+  font-family: var(--font-en);
+  font-size: 9px;
+  font-weight: 700;
+}
+.project-card__title {
+  font-family: var(--font-zh);
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1.3;
+}
+.project-card__jobs {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.project-card__progress-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  border-radius: var(--radius-sm);
+}
+/* Inset teal emphasis remains visible alongside the orange profession picker. */
+.project-card__progress-row--hinted {
+  background: var(--teal-soft);
+  box-shadow: inset 0 0 0 2px var(--teal-deep);
+}
+.project-card__progress-row[role='button'] {
+  min-height: 44px;
+}
+.project-card__contributors {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px solid #f3e6d7;
+}
+.project-card__contributors-label {
+  font-size: 9px;
+  font-family: var(--font-zh);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+}
+.project-card__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.project-card__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 7px 3px 4px;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  background: #fffdf8;
+}
+/* Self-designed compact variant: Figma has desktop frames only. Keep chips
+   wrapping and picker rows tappable while tightening the card at mobile widths. */
+@media (max-width: 600px) {
+  .project-card--compact {
+    padding: 10px;
+    gap: 8px;
+  }
+  .project-card--compact .project-card__jobs {
+    gap: 4px;
+  }
+  .project-card--compact .project-card__tag {
+    padding: 3px 6px;
+  }
+}
+
 /* Bespoke modal — the prototype's .modal sticker panel on a native <dialog>
    (design/Modal.tsx): paper ground, 2px ink border, 22px corner, offset
    sticker shadow over a warm ink-tinted ::backdrop. MUI is not used in new
