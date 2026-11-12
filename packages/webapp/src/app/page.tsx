@@ -4,7 +4,7 @@ import type { JobRole } from '@/components/design';
 import LobbyNav from '@/components/lobby/LobbyNav';
 
 const STATS = [
-  { value: '3–6', zh: '玩家', en: 'PLAYERS' },
+  { value: '2–4', zh: '玩家', en: 'PLAYERS' },
   { value: '~60', zh: '分鐘', en: 'MINUTES' },
   { value: '70+', zh: '專案卡', en: 'PROJECTS' },
 ] as const;

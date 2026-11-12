@@ -18,6 +18,7 @@ test('another lobby receives room creation, start and removal, then resyncs afte
     await mkdir('test-results', {recursive:true});
     await watcher.screenshot({path:'test-results/lobby-live-before.png',fullPage:true});
     await host.getByLabel(/player name/i).fill('Live lobby host');
+    await host.getByRole('group', {name:/players/i}).getByRole('button', {name:'3', exact:true}).click();
     const created = host.waitForResponse(response => response.url().endsWith(`/games/${game}/create`) && response.status() === 200);
     await host.getByRole('button', {name:/建立房間/}).click();
     const {matchID} = await (await created).json();

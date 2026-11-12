@@ -14,8 +14,14 @@ import { refill } from './core/handler/refill';
 
 export const OpenStarTerVillage: Game<GameState, Record<string, unknown>, GameSetupData> = {
   name: 'OpenStarTerVillage',
-  minPlayers: 3,
-  maxPlayers: 6,
+  minPlayers: 2,
+  maxPlayers: 4,
+  // boardgame.io checks min/maxPlayers only on /create; this also covers playAgain
+  // and socket sync, which passes a client's raw (possibly fractional) numPlayers.
+  validateSetupData: (_setupData, numPlayers) =>
+    Number.isInteger(numPlayers) && numPlayers >= 2 && numPlayers <= 4
+      ? undefined
+      : 'numPlayers must be 2 to 4',
   setup: setup,
   turn: {
     /**
