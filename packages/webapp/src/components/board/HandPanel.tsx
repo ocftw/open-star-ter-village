@@ -10,7 +10,6 @@ import {
   getCurrentAction,
   isHandProjectCardsInteractive,
   setAssignedJobName,
-  setCurrentAction,
 } from '@/lib/reducers/actionStepSlice';
 import { getSelectedJobSlots } from '@/lib/reducers/jobSlotSlice';
 import {
@@ -24,15 +23,13 @@ import { ProfessionPicker } from './professionPicker';
 
 /**
  * Your hand. `rail` = desktop left column with the event card below;
- * `strip` = horizontal scroller inside the mobile bottom sheet.
+ * `strip` = horizontal scroller in the mobile hand section.
  */
 export default function HandPanel({
   gameContext,
-  idle,
   layout = 'rail',
 }: {
   gameContext: GameContext;
-  idle: boolean;
   layout?: 'rail' | 'strip';
 }) {
   const { G, playerID } = gameContext;
@@ -72,9 +69,6 @@ export default function HandPanel({
       // Single-select: create (normal or overtime) plays exactly one card.
       if (!selectedCards[cardId]) dispatch(resetHandProjectCardSelection());
       dispatch(toggleHandProjectCardSelection(cardId));
-    } else if (idle) {
-      dispatch(setCurrentAction(UserActionMoves.CreateProject));
-      dispatch(toggleHandProjectCardSelection(cardId));
     }
   };
 
@@ -110,7 +104,7 @@ export default function HandPanel({
               card={card}
               data-testid={`hand-card-${card.id}`}
               selected={handInteractive && !!selectedCards[card.id]}
-              onClick={idle || handInteractive ? () => handleTap(card.id) : undefined}
+              onClick={handInteractive ? () => handleTap(card.id) : undefined}
               professionPicker={professionPickerFor(card)}
             />
           </div>

@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
 import { Alert, Snackbar } from '@mui/material';
+import { Button } from '@/components/design';
+import { PANEL_ACTIONS, canSelectAction } from './actionPanel';
 import { GameContext } from '@/components/GameContextHelpers';
 import { useSnackbar } from '@/lib/useSnackbar';
 import {
@@ -42,17 +44,13 @@ type ExtendedMoves = ActionMoves & { endActionTurn: () => void };
 type RegularActionName = ActionMoveName;
 
 type ModeCopy = {
-  icon: string;
   title: string;
-  en: string;
   hint: string;
-  tone: string;
   cta: string | null;
 };
 
 /**
- * The contextual action bar (design: ContextAction) — the single home for
- * confirming card-driven actions. Replaces ActionBar + ActionStepper.
+ * Action-first panel with the existing selection, preflight, and move dispatch flow.
  */
 export default function ContextAction({ gameContext }: { gameContext: GameContext }) {
   const { G, ctx, moves, playerID } = gameContext;
@@ -142,10 +140,13 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
     };
   }, [currentAction, dispatch, resetSelections]);
 
+  useEffect(() => () => {
+    dispatch(resetAction());
+  }, [dispatch]);
+
   if (playerID === null) return null;
 
   const actionTokens = PlayersSelector.getNumActionTokens(G.players, playerID);
-  const overtimeTokens = PlayersSelector.getNumOvertimeTokens(G.players, playerID);
   const isMyTurn = playerID === ctx.currentPlayer;
   if (!isMyTurn) return null;
 
@@ -238,7 +239,7 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
       dispatch(resetAction());
       return;
     }
-    if (!actionName) return;
+    if (!actionName || !isValid()) return;
 
     // Re-validate at click time: multiplayer state may have moved under the
     // selection. On failure keep the selection intact and explain why.
@@ -301,104 +302,73 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
     switch (currentAction) {
       case null:
         return {
-          icon: '👋',
           title: '輪到你了',
-          en: 'Your turn',
-          hint: '點手牌發起專案、點人力卡招募、點桌上專案貢獻；換人力與加班在市場旁。',
-          tone: 'var(--orange)',
+          hint: '先選擇行動，再選擇卡片。換人力在市場旁。',
           cta: null,
         };
       case UserActionMoves.CreateProject:
         return {
-          icon: '🚀',
-          title: '發起這個專案？',
-          en: 'Create this project',
-          hint: `再點一張人力卡指派 1 名工人。${selectionProgress('createProject')}`,
-          tone: 'var(--orange)',
+          title: '發起專案',
+          hint: `選擇一張手牌專案與一張人力卡。${selectionProgress('createProject')}`,
           cta: '確認發起',
         };
       case UserActionMoves.Recruit:
         return {
-          icon: '👥',
-          title: '招募這位人力？',
-          en: 'Recruit this worker',
-          hint: `再點一個要投入的專案（你發起或已參與的）。${selectionProgress('recruit')}`,
-          tone: 'var(--teal)',
-          cta: '確認招募',
+          title: '加入專案',
+          hint: `選擇一張人力卡與要加入的專案。${selectionProgress('recruit')}`,
+          cta: '確認加入',
         };
       case UserActionMoves.ContributeOwnedProjects:
         return {
-          icon: '✨',
           title: '貢獻給你的專案？',
-          en: 'Contribute (own)',
           hint: `用卡片上的＋−分配貢獻值。${selectionProgress('contributeOwnedProjects')}`,
-          tone: '#1f7a3a',
           cta: '確認貢獻',
         };
       case UserActionMoves.ContributeJoinedProjects:
         return {
-          icon: '✨',
           title: '貢獻給參與的專案？',
-          en: 'Contribute (joined)',
           hint: `用卡片上的＋−分配貢獻值。${selectionProgress('contributeJoinedProjects')}`,
-          tone: '#1f7a3a',
           cta: '確認貢獻',
         };
       case UserActionMoves.RemoveAndRefillJobs:
         return {
-          icon: '🔄',
           title: '換掉這些人力卡？',
-          en: 'Refill job market',
           hint: `點選要移除的人力卡，會補滿新卡。${selectionProgress('removeAndRefillJobs')}`,
-          tone: 'var(--job-civil)',
           cta: '確認更換',
         };
       case UserActionMoves.EndActionTurn:
         return {
-          icon: '🏁',
           title: '結束這回合？',
-          en: 'End your turn',
           hint: '剩下的行動點會被放棄。',
-          tone: 'var(--ink)',
           cta: '確認結束',
         };
       default:
-        return { icon: '👋', title: '', en: '', hint: '', tone: 'var(--orange)', cta: null };
+        return { title: '', hint: '', cta: null };
     }
   })();
-
   // Contextual overrides: rule-blocked, occupied (→ overtime prompt), overtime
   // in progress, or project board full (F-003/F-005).
   const showOvertimePrompt = occupied && !overtime && canOfferOvertime;
   if (ruleUnavailable) {
-    copy = { ...copy, icon: '🚫', hint: '這個行動在本局的規則下不可用。 This action is unavailable under the current rules.', cta: null };
+    copy = { ...copy, hint: '這個行動在本局的規則下不可用。 This action is unavailable under the current rules.', cta: null };
   } else if (occupied && !overtime) {
     copy = canOfferOvertime
       ? {
           ...copy,
-          icon: '⏰',
           title: '此行動已被使用 — 要用加班 token 重做嗎？',
-          en: 'Use overtime token?',
-          tone: 'var(--job-legal)',
-          hint: '這個行動的格子本輪已被佔用。用 1 枚加班 token，只花這個行動原本的 1 AP，照原本的流程再做一次。',
+          hint: `這個行動已被使用。用 1 枚加班 token 與 ${RuleSelector.getActionTokenCost(G.rules, actionName!)} AP 再做一次。`,
           cta: null,
         }
       : {
           ...copy,
-          icon: '🚫',
           title: '此行動已被使用',
-          en: 'Slot occupied',
-          tone: 'var(--ink-soft)',
           hint: overtimeBlockReason ?? '',
           cta: null,
         };
   } else if (overtime) {
     copy = {
       ...copy,
-      icon: '⏰',
       title: `加班：${copy.title}`,
-      en: `Overtime · ${copy.en}`,
-      tone: 'var(--job-legal)',
       cta: '確認加班',
     };
   } else if (createBlockedByCapacity) {
@@ -409,193 +379,102 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
   }
 
   return (
-    <div
+    <section
+      className="gr-action-panel"
+      aria-label="行動面板"
       data-testid="context-action"
       data-mode={currentAction ?? 'idle'}
       data-overtime={overtime || undefined}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        flexWrap: 'wrap',
-        gap: 12,
-        background: 'white',
-        border: '2px solid var(--ink)',
-        borderRadius: 18,
-        boxShadow: 'var(--shadow-sticker)',
-        padding: '10px 16px',
-        borderLeft: `8px solid ${copy.tone}`,
-      }}
     >
-      <div
-        aria-hidden
-        style={{
-          width: 44,
-          height: 44,
-          background: copy.tone,
-          color: 'white',
-          border: '1.5px solid var(--ink)',
-          borderRadius: 12,
-          display: 'grid',
-          placeItems: 'center',
-          fontSize: 22,
-          flexShrink: 0,
-        }}
-      >
-        {copy.icon}
-      </div>
-      {/* flex-basis 180px: on narrow screens the text keeps a readable column
-          and the AP dots + buttons wrap to the next row instead of squeezing it */}
-      <div style={{ flex: '1 1 180px', minWidth: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
-          <strong style={{ fontSize: 15 }}>{copy.title}</strong>
-          <span className="en-cap">{copy.en}</span>
-          {overtime && (
-            <span
-              className="sticker"
-              style={{ background: 'var(--job-legal-soft)', borderColor: 'var(--job-legal)', color: 'var(--job-legal)' }}
-            >
-              ⏰ 加班中 OVERTIME
-            </span>
-          )}
-          {createBlockedByCapacity && (
-            <span
-              className="sticker"
-              style={{ background: 'var(--orange-soft)', borderColor: 'var(--orange-deep)', color: 'var(--orange-deep)' }}
-            >
-              專案區已滿
-            </span>
-          )}
-        </div>
-        <div style={{ fontSize: 12, color: 'var(--ink-soft)', marginTop: 3, lineHeight: 1.4 }}>
-          {copy.hint}
-        </div>
-        {/* Inline preflight reason: announced politely, never looks like a success. */}
-        <div role="status" aria-live="polite">
-          {preflightFailure && (
-            <div
-              data-testid="preflight-error"
-              style={{ fontSize: 12, color: 'var(--orange-deep)', marginTop: 3, lineHeight: 1.4, fontWeight: 700 }}
-            >
-              ⚠ {getActionErrorMessage(preflightFailure)}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* AP dots + 加班 Overtime token (design: GpApDots) */}
-      <div style={{ display: 'flex', alignItems: 'center' }}>
+      <div className="gr-action-panel__ap">
+        <strong>AP</strong>
         <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: 2,
-            padding: '0 14px',
-            borderLeft: '1.5px dashed var(--paper-3)',
-          }}
+          className="gr-action-panel__dots"
           data-testid="ap-dots"
           data-ap={actionTokens}
+          aria-label={`剩餘 ${actionTokens} AP`}
         >
-          <div className="en-cap">AP</div>
-          <div style={{ display: 'flex', gap: 3 }}>
-            {Array.from({ length: 4 }).map((_, i) => (
-              <span
-                key={i}
-                style={{
-                  width: 14,
-                  height: 14,
-                  borderRadius: 999,
-                  background: i < actionTokens ? 'var(--orange)' : 'var(--paper-2)',
-                  border: '1.5px solid var(--ink)',
-                }}
-              />
-            ))}
-          </div>
-        </div>
-        <div
-          data-testid="overtime-token"
-          data-available={overtimeTokens > 0 || undefined}
-          data-active={overtime || undefined}
-          title={
-            overtimeTokens < 1
-              ? '加班 token 本輪已用畢 · Overtime token spent this turn'
-              : overtime
-                ? '加班 token 使用中 · Spending your overtime token'
-                : '加班 token：點一個本輪已使用過的 1 AP 行動即可重做 · Tap a used 1-AP action to redo it'
-          }
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: 2,
-            padding: '0 14px',
-            borderLeft: '1.5px dashed var(--paper-3)',
-          }}
-        >
-          <div className="en-cap">加班 OT</div>
-          <span
-            style={{
-              width: 22,
-              height: 22,
-              borderRadius: 999,
-              border: '1.5px solid var(--ink)',
-              display: 'grid',
-              placeItems: 'center',
-              fontSize: 12,
-              background: overtimeTokens > 0 ? 'var(--job-legal)' : 'var(--paper-2)',
-              color: overtimeTokens > 0 ? 'white' : 'var(--ink-mute)',
-              opacity: overtimeTokens > 0 ? 1 : 0.6,
-              animation: overtime ? 'ot-pulse 1s ease-in-out infinite' : 'none',
-            }}
-          >
-            ⏰
-          </span>
+          {Array.from({ length: Math.max(actionTokens, RuleSelector.getPlayerMaxActionTokens(G.rules)) }, (_, i) => (
+            <span key={i} className="gr-action-panel__dot" data-remaining={i < actionTokens} aria-hidden="true" />
+          ))}
         </div>
       </div>
+      <div className="gr-action-panel__heading">
+        <h2>行動</h2>
+        <span>本回合剩餘次數</span>
+      </div>
+      <div className="gr-action-panel__actions">
+        {PANEL_ACTIONS.map(({ name, title, en }) => {
+          const available = canSelectAction(G, playerID, name);
+          // The game exposes one normal slot per action, not the mockup's two-use counters.
+          const remaining = RuleSelector.isActionSlotAvailable(G.rules, name) && !isSlotOccupied(name) ? 1 : 0;
+          const maxContribution = name === UserActionMoves.ContributeOwnedProjects || name === UserActionMoves.ContributeJoinedProjects
+            ? RuleSelector.getMaxContributionValue(G.rules, name) : null;
+          return (
+            <Button
+              key={name}
+              variant="sec"
+              className="gr-panel-action"
+              data-testid={`action-${name}`}
+              aria-pressed={currentAction === name}
+              disabled={!available}
+              onClick={() => {
+                if (currentAction !== name && canSelectAction(G, playerID, name)) {
+                  dispatch(setCurrentAction(name));
+                }
+              }}
+            >
+              <span className="gr-panel-action__cost" aria-label={`COST ${RuleSelector.getActionTokenCost(G.rules, name)}`}>
+                <span>COST</span>
+                <strong>{RuleSelector.getActionTokenCost(G.rules, name)}</strong>
+              </span>
+              <span className="gr-panel-action__label">
+                <strong>{title}</strong>
+                <span className="gr-panel-action__en">{en}</span>
+                <span className="gr-action-panel__dots" aria-label={`本回合剩餘 ${remaining} 次`} data-remaining-uses={remaining}>
+                  <span className="gr-action-panel__dot" data-remaining={remaining > 0} aria-hidden="true" />
+                </span>
+              </span>
+              {maxContribution !== null && (
+                <span className="gr-panel-action__gain">
+                  <strong>+{maxContribution}</strong>
+                  <span>最大貢獻</span>
+                </span>
+              )}
+            </Button>
+          );
+        })}
+      </div>
 
-      {currentAction ? (
-        <div style={{ display: 'flex', gap: 6 }}>
-          <button type="button" data-testid="ca-cancel" onClick={handleCancel} className="btn-sticker sm ghost">
-            取消
-          </button>
-          {showOvertimePrompt && (
-            <button
-              type="button"
-              data-testid="overtime-confirm"
-              onClick={() => setOvertime(true)}
-              className="btn-sticker sm"
-              style={{ background: 'var(--job-legal)' }}
-            >
-              加班重複 · Overtime
-            </button>
-          )}
-          {copy.cta && (
-            <button
-              type="button"
-              data-testid="ca-confirm"
-              onClick={handleConfirm}
-              disabled={!isValid()}
-              className="btn-sticker sm"
-              style={{ background: copy.tone }}
-            >
-              {copy.cta}
-            </button>
-          )}
-        </div>
-      ) : (
-        <button
-          type="button"
-          data-testid="end-turn"
-          className="btn-sticker sm dark"
-          onClick={() => dispatch(setCurrentAction(UserActionMoves.EndActionTurn))}
-        >
-          結束我的回合
-        </button>
+      <div className="gr-action-panel__selection" role="status" aria-live="polite">
+        {currentAction ? (
+          <>
+            <strong>{copy.title}</strong>
+            <p>{copy.hint}</p>
+            {preflightFailure && (
+              <p data-testid="preflight-error">{getActionErrorMessage(preflightFailure)}</p>
+            )}
+          </>
+        ) : <p>{copy.hint}</p>}
+      </div>
+      {showOvertimePrompt && (
+        <Button data-testid="overtime-confirm" onClick={() => setOvertime(true)}>
+          加班重複 · Overtime
+        </Button>
       )}
-
-      {/* Error toast: click-time validation failures and the generic
-          unexpected-rejection fallback. Single-slot, so repeats replace
-          rather than queue. */}
+      {currentAction && copy.cta && (
+        <Button data-testid="ca-confirm" onClick={handleConfirm} disabled={!isValid()}>
+          {copy.cta}
+        </Button>
+      )}
+      <div className="gr-action-panel__footer">
+        <Button variant="sec" data-testid="ca-cancel" onClick={handleCancel} disabled={!currentAction}>
+          取消行動
+        </Button>
+        <Button data-testid="end-turn" onClick={() => dispatch(setCurrentAction(UserActionMoves.EndActionTurn))}>
+          結束我的回合
+        </Button>
+      </div>
       <Snackbar
         open={snackbar.open}
         autoHideDuration={6000}
@@ -606,6 +485,6 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
           {snackbar.message}
         </Alert>
       </Snackbar>
-    </div>
+    </section>
   );
 }
