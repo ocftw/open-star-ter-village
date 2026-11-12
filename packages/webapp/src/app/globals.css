@@ -257,16 +257,12 @@ button {
   transition: transform 0.12s ease;
 }
 .project-card--in-play {
+  isolation: isolate;
   height: 100%;
   min-height: 224px;
 }
 /* Figma state annotations were unavailable: assume a lifted orange focus ring,
    a dashed peach GeneralHint, and a teal JobHint with one emphasized job row. */
-.project-card--focused {
-  border-color: var(--orange);
-  box-shadow: 0 0 0 2px var(--orange), var(--shadow-sticker);
-  transform: translateY(-3px);
-}
 .project-card--generalHint {
   border-style: dashed;
   border-color: #dd8664;
@@ -275,6 +271,69 @@ button {
 .project-card--jobHint {
   border-color: var(--teal-deep);
   box-shadow: 0 0 0 1px var(--teal-soft), var(--shadow-sticker);
+}
+.project-card__control {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  padding: 0;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  cursor: inherit;
+}
+.project-card__control:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 3px;
+}
+.project-card--focused,
+.project-card--in-play:has(> .project-card__control:focus-visible) {
+  border-color: var(--orange);
+  box-shadow: 0 0 0 2px var(--orange), var(--shadow-sticker);
+  transform: translateY(-3px);
+}
+.project-card__contribution-controls,
+.project-card__progress-row[role='button'] {
+  position: relative;
+  z-index: 2;
+}
+.project-card__stepper {
+  position: relative;
+  box-sizing: border-box;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  border: 1.5px solid var(--ink);
+  background: white;
+  font-weight: 800;
+  font-size: 13px;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 1.5px 0 var(--ink);
+}
+.project-card__stepper::after {
+  content: '';
+  position: absolute;
+  /* 19px padding box + 2 × 12.5px = 44px on the free axes. Adjacent
+     targets meet at the 2px gap midpoint so the later button cannot
+     cover the visible minus control (right/left = 19/2 + 1). */
+  inset: -12.5px;
+}
+.project-card__stepper:first-child::after {
+  right: -2.5px;
+}
+.project-card__stepper:last-child::after {
+  left: -2.5px;
+}
+.project-card__stepper:disabled::after {
+  pointer-events: none;
+}
+.project-card__seat {
+  color: #111111;
+}
+.project-card__seat[data-seat='2'] {
+  color: white;
 }
 .project-card__tag {
   display: flex;
@@ -325,7 +384,7 @@ button {
   color: var(--ink-soft);
 }
 .project-card__own {
-  color: var(--orange-deep);
+  color: #b83208;
   font-family: var(--font-en);
   font-size: 9px;
   font-weight: 700;

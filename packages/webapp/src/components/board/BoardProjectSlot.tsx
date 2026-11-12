@@ -98,11 +98,19 @@ export default function BoardProjectSlot({
       className={`project-card project-card--in-play project-card--compact project-card--${resolvedState}`}
       data-requirements={requiredJobs.join(',')}
       data-job-requirements={JSON.stringify(card.requirements)}
-      onClick={handleClick}
       style={{
         cursor: clickable ? 'pointer' : 'default',
       }}
     >
+      {clickable && (
+        <button
+          type="button"
+          className="project-card__control"
+          aria-label={`${slotsInteractive ? '選擇專案' : '查看專案'} ${card.name}（${ownerName}）`}
+          aria-pressed={slotsInteractive ? selected : undefined}
+          onClick={handleClick}
+        />
+      )}
       <div className="project-card__tag">
         <span className="project-card__type">
           <span className="project-card__type-dot" style={{ background: typeMeta?.color ?? 'var(--ink-soft)' }} />
@@ -115,13 +123,14 @@ export default function BoardProjectSlot({
 
       <div className="project-card__title-row">
         <span
+          className="project-card__seat"
+          data-seat={slot.owner}
           title={ownerName}
           style={{
             width: 24,
             height: 24,
             borderRadius: 999,
             background: seatColor(slot.owner),
-            color: 'white',
             border: '1.5px solid var(--ink)',
             display: 'grid',
             placeItems: 'center',
@@ -237,6 +246,7 @@ export default function BoardProjectSlot({
               </div>
               {/* Fixed-width control column keeps every row's progress bar aligned */}
               <span
+                className={showStepper ? 'project-card__contribution-controls' : undefined}
                 data-testid="contribution-controls"
                 aria-hidden={showStepper ? undefined : true}
                 style={{ display: 'inline-flex', gap: 2, width: STEPPER_COLUMN_WIDTH, flexShrink: 0 }}
@@ -252,7 +262,7 @@ export default function BoardProjectSlot({
                       onClick={() =>
                         dispatch(updateContribute({ slotId: slot.id, jobName, diffAmount: pending - 1 }))
                       }
-                      style={stepperButtonStyle}
+                      className="project-card__stepper"
                     >
                       −
                     </button>
@@ -265,7 +275,7 @@ export default function BoardProjectSlot({
                       onClick={() =>
                         dispatch(updateContribute({ slotId: slot.id, jobName, diffAmount: pending + 1 }))
                       }
-                      style={stepperButtonStyle}
+                      className="project-card__stepper"
                     >
                       ＋
                     </button>
@@ -305,12 +315,13 @@ export default function BoardProjectSlot({
                   title={getPlayerName(matchData, worker)}
                 >
                   <span
+                    className="project-card__seat"
+                    data-seat={worker}
                     style={{
                       width: 14,
                       height: 14,
                       borderRadius: 999,
                       background: seatColor(worker),
-                      color: 'white',
                       border: '1.5px solid var(--ink)',
                       fontFamily: 'var(--font-en)',
                       fontSize: 8,
@@ -333,17 +344,3 @@ export default function BoardProjectSlot({
 
 // Two 22px stepper buttons plus their 2px gap; reserved in every row so bars align.
 const STEPPER_COLUMN_WIDTH = 46;
-
-const stepperButtonStyle: React.CSSProperties = {
-  width: 22,
-  height: 22,
-  borderRadius: 999,
-  border: '1.5px solid var(--ink)',
-  background: 'white',
-  fontWeight: 800,
-  fontSize: 13,
-  lineHeight: 1,
-  display: 'grid',
-  placeItems: 'center',
-  boxShadow: '0 1.5px 0 var(--ink)',
-};

@@ -119,6 +119,24 @@ function renderVisualSlot(
 }
 
 describe('BoardProjectSlot card content', () => {
+  it.each(['0', '1', '2', '3'])('uses scoped seat styling for seat %s initials', (seat) => {
+    const { getByTestId, getByLabelText, getByText } = renderVisualSlot({
+      slot: {
+        ...visualSlot,
+        owner: seat,
+        contributions: [{ jobName: '工程師', worker: seat, value: 1 }],
+      },
+    });
+    const card = getByTestId(visualSlot.id);
+    const initials = card.querySelectorAll('.project-card__seat');
+    expect(initials).toHaveLength(2);
+    initials.forEach((initial) => expect(initial.getAttribute('data-seat')).toBe(seat));
+    expect(getByLabelText(/貢獻 1/).querySelector('.project-card__seat')).toBe(initials[1]);
+    if (seat === '0') {
+      expect(getByText('YOUR PROJECT').classList.contains('project-card__own')).toBe(true);
+    }
+  });
+
   it.each([1, 2, 3])('shows a %i-star difficulty label', (difficulty) => {
     const { getByLabelText } = renderVisualSlot({
       slot: { ...visualSlot, card: { ...visualSlot.card!, difficulty } },
@@ -186,38 +204,81 @@ describe.each([1280, 390])('BoardProjectSlot visual states at %ipx', (width) => 
 });
 
 describe('BoardProjectSlot interactions', () => {
-  it('maps existing single selection to Focused and toggles it off again', () => {
+  it.each(['Enter', ' '])('selects from a focusable native card button with %p', (key) => {
     const store = makeStore();
     store.dispatch(setProjectSlotsInteractive());
     store.dispatch(toggleProjectSlotSelection('project-slot-other'));
     const onIdleTap = jest.fn();
-    const { getByTestId } = renderVisualSlot({ idle: true, onIdleTap }, store);
+    const { getByTestId, getByRole } = renderVisualSlot({ idle: true, onIdleTap }, store);
     const card = getByTestId(visualSlot.id);
-    fireEvent.click(card);
+    const control = getByRole('button', { name: '選擇專案 資料申請小幫手（Claire）' });
+    expect(control.tagName).toBe('BUTTON');
+    expect(control.getAttribute('type')).toBe('button');
+    expect(control.tabIndex).toBe(0);
+    expect(control.classList.contains('project-card__control')).toBe(true);
+    expect(control.getAttribute('aria-pressed')).toBe('false');
+    control.focus();
+    expect(document.activeElement).toBe(control);
+    // JSDOM does not synthesize native keyboard clicks or paint :focus-visible.
+    fireEvent.keyDown(control, { key });
+    fireEvent.keyUp(control, { key });
+    fireEvent.click(control);
     expect(card.getAttribute('data-visual-state')).toBe('focused');
+    expect(control.getAttribute('aria-pressed')).toBe('true');
     expect(store.getState().projectSlots.selectedSlots).toEqual({ [visualSlot.id]: true });
     expect(onIdleTap).not.toHaveBeenCalled();
-    fireEvent.click(card);
+    fireEvent.click(control);
     expect(card.getAttribute('data-visual-state')).toBe('default');
+    expect(control.getAttribute('aria-pressed')).toBe('false');
   });
 
   it('allows an explicit visual state to override selection without changing selection behavior', () => {
     const store = makeStore();
     store.dispatch(setProjectSlotsInteractive());
     store.dispatch(toggleProjectSlotSelection(visualSlot.id));
-    const { getByTestId } = renderVisualSlot({ visualState: 'generalHint' }, store);
+    const { getByTestId, getByRole } = renderVisualSlot({ visualState: 'generalHint' }, store);
     const card = getByTestId(visualSlot.id);
     expect(card.getAttribute('data-visual-state')).toBe('generalHint');
-    fireEvent.click(card);
+    fireEvent.click(getByRole('button', { name: '選擇專案 資料申請小幫手（Claire）' }));
     expect(store.getState().projectSlots.selectedSlots).toEqual({});
     expect(card.getAttribute('data-visual-state')).toBe('generalHint');
   });
 
-  it('keeps idle tap inference', () => {
+  it.each(['Enter', ' '])('keeps idle tap inference through the native button with %p', (key) => {
     const onIdleTap = jest.fn();
-    const { getByTestId } = renderVisualSlot({ idle: true, onIdleTap });
-    fireEvent.click(getByTestId(visualSlot.id));
+    const { getByRole } = renderVisualSlot({ idle: true, onIdleTap });
+    const control = getByRole('button', { name: '查看專案 資料申請小幫手（Claire）' });
+    expect(control.tagName).toBe('BUTTON');
+    expect(control.tabIndex).toBe(0);
+    expect(control.hasAttribute('aria-pressed')).toBe(false);
+    expect(control.classList.contains('project-card__control')).toBe(true);
+    control.focus();
+    expect(document.activeElement).toBe(control);
+    fireEvent.keyDown(control, { key });
+    fireEvent.keyUp(control, { key });
+    fireEvent.click(control);
     expect(onIdleTap).toHaveBeenCalledWith(visualSlot);
+    expect(onIdleTap).toHaveBeenCalledTimes(1);
+  });
+
+  it.each([
+    { idle: false },
+    { idle: true },
+    { idle: false, onIdleTap: jest.fn() },
+  ])('exposes no card button when it is not clickable (%p)', (props) => {
+    const { queryByRole, getByTestId } = renderVisualSlot(props);
+    expect(queryByRole('button')).toBeNull();
+    expect(getByTestId(visualSlot.id).tabIndex).toBe(-1);
+  });
+
+  it('keeps only the independent steppers in the tab order during contribution', () => {
+    const { getAllByRole, queryByRole } = renderSlot();
+    expect(queryByRole('button', { name: /專案/ })).toBeNull();
+    expect(getAllByRole('button')).toHaveLength(2);
+    const increment = getAllByRole('button')[1];
+    expect(increment.tabIndex).toBe(0);
+    increment.focus();
+    expect(document.activeElement).toBe(increment);
   });
 
   it('keeps stepper updates in the fraction, committed-only chips, and click isolation', () => {
@@ -232,6 +293,11 @@ describe('BoardProjectSlot interactions', () => {
     fireEvent.click(getByRole('button', { name: '減少 行銷公關 貢獻' }));
     expect(getByText('1/3')).toBeTruthy();
     expect(onIdleTap).not.toHaveBeenCalled();
+    const cardControl = getByRole('button', { name: '查看專案 資料申請小幫手（Claire）' });
+    const increment = getByRole('button', { name: '增加 行銷公關 貢獻' });
+    expect(cardControl.contains(increment)).toBe(false);
+    expect(increment.parentElement!.closest('button')).toBeNull();
+    expect(increment.classList.contains('project-card__stepper')).toBe(true);
   });
 
   it('keeps profession targets independent of the named JobHint row', () => {
@@ -251,6 +317,7 @@ describe('BoardProjectSlot interactions', () => {
     const hintedRow = getByTestId('profession-target-美術設計');
     expect(hintedRow.classList.contains('project-card__progress-row--hinted')).toBe(true);
     expect(hintedRow.getAttribute('aria-pressed')).toBe('false');
+    expect(hintedRow.closest('button')).toBeNull();
     expect(getByTestId('profession-target-行銷公關').getAttribute('aria-pressed')).toBe('true');
     expect(queryByTestId('profession-target-工程師')).toBeNull();
     fireEvent.click(hintedRow);
