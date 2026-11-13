@@ -4,42 +4,77 @@ type JobTileProps = {
   id: string;
   name: string;
   selected?: boolean;
-  visualState?: 'default' | 'focused' | 'generalHint' | 'change';
+  /**
+   * `change`: remove mode, not yet removed (full colour + red ×).
+   * `ghost`: already removed in remove mode (dashed, faded, no ×).
+   */
+  visualState?: 'default' | 'focused' | 'generalHint' | 'change' | 'ghost';
+  /** Tile body is the control (select / recruit / create). Ignored while the × is shown. */
   onClick?: () => void;
+  /** Remove mode: the × is the control; the tile body is not. */
+  onRemove?: () => void;
 };
 
-/** JobCard: avatar + name. Selection remains owned by JobMarket. */
+/** JobCard: avatar + name. Selection and removal remain owned by JobMarket. */
 export default function JobTile({
   id,
   name,
   selected = false,
   visualState,
   onClick,
+  onRemove,
 }: JobTileProps) {
   const meta = getJobMetaByName(name);
   const state = visualState ?? (selected ? 'focused' : 'default');
-  // Figma state annotations were unavailable: assume ring/lift for Focused,
-  // dashed warm hint for GeneralHint, muted swap cue for Change (visual only).
-  return (
-    <button
-      type="button"
-      className="job-tile"
-      data-testid={`job-card-${id}`}
-      data-job-name={name}
-      data-selected={selected || undefined}
-      data-visual-state={state}
-      aria-label={name}
-      aria-pressed={selected}
-      disabled={!onClick}
-      onClick={onClick}
-    >
+  const showRemove = !!onRemove && state !== 'ghost';
+  const common = {
+    className: 'job-tile',
+    'data-testid': `job-card-${id}`,
+    'data-job-name': name,
+    'data-selected': selected || undefined,
+    'data-visual-state': state,
+  };
+  const content = (
+    <>
       {meta && <CharacterAvatar role={meta.role} />}
       <span className="job-tile-name">{name}</span>
-      {state === 'change' && (
-        <span className="job-tile-change" aria-hidden="true" title="即將更換">
-          ↻
-        </span>
+    </>
+  );
+
+  return (
+    <div className="job-tile-wrap">
+      {showRemove || state === 'ghost' ? (
+        // Not a button: the × is a sibling control, so no nested interactives.
+        <div
+          {...common}
+          role="group"
+          aria-label={state === 'ghost' ? `${name}（已移除）` : name}
+        >
+          {content}
+        </div>
+      ) : (
+        <button
+          type="button"
+          {...common}
+          aria-label={name}
+          aria-pressed={selected}
+          disabled={!onClick}
+          onClick={onClick}
+        >
+          {content}
+        </button>
       )}
-    </button>
+      {showRemove && (
+        <button
+          type="button"
+          className="job-remove"
+          data-testid={`job-remove-${id}`}
+          aria-label={`移除 ${name}`}
+          onClick={onRemove}
+        >
+          ×
+        </button>
+      )}
+    </div>
   );
 }

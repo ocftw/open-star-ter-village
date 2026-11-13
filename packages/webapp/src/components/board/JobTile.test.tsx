@@ -3,7 +3,7 @@ import React from 'react';
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import JobTile from './JobTile';
 
-const states = ['default', 'focused', 'generalHint', 'change'] as const;
+const states = ['default', 'focused', 'generalHint'] as const;
 
 // jsdom checks the component contract at both viewport widths; shots.mjs checks
 // the actual responsive CSS, dimensions and overflow in Chromium.
@@ -46,7 +46,7 @@ describe.each([1280, 390])('JobTile at %ipx', (width) => {
     expect(card.getAttribute('data-visual-state')).toBe(visualState);
     expect(card.hasAttribute('data-selected')).toBe(false);
     expect(within(card).getByRole('img', { name: '文字工作者' })).toBeTruthy();
-    expect(within(card).queryByTitle('即將更換') !== null).toBe(visualState === 'change');
+    expect(card.querySelector('.job-tile-change')).toBeNull();
     fireEvent.click(card);
     expect(onClick).toHaveBeenCalledTimes(1);
   });
@@ -80,5 +80,37 @@ describe.each([1280, 390])('JobTile at %ipx', (width) => {
   it('leaves a non-interactive market tile out of the tab order', () => {
     render(<JobTile id="inactive" name="工程師" />);
     expect((screen.getByRole('button', { name: '工程師' }) as HTMLButtonElement).disabled).toBe(true);
+  });
+
+  it('change: unmuted tile (not a button) with a sibling red × that removes', () => {
+    const onRemove = jest.fn();
+    const onClick = jest.fn();
+    const { container } = render(
+      <JobTile id="r1" name="工程師" visualState="change" onRemove={onRemove} onClick={onClick} />,
+    );
+    const tile = screen.getByTestId('job-card-r1');
+    expect(tile.tagName).toBe('DIV');
+    expect(tile.getAttribute('data-visual-state')).toBe('change');
+    expect(tile.querySelector('button')).toBeNull();
+    expect(container.querySelector('[title="即將更換"]')).toBeNull();
+    expect(container.textContent).not.toContain('↻');
+    fireEvent.click(tile);
+    expect(onRemove).not.toHaveBeenCalled();
+    expect(onClick).not.toHaveBeenCalled();
+    const remove = screen.getByRole('button', { name: '移除 工程師' });
+    expect(remove.parentElement).toBe(tile.parentElement);
+    expect(remove.textContent).toBe('×');
+    fireEvent.click(remove);
+    expect(onRemove).toHaveBeenCalledTimes(1);
+  });
+
+  it('ghost: removed tile has no × and no controls', () => {
+    const { container } = render(
+      <JobTile id="r2" name="美術設計" visualState="ghost" onRemove={jest.fn()} />,
+    );
+    const tile = screen.getByTestId('job-card-r2');
+    expect(tile.getAttribute('data-visual-state')).toBe('ghost');
+    expect(container.querySelector('button')).toBeNull();
+    expect(within(tile).getByText('美術設計')).toBeTruthy();
   });
 });

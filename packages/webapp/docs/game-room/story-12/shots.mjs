@@ -15,12 +15,31 @@ try {
     await Promise.all(Array.from(document.images, (image) => image.decode()));
   });
 
-  const states = ['default', 'focused', 'generalHint', 'change'];
+  const states = ['default', 'focused', 'generalHint', 'change', 'ghost'];
   async function checkTiles(mobile) {
     const signatures = [];
     for (const state of states) {
       const fixture = page.getByTestId(mobile ? 'gallery-mobile' : `gallery-${state}`);
       const tile = fixture.locator(`[data-visual-state="${state}"]`);
+      const remove = tile.locator('xpath=..').locator('.job-remove');
+      // Prototype .xbtn: only the not-yet-removed (change) tile has the red ×.
+      assert.equal(await remove.count(), state === 'change' ? 1 : 0, `${state}: × presence`);
+      if (state === 'change') {
+        const box = await remove.evaluate((element) => {
+          const r = element.getBoundingClientRect();
+          const t = element.parentElement.querySelector('.job-tile').getBoundingClientRect();
+          const cs = getComputedStyle(element);
+          return {
+            w: r.width, h: r.height, dx: r.right - t.right, dy: t.top - r.top,
+            bg: cs.backgroundColor, label: element.getAttribute('aria-label'),
+          };
+        });
+        assert.equal(box.w, 24);
+        assert.equal(box.h, 24);
+        assert.equal(box.bg, 'rgb(194, 41, 27)');
+        assert(box.dx > 0 && box.dy > 0, 'change: × overlaps the top-right corner');
+        assert(box.label.startsWith('移除 '), 'change: × aria-label');
+      }
       const measured = await tile.evaluate((element) => {
         const rect = element.getBoundingClientRect();
         const style = getComputedStyle(element);
@@ -30,17 +49,36 @@ try {
           left: rect.left,
           right: rect.right,
           viewport: window.innerWidth,
-          signature: [style.borderStyle, style.borderColor, style.backgroundColor, style.transform],
+          shadow: style.boxShadow,
+          opacity: style.opacity,
+          borderStyle: style.borderStyle,
+          bg: style.backgroundColor,
+          signature: [style.borderStyle, style.borderColor, style.backgroundColor, style.transform, style.boxShadow, style.opacity],
         };
       });
       assert.equal(measured.width, mobile ? 104 : 124, `${state}: card width`);
       assert.equal(measured.height, mobile ? 94 : 106, `${state}: card height`);
       assert(measured.left >= 0 && measured.right <= measured.viewport, `${state}: horizontal overflow`);
+      // Flat cards: no sticker shadow anywhere (hint ring is a spread-only teal ring).
+      if (state !== 'generalHint') assert.equal(measured.shadow, 'none', `${state}: flat`);
+      else assert(/rgba\(30, 166, 185, 0\.35\) 0px 0px 0px 3px/.test(measured.shadow), 'hint: teal ring');
+      if (state === 'generalHint') {
+        assert.equal(measured.borderStyle, 'solid', 'hint: solid border');
+      }
+      if (state === 'ghost') {
+        assert.equal(measured.borderStyle, 'dashed');
+        assert.equal(measured.opacity, '0.7');
+      } else if (state === 'change') {
+        assert.equal(measured.borderStyle, 'solid');
+        assert.equal(measured.opacity, '1');
+        assert.equal(measured.bg, 'rgb(255, 250, 243)', 'change: unmuted cream');
+      }
       assert.equal(await tile.locator('img').count(), 1, `${state}: character avatar`);
       assert.equal(await tile.getAttribute('data-selected'), state === 'focused' ? 'true' : null);
       signatures.push(JSON.stringify(measured.signature));
     }
-    assert.equal(new Set(signatures).size, 4, 'All four visual treatments must be distinct');
+    // `change` deliberately shares the default tile body (unmuted); only the red × differs.
+    assert.equal(new Set(signatures).size, 4, 'Four distinct tile treatments (change == default body + ×)');
   }
 
   async function capture(testId, filename) {
@@ -54,6 +92,8 @@ try {
   await capture('gallery-default', 'desktop-default.png');
   await capture('gallery-focused', 'desktop-focused.png');
   await capture('gallery-hints', 'desktop-hints.png');
+  await capture('gallery-change', 'desktop-change.png');
+  await capture('gallery-ghost', 'desktop-ghost.png');
 
   await page.setViewportSize({ width: 390, height: 844 });
   await checkTiles(true);
