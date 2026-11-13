@@ -26,44 +26,48 @@ test.describe('Mobile layout', () => {
     await expect(page.getByLabel(/player name/i)).toBeVisible();
   });
 
-  test('board uses the bottom sheet; tap-driven create works', async ({ page }) => {
+  test('board uses the bottom sheet; action-first create works', async ({ page }) => {
     await page.goto('/dev?user=player1&mode=offline');
     const sheet = page.locator('[data-testid="mobile-sheet"]');
     await sheet.waitFor({ state: 'visible', timeout: 20000 });
 
     const launcher = page.getByTestId('dev-tools-open');
     await expect(launcher).toBeVisible();
-    const launcherBox = await launcher.boundingBox();
-    const sheetBox = await sheet.boundingBox();
-    expect(launcherBox).not.toBeNull();
-    expect(sheetBox).not.toBeNull();
-    expect(launcherBox!.y + launcherBox!.height).toBeLessThanOrEqual(sheetBox!.y);
+    expect(await launcher.boundingBox()).not.toBeNull();
+    expect(await sheet.boundingBox()).not.toBeNull();
 
     await openDevTools(page);
     await expect(page.getByTestId('dev-tools-drawer')).toHaveAttribute('data-anchor', 'bottom');
     await closeDevTools(page);
 
-    // Contextual bar lives in the sheet; hand is collapsed by default.
+    // Contextual bar lives in the sheet; hand is collapsed by default
+    // (cards stay in a hidden container, so visibility is the signal).
+    const handCards = sheet.locator('[data-testid^="hand-card-"]');
+    const handle = page.locator('[data-testid="mobile-sheet-handle"]');
     await expect(sheet.locator('[data-testid="context-action"][data-mode="idle"]')).toBeVisible();
-    await expect(sheet.locator('[data-testid^="hand-card-"]')).toHaveCount(0);
+    await expect(handle).toHaveAttribute('aria-expanded', 'false');
+    await expect(handCards.first()).toBeHidden();
 
     // The handle expands the hand strip (and collapses it again).
-    await page.locator('[data-testid="mobile-sheet-handle"]').click();
-    await expect(sheet.locator('[data-testid^="hand-card-"]').first()).toBeVisible();
-    await page.locator('[data-testid="mobile-sheet-handle"]').click();
-    await expect(sheet.locator('[data-testid^="hand-card-"]')).toHaveCount(0);
-    await page.locator('[data-testid="mobile-sheet-handle"]').click();
-    await expect(sheet.locator('[data-testid^="hand-card-"]').first()).toBeVisible();
+    await handle.click();
+    await expect(handle).toHaveAttribute('aria-expanded', 'true');
+    await expect(handCards.first()).toBeVisible();
+    await handle.click();
+    await expect(handle).toHaveAttribute('aria-expanded', 'false');
+    await expect(handCards.first()).toBeHidden();
+    await handle.click();
+    await expect(handCards.first()).toBeVisible();
 
-    // Card-driven create still works on mobile: tap hand card → create mode.
-    await sheet.locator('[data-testid^="hand-card-"]').first().click();
-    await expect(page.locator('[data-testid="context-action"]')).toHaveAttribute(
+    // Choose START in the sheet before selecting any cards.
+    const panel = sheet.locator('[data-testid="context-action"]:visible');
+    await panel.locator('[data-testid="action-createProject"]').click();
+    await expect(panel).toHaveAttribute(
       'data-mode',
       'createProject',
     );
     // Cancel returns to idle.
-    await page.locator('[data-testid="ca-cancel"]').click();
-    await expect(page.locator('[data-testid="context-action"]')).toHaveAttribute('data-mode', 'idle');
+    await panel.locator('[data-testid="ca-cancel"]').click();
+    await expect(panel).toHaveAttribute('data-mode', 'idle');
 
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth - document.documentElement.clientWidth,

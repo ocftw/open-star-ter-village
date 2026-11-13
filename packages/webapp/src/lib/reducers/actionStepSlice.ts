@@ -46,6 +46,7 @@ const actionStepSlice = createSlice({
     setCurrentAction: (state, action: PayloadAction<UserActionMoves | null>) => {
       state.currentAction = action.payload;
       state.assignedJobName = null;
+      state.interactiveState = initialInteractiveState;
     },
     setAssignedJobName: (state, action: PayloadAction<string | null>) => {
       state.assignedJobName = action.payload;

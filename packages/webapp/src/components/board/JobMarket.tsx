@@ -12,11 +12,10 @@ import {
   toggleJobSlotSelection,
 } from '@/lib/reducers/jobSlotSlice';
 import JobTile from './JobTile';
+import { canSelectAction } from './actionPanel';
 
 /**
- * Job market grid + the refill affordance of the redesign. 加班 Overtime is
- * entered contextually by re-tapping an occupied action; its per-player token
- * indicator lives in ContextAction next to the AP dots.
+ * Existing market grid and refill entry; cards become selectable after an action is chosen.
  */
 export default function JobMarket({
   gameContext,
@@ -27,7 +26,7 @@ export default function JobMarket({
   idle: boolean;
   discardActive: boolean;
 }) {
-  const { G } = gameContext;
+  const { G, playerID } = gameContext;
   const dispatch = useAppDispatch();
   const jobsInteractive = useAppSelector(isJobSlotsInteractive);
   const selectedSlots = useAppSelector(getSelectedJobSlots);
@@ -39,15 +38,12 @@ export default function JobMarket({
     if (jobsInteractive) {
       if (!multiSelect && !selectedSlots[id]) dispatch(resetJobSlotSelection());
       dispatch(toggleJobSlotSelection(id));
-    } else if (idle) {
-      dispatch(setCurrentAction(UserActionMoves.Recruit));
-      dispatch(toggleJobSlotSelection(id));
     }
   };
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, paddingLeft: 4 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, paddingLeft: 4, flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <span style={{ fontWeight: 800, fontSize: 14 }}>人力市場</span>
           <span className="en-cap">Job market · {G.table.jobSlots.length} cards</span>
@@ -62,7 +58,7 @@ export default function JobMarket({
             padding: '3px 10px',
           }}
         >
-          ⓘ 點人力卡招募到你的專案
+          ⓘ 先選加入專案，再選人力卡
         </span>
         {idle && (
           <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
@@ -70,6 +66,7 @@ export default function JobMarket({
               type="button"
               data-testid="refill-jobs"
               className="btn-sticker sm ghost"
+              disabled={playerID === null || !canSelectAction(G, playerID, UserActionMoves.RemoveAndRefillJobs)}
               onClick={() => dispatch(setCurrentAction(UserActionMoves.RemoveAndRefillJobs))}
             >
               🔄 換人力 <span className="tag-en">Refill</span>
@@ -91,7 +88,7 @@ export default function JobMarket({
             id={job.id}
             name={job.name}
             selected={jobsInteractive && !!selectedSlots[job.id]}
-            onClick={idle || jobsInteractive ? () => handleTap(job.id) : undefined}
+            onClick={jobsInteractive ? () => handleTap(job.id) : undefined}
           />
         ))}
       </div>

@@ -1,14 +1,14 @@
 /**
- * E2E tests: Simplified Mode action flow (Scenarios 1–10), card-driven UI.
+ * E2E tests: Simplified Mode action flow (Scenarios 1–10), action-first UI.
  *
  * Scenarios 1–4 are based on the rulebook demo (pages 10–12).
  * Scenarios 5–10 cover event banner, turn indicator, endActionTurn,
  * contributions, and the 加班 Overtime token.
  *
- * Interaction model (redesign, Webapp Visual Redesign RFC (#399)): there is no action toolbar.
- * - Tap a hand card  → create-project mode (then tap a job card to assign)
- * - Tap a job card   → recruit mode (then tap a project slot)
- * - Tap a project    → contribute mode (own vs joined inferred by ownership)
+ * Interaction model: choose an action in the panel before selecting cards.
+ * - START → create-project mode → compatible hand card and job card
+ * - JOIN → recruit mode → compatible job card and project slot
+ * - CONTRIBUTE (own or joined) → project slot → worker contribution steppers
  * - 換人力 Refill is an affordance next to the job market; 加班 Overtime is
  *   offered contextually when re-tapping an occupied 1-AP action
  * - The contextual bar [data-testid="context-action"] carries mode
@@ -33,8 +33,8 @@ const TALENT_SCOUTING_VP       = 1;
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-const contextAction = (page: Page) => page.locator('[data-testid="context-action"]');
-const confirmButton = (page: Page) => page.locator('[data-testid="ca-confirm"]');
+const contextAction = (page: Page) => page.locator('[data-testid="context-action"]:visible');
+const confirmButton = (page: Page) => contextAction(page).locator('[data-testid="ca-confirm"]');
 
 /** Wait until the idle contextual bar is visible — game initialised, current player's turn. */
 async function waitForGameReady(page: Page) {
@@ -79,14 +79,16 @@ async function performEndTurn(page: Page): Promise<void> {
 }
 
 /**
- * Create a project via the card-driven flow: tap a compatible hand card
- * (enters create mode), then tap a matching job card. Returns the job name used.
+ * Choose START, then tap a compatible hand card and matching job card.
+ * Returns the job name used.
  *
  * @param requireMultipleJobTypes - when true, prefer hand cards with 2+ different
  *   job requirements — and (pass 1) an unclaimed job needing > 2 points — so a
  *   recruit + contribute on this project stays possible afterwards.
  */
 async function selectCompatibleHandAndJobCard(page: Page, requireMultipleJobTypes = false): Promise<string> {
+  await contextAction(page).locator('[data-testid="action-createProject"]').click();
+  await expect(contextAction(page)).toHaveAttribute('data-mode', 'createProject');
   const handCards = page.locator('[data-testid^="hand-card-"]');
   const jobCards  = page.locator('[data-testid^="job-card-"]');
 
@@ -132,8 +134,6 @@ async function selectCompatibleHandAndJobCard(page: Page, requireMultipleJobType
         if (pass === 'multi-with-room' && !hasRecruitableOther(true)) continue;
         if (pass === 'multi' && !hasRecruitableOther(false)) continue;
         await handCard.click();
-        // Tapping a hand card from idle must enter create mode (inference works).
-        await expect(contextAction(page)).toHaveAttribute('data-mode', 'createProject');
         await jobCard.click();
         return jobName;
       }
@@ -143,8 +143,7 @@ async function selectCompatibleHandAndJobCard(page: Page, requireMultipleJobType
 }
 
 /**
- * Recruit via the card-driven flow: tap a compatible job card (enters recruit
- * mode from idle), then tap the target project slot.
+ * Choose JOIN, then tap a compatible job card and the target project slot.
  *
  * @param preferHighRequirement - when true, prefer jobs whose requirement exceeds
  *   the initial contribution (2), so the slot still has room afterwards.
@@ -154,6 +153,8 @@ async function selectCompatibleJobAndProjectSlot(
   ownerJobName: string,
   preferHighRequirement = false,
 ): Promise<void> {
+  await contextAction(page).locator('[data-testid="action-recruit"]').click();
+  await expect(contextAction(page)).toHaveAttribute('data-mode', 'recruit');
   const projectSlots = page.locator('[data-testid^="project-slot-"]');
   const jobCards     = page.locator('[data-testid^="job-card-"]');
 
@@ -183,8 +184,6 @@ async function selectCompatibleJobAndProjectSlot(
         if (requireHighReq && (jobReqMap[jobName] ?? 0) <= INITIAL_CONTRIBUTION) continue;
 
         await jobCard.click();
-        // Tapping a job card from idle must enter recruit mode (inference works).
-        await expect(contextAction(page)).toHaveAttribute('data-mode', 'recruit');
         await slot.click();
         return;
       }
@@ -212,7 +211,7 @@ test.describe('Simplified Mode — Action Flow', () => {
     await expectActions(page, 'Alice', INITIAL_ACTION_TOKENS);
     await expectScore(page, 'Alice', 0);
 
-    // Tap hand card → tap job card (card-driven, no toolbar)
+    // Choose START → tap hand card → tap job card.
     await selectCompatibleHandAndJobCard(page);
 
     await expect(confirmButton(page)).toBeEnabled();
@@ -230,7 +229,7 @@ test.describe('Simplified Mode — Action Flow', () => {
     await expect(confirmButton(page)).toBeEnabled();
     await confirmButton(page).click();
 
-    // Back to idle, then recruit: tap job card → tap project slot.
+    // Back to idle, then choose JOIN → tap job card → tap project slot.
     await waitForGameReady(page);
     await selectCompatibleJobAndProjectSlot(page, ownerJobName);
 
@@ -302,9 +301,10 @@ test.describe('Simplified Mode — Action Flow', () => {
     await expectActions(page, 'Alice', INITIAL_ACTION_TOKENS - CREATE_PROJECT_COST);
     await waitForGameReady(page);
 
-    // Tap her project on the board — ownership infers contribute (own).
-    await page.locator('[data-testid^="project-slot-"][data-requirements]').first().click();
+    // Choose contribution to her own projects, then tap her project.
+    await contextAction(page).locator('[data-testid="action-contributeOwnedProjects"]').click();
     await expect(contextAction(page)).toHaveAttribute('data-mode', 'contributeOwnedProjects');
+    await page.locator('[data-testid^="project-slot-"][data-requirements]').first().click();
 
     // Before any interaction the contribution delta is 0 → confirm disabled.
     await expect(confirmButton(page)).toBeDisabled();
@@ -322,8 +322,8 @@ test.describe('Simplified Mode — Action Flow', () => {
 
   // ── Scenario 9: Doin' Overtime (per-player token) ─────────────────────────
   test('Scenario 9: Doin\' Overtime — token repeats a prior 1-AP action for 1 AP', async ({ page }) => {
-    // The token starts available.
-    await expect(page.locator('[data-testid="overtime-token"]')).toHaveAttribute('data-available', 'true');
+    // The overtime chip was removed with the action-first panel; availability
+    // is offered contextually when re-entering an occupied 1-AP action.
 
     // Step A: Alice performs Talent Scouting (refill) — 1 AP, 1 VP.
     await page.locator('[data-testid="refill-jobs"]').click();
@@ -358,7 +358,8 @@ test.describe('Simplified Mode — Action Flow', () => {
       INITIAL_ACTION_TOKENS - TALENT_SCOUTING_COST - TALENT_SCOUTING_COST,
     );
     await expectScore(page, 'Alice', TALENT_SCOUTING_VP + TALENT_SCOUTING_VP);
-    await expect(page.locator('[data-testid="overtime-token"]')).not.toHaveAttribute('data-available', 'true');
+    // The token is spent, so the occupied refill action is no longer selectable.
+    await expect(page.locator('[data-testid="refill-jobs"]')).toBeDisabled();
   });
 
   // ── Scenario 10: contributeJoinedProjects ─────────────────────────────────
@@ -396,9 +397,10 @@ test.describe('Simplified Mode — Action Flow', () => {
     await expectActions(page, 'Alice', INITIAL_ACTION_TOKENS - RECRUIT_COST);
     await waitForGameReady(page);
 
-    // Alice taps Bob's project — ownership infers contribute (joined).
-    await page.locator('[data-testid^="project-slot-"][data-requirements]').first().click();
+    // Choose contribution to joined projects, then tap Bob's project.
+    await contextAction(page).locator('[data-testid="action-contributeJoinedProjects"]').click();
     await expect(contextAction(page)).toHaveAttribute('data-mode', 'contributeJoinedProjects');
+    await page.locator('[data-testid^="project-slot-"][data-requirements]').first().click();
     await expect(confirmButton(page)).toBeDisabled();
 
     // Increment Alice's contribution on a row that still has remaining capacity.

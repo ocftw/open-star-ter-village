@@ -17,7 +17,6 @@ import {
   getCurrentAction,
   resetAction,
   setAssignedJobName,
-  setCurrentAction,
 } from '@/lib/reducers/actionStepSlice';
 import { getSelectedJobSlots } from '@/lib/reducers/jobSlotSlice';
 import { getSelectedProjectSlots } from '@/lib/reducers/projectSlotSlice';
@@ -93,19 +92,7 @@ const Board: React.FC<GameContext> = (gameContext) => {
     };
   };
 
-  // Idle tap on a board project → contribute; ownership picks the move.
-  const handleProjectIdleTap = (slot: ProjectSlotState) => {
-    if (playerID === null) return;
-    dispatch(
-      setCurrentAction(
-        slot.owner === playerID
-          ? UserActionMoves.ContributeOwnedProjects
-          : UserActionMoves.ContributeJoinedProjects,
-      ),
-    );
-  };
-
-  // Shared between the desktop layout and the mobile bottom sheet.
+  // Shared between the desktop right column and the mobile stack.
   const actionArea =
     actionAreaView === 'discard' ? (
       <DiscardPanel gameContext={gameContext} />
@@ -142,7 +129,7 @@ const Board: React.FC<GameContext> = (gameContext) => {
             padding: '3px 10px',
           }}
         >
-          ⓘ 點桌上的專案來貢獻
+          ⓘ 先選行動，再選擇專案
         </span>
         <span
           className="sticker"
@@ -174,8 +161,7 @@ const Board: React.FC<GameContext> = (gameContext) => {
               slot={slot}
               playerID={playerID}
               matchData={matchData}
-              idle={idle}
-              onIdleTap={handleProjectIdleTap}
+              idle={false}
               professionPicker={professionPickerFor(slot)}
             />
           ))}
@@ -193,7 +179,7 @@ const Board: React.FC<GameContext> = (gameContext) => {
             fontSize: 12,
           }}
         >
-          還沒有專案 — 點手牌發起第一個專案。 No projects yet — tap a hand card to create one.
+          還沒有專案 — 選擇「發起專案」開始。 No projects yet — choose START to create one.
         </div>
       )}
     </div>
@@ -213,10 +199,14 @@ const Board: React.FC<GameContext> = (gameContext) => {
       }}
     >
       <GameHeader gameContext={gameContext} compact />
+      <MobileSheet
+        action={actionArea}
+        hand={playerID !== null && <HandPanel gameContext={gameContext} layout="strip" />}
+      />
       <div
         style={{
           flex: 1,
-          padding: '12px 12px 280px',
+          padding: '12px',
           display: 'flex',
           flexDirection: 'column',
           gap: 14,
@@ -227,10 +217,6 @@ const Board: React.FC<GameContext> = (gameContext) => {
         {jobMarket}
         <ScorePanel gameContext={gameContext} />
       </div>
-      <MobileSheet
-        action={actionArea}
-        hand={playerID !== null && <HandPanel gameContext={gameContext} idle={idle} layout="strip" />}
-      />
 
       <GameOverDialog gameContext={gameContext} open={!!gameover && showGameOver} onClose={() => setShowGameOver(false)} />
     </div>
@@ -250,7 +236,7 @@ const Board: React.FC<GameContext> = (gameContext) => {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: playerID !== null ? '250px 1fr 260px' : '1fr 260px',
+          gridTemplateColumns: playerID !== null ? '250px minmax(0, 1fr) 231px' : 'minmax(0, 1fr) 231px',
           gap: 16,
           padding: 16,
           flex: 1,
@@ -258,17 +244,18 @@ const Board: React.FC<GameContext> = (gameContext) => {
         }}
       >
         {/* LEFT — hand + event (players only) */}
-        {playerID !== null && <HandPanel gameContext={gameContext} idle={idle} />}
+        {playerID !== null && <HandPanel gameContext={gameContext} />}
 
-        {/* CENTER — contextual action + projects + job market */}
+        {/* CENTER — notices + projects + job market */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14, minWidth: 0 }}>
-          {actionArea}
+          {actionAreaView !== 'context' && actionArea}
           {projectsSection}
           {jobMarket}
         </div>
 
-        {/* RIGHT — score + turn order */}
+        {/* RIGHT — action panel + score + turn order */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {actionAreaView === 'context' && actionArea}
           <ScorePanel gameContext={gameContext} />
           <TurnOrderPanel gameContext={gameContext} />
         </div>
