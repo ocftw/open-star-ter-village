@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import { act, fireEvent, render, screen } from '@testing-library/react';
-import { Button, IconButton, Toast, TOAST_DURATION_MS } from '@/components/design';
+import { Button, DoubleChevron, IconButton, Toast, TOAST_DURATION_MS } from '@/components/design';
 import type { ButtonProps } from '@/components/design';
 
 describe('Button', () => {
@@ -62,6 +62,39 @@ describe('IconButton', () => {
     expect(screen.getByTestId('icon').parentElement?.getAttribute('aria-hidden')).toBe('true');
     fireEvent.click(button);
     expect(onClick).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('DoubleChevron', () => {
+  it.each(['left', 'right', 'up', 'down'] as const)('renders a decorative %s chevron', (direction) => {
+    const { container } = render(<DoubleChevron direction={direction} />);
+    const svg = container.querySelector('svg')!;
+    expect(svg.getAttribute('aria-hidden')).toBe('true');
+    expect(svg.getAttribute('focusable')).toBe('false');
+    expect(svg.getAttribute('data-direction')).toBe(direction);
+    expect(svg.querySelectorAll('path')).toHaveLength(2);
+    expect(svg.getAttribute('stroke')).toBe('currentColor');
+  });
+
+  it('rotates one path per direction', () => {
+    const rotations = (['right', 'down', 'left', 'up'] as const).map((direction) => {
+      const { container, unmount } = render(<DoubleChevron direction={direction} />);
+      const transform = container.querySelector('svg')!.style.transform;
+      unmount();
+      return transform;
+    });
+    expect(rotations).toEqual(['rotate(0deg)', 'rotate(90deg)', 'rotate(180deg)', 'rotate(270deg)']);
+  });
+
+  it('keeps the IconButton accessible name with a chevron child', () => {
+    render(
+      <IconButton label="展開 Hover">
+        <DoubleChevron direction="up" />
+      </IconButton>,
+    );
+    const button = screen.getByRole('button', { name: '展開 Hover' });
+    expect(button.querySelector('.gr-icon-btn__icon')?.getAttribute('aria-hidden')).toBe('true');
+    expect(button.getAttribute('title')).toBe('展開 Hover');
   });
 });
 
@@ -137,5 +170,37 @@ describe('Toast', () => {
     unmount();
     act(() => jest.advanceTimersByTime(TOAST_DURATION_MS));
     expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it('defaults to the default (black) tone', () => {
+    render(<Toast open onClose={jest.fn()}>msg</Toast>);
+    const toast = screen.getByRole('status').parentElement!;
+    expect(toast.classList.contains('gr-toast')).toBe(true);
+    expect(toast.classList.contains('gr-toast--default')).toBe(true);
+    expect(toast.getAttribute('data-tone')).toBe('default');
+  });
+
+  it.each(['default', 'alert'] as const)('%s tone auto-hides after 2s and can be dismissed', (tone) => {
+    const onClose = jest.fn();
+    const { unmount } = render(<Toast open tone={tone} onClose={onClose}>已達到貢獻值上限</Toast>);
+    const toast = screen.getByRole('status').parentElement!;
+    expect(toast.classList.contains(`gr-toast--${tone}`)).toBe(true);
+    expect(toast.getAttribute('data-tone')).toBe(tone);
+    act(() => jest.advanceTimersByTime(TOAST_DURATION_MS));
+    expect(onClose).toHaveBeenCalledTimes(1);
+    unmount();
+
+    const onClose2 = jest.fn();
+    render(<Toast open tone={tone} onClose={onClose2}>msg</Toast>);
+    const dismiss = screen.getByRole('button', { name: '關閉提示' });
+    expect(dismiss.querySelector('svg')?.getAttribute('aria-hidden')).toBe('true');
+    fireEvent.click(dismiss);
+    expect(onClose2).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps the live region mounted with no tone class while closed', () => {
+    render(<Toast open={false} tone="alert" onClose={jest.fn()}>msg</Toast>);
+    const region = screen.getByRole('status');
+    expect(region.parentElement?.className).toBe('');
   });
 });

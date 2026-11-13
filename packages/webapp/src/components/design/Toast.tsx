@@ -2,9 +2,12 @@
 
 import { CSSProperties, ReactNode, useEffect, useRef } from 'react';
 import IconButton from '@/components/design/IconButton';
+import CloseIcon from '@/components/design/CloseIcon';
 
 /** Figma annotation on Frame 22: 跳出貢獻上限提示 / 2秒後消失. */
 export const TOAST_DURATION_MS = 2000;
+
+export type ToastTone = 'default' | 'alert';
 
 export type ToastProps = {
   open: boolean;
@@ -13,6 +16,8 @@ export type ToastProps = {
   /** Change on each trigger to restart the timer and re-announce an open toast. */
   resetKey?: string | number;
   children: ReactNode;
+  /** `default` is the black notice (prototype .hint); `alert` is the red rule alert (.alert-pill). */
+  tone?: ToastTone;
   duration?: number;
   className?: string;
   style?: CSSProperties;
@@ -28,6 +33,7 @@ export default function Toast({
   onClose,
   resetKey,
   children,
+  tone = 'default',
   duration = TOAST_DURATION_MS,
   className,
   style,
@@ -52,13 +58,15 @@ export default function Toast({
 
   return (
     <div className={className} style={style}>
-      <div className={open ? 'gr-toast' : undefined}>
+      <div className={open ? `gr-toast gr-toast--${tone}` : undefined} data-tone={open ? tone : undefined}>
         <span role="status" aria-live="polite" aria-atomic="true">
           {/* Replacing the message node re-announces identical notices. */}
           {open ? <span key={resetKey}>{children}</span> : null}
         </span>
         {open ? (
-          <IconButton label="關閉提示" onClick={dismiss}>×</IconButton>
+          <IconButton label="關閉提示" className="gr-toast__dismiss" onClick={dismiss}>
+            <CloseIcon />
+          </IconButton>
         ) : null}
       </div>
     </div>
