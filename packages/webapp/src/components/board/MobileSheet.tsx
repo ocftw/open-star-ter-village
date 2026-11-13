@@ -1,5 +1,5 @@
 import { ReactNode, useState } from 'react';
-import { IconButton } from '@/components/design';
+import { DoubleChevron, IconButton } from '@/components/design';
 
 /** Mobile stacks the actions and collapsible hand in normal document flow. */
 export default function MobileSheet({
@@ -27,7 +27,7 @@ export default function MobileSheet({
               aria-controls="mobile-hand"
               onClick={() => setExpanded((value) => !value)}
             >
-              {expanded ? '⌃' : '⌄'}
+              <DoubleChevron direction={expanded ? 'up' : 'down'} />
             </IconButton>
             <span style={{ fontSize: 12, fontWeight: 700 }}>你的手牌</span>
           </div>
