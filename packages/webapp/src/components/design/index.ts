@@ -16,5 +16,7 @@ export { default as Button } from './Button';
 export type { ButtonProps, ButtonSize, ButtonVariant } from './Button';
 export { default as IconButton } from './IconButton';
 export type { IconButtonProps } from './IconButton';
+export { default as DoubleChevron } from './DoubleChevron';
+export type { ChevronDirection, DoubleChevronProps } from './DoubleChevron';
 export { default as Toast, TOAST_DURATION_MS } from './Toast';
-export type { ToastProps } from './Toast';
+export type { ToastProps, ToastTone } from './Toast';

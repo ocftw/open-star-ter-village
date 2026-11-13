@@ -608,6 +608,7 @@ body:has(.modal[open]) {
   --gr-text-secondary: #8a8070;
   --gr-bg-light: #fffdf8;
   --gr-bg-dk: #fff0e2;
+  --gr-orange-hover: #f05a1e; /* prototype --focus; Figma IconButton Hover */
 }
 
 .gr-btn {
@@ -699,56 +700,93 @@ body:has(.modal[open]) {
   cursor: not-allowed;
 }
 
+/* Figma IconButton (110-359): Default = ink disc + cream double chevron,
+   Hover = orange disc (--gr-orange-hover). Grid + line-height 0 centre
+   the SVG exactly (same fix as .job-remove). ::after keeps a 44px hit area
+   when a modifier shrinks the visible disc. */
 .gr-icon-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  position: relative;
+  display: grid;
+  place-items: center;
   width: 44px;
   height: 44px;
   padding: 0;
-  border: 1.5px solid var(--gr-ink);
-  border-radius: 999px;
-  background: var(--gr-bg-light);
-  color: var(--gr-ink);
+  border: 0;
+  border-radius: 50%;
+  background: var(--gr-ink);
+  color: var(--gr-bg-light);
+  line-height: 0;
   cursor: pointer;
-  transition: transform 0.08s ease, box-shadow 0.08s ease, background-color 0.12s ease;
+  transition: transform 0.08s ease, background-color 0.12s ease;
 }
 .gr-icon-btn__icon {
-  display: inline-flex;
-  font-size: 22px;
-  line-height: 1;
+  display: grid;
+  place-items: center;
+  line-height: 0;
+}
+.gr-icon-btn__icon > svg {
+  display: block;
 }
 .gr-icon-btn:not(:disabled):hover,
 .gr-icon-btn:focus-visible {
-  background: var(--gr-bg-dk);
-  box-shadow: 0 2px 0 var(--gr-ink);
-  transform: translateY(-1px);
+  background: var(--gr-orange-hover);
 }
 .gr-icon-btn:disabled {
   opacity: 0.45;
   cursor: not-allowed;
 }
 
+/* Toast tones. default = prototype .hint (black notice), alert = .alert-pill
+   (Figma 貢獻專案1.1.3 node 148-794 / Frame 39 Notification-Alert). */
 .gr-toast {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  min-width: 186px;
-  min-height: 48px;
-  padding: 0 12px 0 20px;
-  border: 1.5px solid var(--gr-ink);
-  border-radius: 12px;
-  background: var(--gr-bg-light);
-  color: var(--gr-ink);
+  gap: 8px;
   font-family: var(--font-zh);
-  font-weight: 700;
-  font-size: 14px;
-  box-shadow: 0 3px 0 var(--gr-ink);
   animation: gr-toast-in 0.16s ease-out;
 }
-.gr-toast > .gr-icon-btn {
+.gr-toast--default {
+  padding: 7px 8px 7px 14px;
+  border-radius: 99px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 13px;
+  line-height: 16px;
+  box-shadow: 0 6px 18px -8px rgba(0, 0, 0, 0.5);
+}
+.gr-toast--alert {
+  padding: 8px 8px 8px 16px;
+  border-radius: 16px;
+  background: #c00f0c;
+  color: #f3f3f3;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 14px;
+}
+/* Dismiss: a 24px translucent disc inside the pill with a 44px ::after hit
+   area; negative margins stop it growing the pill. The ring is light and
+   inset so it stays visible on the dark and red grounds. */
+.gr-toast .gr-toast__dismiss {
   flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  margin: -5px 0;
+  background: transparent;
+  color: inherit;
+}
+.gr-toast .gr-toast__dismiss::after {
+  content: '';
+  position: absolute;
+  inset: -10px;
+}
+.gr-toast .gr-toast__dismiss:not(:disabled):hover,
+.gr-toast .gr-toast__dismiss:focus-visible {
+  background: rgba(255, 255, 255, 0.22);
+}
+.gr-toast .gr-toast__dismiss:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 1px;
 }
 @keyframes gr-toast-in {
   from {
