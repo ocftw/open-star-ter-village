@@ -33,7 +33,11 @@ export default function JobMarket({
   const selectedSlots = useAppSelector(getSelectedJobSlots);
   const currentAction = useAppSelector(getCurrentAction);
 
-  const multiSelect = currentAction === UserActionMoves.RemoveAndRefillJobs || discardActive;
+  const refillMode = jobsInteractive && currentAction === UserActionMoves.RemoveAndRefillJobs;
+  const discardMode = jobsInteractive && discardActive;
+  const removeMode = refillMode || discardMode;
+  const multiSelect = removeMode;
+  const removedCount = Object.values(selectedSlots).filter(Boolean).length;
 
   const handleTap = (id: string) => {
     if (jobsInteractive) {
@@ -85,15 +89,33 @@ export default function JobMarket({
           marginTop: 10,
         }}
       >
-        {G.table.jobSlots.map((job) => (
-          <JobTile
-            key={job.id}
-            id={job.id}
-            name={job.name}
-            selected={jobsInteractive && !!selectedSlots[job.id]}
-            onClick={idle || jobsInteractive ? () => handleTap(job.id) : undefined}
-          />
-        ))}
+        {G.table.jobSlots.map((job) => {
+          const removed = !!selectedSlots[job.id];
+          if (removeMode) {
+            // 四大自由 discard: marked tiles leave the row (prototype); the
+            // × disappears once 2 are marked. Refill: removed tiles stay as ghosts.
+            if (discardMode && removed) return null;
+            const canRemove = !removed && !(discardMode && removedCount >= 2);
+            return (
+              <JobTile
+                key={job.id}
+                id={job.id}
+                name={job.name}
+                visualState={removed ? 'ghost' : 'change'}
+                onRemove={canRemove ? () => handleTap(job.id) : undefined}
+              />
+            );
+          }
+          return (
+            <JobTile
+              key={job.id}
+              id={job.id}
+              name={job.name}
+              selected={jobsInteractive && removed}
+              onClick={idle || jobsInteractive ? () => handleTap(job.id) : undefined}
+            />
+          );
+        })}
       </div>
     </div>
   );

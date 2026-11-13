@@ -372,6 +372,149 @@ body:has(.modal[open]) {
   height: 88px;
 }
 
+/* JobCard (story 12): prototype .jtile, flat (sticker shadow is for action buttons only). */
+.job-tile-wrap {
+  position: relative;
+  display: flex;
+  justify-self: center;
+  width: min(124px, 100%);
+  min-width: 0;
+  overflow: visible;
+}
+.job-tile {
+  appearance: none;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  min-height: 106px;
+  padding: 12px 8px;
+  border: 2px solid var(--ink);
+  border-radius: var(--radius);
+  background: #fffaf3;
+  color: var(--ink);
+  font-family: var(--font-zh);
+  text-align: center;
+  overflow: visible;
+}
+div.job-tile,
+.job-tile:disabled {
+  cursor: default;
+}
+.job-tile-name {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.job-tile[data-visual-state='focused'] {
+  border-color: var(--orange);
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
+  transform: translateY(-3px);
+}
+/* GeneralHint: steady teal ring + breathing halo, solid ink border kept. */
+.job-tile[data-visual-state='generalHint'] {
+  --hint-ring: 0 0 0 3px rgba(30, 166, 185, 0.35);
+  box-shadow: var(--hint-ring);
+}
+.job-tile[data-visual-state='generalHint']::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: calc(var(--radius) + 2px);
+  box-shadow: 0 0 0 5px rgba(30, 166, 185, 0.5);
+  opacity: 0;
+  pointer-events: none;
+  animation: breathe 1.6s ease-in-out infinite;
+}
+@keyframes breathe {
+  50% {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .job-tile[data-visual-state='generalHint']::before {
+    animation: none;
+  }
+}
+/* change = remove mode, not yet removed: normal full-colour tile (the red × is the cue). */
+.job-tile[data-visual-state='ghost'] {
+  border-style: dashed;
+  opacity: 0.7;
+  color: var(--ink-mute);
+}
+.job-tile[data-visual-state='ghost'] .job-char {
+  filter: grayscale(0.6);
+  opacity: 0.5;
+}
+.job-tile[data-visual-state='ghost'] .job-tile-name {
+  color: var(--ink-mute);
+}
+.job-tile:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 3px;
+}
+.job-remove {
+  appearance: none;
+  position: absolute;
+  top: -9px;
+  right: -9px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  line-height: 0;
+  overflow: visible;
+  border: 2px solid #fffaf3;
+  border-radius: 50%;
+  background: #c2291b;
+  color: #fff;
+  cursor: pointer;
+}
+.job-remove svg {
+  display: block;
+  width: 24px;
+  height: 24px;
+  margin: -2px; /* map the 24 viewBox onto the full border box, not the 20px content box */
+}
+/* Larger invisible hit area around the 24px visual. */
+.job-remove::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
+}
+.job-remove:focus-visible {
+  outline: 3px solid var(--teal);
+  outline-offset: 2px;
+}
+
+/* Self-designed compact mobile sizing; Figma has no mobile frames yet. */
+@media (max-width: 600px) {
+  .job-tile-wrap {
+    width: min(104px, 100%);
+  }
+  .job-tile {
+    min-height: 94px;
+    padding: 10px 6px;
+    gap: 6px;
+  }
+  .job-tile .job-char {
+    width: 40px;
+    height: 40px;
+  }
+  .job-tile-name {
+    font-size: 13px;
+  }
+}
+
 /* placeholder bg pattern */
 .hatch {
   background-image: repeating-linear-gradient(
