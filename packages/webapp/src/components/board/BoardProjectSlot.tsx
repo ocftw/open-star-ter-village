@@ -1,7 +1,7 @@
 import React from 'react';
 import { FilteredMetadata, PlayerID } from 'boardgame.io';
 import { ProjectSlotState } from '@/game';
-import { CharacterAvatar, getJobMetaByName, getProjectTypeMetaByName } from '@/components/design';
+import { CharacterAvatar, getJobMetaByName } from '@/components/design';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import {
   isJoinedContributionInteractive,
@@ -17,6 +17,8 @@ import { getContributions, updateContribute } from '@/lib/reducers/contributionS
 import { getPlayerName } from '@/components/playerNameMap';
 import { ProfessionPicker } from './professionPicker';
 
+export type ProjectCardVisualState = 'default' | 'focused' | 'generalHint' | 'jobHint';
+
 type BoardProjectSlotProps = {
   slot: ProjectSlotState;
   playerID: PlayerID | null;
@@ -26,6 +28,9 @@ type BoardProjectSlotProps = {
   idle: boolean;
   /** 斜槓青年: makes eligible requirement rows tappable targets. */
   professionPicker?: ProfessionPicker;
+  /** Presentational override; otherwise the existing selection resolves to Focused. */
+  visualState?: ProjectCardVisualState;
+  hintJobName?: string;
 };
 
 const seatColor = (worker: PlayerID) => `var(--p${worker})`;
@@ -38,6 +43,8 @@ export default function BoardProjectSlot({
   onIdleTap,
   idle,
   professionPicker,
+  visualState,
+  hintJobName,
 }: BoardProjectSlotProps) {
   const dispatch = useAppDispatch();
   const slotsInteractive = useAppSelector(isProjectSlotsInteractive);
@@ -50,9 +57,10 @@ export default function BoardProjectSlot({
   if (!slot.card) return null;
 
   const card = slot.card;
-  const typeMeta = getProjectTypeMetaByName(card.type);
   const isOwn = playerID !== null && slot.owner === playerID;
   const selected = slotsInteractive && !!selectedSlots[slot.id];
+  const resolvedState = visualState ?? (selected ? 'focused' : 'default');
+  const ownerName = getPlayerName(matchData, slot.owner);
   // In contribute mode, only this player's worker rows on the right slots are adjustable.
   const contributionEditable =
     playerID !== null && ((ownedInteractive && isOwn) || (joinedInteractive && !isOwn));
@@ -85,75 +93,37 @@ export default function BoardProjectSlot({
   return (
     <div
       data-testid={slot.id}
+      data-visual-state={resolvedState}
+      className={`project-card project-card--in-play project-card--compact project-card--${resolvedState}`}
       data-requirements={requiredJobs.join(',')}
       data-job-requirements={JSON.stringify(card.requirements)}
-      onClick={handleClick}
       style={{
-        background: 'white',
-        border: selected ? '2.5px solid var(--orange)' : '2px solid var(--ink)',
-        borderRadius: 18,
-        boxShadow: selected ? '0 4px 0 var(--orange)' : 'var(--shadow-sticker)',
-        padding: '12px 12px 10px',
         cursor: clickable ? 'pointer' : 'default',
-        position: 'relative',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 8,
-        minHeight: 168,
-        height: '100%',
-        transition: 'transform 0.12s',
-        transform: selected ? 'translateY(-3px)' : 'none',
       }}
     >
-      {/* corner type tab */}
-      <div
-        style={{
-          position: 'absolute',
-          top: -10,
-          left: 12,
-          background: typeMeta?.color ?? 'var(--ink-soft)',
-          color: 'white',
-          padding: '2px 10px',
-          borderRadius: 999,
-          border: '1.5px solid var(--ink)',
-          boxShadow: '0 2px 0 var(--ink)',
-          fontSize: 10,
-          fontWeight: 800,
-          letterSpacing: '0.04em',
-        }}
-      >
-        {card.type}
-      </div>
-      {isOwn && (
-        <div
-          style={{
-            position: 'absolute',
-            top: -10,
-            right: 12,
-            background: 'var(--orange)',
-            color: 'white',
-            padding: '2px 10px',
-            borderRadius: 999,
-            border: '1.5px solid var(--ink)',
-            boxShadow: '0 2px 0 var(--ink)',
-            fontSize: 10,
-            fontWeight: 800,
-            letterSpacing: '0.04em',
-          }}
-        >
-          YOUR PROJECT
-        </div>
+      {clickable && (
+        <button
+          type="button"
+          className="project-card__control"
+          aria-label={`${slotsInteractive ? '選擇專案' : '查看專案'} ${card.name}（${ownerName}）`}
+          aria-pressed={slotsInteractive ? selected : undefined}
+          onClick={handleClick}
+        />
       )}
+      <span className="project-card__star-pill" aria-label={`難度 ${card.difficulty}`}>
+        {'★'.repeat(card.difficulty)}
+      </span>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6 }}>
+      <div className="project-card__title-row">
         <span
-          title={getPlayerName(matchData, slot.owner)}
+          className="project-card__seat"
+          data-seat={slot.owner}
+          title={ownerName}
           style={{
             width: 24,
             height: 24,
             borderRadius: 999,
             background: seatColor(slot.owner),
-            color: 'white',
             border: '1.5px solid var(--ink)',
             display: 'grid',
             placeItems: 'center',
@@ -163,12 +133,18 @@ export default function BoardProjectSlot({
             flexShrink: 0,
           }}
         >
-          {getPlayerName(matchData, slot.owner)[0]}
+          {ownerName[0]}
         </span>
-        <div style={{ fontWeight: 800, fontSize: 14, lineHeight: 1.15 }}>{card.name}</div>
+        <div className="project-card__heading">
+          <div className="project-card__initiator">
+            <span>{ownerName}</span>
+            {isOwn && <span className="project-card__own">YOUR PROJECT</span>}
+          </div>
+          <h3 className="project-card__title">{card.name}</h3>
+        </div>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <div className="project-card__jobs">
         {requiredJobs.map((jobName) => {
           const need = card.requirements[jobName];
           const jobMeta = getJobMetaByName(jobName);
@@ -182,9 +158,12 @@ export default function BoardProjectSlot({
           const pickerActive = !!professionPicker;
           const pickerEligible = pickerActive && professionPicker!.eligibleJobNames.includes(jobName);
           const pickerSelected = pickerEligible && professionPicker!.selectedJobName === jobName;
+          const jobHinted = resolvedState === 'jobHint' && hintJobName === jobName;
           return (
             <div
               key={jobName}
+              className={`project-card__progress-row${jobHinted ? ' project-card__progress-row--hinted' : ''}`}
+              data-job-hint={jobHinted ? 'true' : undefined}
               role={pickerEligible ? 'button' : undefined}
               aria-pressed={pickerEligible ? pickerSelected : undefined}
               data-testid={pickerEligible ? `profession-target-${jobName}` : undefined}
@@ -202,9 +181,6 @@ export default function BoardProjectSlot({
                   : undefined
               }
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
                 ...(pickerActive && {
                   borderRadius: 10,
                   padding: '2px 4px',
@@ -227,9 +203,10 @@ export default function BoardProjectSlot({
               <div
                 style={{
                   flex: 1,
+                  minWidth: 0,
                   height: 11,
                   borderRadius: 6,
-                  background: 'white',
+                  background: '#FFFDF8',
                   border: '1.5px solid var(--ink)',
                   overflow: 'hidden',
                   display: 'flex',
@@ -262,6 +239,7 @@ export default function BoardProjectSlot({
               </div>
               {/* Fixed-width control column keeps every row's progress bar aligned */}
               <span
+                className={showStepper ? 'project-card__contribution-controls' : undefined}
                 data-testid="contribution-controls"
                 aria-hidden={showStepper ? undefined : true}
                 style={{ display: 'inline-flex', gap: 2, width: STEPPER_COLUMN_WIDTH, flexShrink: 0 }}
@@ -277,7 +255,7 @@ export default function BoardProjectSlot({
                       onClick={() =>
                         dispatch(updateContribute({ slotId: slot.id, jobName, diffAmount: pending - 1 }))
                       }
-                      style={stepperButtonStyle}
+                      className="project-card__stepper"
                     >
                       −
                     </button>
@@ -290,7 +268,7 @@ export default function BoardProjectSlot({
                       onClick={() =>
                         dispatch(updateContribute({ slotId: slot.id, jobName, diffAmount: pending + 1 }))
                       }
-                      style={stepperButtonStyle}
+                      className="project-card__stepper"
                     >
                       ＋
                     </button>
@@ -303,6 +281,8 @@ export default function BoardProjectSlot({
                   fontSize: 11,
                   fontWeight: 800,
                   minWidth: 32,
+                  flexShrink: 0,
+                  whiteSpace: 'nowrap',
                   textAlign: 'right',
                 }}
               >
@@ -314,42 +294,41 @@ export default function BoardProjectSlot({
       </div>
 
       {Object.keys(totals).length > 0 && (
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            flexWrap: 'wrap',
-            marginTop: 'auto',
-            paddingTop: 7,
-            borderTop: '1.5px dashed var(--paper-3)',
-          }}
-        >
-          <span className="tag-en">貢獻者 CONTRIBUTORS</span>
-          {Object.entries(totals)
-            .sort(([, a], [, b]) => b - a)
-            .map(([worker, value]) => (
-              <span key={worker} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+        <div className="project-card__contributors">
+          <span className="project-card__contributors-label">貢獻者 CONTRIBUTORS</span>
+          <div className="project-card__chips">
+            {Object.entries(totals)
+              .sort(([, a], [, b]) => b - a)
+              .map(([worker, value]) => (
                 <span
-                  style={{
-                    width: 14,
-                    height: 14,
-                    borderRadius: 999,
-                    background: seatColor(worker),
-                    color: 'white',
-                    border: '1.5px solid var(--ink)',
-                    fontFamily: 'var(--font-en)',
-                    fontSize: 8,
-                    fontWeight: 800,
-                    display: 'grid',
-                    placeItems: 'center',
-                  }}
+                  key={worker}
+                  className="project-card__chip"
+                  role="img"
+                  aria-label={`${getPlayerName(matchData, worker)} 貢獻 ${value}`}
+                  title={getPlayerName(matchData, worker)}
                 >
-                  {getPlayerName(matchData, worker)[0]}
+                  <span
+                    className="project-card__seat"
+                    data-seat={worker}
+                    style={{
+                      width: 14,
+                      height: 14,
+                      borderRadius: 999,
+                      background: seatColor(worker),
+                      border: '1.5px solid var(--ink)',
+                      fontFamily: 'var(--font-en)',
+                      fontSize: 8,
+                      fontWeight: 800,
+                      display: 'grid',
+                      placeItems: 'center',
+                    }}
+                  >
+                    {getPlayerName(matchData, worker)[0]}
+                  </span>
+                  <strong style={{ fontFamily: 'var(--font-en)', fontSize: 11 }}>{value}</strong>
                 </span>
-                <strong style={{ fontFamily: 'var(--font-en)', fontSize: 11 }}>{value}</strong>
-              </span>
-            ))}
+              ))}
+          </div>
         </div>
       )}
     </div>
@@ -358,17 +337,3 @@ export default function BoardProjectSlot({
 
 // Two 22px stepper buttons plus their 2px gap; reserved in every row so bars align.
 const STEPPER_COLUMN_WIDTH = 46;
-
-const stepperButtonStyle: React.CSSProperties = {
-  width: 22,
-  height: 22,
-  borderRadius: 999,
-  border: '1.5px solid var(--ink)',
-  background: 'white',
-  fontWeight: 800,
-  fontSize: 13,
-  lineHeight: 1,
-  display: 'grid',
-  placeItems: 'center',
-  boxShadow: '0 1.5px 0 var(--ink)',
-};

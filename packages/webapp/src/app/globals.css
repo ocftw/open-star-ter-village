@@ -237,6 +237,279 @@ button {
   box-shadow: var(--shadow-sticker);
 }
 
+/* ProjectCard (story 10): shared paper, tag and type for in-play and hand faces.
+   Cards are flat (prototype .bcard / Figma): 2px ink border, no sticker shadow. */
+.project-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  padding: 12px;
+  border: 2px solid var(--ink);
+  border-radius: var(--radius);
+  background: #fff9f0;
+  color: var(--ink);
+  font-family: var(--font-zh);
+  overflow: visible;
+  overflow-wrap: anywhere;
+  transition: transform 0.12s ease;
+}
+.project-card--in-play {
+  isolation: isolate;
+  height: 100%;
+  min-height: 224px;
+  /* Floating star pill sits at top -10px; the parent grid reserves that room. */
+  padding-top: 16px;
+}
+/* GeneralHint (prototype .bcard.eligible / Figma): solid ink border and cream
+   fill, steady teal ring plus a breathing teal halo. */
+.project-card--generalHint {
+  box-shadow: 0 0 0 3px rgba(30, 166, 185, 0.35);
+}
+.project-card--generalHint::before {
+  content: '';
+  position: absolute;
+  /* Prototype: inset -2px + 5px spread. Pseudo sits in the padding box (inside the
+     2px border), so a 7px spread draws the same halo without overflowing. */
+  inset: 0;
+  border-radius: calc(var(--radius) - 2px);
+  box-shadow: 0 0 0 7px rgba(30, 166, 185, 0.5);
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity;
+  animation: breathe 1.6s ease-in-out infinite;
+}
+@keyframes breathe {
+  50% {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .project-card--generalHint::before {
+    animation: none;
+    opacity: 0.6;
+  }
+}
+/* JobHint (Figma): the card itself is unchanged; only the hinted requirement
+   row is highlighted (see .project-card__progress-row--hinted). */
+.project-card__control {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  padding: 0;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  cursor: inherit;
+}
+.project-card__control:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 3px;
+}
+/* Orange ring. Only hand faces lift (prototype .hcard.selected); board cards
+   (.bcard.selected) do not. */
+.project-card--focused,
+.project-card--in-play:has(> .project-card__control:focus-visible) {
+  border-color: var(--orange);
+  box-shadow: 0 0 0 2px var(--orange);
+}
+.project-card--focused:not(.project-card--in-play) {
+  transform: translateY(-3px);
+}
+.project-card__contribution-controls,
+.project-card__progress-row[role='button'] {
+  position: relative;
+  z-index: 2;
+}
+.project-card__stepper {
+  position: relative;
+  box-sizing: border-box;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  border: 1.5px solid var(--ink);
+  background: white;
+  font-weight: 800;
+  font-size: 13px;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 1.5px 0 var(--ink);
+}
+.project-card__stepper::after {
+  content: '';
+  position: absolute;
+  /* 19px padding box + 2 × 12.5px = 44px on the free axes. Adjacent
+     targets meet at the 2px gap midpoint so the later button cannot
+     cover the visible minus control (right/left = 19/2 + 1). */
+  inset: -12.5px;
+}
+.project-card__stepper:first-child::after {
+  right: -2.5px;
+}
+.project-card__stepper:last-child::after {
+  left: -2.5px;
+}
+.project-card__stepper:disabled::after {
+  pointer-events: none;
+}
+.project-card__seat {
+  color: #111111;
+}
+.project-card__seat[data-seat='2'] {
+  color: white;
+}
+.project-card__tag {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 8px;
+  padding: 4px 7px;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius-sm);
+  background: #fff0e2;
+  font-size: 10px;
+  font-weight: 700;
+}
+.project-card__type {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.project-card__type-dot {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+.project-card__stars {
+  color: var(--ink);
+  font-family: var(--font-en);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+/* Prototype .bcard-tags + .tag.stars-tag: teal pill, white stars, floating on
+   the card's top-left edge. */
+.project-card__star-pill {
+  position: absolute;
+  top: -10px;
+  left: 10px;
+  z-index: 1;
+  padding: 1px 12px;
+  border: 1.5px solid var(--ink);
+  border-radius: 99px;
+  background: var(--teal);
+  color: #fff;
+  font-family: var(--font-en);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  line-height: 1.4;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.project-card__title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.project-card__heading {
+  min-width: 0;
+}
+.project-card__initiator {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 6px;
+  margin-bottom: 3px;
+  font-size: 10px;
+  color: var(--ink-soft);
+}
+.project-card__own {
+  color: #b83208;
+  font-family: var(--font-en);
+  font-size: 9px;
+  font-weight: 700;
+}
+.project-card__title {
+  font-family: var(--font-zh);
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1.3;
+}
+.project-card__jobs {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.project-card__progress-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  border-radius: var(--radius-sm);
+}
+/* Figma JobHint: dashed orange rounded rect with peach fill. */
+.project-card__progress-row--hinted {
+  margin: -3px -5px;
+  padding: 3px 5px;
+  background: #fff0e2;
+  outline: 2px dashed var(--orange);
+  outline-offset: -2px;
+}
+.project-card__progress-row[role='button'] {
+  min-height: 44px;
+}
+.project-card__contributors {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px solid #f3e6d7;
+}
+.project-card__contributors-label {
+  font-size: 9px;
+  font-family: var(--font-zh);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+}
+.project-card__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.project-card__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 7px 3px 4px;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  background: #fffdf8;
+}
+/* Self-designed compact variant: Figma has desktop frames only. Keep chips
+   wrapping and picker rows tappable while tightening the card at mobile widths. */
+@media (max-width: 600px) {
+  .project-card--compact {
+    padding: 10px;
+    gap: 8px;
+  }
+  .project-card--compact .project-card__jobs {
+    gap: 4px;
+  }
+  .project-card--compact .project-card__tag {
+    padding: 3px 6px;
+  }
+}
+
 /* Bespoke modal — the prototype's .modal sticker panel on a native <dialog>
    (design/Modal.tsx): paper ground, 2px ink border, 22px corner, offset
    sticker shadow over a warm ink-tinted ::backdrop. MUI is not used in new
