@@ -1,7 +1,7 @@
 import React from 'react';
 import { FilteredMetadata, PlayerID } from 'boardgame.io';
 import { ProjectSlotState } from '@/game';
-import { CharacterAvatar, getJobMetaByName, getProjectTypeMetaByName } from '@/components/design';
+import { CharacterAvatar, getJobMetaByName } from '@/components/design';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import {
   isJoinedContributionInteractive,
@@ -57,7 +57,6 @@ export default function BoardProjectSlot({
   if (!slot.card) return null;
 
   const card = slot.card;
-  const typeMeta = getProjectTypeMetaByName(card.type);
   const isOwn = playerID !== null && slot.owner === playerID;
   const selected = slotsInteractive && !!selectedSlots[slot.id];
   const resolvedState = visualState ?? (selected ? 'focused' : 'default');
@@ -111,15 +110,9 @@ export default function BoardProjectSlot({
           onClick={handleClick}
         />
       )}
-      <div className="project-card__tag">
-        <span className="project-card__type">
-          <span className="project-card__type-dot" style={{ background: typeMeta?.color ?? 'var(--ink-soft)' }} />
-          {card.type}
-        </span>
-        <span className="project-card__stars" aria-label={`難度 ${card.difficulty}`}>
-          {'★'.repeat(card.difficulty)}
-        </span>
-      </div>
+      <span className="project-card__star-pill" aria-label={`難度 ${card.difficulty}`}>
+        {'★'.repeat(card.difficulty)}
+      </span>
 
       <div className="project-card__title-row">
         <span

@@ -29,12 +29,34 @@ try {
       const card = fixture.locator('[data-visual-state]');
       assert.equal(await card.getAttribute('data-visual-state'), state);
       assert.equal(await card.locator('.project-card__progress-row--hinted').count(), state === 'jobHint' ? 1 : 0);
+      // JobHint leaves the card untouched; its treatment is the hinted row's outline.
       treatments.push(await card.evaluate((element) => {
         const style = getComputedStyle(element);
-        return JSON.stringify([style.borderStyle, style.borderColor, style.backgroundColor, style.transform]);
+        const row = element.querySelector('.project-card__progress-row--hinted');
+        return JSON.stringify([
+          style.borderStyle, style.borderColor, style.boxShadow, style.transform,
+          row ? getComputedStyle(row).outlineStyle : null,
+        ]);
       }));
+      // Flat cards: no sticker shadow; board cards never lift.
+      assert.ok(!(await card.evaluate((element) => getComputedStyle(element).boxShadow)).includes('0px 3px 0px'), 'card must be flat');
+      assert.equal(await card.evaluate((element) => getComputedStyle(element).transform), 'none', 'board card must not lift');
+      // Floating teal star pill with white stars.
+      const pill = await card.locator('.project-card__star-pill').evaluate((element) => {
+        const style = getComputedStyle(element);
+        return { background: style.backgroundColor, color: style.color, position: style.position, top: style.top };
+      });
+      assert.deepEqual(pill, { background: 'rgb(30, 166, 185)', color: 'rgb(255, 255, 255)', position: 'absolute', top: '-10px' });
     }
     assert.equal(new Set(treatments).size, 4, 'Each state must have a distinct treatment');
+    const generalHint = page.getByTestId(`${prefix}generalHint`).locator('[data-visual-state]');
+    assert.equal(await generalHint.evaluate((element) => getComputedStyle(element).borderStyle), 'solid');
+    assert.equal(await generalHint.evaluate((element) => getComputedStyle(element, '::before').animationName), 'breathe');
+    const hinted = await page.getByTestId(`${prefix}jobHint`).locator('.project-card__progress-row--hinted').evaluate((element) => {
+      const style = getComputedStyle(element);
+      return { outlineStyle: style.outlineStyle, outlineColor: style.outlineColor, background: style.backgroundColor };
+    });
+    assert.deepEqual(hinted, { outlineStyle: 'dashed', outlineColor: 'rgb(239, 88, 38)', background: 'rgb(255, 240, 226)' });
   }
 
   await checkStates('gallery-');

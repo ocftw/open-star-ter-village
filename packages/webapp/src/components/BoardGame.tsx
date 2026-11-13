@@ -165,7 +165,8 @@ const Board: React.FC<GameContext> = (gameContext) => {
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
             gap: 14,
-            marginTop: 12,
+            // +10px room for the floating star pill above each card.
+            marginTop: 22,
           }}
         >
           {occupiedSlots.map((slot) => (

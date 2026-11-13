@@ -145,13 +145,14 @@ describe('BoardProjectSlot card content', () => {
   });
 
   it('shows the initiator, title, type, ownership, progress fractions and contributor chips', () => {
-    const { getByTestId, getByText, getByLabelText, getByRole } = renderVisualSlot();
+    const { getByTestId, getByText, queryByText, getByLabelText, getByRole } = renderVisualSlot();
     expect(getByTestId(visualSlot.id).getAttribute('data-job-requirements')).toBe(
       JSON.stringify(visualSlot.card!.requirements),
     );
     expect(getByText('Claire')).toBeTruthy();
     expect(getByRole('heading', { name: '資料申請小幫手' })).toBeTruthy();
-    expect(getByText('開放資料')).toBeTruthy();
+    expect(getByLabelText('難度 3').textContent).toBe('★★★');
+    expect(queryByText('開放資料')).toBeNull();
     expect(getByText('YOUR PROJECT')).toBeTruthy();
     ['2/2', '3/4', '1/3'].forEach((fraction) => expect(getByText(fraction)).toBeTruthy());
     expect(getByText('貢獻者 CONTRIBUTORS')).toBeTruthy();
