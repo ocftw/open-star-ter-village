@@ -4,8 +4,24 @@ import { fileURLToPath } from 'node:url';
 import * as playwright from '../../../node_modules/@playwright/test/index.mjs';
 
 // Run against an already-running local dev server (+ game server); never starts one.
+// Works on a clean checkout: every shot comes from the real game screen at /dev?seed=e2e-2
+// (no gallery / fixture page).
 //   node shots.mjs before   -> before-*.png (baseline build)
-//   node shots.mjs after    -> *.png        (this PR; also needs the local card gallery)
+//   node shots.mjs after    -> *.png        (this PR)
+//
+// Seed `e2e-2`, hot-seat /dev. Play sequences and the prototype reference (behaviour.md step):
+//  - hand-idle / hand-hover / hand-selected: first hand card, hover, click (selected, no lift).
+//      prototype: reference-hand-selected.png (32-handcard-selected), steps 25, 37.
+//  - start-market: after selecting a hand card, job tiles the project does not need are
+//      data-visual-state="disabled" (opacity .35) -> the disabled JobCard state.
+//      prototype: reference-start-market-disabled.png (32b-market-after-handcard), steps 6-9, 12.
+//  - refill-ghosts / refill-pushup-mid / refill-after: REFILL, remove 2 tiles, confirm.
+//      prototype: reference-refill-pushup.png (19-remove-job-confirm-after), step 18.
+//  - dropout-mid / pushup-after-dropout-mid: START with the first hand card + a required job tile,
+//      confirm; used tile sinks, refill pushes up. prototype: steps 21/24, 40 (72-release-anim-*).
+// NOT reachable on /dev: disabled ProjectCard (board or hand). HandPanel never passes `disabled`
+// and BoardGame never passes a board slot visualState; behaviour.md step 29 also "not reached".
+// JOIN-mode disabled tiles are not captured (needs another player's started project).
 const mode = process.argv[2] === 'before' ? 'before' : 'after';
 const port = process.env.SHOT_PORT || 3493;
 const base = `http://127.0.0.1:${port}`;
@@ -73,16 +89,6 @@ try {
   await market.screenshot({ path: out('dropout-mid') });
   await page.waitForTimeout(500);
   await market.screenshot({ path: out('pushup-after-dropout-mid') });
-
-  if (mode === 'after') {
-    await page.goto(`${base}/dev/card-gallery`);
-    await page.getByTestId('g-board-default').waitFor();
-    await settle(page);
-    for (const id of ['g-board-default', 'g-board-disabled', 'g-hand-default', 'g-hand-selected', 'g-hand-disabled', 'g-jobs']) {
-      await page.getByTestId(id).screenshot({ path: out(id.replace('g-', 'fixture-')) });
-    }
-    assert.equal(await page.getByTestId('g-board-disabled').locator('.project-card').evaluate((e) => getComputedStyle(e).opacity), '0.35');
-  }
 } finally {
   await browser.close();
 }
