@@ -85,7 +85,7 @@ export default function HandPanel({
       style={
         strip
           ? { display: 'flex', flexDirection: 'column', gap: 8 }
-          : { display: 'flex', flexDirection: 'column', gap: 12, overflowY: 'auto', paddingTop: 4 }
+          : { display: 'flex', flexDirection: 'column', gap: 12, overflowY: 'auto', paddingTop: 14 }
       }
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -100,7 +100,7 @@ export default function HandPanel({
       <div
         style={
           strip
-            ? { display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 4 }
+            ? { display: 'flex', gap: 10, overflowX: 'auto', paddingTop: 12, paddingBottom: 4 }
             : { display: 'flex', flexDirection: 'column', gap: 12 }
         }
       >

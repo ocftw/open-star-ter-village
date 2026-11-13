@@ -11,7 +11,14 @@ import {
   resetJobSlotSelection,
   toggleJobSlotSelection,
 } from '@/lib/reducers/jobSlotSlice';
+import { RuleSelector } from '@/game/store/slice/rule';
+import { PlayersSelector } from '@/game/store/slice/players';
+import { ProjectBoardSelector } from '@/game/store/slice/projectBoard';
+import { getSelectedHandProjectCards } from '@/lib/reducers/handProjectCardSlice';
+import { getSelectedProjectSlots } from '@/lib/reducers/projectSlotSlice';
 import JobTile from './JobTile';
+import { isJobEligible, JobEligibilityContext } from './jobEligibility';
+import { useJobMarketMotion } from './useJobMarketMotion';
 
 /**
  * Job market grid + the refill affordance of the redesign. 加班 Overtime is
@@ -27,17 +34,47 @@ export default function JobMarket({
   idle: boolean;
   discardActive: boolean;
 }) {
-  const { G } = gameContext;
+  const { G, playerID } = gameContext;
   const dispatch = useAppDispatch();
   const jobsInteractive = useAppSelector(isJobSlotsInteractive);
   const selectedSlots = useAppSelector(getSelectedJobSlots);
   const currentAction = useAppSelector(getCurrentAction);
+  const selectedHandCards = useAppSelector(getSelectedHandProjectCards);
+  const selectedProjectSlots = useAppSelector(getSelectedProjectSlots);
 
   const refillMode = jobsInteractive && currentAction === UserActionMoves.RemoveAndRefillJobs;
   const discardMode = jobsInteractive && discardActive;
   const removeMode = refillMode || discardMode;
   const multiSelect = removeMode;
   const removedCount = Object.values(selectedSlots).filter(Boolean).length;
+
+  // START / JOIN: once a project is picked, jobs it cannot use are disabled
+  // (prototype .jtile.disabled). Selected tiles stay enabled so they can be unpicked.
+  const override = playerID !== null && RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, playerID);
+  let eligibility: JobEligibilityContext | undefined;
+  if (jobsInteractive && playerID !== null && !removeMode) {
+    if (currentAction === UserActionMoves.CreateProject) {
+      const cardId = Object.keys(selectedHandCards).find((id) => selectedHandCards[id]);
+      eligibility = {
+        action: 'createProject',
+        card: cardId ? PlayersSelector.getProjectCardById(G.players, playerID, cardId) : undefined,
+        override,
+      };
+    } else if (currentAction === UserActionMoves.Recruit) {
+      const slotId = Object.keys(selectedProjectSlots).find((id) => selectedProjectSlots[id]);
+      eligibility = {
+        action: 'recruit',
+        slot: slotId ? ProjectBoardSelector.getBySlotId(G.table.projectBoard, slotId) : undefined,
+        playerID,
+        override,
+      };
+    }
+  }
+
+  // 四大自由: marked tiles leave the row; refill: removed tiles stay as ghosts.
+  const visibleJobs = G.table.jobSlots.filter((job) => !(discardMode && selectedSlots[job.id]));
+  const ghostIds = new Set(refillMode ? visibleJobs.filter((j) => selectedSlots[j.id]).map((j) => j.id) : []);
+  const rows = useJobMarketMotion(visibleJobs, ghostIds);
 
   const handleTap = (id: string) => {
     if (jobsInteractive) {
@@ -89,12 +126,13 @@ export default function JobMarket({
           marginTop: 10,
         }}
       >
-        {G.table.jobSlots.map((job) => {
+        {rows.map(({ job, motion, delay }) => {
+          if (motion === 'drop-out') {
+            return <JobTile key={job.id} id={job.id} name={job.name} motion={motion} motionDelay={delay} />;
+          }
           const removed = !!selectedSlots[job.id];
           if (removeMode) {
-            // 四大自由 discard: marked tiles leave the row (prototype); the
-            // × disappears once 2 are marked. Refill: removed tiles stay as ghosts.
-            if (discardMode && removed) return null;
+            // The × disappears once 2 are marked (discard).
             const canRemove = !removed && !(discardMode && removedCount >= 2);
             return (
               <JobTile
@@ -102,17 +140,23 @@ export default function JobMarket({
                 id={job.id}
                 name={job.name}
                 visualState={removed ? 'ghost' : 'change'}
+                motion={motion}
+                motionDelay={delay}
                 onRemove={canRemove ? () => handleTap(job.id) : undefined}
               />
             );
           }
+          const disabled = !!eligibility && !removed && !isJobEligible(job.name, eligibility);
           return (
             <JobTile
               key={job.id}
               id={job.id}
               name={job.name}
               selected={jobsInteractive && removed}
-              onClick={idle || jobsInteractive ? () => handleTap(job.id) : undefined}
+              visualState={disabled ? 'disabled' : undefined}
+              motion={motion}
+              motionDelay={delay}
+              onClick={!disabled && (idle || jobsInteractive) ? () => handleTap(job.id) : undefined}
             />
           );
         })}

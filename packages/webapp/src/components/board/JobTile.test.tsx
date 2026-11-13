@@ -82,6 +82,40 @@ describe.each([1280, 390])('JobTile at %ipx', (width) => {
     expect((screen.getByRole('button', { name: '工程師' }) as HTMLButtonElement).disabled).toBe(true);
   });
 
+  it('disabled: faded state that ignores click and keyboard, unlike a plain idle tile', () => {
+    const onClick = jest.fn();
+    const { rerender } = render(
+      <JobTile id="d1" name="工程師" visualState="disabled" onClick={onClick} />,
+    );
+    const tile = screen.getByTestId('job-card-d1') as HTMLButtonElement;
+    expect(tile.getAttribute('data-visual-state')).toBe('disabled');
+    expect(tile.disabled).toBe(true);
+    fireEvent.click(tile);
+    fireEvent.keyDown(tile, { key: 'Enter' });
+    expect(onClick).not.toHaveBeenCalled();
+    // Idle, not interactive: still full colour (only an explicit disabled state fades).
+    rerender(<JobTile id="d1" name="工程師" />);
+    expect(screen.getByTestId('job-card-d1').getAttribute('data-visual-state')).toBe('default');
+  });
+
+  it('motion: drop-out tiles are hidden from assistive tech and inert; push-in carries a stagger delay', () => {
+    const onClick = jest.fn();
+    const { container, rerender } = render(
+      <JobTile id="m1" name="工程師" motion="drop-out" motionDelay={40} onClick={onClick} />,
+    );
+    const wrap = container.firstElementChild as HTMLElement;
+    expect(wrap.getAttribute('data-motion')).toBe('drop-out');
+    expect(wrap.getAttribute('aria-hidden')).toBe('true');
+    expect(wrap.style.animationDelay).toBe('40ms');
+    fireEvent.click(container.querySelector('button')!);
+    expect(onClick).not.toHaveBeenCalled();
+    rerender(<JobTile id="m1" name="工程師" motion="push-in" motionDelay={120} onClick={onClick} />);
+    const pushed = container.firstElementChild as HTMLElement;
+    expect(pushed.getAttribute('data-motion')).toBe('push-in');
+    expect(pushed.getAttribute('aria-hidden')).toBeNull();
+    expect(pushed.style.animationDelay).toBe('120ms');
+  });
+
   it('change: unmuted tile (not a button) with a sibling red × that removes', () => {
     const onRemove = jest.fn();
     const onClick = jest.fn();
