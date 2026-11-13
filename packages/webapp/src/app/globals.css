@@ -255,7 +255,6 @@ button {
   font-family: var(--font-zh);
   overflow: visible;
   overflow-wrap: anywhere;
-  transition: transform 0.12s ease;
 }
 .project-card--in-play {
   isolation: isolate;
@@ -309,15 +308,29 @@ button {
   outline: 3px solid var(--ink);
   outline-offset: 3px;
 }
-/* Orange ring. Only hand faces lift (prototype .hcard.selected); board cards
-   (.bcard.selected) do not. */
+/* Orange ring. Neither board nor hand cards lift: the hand face deliberately
+   drops the prototype's .hcard.selected -4px (approved deviation). */
 .project-card--focused,
 .project-card--in-play:has(> .project-card__control:focus-visible) {
   border-color: var(--orange);
   box-shadow: 0 0 0 2px var(--orange);
 }
-.project-card--focused:not(.project-card--in-play) {
-  transform: translateY(-3px);
+/* Prototype .bcard.disabled / .hcard: ineligible card dims to the approved .35. */
+.project-card[data-visual-state='disabled'] {
+  opacity: 0.35;
+}
+/* Hand face: same floating star pill as the board card, so same top room. */
+.project-card--hand {
+  padding-top: 16px;
+}
+.project-card__type-line {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 3px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--ink-soft);
 }
 .project-card__contribution-controls,
 .project-card__progress-row[role='button'] {
@@ -362,36 +375,11 @@ button {
 .project-card__seat[data-seat='2'] {
   color: white;
 }
-.project-card__tag {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 4px 8px;
-  padding: 4px 7px;
-  border: 1.5px solid var(--ink);
-  border-radius: var(--radius-sm);
-  background: #fff0e2;
-  font-size: 10px;
-  font-weight: 700;
-}
-.project-card__type {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-}
 .project-card__type-dot {
   width: 7px;
   height: 7px;
   flex-shrink: 0;
   border-radius: 50%;
-}
-.project-card__stars {
-  color: var(--ink);
-  font-family: var(--font-en);
-  font-size: 12px;
-  letter-spacing: 0.06em;
-  white-space: nowrap;
 }
 /* Prototype .bcard-tags + .tag.stars-tag: teal pill, white stars, floating on
    the card's top-left edge. */
@@ -504,9 +492,6 @@ button {
   }
   .project-card--compact .project-card__jobs {
     gap: 4px;
-  }
-  .project-card--compact .project-card__tag {
-    padding: 3px 6px;
   }
 }
 
@@ -714,6 +699,30 @@ div.job-tile,
   .job-tile[data-visual-state='generalHint']::before {
     animation: none;
   }
+}
+/* Disabled (prototype .jtile.disabled): the selection cannot use this job. */
+.job-tile[data-visual-state='disabled'] {
+  opacity: 0.35;
+}
+/* Market motion (prototype pushUp / dropOut); delay is the inline stagger. */
+@keyframes pushUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+@keyframes dropOut {
+  to {
+    transform: translateY(115%);
+    opacity: 0;
+  }
+}
+.job-tile-wrap[data-motion='push-in'] {
+  animation: pushUp 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.08) backwards;
+}
+.job-tile-wrap[data-motion='drop-out'] {
+  pointer-events: none;
+  animation: dropOut 0.4s ease-in forwards;
 }
 /* change = remove mode, not yet removed: normal full-colour tile (the red × is the cue). */
 .job-tile[data-visual-state='ghost'] {
@@ -1011,4 +1020,14 @@ div.job-tile,
   .rules-grid { grid-template-columns: 1fr; }
   .rules-steps li { display: block; }
   .rules-steps strong { display: block; }
+}
+
+/* Reduced motion (prototype): no animation or transition anywhere; state changes are instant. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }

@@ -171,6 +171,16 @@ describe('BoardProjectSlot card content', () => {
   });
 });
 
+describe('BoardProjectSlot disabled state', () => {
+  it('dims the card and removes its select control', () => {
+    const { getByTestId, queryByRole } = renderVisualSlot({ visualState: 'disabled', idle: true, onIdleTap: jest.fn() });
+    const card = getByTestId(visualSlot.id);
+    expect(card.getAttribute('data-visual-state')).toBe('disabled');
+    expect(card.classList.contains('project-card--disabled')).toBe(true);
+    expect(queryByRole('button', { name: /查看專案|選擇專案/ })).toBeNull();
+  });
+});
+
 describe.each([1280, 390])('BoardProjectSlot visual states at %ipx', (width) => {
   it.each(['default', 'focused', 'generalHint', 'jobHint'] as const)(
     'renders %s with its own visual treatment and preserves slot/row selectors',

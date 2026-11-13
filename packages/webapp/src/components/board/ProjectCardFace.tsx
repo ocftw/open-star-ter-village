@@ -5,6 +5,8 @@ import { ProfessionPicker } from './professionPicker';
 type ProjectCardFaceProps = {
   card: ProjectCard;
   selected?: boolean;
+  /** The current selection cannot use this card (.35 opacity). Not clickable. */
+  disabled?: boolean;
   onClick?: () => void;
   'data-testid'?: string;
   /** 斜槓青年: makes requirement rows tappable target positions. */
@@ -18,34 +20,34 @@ type ProjectCardFaceProps = {
 export default function ProjectCardFace({
   card,
   selected = false,
+  disabled = false,
   onClick,
   professionPicker,
   ...rest
 }: ProjectCardFaceProps) {
   const typeMeta = getProjectTypeMetaByName(card.type);
+  const visualState = disabled ? 'disabled' : selected ? 'focused' : 'default';
   return (
     <div
-      onClick={onClick}
-      className={`project-card project-card--compact project-card--${selected ? 'focused' : 'default'}`}
-      data-visual-state={selected ? 'focused' : 'default'}
+      onClick={disabled ? undefined : onClick}
+      className={`project-card project-card--compact project-card--hand project-card--${visualState}`}
+      data-visual-state={visualState}
       data-requirements={Object.keys(card.requirements).join(',')}
       data-job-requirements={JSON.stringify(card.requirements)}
       {...rest}
       style={{
-        cursor: onClick ? 'pointer' : 'default',
+        cursor: onClick && !disabled ? 'pointer' : 'default',
       }}
     >
-      <div className="project-card__tag">
-        <span className="project-card__type">
-          <span className="project-card__type-dot" style={{ background: typeMeta?.color ?? 'var(--ink-soft)' }} />
-          {card.type}
-        </span>
-        <span className="project-card__stars" aria-label={`難度 ${card.difficulty}`}>
-          {'★'.repeat(card.difficulty)}
-        </span>
-      </div>
+      <span className="project-card__star-pill" aria-label={`難度 ${card.difficulty}`}>
+        {'★'.repeat(card.difficulty)}
+      </span>
 
       <div>
+        <div className="project-card__type-line">
+          <span className="project-card__type-dot" style={{ background: typeMeta?.color ?? 'var(--ink-soft)' }} />
+          <span>{card.type}</span>
+        </div>
         <h3 className="project-card__title">{card.name}</h3>
         {typeMeta && (
           <div className="tag-en" style={{ marginTop: 3 }}>
