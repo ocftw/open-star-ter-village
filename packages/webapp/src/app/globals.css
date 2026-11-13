@@ -708,8 +708,13 @@ body:has(.modal[open]) {
   position: relative;
   display: grid;
   place-items: center;
+  /* Never let a flex row squeeze the disc into an oval: fixed size, no
+     shrinking, always 1:1. Rows that run out of room should wrap instead. */
+  flex: none;
+  box-sizing: border-box;
   width: 44px;
   height: 44px;
+  aspect-ratio: 1 / 1;
   padding: 0;
   border: 0;
   border-radius: 50%;
