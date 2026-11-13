@@ -99,7 +99,8 @@ describe.each([1280, 390])('JobTile at %ipx', (width) => {
     expect(onClick).not.toHaveBeenCalled();
     const remove = screen.getByRole('button', { name: '移除 工程師' });
     expect(remove.parentElement).toBe(tile.parentElement);
-    expect(remove.textContent).toBe('×');
+    expect(remove.querySelector('svg')).not.toBeNull();
+    expect(remove.textContent).not.toContain('×');
     fireEvent.click(remove);
     expect(onRemove).toHaveBeenCalledTimes(1);
   });

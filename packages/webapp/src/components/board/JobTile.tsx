@@ -72,7 +72,10 @@ export default function JobTile({
           aria-label={`移除 ${name}`}
           onClick={onRemove}
         >
-          ×
+          <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false">
+            <line x1="7" y1="7" x2="17" y2="17" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+            <line x1="17" y1="7" x2="7" y2="17" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+          </svg>
         </button>
       )}
     </div>

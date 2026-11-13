@@ -95,6 +95,24 @@ try {
   await capture('gallery-change', 'desktop-change.png');
   await capture('gallery-ghost', 'desktop-ghost.png');
 
+  // Zoomed close-up of the remove ×, cropped to the 24px button at deviceScaleFactor 4.
+  const zoomPage = await browser.newPage({
+    viewport: { width: 1280, height: 832 },
+    deviceScaleFactor: 4,
+  });
+  await zoomPage.goto(`http://127.0.0.1:${port}/dev/card-gallery`);
+  await zoomPage.getByTestId('gallery-change').waitFor();
+  await zoomPage.evaluate(async () => {
+    await document.fonts.ready;
+    await Promise.all(Array.from(document.images, (image) => image.decode()));
+  });
+  const removeZoom = zoomPage.getByTestId('gallery-change').locator('.job-remove');
+  await removeZoom.screenshot({
+    path: fileURLToPath(new URL('x-centring-zoom.png', import.meta.url)),
+    animations: 'disabled',
+  });
+  await zoomPage.close();
+
   await page.setViewportSize({ width: 390, height: 844 });
   await checkTiles(true);
   const mobile = await page.getByTestId('gallery-mobile').boundingBox();

@@ -465,17 +465,25 @@ div.job-tile,
   top: -9px;
   right: -9px;
   z-index: 2;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
   width: 24px;
   height: 24px;
   padding: 0;
+  line-height: 0;
+  overflow: visible;
   border: 2px solid #fffaf3;
   border-radius: 50%;
   background: #c2291b;
   color: #fff;
-  font-size: 15px;
-  font-weight: 900;
-  line-height: 1;
   cursor: pointer;
+}
+.job-remove svg {
+  display: block;
+  width: 24px;
+  height: 24px;
+  margin: -2px; /* map the 24 viewBox onto the full border box, not the 20px content box */
 }
 /* Larger invisible hit area around the 24px visual. */
 .job-remove::after {
