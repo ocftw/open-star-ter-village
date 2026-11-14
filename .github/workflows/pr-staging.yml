@@ -194,6 +194,22 @@ jobs:
           fi
 
           flyctl apps create "$APP" --org "$FLY_ORG"
+          echo "created=true" >> "$GITHUB_OUTPUT"
+
+          # The per-PR concurrency group does not serialize different PRs, so
+          # two runs can both pass the check above. Recount after creating and
+          # back off if the cap was exceeded (racers may both back off; that
+          # fails safe).
+          count="$(flyctl apps list --org "$FLY_ORG" --json | jq '[.[].Name | select(test("^osv-pr-[0-9]+$"))] | length')"
+          if (( count > MAX_STAGING_APPS )); then
+            echo "::warning::Staging cap exceeded by a concurrent deploy (${count}/${MAX_STAGING_APPS}); removing ${APP}."
+            if [[ "$APP" == "open-star-ter-village" ]] || ! [[ "$APP" =~ ^osv-pr-[0-9]+$ ]]; then
+              echo "::error::Refusing to destroy app '${APP}'."
+              exit 1
+            fi
+            flyctl apps destroy "$APP" --yes
+            echo "outcome=cap" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Check out exact PR head
         if: ${{ steps.cap.outputs.outcome != 'cap' }}
@@ -291,6 +307,18 @@ jobs:
             --build-arg "SENTRY_RELEASE=${HEAD_SHA}" \
             --wait-timeout 10m
           echo "outcome=deployed" >> "$GITHUB_OUTPUT"
+
+      - name: Remove app created by a failed first deploy
+        # Only an app this run created; a failed redeploy keeps the existing app.
+        # Without this, an app with no machines or releases has no age the
+        # reaper can read (the reaper also removes it once the PR is unlabeled).
+        if: ${{ failure() && steps.cap.outputs.created == 'true' && steps.cap.outputs.outcome != 'cap' }}
+        run: |
+          if [[ "$APP" == "open-star-ter-village" ]] || ! [[ "$APP" =~ ^osv-pr-[0-9]+$ ]]; then
+            echo "::error::Refusing to destroy app '${APP}'."
+            exit 1
+          fi
+          flyctl apps destroy "$APP" --yes
 
   destroy:
     name: Destroy osv-pr-${{ needs.route.outputs.pr_number }}

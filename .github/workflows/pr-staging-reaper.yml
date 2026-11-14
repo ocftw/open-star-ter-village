@@ -2,7 +2,8 @@ name: PR Staging Reaper
 
 # Hourly cleanup for ephemeral PR staging apps. See packages/webapp/docs/pr-staging.md.
 # Destroys only osv-pr-<number> apps in the staging org that are older than
-# 4 hours. Never checks out code.
+# 4 hours (or, when an empty app has no readable age, whose PR is closed or
+# unlabeled). Never checks out code.
 
 on:
   schedule:
@@ -24,10 +25,12 @@ jobs:
     name: Destroy staging apps older than 4h
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    permissions: {}
+    permissions:
+      pull-requests: read
     env:
       FLY_API_TOKEN: ${{ secrets.FLY_STAGING_API_TOKEN }}
       FLY_ORG: ${{ vars.FLY_STAGING_ORG }}
+      GH_TOKEN: ${{ github.token }}
     steps:
       - name: Check staging configuration
         id: config
@@ -63,24 +66,38 @@ jobs:
 
             # App age: the oldest machine's creation time (deploys update
             # machines in place). Fall back to the latest release time for apps
-            # without machines; skip apps whose age cannot be determined.
+            # without machines.
             created="$(flyctl machines list --app "$app" --json | jq -r '[.[].created_at | select(. != null)] | sort | first // ""')"
             if [[ -z "$created" ]]; then
               created="$(jq -r --arg app "$app" '.[] | select(.Name == $app) | .CurrentRelease.CreatedAt // ""' <<< "$apps_json")"
             fi
 
             if ! created_epoch="$(to_epoch "$created")"; then
-              echo "::warning::Cannot determine the age of ${app}; skipping."
-              continue
+              # An app shell with no machines and no release (for example a
+              # first deploy that was cancelled mid-way) has no readable age.
+              # Remove it only when its PR no longer wants staging; an open,
+              # labeled PR reuses it on the next deploy.
+              pr_number="${app#osv-pr-}"
+              pr_json=""
+              if pr_json="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr_number}" 2>/dev/null)" \
+                && jq -e '.state == "open" and any(.labels[]; .name == "staging")' <<< "$pr_json" > /dev/null; then
+                echo "${app}: age unknown, PR #${pr_number} is open and labeled; keeping."
+                continue
+              fi
+              if [[ -z "${pr_json:-}" ]]; then
+                echo "::warning::${app}: age unknown and PR #${pr_number} lookup failed; skipping."
+                continue
+              fi
+              echo "${app}: age unknown, PR #${pr_number} is closed or unlabeled; destroying."
+            else
+              age=$((now - created_epoch))
+              if (( age < MAX_AGE_SECONDS )); then
+                echo "${app}: ${age}s old; keeping."
+                continue
+              fi
+              echo "${app}: ${age}s old; destroying."
             fi
 
-            age=$((now - created_epoch))
-            if (( age < MAX_AGE_SECONDS )); then
-              echo "${app}: ${age}s old; keeping."
-              continue
-            fi
-
-            echo "${app}: ${age}s old; destroying."
             if ! flyctl apps destroy "$app" --yes; then
               echo "::error::Failed to destroy ${app}."
               failures=$((failures + 1))
