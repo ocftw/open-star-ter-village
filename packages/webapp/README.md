@@ -68,6 +68,14 @@ Rejected alternatives:
 - Railway: workable, but Fly.io gives more explicit region and VM control for
   this alpha.
 
+### Per-PR Staging
+
+Maintainers can add the `staging` label to a pull request to deploy it to a
+throwaway `osv-pr-<number>` Fly app in a separate staging org, with `/dev`
+enabled. See [docs/pr-staging.md](docs/pr-staging.md) for usage, the required
+`FLY_STAGING_API_TOKEN` secret and `FLY_STAGING_ORG` variable, and the
+`pull_request_target` security model.
+
 ### Deploy Your Own Village
 
 Prerequisites:
@@ -272,7 +280,8 @@ Important implementation decisions archived in
 
 The non-production `/dev` route renders the same game view used by active
 multiplayer rooms, with a collapsed developer-controls widget layered over it.
-The route is unavailable in production builds.
+The route returns 404 in production builds unless the image is built with
+`ENABLE_DEV_ROUTE=true`, which only per-PR staging sets.
 
 Supported query parameters:
 
@@ -338,6 +347,8 @@ in Redux.
 - `GAME_SERVER_ORIGINS` sets the comma-separated list of allowed client origins
   for the game server in production.
 - `PORT` overrides the game server port; it defaults to `3001`.
+- `ENABLE_DEV_ROUTE=true` serves `/dev` in a production build (Docker build
+  arg, default `false`; set only by per-PR staging).
 - `@/*` maps to `packages/webapp/src/*`.
 
 ## Coding Constraints
