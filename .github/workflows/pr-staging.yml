@@ -1,0 +1,429 @@
+name: PR Staging
+
+# Ephemeral per-PR staging on Fly.io. See packages/webapp/docs/pr-staging.md.
+#
+# Security model (pull_request_target runs with base-repo secrets):
+# - This file and permission-fence.yml always run from the base branch.
+# - Every deploy path needs the permission fence before PR code is checked out
+#   and before any job can read secrets.FLY_STAGING_API_TOKEN.
+# - Only the deploy job checks out PR code: the exact head SHA, without
+#   persisted credentials, with a read-only GITHUB_TOKEN. It never installs or
+#   runs PR code on the runner; Fly builds the image on a remote builder in the
+#   separate staging org.
+# - Jobs that write comments or labels never check out PR code.
+
+on:
+  pull_request_target:
+    types: [labeled, unlabeled, synchronize, reopened, closed]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Pull request number to (re)deploy. The PR must be open and carry the staging label.
+        required: true
+        type: string
+
+permissions: {}
+
+# One group per PR. Label events for other labels, and pushes to PRs without
+# the staging label, get a throwaway group so they cannot cancel a real deploy.
+concurrency:
+  group: >-
+    pr-staging-${{
+      (github.event_name == 'workflow_dispatch' && inputs.pr_number)
+      || ((github.event.action == 'labeled' || github.event.action == 'unlabeled')
+          && github.event.label.name != 'staging' && format('noop-{0}', github.run_id))
+      || ((github.event.action == 'synchronize' || github.event.action == 'reopened')
+          && !contains(github.event.pull_request.labels.*.name, 'staging') && format('noop-{0}', github.run_id))
+      || github.event.pull_request.number
+    }}
+  cancel-in-progress: true
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  STAGING_LABEL: staging
+  COMMENT_MARKER: "<!-- osv-pr-staging -->"
+  MAX_STAGING_APPS: 5
+
+jobs:
+  route:
+    name: Decide staging action
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      pull-requests: read
+    outputs:
+      mode: ${{ steps.route.outputs.mode }}
+      pr_number: ${{ steps.route.outputs.pr_number }}
+      head_sha: ${{ steps.route.outputs.head_sha }}
+      app: ${{ steps.route.outputs.app }}
+    steps:
+      - name: Route event
+        id: route
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+          ACTION: ${{ github.event.action }}
+          EVENT_LABEL: ${{ github.event.label.name }}
+          EVENT_PR_NUMBER: ${{ github.event.pull_request.number }}
+          EVENT_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          EVENT_HAS_LABEL: ${{ contains(github.event.pull_request.labels.*.name, 'staging') }}
+          DISPATCH_PR_NUMBER: ${{ inputs.pr_number }}
+        run: |
+          mode=none
+          pr_number=""
+          head_sha=""
+
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            if ! [[ "$DISPATCH_PR_NUMBER" =~ ^[1-9][0-9]{0,6}$ ]]; then
+              echo "::error::pr_number must be a positive integer."
+              exit 1
+            fi
+            pr_number="$DISPATCH_PR_NUMBER"
+            pr_json="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr_number}")"
+            state="$(jq -r '.state' <<< "$pr_json")"
+            has_label="$(jq --arg l "$STAGING_LABEL" '[.labels[].name] | index($l) != null' <<< "$pr_json")"
+            if [[ "$state" != "open" ]]; then
+              echo "::notice::PR #${pr_number} is ${state}; nothing to deploy."
+            elif [[ "$has_label" != "true" ]]; then
+              echo "::notice::PR #${pr_number} does not carry the '${STAGING_LABEL}' label; nothing to deploy."
+            else
+              mode=deploy
+              head_sha="$(jq -r '.head.sha' <<< "$pr_json")"
+            fi
+          else
+            pr_number="$EVENT_PR_NUMBER"
+            head_sha="$EVENT_HEAD_SHA"
+            case "$ACTION" in
+              labeled)
+                [[ "$EVENT_LABEL" == "$STAGING_LABEL" ]] && mode=deploy
+                ;;
+              synchronize|reopened)
+                [[ "$EVENT_HAS_LABEL" == "true" ]] && mode=deploy
+                ;;
+              unlabeled)
+                [[ "$EVENT_LABEL" == "$STAGING_LABEL" ]] && mode=destroy
+                ;;
+              closed)
+                [[ "$EVENT_HAS_LABEL" == "true" ]] && mode=destroy
+                ;;
+            esac
+          fi
+
+          if [[ "$mode" != "none" ]]; then
+            if ! [[ "$pr_number" =~ ^[1-9][0-9]*$ ]]; then
+              echo "::error::Unexpected PR number '${pr_number}'."
+              exit 1
+            fi
+            if [[ "$mode" == "deploy" ]] && ! [[ "$head_sha" =~ ^[0-9a-f]{40}$ ]]; then
+              echo "::error::Unexpected head SHA '${head_sha}'."
+              exit 1
+            fi
+          fi
+
+          {
+            echo "mode=$mode"
+            echo "pr_number=$pr_number"
+            echo "head_sha=$head_sha"
+            echo "app=osv-pr-${pr_number}"
+          } >> "$GITHUB_OUTPUT"
+          echo "mode=$mode pr=#${pr_number} sha=${head_sha:-n/a}"
+
+  fence:
+    name: Permission fence
+    needs: route
+    if: ${{ needs.route.outputs.mode == 'deploy' }}
+    permissions:
+      contents: read
+    uses: ./.github/workflows/permission-fence.yml
+    with:
+      # Label added: the labeler. Synchronize: the pusher. Reopened: the reopener.
+      # Manual dispatch (and any re-run of it): whoever triggered the run.
+      actor: ${{ github.event_name == 'workflow_dispatch' && github.triggering_actor || github.event.sender.login }}
+
+  deploy:
+    name: Deploy osv-pr-${{ needs.route.outputs.pr_number }}
+    needs: [route, fence]
+    if: ${{ needs.route.outputs.mode == 'deploy' && needs.fence.outputs.allowed == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # Read-only token: this job holds untrusted PR files on disk.
+    permissions:
+      contents: read
+    outputs:
+      outcome: ${{ steps.cap.outputs.outcome || steps.flydeploy.outputs.outcome }}
+    env:
+      FLY_API_TOKEN: ${{ secrets.FLY_STAGING_API_TOKEN }}
+      FLY_ORG: ${{ vars.FLY_STAGING_ORG }}
+      APP: ${{ needs.route.outputs.app }}
+      HEAD_SHA: ${{ needs.route.outputs.head_sha }}
+    steps:
+      - name: Check staging configuration
+        run: |
+          if [[ -z "$FLY_API_TOKEN" ]]; then
+            echo "::error::Repository secret FLY_STAGING_API_TOKEN is not set. See packages/webapp/docs/pr-staging.md."
+            exit 1
+          fi
+          if ! [[ "$FLY_ORG" =~ ^[a-z0-9][a-z0-9-]*$ ]]; then
+            echo "::error::Repository variable FLY_STAGING_ORG is missing or invalid. See packages/webapp/docs/pr-staging.md."
+            exit 1
+          fi
+          if [[ "$APP" == "open-star-ter-village" ]] || ! [[ "$APP" =~ ^osv-pr-[0-9]+$ ]]; then
+            echo "::error::Refusing to deploy to app '${APP}'."
+            exit 1
+          fi
+
+      - uses: superfly/flyctl-actions/setup-flyctl@98172f70657cb3e15db199af139be99bd3e61200 # master 2026-10-30
+
+      - name: Enforce staging app cap and create app
+        id: cap
+        run: |
+          apps_json="$(flyctl apps list --org "$FLY_ORG" --json)"
+          mapfile -t staging_apps < <(jq -r '.[].Name | select(test("^osv-pr-[0-9]+$"))' <<< "$apps_json")
+
+          for existing in "${staging_apps[@]}"; do
+            if [[ "$existing" == "$APP" ]]; then
+              echo "App ${APP} already exists in ${FLY_ORG}; redeploying."
+              exit 0
+            fi
+          done
+
+          if (( ${#staging_apps[@]} >= MAX_STAGING_APPS )); then
+            echo "::warning::Staging cap reached (${#staging_apps[@]}/${MAX_STAGING_APPS}): ${staging_apps[*]}"
+            echo "outcome=cap" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          flyctl apps create "$APP" --org "$FLY_ORG"
+
+      - name: Check out exact PR head
+        if: ${{ steps.cap.outputs.outcome != 'cap' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.route.outputs.head_sha }}
+          path: pr
+          persist-credentials: false
+
+      - name: Generate staging Fly config
+        if: ${{ steps.cap.outputs.outcome != 'cap' }}
+        working-directory: pr
+        run: |
+          # Generated here, never read from the PR. Remove first so a PR cannot
+          # redirect the write through a symlink.
+          rm -f fly.staging.generated.toml
+          cat > fly.staging.generated.toml <<EOF
+          app = "${APP}"
+          primary_region = "sin"
+
+          [build]
+            dockerfile = "Dockerfile"
+
+          [env]
+            NEXT_PUBLIC_GAME_SERVER_URL = "https://${APP}.fly.dev:3001"
+            GAME_SERVER_ORIGINS = "https://${APP}.fly.dev"
+            ENABLE_DEV_ROUTE = "true"
+            SENTRY_ENVIRONMENT = "staging"
+
+          [[services]]
+            protocol = "tcp"
+            internal_port = 3000
+            auto_stop_machines = "stop"
+            auto_start_machines = true
+            min_machines_running = 0
+
+            [[services.http_checks]]
+              interval = "30s"
+              timeout = "10s"
+              grace_period = "60s"
+              method = "GET"
+              path = "/"
+              protocol = "http"
+
+            [[services.ports]]
+              port = 80
+              handlers = ["http"]
+              force_https = true
+
+            [[services.ports]]
+              port = 443
+              handlers = ["tls", "http"]
+
+          [[services]]
+            protocol = "tcp"
+            internal_port = 3001
+            auto_stop_machines = "stop"
+            auto_start_machines = true
+            min_machines_running = 0
+
+            [[services.http_checks]]
+              interval = "30s"
+              timeout = "10s"
+              grace_period = "60s"
+              method = "GET"
+              path = "/health"
+              protocol = "http"
+
+            [[services.ports]]
+              port = 3001
+              handlers = ["tls", "http"]
+
+          [[vm]]
+            size = "shared-cpu-1x"
+            memory = "256mb"
+          EOF
+          cat fly.staging.generated.toml
+
+      - name: Deploy to Fly staging
+        id: flydeploy
+        if: ${{ steps.cap.outputs.outcome != 'cap' }}
+        working-directory: pr
+        run: |
+          # No GTM, Sentry or Discord values: staging images must not report to
+          # production analytics or monitoring. ENABLE_DEV_ROUTE serves /dev.
+          flyctl deploy . \
+            --config fly.staging.generated.toml \
+            --app "$APP" \
+            --remote-only \
+            --ha=false \
+            --strategy immediate \
+            --build-arg "NEXT_PUBLIC_GAME_SERVER_URL=https://${APP}.fly.dev:3001" \
+            --build-arg "ENABLE_DEV_ROUTE=true" \
+            --build-arg "SENTRY_ENVIRONMENT=staging" \
+            --build-arg "SENTRY_RELEASE=${HEAD_SHA}" \
+            --wait-timeout 10m
+          echo "outcome=deployed" >> "$GITHUB_OUTPUT"
+
+  destroy:
+    name: Destroy osv-pr-${{ needs.route.outputs.pr_number }}
+    needs: [route, fence]
+    # Label removed, PR closed, or the fence denied a deploy (tear down any app
+    # built from previously approved code). Never checks out PR code.
+    if: >-
+      ${{ !cancelled() && needs.route.result == 'success' && (
+        needs.route.outputs.mode == 'destroy'
+        || (needs.route.outputs.mode == 'deploy' && needs.fence.outputs.allowed != 'true')
+      ) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions: {}
+    env:
+      FLY_API_TOKEN: ${{ secrets.FLY_STAGING_API_TOKEN }}
+      FLY_ORG: ${{ vars.FLY_STAGING_ORG }}
+      APP: ${{ needs.route.outputs.app }}
+    steps:
+      - name: Check staging configuration
+        id: config
+        run: |
+          if [[ -z "$FLY_API_TOKEN" ]] || ! [[ "$FLY_ORG" =~ ^[a-z0-9][a-z0-9-]*$ ]]; then
+            echo "::warning::FLY_STAGING_API_TOKEN or FLY_STAGING_ORG is not configured; nothing to destroy."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: superfly/flyctl-actions/setup-flyctl@98172f70657cb3e15db199af139be99bd3e61200 # master 2026-10-30
+        if: ${{ steps.config.outputs.skip != 'true' }}
+
+      - name: Destroy staging app
+        if: ${{ steps.config.outputs.skip != 'true' }}
+        run: |
+          # Hard guard: only ever destroy osv-pr-<number>, never production.
+          if [[ "$APP" == "open-star-ter-village" ]] || ! [[ "$APP" =~ ^osv-pr-[0-9]+$ ]]; then
+            echo "::error::Refusing to destroy app '${APP}'."
+            exit 1
+          fi
+
+          apps_json="$(flyctl apps list --org "$FLY_ORG" --json)"
+          if ! jq -e --arg app "$APP" 'any(.[]; .Name == $app)' <<< "$apps_json" > /dev/null; then
+            echo "App ${APP} does not exist in ${FLY_ORG}; nothing to destroy."
+            exit 0
+          fi
+
+          flyctl apps destroy "$APP" --yes
+
+  report:
+    name: Update PR staging comment
+    needs: [route, fence, deploy, destroy]
+    if: ${{ !cancelled() && needs.route.result == 'success' && needs.route.outputs.mode != 'none' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # Write access for comments and labels; never checks out PR code.
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Remove label and comment, or post staging URLs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MODE: ${{ needs.route.outputs.mode }}
+          PR_NUMBER: ${{ needs.route.outputs.pr_number }}
+          APP: ${{ needs.route.outputs.app }}
+          HEAD_SHA: ${{ needs.route.outputs.head_sha }}
+          FENCE_ALLOWED: ${{ needs.fence.outputs.allowed }}
+          FENCE_REASON: ${{ needs.fence.outputs.reason }}
+          FENCE_ACTOR: ${{ github.event_name == 'workflow_dispatch' && github.triggering_actor || github.event.sender.login }}
+          DEPLOY_RESULT: ${{ needs.deploy.result }}
+          DEPLOY_OUTCOME: ${{ needs.deploy.outputs.outcome }}
+          DESTROY_RESULT: ${{ needs.destroy.result }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          comments_api="repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/comments"
+
+          find_comment() {
+            gh api --paginate "$comments_api" \
+              --jq ".[] | select(.user.login == \"github-actions[bot]\" and (.body | contains(\"${COMMENT_MARKER}\"))) | .id" \
+              | head -n 1
+          }
+
+          upsert_comment() {
+            local body="${COMMENT_MARKER}"$'\n'"$1" id
+            id="$(find_comment)"
+            if [[ -n "$id" ]]; then
+              gh api --method PATCH "repos/${GITHUB_REPOSITORY}/issues/comments/${id}" -f body="$body" > /dev/null
+            else
+              gh api --method POST "$comments_api" -f body="$body" > /dev/null
+            fi
+          }
+
+          update_existing_comment() {
+            local body="${COMMENT_MARKER}"$'\n'"$1" id
+            id="$(find_comment)"
+            if [[ -n "$id" ]]; then
+              gh api --method PATCH "repos/${GITHUB_REPOSITORY}/issues/comments/${id}" -f body="$body" > /dev/null
+            fi
+          }
+
+          url="https://${APP}.fly.dev"
+
+          if [[ "$MODE" == "deploy" && "$FENCE_ALLOWED" != "true" ]]; then
+            gh api --method DELETE "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/labels/${STAGING_LABEL}" > /dev/null 2>&1 || true
+            upsert_comment "### PR staging refused
+
+          The \`${STAGING_LABEL}\` label was removed because \`@${FENCE_ACTOR}\` is not allowed to deploy staging (${FENCE_REASON:-permission check did not complete}). Staging deploys require admin, maintain or write access for whoever added the label, pushed the new commits, or dispatched the run. Any existing staging app for this PR was torn down.
+
+          A maintainer can review the latest commits and re-add the \`${STAGING_LABEL}\` label to deploy them. [Workflow run](${RUN_URL})"
+          elif [[ "$MODE" == "deploy" && "$DEPLOY_OUTCOME" == "cap" ]]; then
+            gh api --method DELETE "repos/${GITHUB_REPOSITORY}/issues/${PR_NUMBER}/labels/${STAGING_LABEL}" > /dev/null 2>&1 || true
+            upsert_comment "### PR staging refused: capacity
+
+          Staging already runs the maximum of ${MAX_STAGING_APPS} \`osv-pr-*\` apps, so \`${APP}\` was not created and the \`${STAGING_LABEL}\` label was removed. Remove the \`${STAGING_LABEL}\` label from another PR (or wait for the 4-hour reaper), then re-add it here. [Workflow run](${RUN_URL})"
+          elif [[ "$MODE" == "deploy" && "$DEPLOY_RESULT" == "success" && "$DEPLOY_OUTCOME" == "deployed" ]]; then
+            upsert_comment "### PR staging deployed
+
+          - App: ${url}
+          - Dev harness: ${url}/dev?seed=e2e-2
+          - Commit: ${HEAD_SHA}
+
+          The machine stops when idle and starts on the next request, so the first load can take a few seconds. Remove the \`${STAGING_LABEL}\` label or close the PR to destroy it; apps older than 4 hours are reaped hourly. [Workflow run](${RUN_URL})"
+          elif [[ "$MODE" == "deploy" && "$DEPLOY_RESULT" == "cancelled" ]]; then
+            echo "Deploy was cancelled (superseded by a newer run); leaving the comment unchanged."
+          elif [[ "$MODE" == "deploy" ]]; then
+            upsert_comment "### PR staging deploy failed
+
+          Deploying ${HEAD_SHA} to \`${APP}\` did not succeed (${DEPLOY_RESULT}). See the [workflow run](${RUN_URL})."
+          elif [[ "$MODE" == "destroy" && "$DESTROY_RESULT" == "success" ]]; then
+            update_existing_comment "### PR staging torn down
+
+          \`${APP}\` was destroyed. Re-add the \`${STAGING_LABEL}\` label to deploy again. [Workflow run](${RUN_URL})"
+          elif [[ "$MODE" == "destroy" ]]; then
+            update_existing_comment "### PR staging teardown failed
+
+          Destroying \`${APP}\` did not succeed (${DESTROY_RESULT}); the hourly reaper retries apps older than 4 hours. [Workflow run](${RUN_URL})"
+          fi

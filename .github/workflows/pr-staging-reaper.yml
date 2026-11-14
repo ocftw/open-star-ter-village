@@ -1,0 +1,92 @@
+name: PR Staging Reaper
+
+# Hourly cleanup for ephemeral PR staging apps. See packages/webapp/docs/pr-staging.md.
+# Destroys only osv-pr-<number> apps in the staging org that are older than
+# 4 hours. Never checks out code.
+
+on:
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: pr-staging-reaper
+  cancel-in-progress: false
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  MAX_AGE_SECONDS: 14400
+
+jobs:
+  reap:
+    name: Destroy staging apps older than 4h
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions: {}
+    env:
+      FLY_API_TOKEN: ${{ secrets.FLY_STAGING_API_TOKEN }}
+      FLY_ORG: ${{ vars.FLY_STAGING_ORG }}
+    steps:
+      - name: Check staging configuration
+        id: config
+        run: |
+          if [[ -z "$FLY_API_TOKEN" ]] || ! [[ "$FLY_ORG" =~ ^[a-z0-9][a-z0-9-]*$ ]]; then
+            echo "::notice::FLY_STAGING_API_TOKEN or FLY_STAGING_ORG is not configured; nothing to reap."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: superfly/flyctl-actions/setup-flyctl@98172f70657cb3e15db199af139be99bd3e61200 # master 2026-10-30
+        if: ${{ steps.config.outputs.skip != 'true' }}
+
+      - name: Reap old staging apps
+        if: ${{ steps.config.outputs.skip != 'true' }}
+        run: |
+          now="$(date -u +%s)"
+          apps_json="$(flyctl apps list --org "$FLY_ORG" --json)"
+          mapfile -t candidates < <(jq -r '.[].Name | select(test("^osv-pr-[0-9]+$"))' <<< "$apps_json")
+          failures=0
+
+          to_epoch() {
+            # Accepts RFC 3339 timestamps with or without fractional seconds.
+            [[ -n "$1" && "$1" != "null" ]] && date -u -d "$1" +%s 2>/dev/null
+          }
+
+          for app in "${candidates[@]}"; do
+            # Hard guard: only ever destroy osv-pr-<number>, never production.
+            if [[ "$app" == "open-star-ter-village" ]] || ! [[ "$app" =~ ^osv-pr-[0-9]+$ ]]; then
+              echo "::error::Refusing to destroy app '${app}'."
+              failures=$((failures + 1))
+              continue
+            fi
+
+            # App age: the oldest machine's creation time (deploys update
+            # machines in place). Fall back to the latest release time for apps
+            # without machines; skip apps whose age cannot be determined.
+            created="$(flyctl machines list --app "$app" --json | jq -r '[.[].created_at | select(. != null)] | sort | first // ""')"
+            if [[ -z "$created" ]]; then
+              created="$(jq -r --arg app "$app" '.[] | select(.Name == $app) | .CurrentRelease.CreatedAt // ""' <<< "$apps_json")"
+            fi
+
+            if ! created_epoch="$(to_epoch "$created")"; then
+              echo "::warning::Cannot determine the age of ${app}; skipping."
+              continue
+            fi
+
+            age=$((now - created_epoch))
+            if (( age < MAX_AGE_SECONDS )); then
+              echo "${app}: ${age}s old; keeping."
+              continue
+            fi
+
+            echo "${app}: ${age}s old; destroying."
+            if ! flyctl apps destroy "$app" --yes; then
+              echo "::error::Failed to destroy ${app}."
+              failures=$((failures + 1))
+            fi
+          done
+
+          if (( failures > 0 )); then
+            exit 1
+          fi
