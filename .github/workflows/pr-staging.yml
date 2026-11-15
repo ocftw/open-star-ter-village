@@ -150,7 +150,7 @@ jobs:
     permissions:
       contents: read
     outputs:
-      outcome: ${{ steps.cap.outputs.outcome || steps.flydeploy.outputs.outcome }}
+      outcome: ${{ steps.cap.outputs.outcome || steps.gate.outputs.outcome }}
     env:
       FLY_API_TOKEN: ${{ secrets.FLY_STAGING_API_TOKEN }}
       FLY_ORG: ${{ vars.FLY_STAGING_ORG }}
@@ -209,6 +209,32 @@ jobs:
             fi
             flyctl apps destroy "$APP" --yes
             echo "outcome=cap" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Ensure public IPs
+        if: ${{ steps.cap.outputs.outcome != 'cap' }}
+        run: |
+          # A new Fly app has no public IPs, so it is unreachable even when the
+          # deploy succeeds. Allocate a free IPv6 and a free shared IPv4 (never a
+          # dedicated, paid IPv4: always --shared). Idempotent on redeploys.
+          if [[ "$APP" == "open-star-ter-village" ]] || ! [[ "$APP" =~ ^osv-pr-[0-9]+$ ]]; then
+            echo "::error::Refusing to allocate IPs for app '${APP}'."
+            exit 1
+          fi
+
+          ips_json="$(flyctl ips list -a "$APP" --json)"
+          has_v6="$(jq -r 'any((. // [])[]; .Type == "v6")' <<< "$ips_json")"
+          has_v4="$(jq -r 'any((. // [])[]; .Type == "v4" or .Type == "shared_v4")' <<< "$ips_json")"
+
+          if [[ "$has_v6" == "true" ]]; then
+            echo "${APP} already has a public IPv6."
+          else
+            flyctl ips allocate-v6 -a "$APP"
+          fi
+          if [[ "$has_v4" == "true" ]]; then
+            echo "${APP} already has a public IPv4."
+          else
+            flyctl ips allocate-v4 --shared -a "$APP"
           fi
 
       - name: Check out exact PR head
@@ -306,7 +332,50 @@ jobs:
             --build-arg "SENTRY_ENVIRONMENT=staging" \
             --build-arg "SENTRY_RELEASE=${HEAD_SHA}" \
             --wait-timeout 10m
-          echo "outcome=deployed" >> "$GITHUB_OUTPUT"
+
+      - name: Wait until staging is reachable
+        id: gate
+        if: ${{ steps.cap.outputs.outcome != 'cap' }}
+        run: |
+          # The "deployed" outcome (and so the URL comment) is only set once the
+          # web app and the game server both answer from the public internet.
+          # Machines auto-stop, so allow for cold starts; budget about 3 minutes.
+          if [[ "$APP" == "open-star-ter-village" ]] || ! [[ "$APP" =~ ^osv-pr-[0-9]+$ ]]; then
+            echo "::error::Refusing to probe app '${APP}'."
+            exit 1
+          fi
+
+          probe() {
+            local code
+            code="$(curl -sS -o /dev/null -w '%{http_code}' --connect-timeout 10 --max-time 30 "$1" 2>/dev/null)" || code=000
+            echo "  $1 -> ${code}" >&2
+            [[ "$code" =~ ^[23][0-9][0-9]$ ]]
+          }
+
+          urls=("https://${APP}.fly.dev/" "https://${APP}.fly.dev:3001/health")
+          deadline=$((SECONDS + 180))
+          attempt=0
+          while :; do
+            attempt=$((attempt + 1))
+            echo "Reachability attempt ${attempt}:"
+            ok=true
+            for u in "${urls[@]}"; do
+              probe "$u" || ok=false
+            done
+            if [[ "$ok" == "true" ]]; then
+              echo "${APP} is reachable."
+              echo "outcome=deployed" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            (( SECONDS >= deadline )) && break
+            delay=$((attempt * 5)); (( delay > 20 )) && delay=20
+            sleep "$delay"
+          done
+
+          echo "::error::${APP} was not reachable within 3 minutes; not reporting it as deployed."
+          flyctl status -a "$APP" || true
+          flyctl ips list -a "$APP" || true
+          exit 1
 
       - name: Remove app created by a failed first deploy
         # Only an app this run created; a failed redeploy keeps the existing app.

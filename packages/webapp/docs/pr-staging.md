@@ -12,6 +12,10 @@ production `open-star-ter-village` app.
    - `https://osv-pr-<number>.fly.dev`
    - `https://osv-pr-<number>.fly.dev/dev?seed=e2e-2` (the `/dev` harness,
      which staging images enable)
+   The comment is posted only after the app answers from the public internet
+   (web on :443 and the game server `/health` on :3001). New apps get a free
+   IPv6 and a shared IPv4; a dedicated IPv4 is never allocated. If the app is
+   not reachable within about 3 minutes the run fails and no URL is posted.
 3. While the label stays on, each push redeploys automatically, but only if
    the pusher has write access too (see below).
 4. To redeploy by hand, run **PR Staging** from the Actions tab with
