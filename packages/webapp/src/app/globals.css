@@ -1072,3 +1072,87 @@ body:has(.modal[open]) {
   .turn-queue-exit { display: none; }
 }
 /* ===== end story 5 ===== */
+
+/* ===== story 6: event button and event card dialog ===== */
+.turn-strip:not(.turn-strip-horizontal):has(> .event-btn) { padding-top: 14px; }
+.event-btn {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  background: var(--orange);
+  color: white;
+  font-family: var(--font-zh);
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1.1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.event-btn small { font-size: 9px; letter-spacing: .06em; }
+.event-btn:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+.turn-strip-horizontal > .event-btn { width: 44px; height: 38px; font-size: 11px; }
+/* Keep the tag inside the native dialog's scrollable bounds, above the card. */
+.modal:has(> .event-card) {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  max-width: calc(100vw - 48px);
+  padding: 13px 0 0;
+}
+.modal:has(> .event-card)::backdrop { background: rgba(42, 36, 34, .55); }
+.event-card {
+  position: relative;
+  width: 100%;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 16px;
+  padding: 26px 22px 18px;
+  display: grid;
+  grid-template-columns: 70px minmax(0, 1fr);
+  gap: 6px 18px;
+  align-items: start;
+}
+.event-card h2 { font-size: 18px; font-weight: 900; }
+.event-card p { font-size: 14px; color: var(--ink-soft); line-height: 1.6; margin-top: 4px; }
+.event-tag {
+  position: absolute;
+  top: -13px;
+  left: 20px;
+  background: var(--orange);
+  color: white;
+  border: 2px solid var(--ink);
+  border-radius: 99px;
+  padding: 3px 14px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.event-art {
+  width: 70px;
+  height: 70px;
+  border-radius: 12px;
+  background: var(--orange-soft);
+  border: 2px solid var(--ink);
+  display: grid;
+  place-items: center;
+  font-size: 30px;
+}
+.event-card > .btn-sticker {
+  grid-column: 2;
+  justify-self: end;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 12px;
+  box-shadow: none;
+  transform: none;
+}
+@media (max-width: 899px) {
+  .event-card { grid-template-columns: minmax(0, 1fr); }
+  .event-card > .btn-sticker { grid-column: 1; }
+}
+/* ===== end story 6 ===== */

@@ -2,7 +2,7 @@
  * E2E tests: Simplified Mode action flow (Scenarios 1–10), action-first UI.
  *
  * Scenarios 1–4 are based on the rulebook demo (pages 10–12).
- * Scenarios 5–10 cover event banner, turn indicator, endActionTurn,
+ * Scenarios 5–10 cover event dialog, turn indicator, endActionTurn,
  * contributions, and the 加班 Overtime token.
  *
  * Interaction model: choose an action in the panel before selecting cards.
@@ -320,12 +320,35 @@ test.describe('Simplified Mode — Action Flow', () => {
     await expectScore(page, 'Alice', TALENT_SCOUTING_VP);
   });
 
-  // ── Scenario 5: Event card banner ─────────────────────────────────────────
-  test('Scenario 5: Event card banner — visible at game start', async ({ page }) => {
+  // ── Scenario 5: Event card dialog ─────────────────────────────────────────
+  test('Scenario 5: Event card dialog — opens from the strip at game start', async ({ page }) => {
     // playEventCard runs in onBegin for Alice's first turn (playOrderPos === 0),
     // so there should always be an event in the slot immediately after load.
+    const button = page.getByTestId('event-button');
+    await expect(page.getByTestId('event-card-banner')).toHaveCount(0);
+    await expect(button).toHaveCSS('width', '56px');
+    await expect(button).toHaveCSS('height', '56px');
+    expect(await button.evaluate((element) => element.parentElement?.firstElementChild === element)).toBe(true);
+    await button.click();
     await expect(page.locator('[data-testid="event-card-banner"]')).toBeVisible();
     await expect(page.locator('[data-testid="event-card-banner"]')).toContainText('EVENT');
+    const acknowledge = page.getByRole('button', { name: '知道了' });
+    await expect(acknowledge).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(acknowledge).toBeFocused();
+    await page.keyboard.press('Shift+Tab');
+    await expect(acknowledge).toBeFocused();
+    await acknowledge.click();
+    await expect(button).toBeFocused();
+    await expect(page.getByTestId('event-card-banner')).toHaveCount(0);
+
+    // Observers use the same strip, without the old player-only hand banner.
+    await selectDevPerspective(page, 'observer');
+    await button.click();
+    await expect(page.getByTestId('event-card-banner')).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(page.getByTestId('event-card-banner')).toHaveCount(0);
+    await expect(button).toBeFocused();
   });
 
   // ── Scenario 6: Turn indicator ────────────────────────────────────────────
@@ -502,7 +525,9 @@ test.describe('四大自由 — pending discard is visible to everyone (#373)', 
   test('other players see who owes the discard until it is done', async ({ page }) => {
     await page.goto('/dev?seed=e2e-2&demo=four-freedoms');
     await waitForGameReady(page);
+    await page.getByTestId('event-button').click();
     await expect(page.locator('[data-testid="event-card-banner"]')).toContainText('四大自由');
+    await page.getByRole('button', { name: '知道了' }).click();
 
     // Alice and Bob end their turns; neither is last, so no discard is owed.
     await performEndTurn(page);

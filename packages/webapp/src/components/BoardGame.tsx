@@ -36,7 +36,6 @@ import GameOverNote from './board/GameOverNote';
 import { isFourFreedomsDiscardPending } from './board/fourFreedomsDiscard';
 import { getActionAreaView } from './board/actionAreaView';
 import BoardProjectSlot from './board/BoardProjectSlot';
-import EventBanner from './board/EventBanner';
 import MobileSheet from './board/MobileSheet';
 import { ScorePanel } from './board/SidePanels';
 import TurnStrip from './board/TurnStrip';
@@ -218,7 +217,6 @@ const Board: React.FC<GameContext> = (gameContext) => {
           gap: 14,
         }}
       >
-        {G.table.eventSlot && <EventBanner event={G.table.eventSlot} />}
         {projectsSection}
         {jobMarket}
         <ScorePanel gameContext={gameContext} />
