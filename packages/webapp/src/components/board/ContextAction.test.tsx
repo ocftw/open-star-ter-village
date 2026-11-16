@@ -68,6 +68,8 @@ function setup(change?: (G: GameState) => void, playerID: string | null = '0') {
 
 const actionButton = (name: UserActionMoves) => screen.getByTestId(`action-${name}`) as HTMLButtonElement;
 const confirmButton = () => screen.getByTestId('ca-confirm') as HTMLButtonElement;
+const projectSelect = (slotId: string) =>
+  within(screen.getByTestId(slotId)).getByRole('button', { name: /選擇專案/ });
 
 beforeEach(() => jest.useFakeTimers());
 afterEach(() => {
@@ -179,7 +181,7 @@ it('rejects duplicate workers during join preflight', () => {
     JobSlotsMutator.addJobCards(G.table.jobSlots, [{ id: 'designer', name: '美術設計' }]);
   });
   fireEvent.click(actionButton(UserActionMoves.Recruit));
-  fireEvent.click(screen.getByTestId(slots[1].id));
+  fireEvent.click(projectSelect(slots[1].id));
   // The engineer position already has this player's worker; preflight rejects duplicates.
   fireEvent.click(screen.getByTestId('job-card-engineer'));
   expect(confirmButton().disabled).toBe(true);
@@ -192,7 +194,7 @@ it.each(['project-first', 'job-first'])('joins a project through the existing mo
     G.table.projectBoard.find((slot) => slot.owner === '1')!.contributions = [];
   });
   fireEvent.click(actionButton(UserActionMoves.Recruit));
-  const project = screen.getByTestId(slots[1].id);
+  const project = projectSelect(slots[1].id);
   const job = screen.getByTestId('job-card-engineer');
   fireEvent.click(order === 'project-first' ? project : job);
   expect(confirmButton().disabled).toBe(true);
@@ -220,7 +222,8 @@ it('keeps refill as a separate market action with the existing move', () => {
   const { moves } = setup();
   fireEvent.click(screen.getByTestId('refill-jobs'));
   expect(confirmButton().disabled).toBe(true);
-  fireEvent.click(screen.getByTestId('job-card-engineer'));
+  // #502: in refill/remove mode the × is the control, not the tile body.
+  fireEvent.click(screen.getByTestId('job-remove-engineer'));
   fireEvent.click(confirmButton());
   expect(moves.removeAndRefillJobs).toHaveBeenCalledWith(['engineer'], undefined);
 });

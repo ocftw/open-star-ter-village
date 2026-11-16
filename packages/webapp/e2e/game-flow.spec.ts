@@ -70,8 +70,10 @@ async function performEndTurn(page: Page): Promise<void> {
     .catch(() => false);
   if (needsDiscard) {
     const jobCards = page.locator('[data-testid^="job-card-"]');
-    await jobCards.nth(0).click();
-    await jobCards.nth(1).click();
+    // Each × removes a tile from the row, so the first × is always next.
+    const removeButtons = page.locator('[data-testid^="job-remove-"]');
+    await removeButtons.first().click();
+    await removeButtons.first().click();
     await page.locator('[data-testid="discard-confirm"]').click();
     await discardPanel.waitFor({ state: 'hidden', timeout: 5000 });
   }
@@ -338,8 +340,8 @@ test.describe('Simplified Mode — Action Flow', () => {
     await page.locator('[data-testid="refill-jobs"]').click();
     await expect(contextAction(page)).toHaveAttribute('data-mode', 'removeAndRefillJobs');
 
-    // Select at least one job card to remove.
-    await page.locator('[data-testid^="job-card-"]').first().click();
+    // Remove at least one job card via its red ×.
+    await page.locator('[data-testid^="job-remove-"]').first().click();
 
     await expect(confirmButton(page)).toBeEnabled();
     await confirmButton(page).click();
@@ -462,7 +464,8 @@ test.describe('Simplified Mode — Action Flow', () => {
     // Step A: Alice performs Talent Scouting (refill) — 1 AP, 1 VP.
     await page.locator('[data-testid="refill-jobs"]').click();
     await expect(contextAction(page)).toHaveAttribute('data-mode', 'removeAndRefillJobs');
-    await page.locator('[data-testid^="job-card-"]').first().click();
+    await page.locator('[data-testid^="job-remove-"]').first().click();
+    await expect(page.locator('[data-visual-state="ghost"]')).toHaveCount(1);
     await expect(confirmButton(page)).toBeEnabled();
     await confirmButton(page).click();
 
@@ -479,9 +482,10 @@ test.describe('Simplified Mode — Action Flow', () => {
 
     // Then the normal refill selection flow continues, including multi-select
     // of the cards to remove.
-    await page.locator('[data-testid^="job-card-"]').nth(0).click();
-    await page.locator('[data-testid^="job-card-"]').nth(1).click();
-    await expect(page.locator('[data-testid^="job-card-"][data-selected]')).toHaveCount(2);
+    // The × is the control; removed tiles become dashed ghosts (no ×).
+    await page.locator('[data-testid^="job-remove-"]').nth(0).click();
+    await page.locator('[data-testid^="job-remove-"]').nth(0).click();
+    await expect(page.locator('[data-testid^="job-card-"][data-visual-state="ghost"]')).toHaveCount(2);
     await expect(confirmButton(page)).toBeEnabled();
     await confirmButton(page).click();
 
@@ -581,7 +585,7 @@ test.describe('四大自由 — pending discard is visible to everyone (#373)', 
     await confirmButton(page).click();
     await waitForGameReady(page);
     await page.locator('[data-testid="refill-jobs"]').click();
-    await page.locator('[data-testid^="job-card-"]').first().click();
+    await page.locator('[data-testid^="job-remove-"]').first().click();
     await confirmButton(page).click();
     await expectActions(page, 'Charlie', 0);
     const discardPanel = page.locator('[data-testid="discard-job-cards-panel"]');
@@ -599,8 +603,10 @@ test.describe('四大自由 — pending discard is visible to everyone (#373)', 
     // Once Charlie discards, the round ends and the note goes back to normal.
     await selectDevPerspective(page, 'player3');
     const jobCards = page.locator('[data-testid^="job-card-"]');
-    await jobCards.nth(0).click();
-    await jobCards.nth(1).click();
+    // Each × removes a tile from the row, so the first × is always next.
+    const removeButtons = page.locator('[data-testid^="job-remove-"]');
+    await removeButtons.first().click();
+    await removeButtons.first().click();
     await page.locator('[data-testid="discard-confirm"]').click();
     await expect(discardPanel).toHaveCount(0);
     await expect(page.getByRole('heading', { name: '回合二', exact: true })).toBeVisible();
