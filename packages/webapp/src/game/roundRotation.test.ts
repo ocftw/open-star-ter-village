@@ -1,0 +1,153 @@
+import { Client } from 'boardgame.io/client';
+import type { Game } from 'boardgame.io';
+import { OpenStarTerVillage } from './game';
+import { setup } from './core/setup';
+import { GameState } from './store/store';
+import type { EventCard } from './card';
+import rawEventCards from './data/card/events.json';
+
+type TestClient = ReturnType<typeof Client<GameState>>;
+
+const FOUR_FREEDOMS = 'add_two_worker_slots';
+
+// Real game plus a test-only move that spends every remaining AP, so a turn can
+// end through the engine's out-of-AP path rather than End Turn. playerView is
+// dropped so tests can read the decks. 四大自由 (which correctly holds the round
+// open until the last player discards) is pinned to round 1 or neutralized,
+// keeping the deck size and so the number of rounds unchanged.
+const makeGame = (opts: { fourFreedomsFirst?: boolean } = {}): Game<GameState> => ({
+  ...OpenStarTerVillage,
+  playerView: undefined,
+  setup: (context) => {
+    const G = setup(context);
+    const pile = G.decks.events.drawPile;
+    const idx = pile.findIndex((card) => card.function_name === FOUR_FREEDOMS);
+    if (opts.fourFreedomsFirst) {
+      if (idx < 0) pile.unshift(rawEventCards.find((card) => card.function_name === FOUR_FREEDOMS) as EventCard);
+      else pile.unshift(...pile.splice(idx, 1));
+    } else if (idx >= 0) {
+      pile[idx] = { ...pile[idx], function_name: 'test_no_effect' };
+    }
+    return G;
+  },
+  turn: {
+    ...OpenStarTerVillage.turn,
+    stages: {
+      action: {
+        moves: {
+          ...OpenStarTerVillage.turn!.stages!.action.moves,
+          spendAllActionPoints: ({ G, playerID }) => {
+            G.players[playerID].token.actions = 0;
+          },
+        },
+      },
+    },
+  },
+});
+
+const start = (numPlayers: number, opts?: { fourFreedomsFirst?: boolean }): TestClient => {
+  const client = Client<GameState>({ game: makeGame(opts), numPlayers });
+  client.start();
+  return client;
+};
+
+const ctx = (client: TestClient) => client.getState()!.ctx;
+
+/** Plays one whole round, returning who acted, in order. */
+const playRound = (client: TestClient, endBy: (seatIndex: number) => 'endTurn' | 'outOfAP') => {
+  const numPlayers = ctx(client).numPlayers;
+  const actors: string[] = [];
+  for (let seat = 0; seat < numPlayers; seat++) {
+    const { currentPlayer } = ctx(client);
+    actors.push(currentPlayer);
+    client.updatePlayerID(currentPlayer);
+    if (endBy(seat) === 'endTurn') client.moves.endActionTurn();
+    else (client.moves as Record<string, () => void>).spendAllActionPoints();
+  }
+  return actors;
+};
+
+const expectedOrder = (numPlayers: number, round: number) =>
+  Array.from({ length: numPlayers }, (_, seat) => String((round - 1 + seat) % numPlayers));
+
+describe('round starter rotation (real engine)', () => {
+  const cases = [2, 3, 4].map((numPlayers) => ({ numPlayers, rounds: numPlayers === 4 ? 4 : 3 }));
+
+  test.each(cases)(
+    '$numPlayers players: round r starts with seat (r-1) mod n and goes clockwise',
+    ({ numPlayers, rounds }) => {
+      const client = start(numPlayers);
+      expect(ctx(client).phase).toBe('round');
+      for (let round = 1; round <= rounds; round++) {
+        // Alternate how the round's last turn ends: End Turn on odd rounds,
+        // running out of AP on even rounds.
+        const lastEndsBy = round % 2 === 1 ? 'endTurn' : 'outOfAP';
+        const actors = playRound(client, (seat) =>
+          seat === numPlayers - 1 ? lastEndsBy : seat % 2 === 0 ? 'endTurn' : 'outOfAP',
+        );
+        expect({ round, actors }).toEqual({ round, actors: expectedOrder(numPlayers, round) });
+        expect(ctx(client).phase).toBe('round');
+        expect({ round, pos: ctx(client).playOrderPos, cp: ctx(client).currentPlayer }).toEqual({ round, pos: 0, cp: expectedOrder(numPlayers, round + 1)[0] });
+        expect(ctx(client).gameover).toBeUndefined();
+      }
+      client.stop();
+    },
+  );
+
+  test('each round plays exactly one event and the round ends exactly once', () => {
+    const client = start(3);
+    const eventsLeft = () => client.getState()!.G.decks.events.drawPile.length;
+    const initial = eventsLeft();
+    playRound(client, () => 'endTurn');
+    expect(eventsLeft()).toBe(initial - 1); // round 2's event drawn once
+    const { G, ctx: c } = client.getState()!;
+    expect(G.playOrder).toEqual(['1', '2', '0']);
+    expect(c.playOrder).toEqual(['1', '2', '0']);
+    expect(c.currentPlayer).toBe('1');
+    expect(G.table.actionPhaseDone).toBe(false);
+    // Round 1's last player was refilled exactly once (not double-scored/refilled).
+    expect(G.players['2'].token.actions).toBe(G.rules.player.maxActionTokens);
+    client.stop();
+  });
+
+  test('四大自由: the round does not end until the last player resolves the discard', () => {
+    const client = start(3, { fourFreedomsFirst: true });
+    const state = () => client.getState()!;
+    expect(state().G.table.eventSlot?.function_name).toBe(FOUR_FREEDOMS);
+    expect(state().G.table.fourFreedomsPendingDiscards).toHaveLength(2);
+
+    client.updatePlayerID('0');
+    client.moves.endActionTurn();
+    client.updatePlayerID('1');
+    client.moves.endActionTurn();
+
+    // Last player presses End Turn, then also runs out of AP: still their turn.
+    client.updatePlayerID('2');
+    client.moves.endActionTurn();
+    expect(state().ctx.currentPlayer).toBe('2');
+    expect(state().ctx.playOrderPos).toBe(2);
+    (client.moves as Record<string, () => void>).spendAllActionPoints();
+    expect(state().ctx.currentPlayer).toBe('2');
+    expect(state().G.table.actionPhaseDone).toBe(true);
+
+    client.moves.discardExcessJobCards(state().G.table.fourFreedomsPendingDiscards);
+    expect(state().G.table.fourFreedomsPendingDiscards).toEqual([]);
+    expect(state().G.table.actionPhaseDone).toBe(false);
+    expect(state().ctx.phase).toBe('round');
+    expect(state().ctx.currentPlayer).toBe('1');
+    expect(state().ctx.playOrder).toEqual(['1', '2', '0']);
+    client.stop();
+  });
+
+  test('the last event still ends the game after the rotated rounds', () => {
+    const client = start(2);
+    const eventRounds = client.getState()!.G.decks.events.drawPile.length + 1;
+    for (let round = 1; round <= eventRounds; round++) {
+      expect(ctx(client).gameover).toBeUndefined();
+      const actors = playRound(client, () => 'endTurn');
+      expect({ round, actors }).toEqual({ round, actors: expectedOrder(2, round) });
+    }
+    expect(ctx(client).gameover).toBeDefined();
+    client.stop();
+  });
+});
