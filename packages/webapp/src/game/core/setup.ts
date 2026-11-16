@@ -4,7 +4,7 @@ import rawJobCards from '../data/card/jobs.json';
 import rawEventCards from '../data/card/events.json';
 import { EventCard, JobCard, ProjectCard } from '../card';
 import { PlayersMutator } from '../store/slice/players';
-import GameStore, { GameState } from '../store/store';
+import GameStore, { GameState, StarterRotation } from '../store/store';
 import { DeckMutator, DeckSelector } from '../store/slice/deck';
 import { ScoreBoardMutator } from "../store/slice/scoreBoard";
 import { JobSlotsMutator } from '../store/slice/jobSlots';
@@ -39,6 +39,11 @@ interface RawJobCard {
 export interface GameSetupData {
   /** Forces a specific event card to appear first in the event deck (for demos/tests). */
   forcedFirstEvent?: string;
+  /**
+   * Who starts each round after the first. Only 'clockwise' or
+   * 'counterclockwise' rotates; missing or any other value means 'none'.
+   */
+  starterRotation?: StarterRotation;
 }
 
 export const setup: SetupFn<GameState> = ({ ctx, random }, setupData?: GameSetupData) => {
@@ -159,6 +164,11 @@ export const setup: SetupFn<GameState> = ({ ctx, random }, setupData?: GameSetup
   // Initialize G.playOrder from ctx.playOrder so it can be rotated each round
   // via passStartPlayerToken without mutating the read-only ctx.
   G.playOrder = [...ctx.playOrder];
+
+  G.starterRotation =
+    setupData?.starterRotation === 'clockwise' || setupData?.starterRotation === 'counterclockwise'
+      ? setupData.starterRotation
+      : 'none';
 
   return G;
 };
