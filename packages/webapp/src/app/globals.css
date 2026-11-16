@@ -1225,3 +1225,8 @@ body:has(.modal[open]) {
   color: var(--ink-mute);
 }
 /* ===== end story 2 ===== */
+
+/* Dev-only gear (DevToolsWidget) must not cover the open ⋯ header menu. */
+body:has([data-testid='header-menu'][aria-expanded='true']) [data-testid='dev-tools-open'] {
+  visibility: hidden;
+}
