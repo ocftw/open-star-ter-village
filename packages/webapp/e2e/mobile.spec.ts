@@ -71,7 +71,7 @@ test.describe('Mobile layout', () => {
     const current = page.getByTestId('turn-queue-current');
     await expect(current).toBeVisible({ timeout: 20000 });
     await expect(current).toHaveAttribute('data-player-id', '0');
-    await expect(queue).toHaveAttribute('aria-label', /^玩家順序：目前 Alice，接著 Bob、Charlie、Bob、Charlie、Alice、Charlie$/);
+    await expect(queue).toHaveAttribute('aria-label', /^玩家順序：目前 Alice，接著 Bob、Charlie、Alice、Bob、Charlie、Alice$/);
     await expect(current).toHaveCSS('width', '34px');
     const upcoming = page.getByTestId('turn-queue-next');
     await expect(upcoming).toHaveCount(6);
