@@ -2,6 +2,7 @@ import React from 'react';
 import { GameContext } from '@/components/GameContextHelpers';
 import { DoubleChevron, IconButton } from '@/components/design';
 import TurnQueue from './TurnQueue';
+import EventButton from './EventButton';
 
 // Scroll offsets and layout bounds can round to different CSS pixels.
 const SCROLL_TOLERANCE = 2;
@@ -62,6 +63,7 @@ export default function TurnStrip({ gameContext, projectsRef, horizontal = false
 
   return (
     <div ref={stripRef} className={`turn-strip${horizontal ? ' turn-strip-horizontal' : ''}`} data-testid="turn-strip">
+      <EventButton event={gameContext.G.table.eventSlot} />
       <TurnQueue gameContext={gameContext} horizontal={horizontal} />
       {!horizontal && overflow && (
         <IconButton

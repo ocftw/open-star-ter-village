@@ -17,7 +17,6 @@ import {
   resetHandProjectCardSelection,
   toggleHandProjectCardSelection,
 } from '@/lib/reducers/handProjectCardSlice';
-import EventBanner from './EventBanner';
 import ProjectCardFace from './ProjectCardFace';
 import { ProfessionPicker } from './professionPicker';
 
@@ -42,7 +41,6 @@ export default function HandPanel({
 
   if (playerID === null) return null;
   const hand = PlayersSelector.getProjectCards(G.players, playerID);
-  const event = G.table.eventSlot;
 
   // 斜槓青年 target-position picker: during Create Project with a
   // mismatched job card and the event entitlement available, the selected hand
@@ -126,17 +124,6 @@ export default function HandPanel({
         </div>
       )}
 
-      {event && !strip && (
-        <>
-          <div className="dotted" style={{ margin: '8px 0' }} />
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <div style={{ fontWeight: 700, fontSize: 11, color: 'var(--ink)' }}>
-              本回合事件 <span className="tag-en">This round</span>
-            </div>
-            <EventBanner event={event} />
-          </div>
-        </>
-      )}
     </div>
   );
 }

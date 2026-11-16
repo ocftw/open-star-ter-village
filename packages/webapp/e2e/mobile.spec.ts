@@ -8,6 +8,42 @@ import { closeDevTools, openDevTools } from './devTools';
 test.use({ viewport: { width: 390, height: 844 } });
 
 test.describe('Mobile layout', () => {
+  test('event button leads the strip and opens a dismissible card at 390px', async ({ page }) => {
+    await page.goto('/dev?seed=e2e-2');
+    const button = page.getByTestId('event-button');
+    const card = page.getByTestId('event-card-banner');
+    await expect(button).toBeVisible({ timeout: 20000 });
+    await expect(button).toHaveCSS('width', '44px');
+    await expect(button).toHaveCSS('height', '38px');
+    expect(await button.evaluate((element) => element.parentElement?.firstElementChild === element)).toBe(true);
+    await expect(card).toHaveCount(0);
+    await button.click();
+    await expect(card).toBeVisible();
+    await expect(card).toContainText('事件 EVENT');
+    const art = card.locator('.event-art');
+    await expect(art).toHaveCSS('width', '70px');
+    await expect(art).toHaveCSS('height', '70px');
+    const box = await card.boundingBox();
+    expect(box!.x).toBeGreaterThanOrEqual(0);
+    expect(box!.x + box!.width).toBeLessThanOrEqual(390);
+    const artBox = await art.boundingBox();
+    const titleBox = await card.getByRole('heading').boundingBox();
+    expect(titleBox!.y).toBeGreaterThanOrEqual(artBox!.y + artBox!.height);
+
+    await page.getByRole('button', { name: '知道了' }).click();
+    await expect(card).toHaveCount(0);
+    await expect(button).toBeFocused();
+    await button.click();
+    await page.keyboard.press('Escape');
+    await expect(card).toHaveCount(0);
+    await expect(button).toBeFocused();
+    await button.click();
+    await page.getByRole('dialog').click({ position: { x: -10, y: -10 } });
+    await expect(card).toHaveCount(0);
+    await expect(button).toBeFocused();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
+  });
+
   test('turn queue is horizontal directly under the header at 390px', async ({ page }) => {
     await page.goto('/dev?seed=e2e-2');
     const strip = page.getByTestId('turn-strip');

@@ -4,7 +4,7 @@ import { act, fireEvent, render, screen } from '@testing-library/react';
 import { GameContext } from '@/components/GameContextHelpers';
 import TurnStrip from './TurnStrip';
 
-const gameContext = { G: { playOrder: ['0', '1'] }, ctx: { playOrderPos: 0, turn: 1 } } as GameContext;
+const gameContext = { G: { playOrder: ['0', '1'], table: { eventSlot: null } }, ctx: { playOrderPos: 0, turn: 1 } } as GameContext;
 let projectBottom: number;
 let projectTop: number;
 let documentBottom: number;
