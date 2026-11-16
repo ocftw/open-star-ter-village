@@ -87,6 +87,43 @@ test.describe('Mobile layout', () => {
     await expect(sheet.locator('[data-testid="context-action"]')).toHaveCount(0);
   });
 
+  test('influence ranking stays in the bottom stack as a readable paper card', async ({ page }) => {
+    await page.goto('/dev?seed=e2e-2');
+    const ranking = page.getByTestId('influence-ranking');
+    await expect(ranking).toBeVisible({ timeout: 20000 });
+    await ranking.scrollIntoViewIfNeeded();
+    await expect(ranking.getByRole('heading', { name: '影響力排行' })).toBeVisible();
+    await expect(ranking.getByRole('listitem')).toHaveCount(3);
+    await expect(ranking.getByRole('meter')).toHaveCount(6);
+    await expect(ranking).toHaveCSS('border-radius', '16px');
+    expect(await ranking.evaluate((element) => getComputedStyle(element).backgroundColor))
+      .toBe(await page.evaluate(() => {
+        const sample = document.createElement('span');
+        sample.style.background = 'var(--paper-2)';
+        document.body.append(sample);
+        const color = getComputedStyle(sample).backgroundColor;
+        sample.remove();
+        return color;
+      }));
+    for (const row of await ranking.getByRole('listitem').all()) {
+      const box = await row.boundingBox();
+      expect(box).not.toBeNull();
+      expect(box!.x).toBeGreaterThanOrEqual(0);
+      expect(box!.x + box!.width).toBeLessThanOrEqual(390);
+    }
+    // The ranking follows the market, outside the action/hand stack.
+    expect(await ranking.evaluate((element) => {
+      const marketCard = document.querySelector('[data-testid^="job-card-"]');
+      return Boolean(marketCard && (marketCard.compareDocumentPosition(element) & Node.DOCUMENT_POSITION_FOLLOWING));
+    })).toBe(true);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth))
+      .toBeLessThanOrEqual(0);
+    await expect(page.getByTestId('ranking-row-Bob')).toHaveAttribute('data-actions', '4');
+    await expect(page.getByTestId('ranking-row-Bob')).toHaveAttribute('data-you', 'false');
+    // Viewer's name: #c53808 on paper-2 (#fbf2e6) is 4.80:1, above WCAG AA 4.5:1 (was #d83d0a, 4.12:1).
+    await expect(ranking.getByTitle('Alice')).toHaveCSS('color', 'rgb(197, 56, 8)');
+  });
+
   test('compact header ⋯ menu opens the exit-choice dialog (#420)', async ({ page }) => {
     await page.goto('/dev');
     await page.locator('[data-testid="mobile-sheet"]').waitFor({ state: 'visible', timeout: 20000 });
