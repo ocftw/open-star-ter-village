@@ -1,0 +1,30 @@
+{
+  "candidateSHA": "2238555e8482daa12244e1a5e068fb30e971f3d4",
+  "planHash": "sha256:09d0ca3a79d851e5535f80de4d360aa1292eb6c0c079cce2e7e02def1e63ea55",
+  "captures": [
+    {
+      "file": "app-header-desktop-1280.png",
+      "comparison": "app-header-desktop-1280-comparison.png",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "url": "http://localhost:3400/dev?seed=e2e-2&user=player1&mode=offline",
+      "round": "第 1 輪 · 番茄醬工作法",
+      "menuOpen": false,
+      "reference": "02-default-1280"
+    },
+    {
+      "file": "app-header-mobile-390-menu.png",
+      "comparison": "app-header-mobile-390-menu-comparison.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "url": "http://localhost:3400/dev?seed=e2e-2&user=player1&mode=offline",
+      "round": "第 1 輪",
+      "menuOpen": true,
+      "reference": "82-mobile-390-default"
+    }
+  ]
+}
