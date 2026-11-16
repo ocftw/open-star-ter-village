@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { dismissRoundStartOverlay } from './devTools';
 
 test('players can open the rules from home and continue to the lobby', async ({ page }) => {
   await page.goto('/');
@@ -25,6 +26,7 @@ test('rules remain readable on a narrow screen', async ({ page }) => {
 
 test('players can consult the rules without leaving an active game', async ({ page }) => {
   await page.goto('/dev?user=player1&mode=offline');
+  await dismissRoundStartOverlay(page);
   await expect(page.getByTestId('header-leave')).toBeVisible();
 
   const [rulesTab] = await Promise.all([
@@ -39,6 +41,7 @@ test('players can consult the rules without leaving an active game', async ({ pa
 test('mobile players can open the rules from the game menu', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/dev?user=player1&mode=offline');
+  await dismissRoundStartOverlay(page);
   await page.getByTestId('header-menu').click();
 
   const [rulesTab] = await Promise.all([

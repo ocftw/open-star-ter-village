@@ -20,7 +20,7 @@
  * mounted board client between player and observer perspectives.
  */
 import { test, expect, Page } from '@playwright/test';
-import { selectDevPerspective } from './devTools';
+import { dismissRoundStartOverlay, selectDevPerspective } from './devTools';
 import RuleSlice from '../src/game/store/slice/rule';
 
 // ── Constants from the rulebook (Simplified Mode) ────────────────────────────
@@ -199,12 +199,40 @@ test.describe('Simplified Mode — Action Flow', () => {
   test.beforeEach(async ({ page }) => {
     // Fixed boardgame.io seed keeps card and job deals deterministic in CI.
     await page.goto('/dev?seed=e2e-2');
+    await dismissRoundStartOverlay(page);
     await waitForGameReady(page);
   });
 
   // ── Scenario 1: Turn start ─────────────────────────────────────────────────
   test('Scenario 1: Alice starts her turn with 4 action tokens', async ({ page }) => {
     await expectActions(page, 'Alice', INITIAL_ACTION_TOKENS);
+  });
+
+  test('round two announces its event once after every player ends their turn', async ({ page }) => {
+    for (const perspective of ['player1', 'player2', 'player3'] as const) {
+      await selectDevPerspective(page, perspective);
+      await waitForGameReady(page);
+      await performEndTurn(page);
+    }
+    const overlay = page.getByTestId('round-start-overlay');
+    await expect(overlay.getByRole('heading', { level: 1 })).toHaveText('回合二');
+    await expect(overlay.getByTestId('event-card-banner').getByRole('heading')).not.toBeEmpty();
+    await expect(overlay.locator('.event-card p')).not.toBeEmpty();
+    await expect(overlay.locator('.round-start-title')).toHaveCSS('font-size', '64px');
+    await expect(overlay.locator('.round-start-title')).toHaveCSS('animation-name', 'roundStartDropIn');
+    const eventName = await overlay.locator('.event-card h2').innerText();
+    const description = await overlay.locator('.event-card p').innerText();
+    await dismissRoundStartOverlay(page);
+    await page.getByTestId('event-button').click();
+    const peek = page.getByTestId('event-card-banner');
+    await expect(peek.getByRole('heading')).toHaveText(eventName);
+    await expect(peek.locator('p')).toHaveText(description);
+    await page.getByRole('button', { name: '知道了', exact: true }).click();
+    // starterRotation defaults to 'none', so Alice still starts round two.
+    await selectDevPerspective(page, 'player1');
+    await waitForGameReady(page);
+    await expect(page.locator('[data-testid="player-status-Alice"]')).toContainText('TURN');
+    await expect(overlay).toHaveCount(0);
   });
 
   test('influence ranking retains seat order on zero ties and sits above the hand', async ({ page }) => {
@@ -492,6 +520,9 @@ test.describe('Simplified Mode — Action Flow', () => {
     await waitForGameReady(page);
     await performEndTurn(page);
 
+    // === Round 2: the round-start overlay announces it once. ===
+    await expect(page.getByRole('heading', { name: '回合二', exact: true })).toBeVisible();
+    await dismissRoundStartOverlay(page);
     // === Round 2: starterRotation defaults to 'none', so Alice still goes first. ===
     await selectDevPerspective(page, 'player1');
     await waitForGameReady(page);
@@ -530,6 +561,7 @@ test.describe('Simplified Mode — Action Flow', () => {
 test.describe('四大自由 — pending discard is visible to everyone (#373)', () => {
   test('other players see who owes the discard until it is done', async ({ page }) => {
     await page.goto('/dev?seed=e2e-2&demo=four-freedoms');
+    await dismissRoundStartOverlay(page);
     await waitForGameReady(page);
     await page.getByTestId('event-button').click();
     await expect(page.locator('[data-testid="event-card-banner"]')).toContainText('四大自由');
@@ -577,6 +609,8 @@ test.describe('四大自由 — pending discard is visible to everyone (#373)', 
     await removeButtons.first().click();
     await page.locator('[data-testid="discard-confirm"]').click();
     await expect(discardPanel).toHaveCount(0);
+    await expect(page.getByRole('heading', { name: '回合二', exact: true })).toBeVisible();
+    await dismissRoundStartOverlay(page);
 
     // Round 2 starts with Alice (starterRotation defaults to 'none'), not Charlie.
     await expect(page.locator('[data-testid="player-status-Alice"]')).toContainText('TURN');

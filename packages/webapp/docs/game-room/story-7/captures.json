@@ -1,0 +1,36 @@
+{
+  "candidateSHA": "144745fdcb2b359d41570d4e5d5ca70e6726d946",
+  "planHash": "sha256:bf669e7eb3381b7272bbd0345dc7c5a84e677f80e84102b78c730302537fe1a8",
+  "captures": [
+    {
+      "file": "round-start-desktop-1280-round-1.png",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "url": "http://localhost:3400/dev?seed=e2e-2&user=player1&mode=offline",
+      "event": "事件 EVENT\n✦\n番茄醬工作法\n\n本輪執行發起人貢獻時可分配的貢獻值 +1\n\n知道了",
+      "reference": "01-intro-round-event-1280"
+    },
+    {
+      "file": "round-start-desktop-1280-round-2.png",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "url": "http://localhost:3400/dev?seed=e2e-2&user=player3&mode=offline",
+      "event": "事件 EVENT\n✦\n人力釋出\n\n立即將人力資源區的人力卡全部棄掉，並重新補滿\n\n知道了",
+      "reference": "01-intro-round-event-1280"
+    },
+    {
+      "file": "round-start-mobile-390.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "url": "http://localhost:3400/dev?seed=e2e-2&user=player1&mode=offline",
+      "event": "事件 EVENT\n✦\n番茄醬工作法\n\n本輪執行發起人貢獻時可分配的貢獻值 +1\n\n知道了",
+      "reference": "81-mobile-390-intro"
+    }
+  ]
+}

@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import { Client, LobbyClient } from 'boardgame.io/client';
 import { SocketIO } from 'boardgame.io/multiplayer';
 import { OpenStarTerVillage } from '../src/game/game';
+import { dismissRoundStartOverlay } from './devTools';
 
 const gameName = 'OpenStarTerVillage';
 const server = `http://localhost:${process.env.PLAYWRIGHT_GAME_SERVER_PORT ?? '3001'}`;
@@ -47,6 +48,7 @@ test('leaving after game over preserves named results for the remaining player',
     }));
     await Promise.all(pages.map((page) => page.goto(`/game/${matchID}`)));
     await expect(pages[0].getByText(/Alice 獲勝/)).toBeVisible();
+    await Promise.all(pages.map(dismissRoundStartOverlay));
     await pages[0].getByText(/關閉，查看最終盤面/).click();
     await pages[0].getByTestId('header-leave').click();
     await pages[0].getByTestId('exit-leave-seat').click();
@@ -54,6 +56,8 @@ test('leaving after game over preserves named results for the remaining player',
 
     await pages[1].reload();
     await expect(pages[1].getByText(/Alice 獲勝/)).toBeVisible();
+    await expect(pages[1].getByTestId('round-start-overlay')).toHaveCount(0);
+    await dismissRoundStartOverlay(pages[1]);
     await expect(pages[1].getByLabel('遊戲結束').getByText('Alice', { exact: true })).toBeVisible();
     await pages[1].screenshot({ path: 'test-results/postgame-results-after-leave.png', fullPage: true });
   } finally {

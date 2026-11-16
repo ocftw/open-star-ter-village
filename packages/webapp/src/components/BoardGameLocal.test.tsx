@@ -78,7 +78,26 @@ it('offers no observer 繼續觀戰 and polls no lobby in an offline game (#373)
   );
   await waitFor(() => expect(screen.getByText('遊戲結束', { selector: 'h2' })).toBeTruthy());
   expect(screen.queryByTestId('observer-watch')).toBeNull();
+  expect(screen.queryByTestId('round-start-overlay')).toBeNull();
   expect(getMatchMock).not.toHaveBeenCalled();
+});
+
+it('opens the actual first-round event and keeps a fixed match dismissed across a board remount', async () => {
+  const seededGame = { ...game, seed: 'e2e-2' };
+  const board = (
+    <StoreProvider>
+      <Boardgame isLocal matchID="round-start-remount" playerID="0" numPlayers={3} gameConfig={seededGame} />
+    </StoreProvider>
+  );
+  const first = render(board);
+  const dialog = await screen.findByRole('dialog', { name: /^回合一 / });
+  expect(within(dialog).getByTestId('event-card-banner')).toBeTruthy();
+  fireEvent.click(within(dialog).getByRole('button', { name: '知道了' }));
+  expect(screen.queryByTestId('round-start-overlay')).toBeNull();
+  first.unmount();
+  render(board);
+  await screen.findByTestId('context-action');
+  expect(screen.queryByTestId('round-start-overlay')).toBeNull();
 });
 
 it('starts actions from the panel rather than idle cards in the real board', async () => {

@@ -4,6 +4,7 @@
  * that, so this test really scrolls the page and measures.
  */
 import { test, expect, type Page } from '@playwright/test';
+import { dismissRoundStartOverlay } from './devTools';
 
 async function settle(page: Page) {
   await page.evaluate(() => new Promise<void>((resolve) => {
@@ -25,6 +26,7 @@ for (const width of [1024, 1280, 1440]) {
   test(`header and turn strip stay stuck after scrolling at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 720 });
     await page.goto('/dev?seed=e2e-2');
+    await dismissRoundStartOverlay(page);
     const header = page.getByTestId('app-header');
     const strip = page.getByTestId('turn-strip');
     await expect(page.getByTestId('turn-queue-current')).toBeVisible({ timeout: 20000 });
@@ -58,6 +60,7 @@ for (const width of [320, 390]) {
   test(`board has no horizontal overflow at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 800 });
     await page.goto('/dev?seed=e2e-2');
+    await dismissRoundStartOverlay(page);
     await expect(page.getByTestId('turn-queue-current')).toBeVisible({ timeout: 20000 });
     expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
   });
