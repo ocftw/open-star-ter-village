@@ -39,6 +39,7 @@ import BoardProjectSlot from './board/BoardProjectSlot';
 import EventBanner from './board/EventBanner';
 import MobileSheet from './board/MobileSheet';
 import { ScorePanel, TurnOrderPanel } from './board/SidePanels';
+import GameHistory, { useGameHistory } from './board/GameHistory';
 import { useIsMobile } from '@/lib/useIsMobile';
 import ProjectCatalogLink from './ProjectCatalogLink';
 
@@ -67,6 +68,7 @@ const Board: React.FC<GameContext> = (gameContext) => {
     if (hasEnded) dispatch(resetAction());
   }, [hasEnded, dispatch]);
   const isMobile = useIsMobile();
+  const history = useGameHistory(gameContext);
 
   // 斜槓青年 target-position picker: during Recruit with a mismatched
   // job card and the event entitlement available, the selected project's
@@ -216,6 +218,7 @@ const Board: React.FC<GameContext> = (gameContext) => {
         {projectsSection}
         {jobMarket}
         <ScorePanel gameContext={gameContext} />
+        <GameHistory entries={history} matchData={matchData} />
       </div>
 
       <GameOverDialog gameContext={gameContext} open={!!gameover && showGameOver} onClose={() => setShowGameOver(false)} />
@@ -243,9 +246,10 @@ const Board: React.FC<GameContext> = (gameContext) => {
           alignItems: 'start',
         }}
       >
-        {/* LEFT — ranking, then hand (players only) */}
+        {/* LEFT — ranking, history, then hand (players only) */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14, minWidth: 0 }}>
           <ScorePanel gameContext={gameContext} />
+          <GameHistory entries={history} matchData={matchData} />
           {playerID !== null && <HandPanel gameContext={gameContext} />}
         </div>
 

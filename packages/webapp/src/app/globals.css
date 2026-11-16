@@ -970,3 +970,31 @@ body:has(.modal[open]) {
   .influence-ranking { background: var(--paper-2); border-radius: 16px; }
 }
 /* ===== end story 3 ===== */
+
+/* ===== story 4: game history (#485) ===== */
+.game-history { min-width: 0; padding: 0 12px; }
+.game-history h3 { margin: 0 0 8px; font-size: 16px; font-weight: 700; }
+.game-history ul {
+  height: 174px;
+  overflow-y: auto;
+  overflow-anchor: none;
+  scrollbar-width: thin;
+  scrollbar-color: var(--paper-3) transparent;
+  list-style: none;
+  margin: 0;
+  padding: 0 4px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--ink);
+  font-size: 11px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.game-history li { flex-shrink: 0; }
+.game-history b { font-weight: 700; }
+@media (max-width: 899px) {
+  .game-history { background: var(--paper-2); border-radius: 16px; padding: 12px; }
+  .game-history ul { height: auto; max-height: 180px; }
+}
+/* ===== end story 4 ===== */

@@ -20,6 +20,7 @@
  */
 import { test, expect, Page } from '@playwright/test';
 import { selectDevPerspective } from './devTools';
+import RuleSlice from '../src/game/store/slice/rule';
 
 // ── Constants from the rulebook (Simplified Mode) ────────────────────────────
 const INITIAL_ACTION_TOKENS    = 4;
@@ -247,6 +248,39 @@ test.describe('Simplified Mode — Action Flow', () => {
     expect(await ranking.getByRole('meter', { name: 'Alice 影響力' }).locator('i')
       .evaluate((fill) => (fill as HTMLElement).style.width)).toBe('100%');
     await expect(page.getByTestId('ranking-row-Alice')).toHaveAttribute('data-workers', '10');
+    const history = page.getByRole('region', { name: '遊戲歷程', exact: true });
+    await expect(history.getByRole('listitem').filter({ hasText: /^Alice · 發起專案：/ })).toHaveCount(1);
+    const createPoints = RuleSlice.initialState().action.createProject.victoryPoints;
+    await expect(history.getByRole('listitem').filter({ hasText: `Alice · 影響力 +${createPoints}` })).toHaveCount(1);
+    const rankingBox = await ranking.boundingBox();
+    const historyBox = await history.boundingBox();
+    expect(historyBox!.y).toBeGreaterThanOrEqual(rankingBox!.y + rankingBox!.height);
+
+    await selectDevPerspective(page, 'observer');
+    await expect(history.getByRole('listitem').filter({ hasText: /^Alice · 發起專案：/ })).toHaveCount(1);
+  });
+
+  test('history uses a paper card after the ranking on mobile with internal scroll', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    const history = page.getByTestId('game-history');
+    const ranking = page.getByTestId('influence-ranking');
+    const list = history.getByRole('list');
+    await history.scrollIntoViewIfNeeded();
+    await expect(history).toBeVisible();
+    await expect(list).toHaveCSS('max-height', '180px');
+    await expect(list).toHaveCSS('overflow-y', 'auto');
+    expect(await history.evaluate((element) => getComputedStyle(element).backgroundColor))
+      .toBe(await history.evaluate((element) => {
+        const probe = document.createElement('span');
+        probe.style.background = 'var(--paper-2)';
+        element.append(probe);
+        const color = getComputedStyle(probe).backgroundColor;
+        probe.remove();
+        return color;
+      }));
+    const rankingBox = await ranking.boundingBox();
+    const historyBox = await history.boundingBox();
+    expect(historyBox!.y).toBeGreaterThanOrEqual(rankingBox!.y + rankingBox!.height);
   });
 
   // ── Scenario 3: Recruit Talents ───────────────────────────────────────────
