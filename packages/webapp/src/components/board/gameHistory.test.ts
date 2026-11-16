@@ -51,6 +51,21 @@ describe('game history builder', () => {
     expect(texts(buildGameHistory(input))).toEqual(['第 1 輪開始', '發起專案', '發起專案']);
   });
 
+  it('retains observed project names after settlement, with generic names after reload', () => {
+    const first = source(1, 1, [move('createProject', 1, ['project'])]);
+    first.G.table.projectBoard[0].card = project;
+    const baseline = buildGameHistory(first);
+    const saved = JSON.stringify(baseline);
+    const next = source(2, 1, [...first.log, move('createProject', 2, ['missing'], 2)]);
+    const settled = buildGameHistory(next, baseline);
+    expect(texts(settled)).toEqual([
+      '第 1 輪開始', '發起專案：國家寶藏', '發起專案', '專案結案：國家寶藏',
+    ]);
+    expect(texts(buildGameHistory(next, settled))).toEqual(texts(settled));
+    expect(texts(buildGameHistory(next))).toEqual(['第 1 輪開始', '發起專案', '發起專案']);
+    expect(JSON.stringify(baseline)).toBe(saved);
+  });
+
   it('tolerates hidden hands, missing logs and unknown moves', () => {
     const input = source(1, 1, [move('futureMove'), move('endActionTurn'), move('createProject')]);
     const { hand, ...publicPlayer } = input.G.players['1'];
@@ -70,6 +85,36 @@ describe('game history builder', () => {
     expect(texts(buildGameHistory(input))).toEqual([
       '第 10 輪開始', '招募人力', '第 11 輪開始', '招募人力', '招募人力',
       '第 12 輪開始 · 事件：人力釋出', '招募人力',
+    ]);
+  });
+
+  it.each([2, 3, 4])('keeps final-round moves and settlement in their rounds with %i players', (numPlayers) => {
+    const log = [move('recruit', 1), move('contributeOwnedProjects', numPlayers * 2)];
+    const first = source(numPlayers * 2, 2, log);
+    first.ctx.numPlayers = numPlayers;
+    first.G.table.eventSlot = event('最後一輪');
+    first.G.table.projectBoard[0].card = project;
+    const baseline = buildGameHistory(first);
+    const expected = ['第 1 輪開始', '招募人力', '第 2 輪開始 · 事件：最後一輪', '貢獻專案'];
+    expect(texts(baseline)).toEqual(expected);
+
+    const next = source(numPlayers * 2 + 1, 2, [...log, move('endActionTurn', numPlayers * 2, [], 99)]);
+    next.ctx.numPlayers = numPlayers;
+    next.ctx.gameover = { winners: ['0'] };
+    next.G.table.scoreBoard['0'] = 5;
+    const finished = buildGameHistory(next, baseline);
+    expect(texts(finished)).toEqual([...expected, '專案結案：國家寶藏', '影響力 +5']);
+    expect(texts(buildGameHistory(next, finished))).toEqual(texts(finished));
+    expect(texts(buildGameHistory(next))).toEqual([
+      '第 1 輪開始', '招募人力', '第 2 輪開始', '貢獻專案',
+    ]);
+  });
+
+  it.each([6, 7])('anchors game-over history on G.table.round with terminal turn %i', (turn) => {
+    const input = source(turn, 12, [move('recruit', 3), move('removeAndRefillJobs', 6)]);
+    input.ctx.gameover = { winners: ['0'] };
+    expect(texts(buildGameHistory(input))).toEqual([
+      '第 11 輪開始', '招募人力', '第 12 輪開始', '換人力',
     ]);
   });
 

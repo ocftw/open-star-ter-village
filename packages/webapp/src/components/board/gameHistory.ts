@@ -19,6 +19,7 @@ interface ObservedDiff extends HistoryEntry {
 export interface GameHistoryState {
   source: HistorySource;
   events: Record<number, string>;
+  projectNames: Record<string, string>;
   roundExtras: Record<number, HistoryEntry[]>;
   diffs: ObservedDiff[];
   entries: HistoryEntry[];
@@ -27,9 +28,10 @@ export interface GameHistoryState {
 const logKey = (entry: LogEntry) =>
   `${entry._stateID}:${entry.turn}:${entry.action.type}:${entry.action.payload.type}:${entry.action.payload.playerID ?? ''}`;
 
-function moveEntry(source: HistorySource, entry: LogEntry, index: number): HistoryEntry | undefined {
+function moveEntry(source: HistorySource, entry: LogEntry, index: number, projectNames: Record<string, string>): HistoryEntry | undefined {
   if (entry.action.type !== 'MAKE_MOVE') return;
   const { type, args, playerID } = entry.action.payload;
+  const id = `move:${index}:${logKey(entry)}`;
   let text: string;
   switch (type) {
     case 'createProject': {
@@ -38,7 +40,9 @@ function moveEntry(source: HistorySource, entry: LogEntry, index: number): Histo
         ...source.G.table.projectBoard.flatMap((slot) => slot.card ? [slot.card] : []),
         ...Object.values(source.G.players).flatMap((player) => player.hand?.projects ?? []),
       ];
-      const name = typeof cardID === 'string' ? cards.find((card) => card.id === cardID)?.name : undefined;
+      const name = (typeof cardID === 'string' ? cards.find((card) => card.id === cardID)?.name : undefined)
+        ?? projectNames[id];
+      if (name) projectNames[id] = name;
       text = name ? `發起專案：${name}` : '發起專案';
       break;
     }
@@ -48,7 +52,7 @@ function moveEntry(source: HistorySource, entry: LogEntry, index: number): Histo
     case 'removeAndRefillJobs': text = '換人力'; break;
     default: return;
   }
-  return { id: `move:${index}:${logKey(entry)}`, text, playerID: playerID ?? undefined };
+  return { id, text, playerID: playerID ?? undefined };
 }
 
 /** Pure session reducer. Log entries rebuild each time; observations never persist in G. */
@@ -56,10 +60,14 @@ export function buildGameHistory(source: HistorySource, previous?: GameHistorySt
   const { G, ctx } = source;
   const log = source.log ?? [];
   const round = TableSelector.getRound(G.table);
+  // The queued endGame can advance ctx.turn after the final event is removed, without advancing G's round.
+  const terminalAdvance = ctx.gameover !== undefined && G.table.eventSlot === null && ctx.turn % ctx.numPlayers === 1;
+  const anchorTurn = terminalAdvance ? ctx.turn - 1 : ctx.turn;
   // Every player takes exactly one turn per round; G is the round authority.
   const roundOf = (entry: LogEntry) =>
-    round - (Math.ceil(ctx.turn / ctx.numPlayers) - Math.ceil(entry.turn / ctx.numPlayers));
+    round - (Math.ceil(anchorTurn / ctx.numPlayers) - Math.ceil(entry.turn / ctx.numPlayers));
   const events = { ...previous?.events };
+  const projectNames = { ...previous?.projectNames };
   if (G.table.eventSlot) events[round] = G.table.eventSlot.name;
   const roundExtras = { ...previous?.roundExtras };
   const diffs = [...(previous?.diffs ?? [])];
@@ -104,7 +112,7 @@ export function buildGameHistory(source: HistorySource, previous?: GameHistorySt
     const pending = diffs.filter((diff) => diff.round === entryRound);
     log.forEach((entry, index) => {
       if (roundOf(entry) !== entryRound) return;
-      const move = moveEntry(source, entry, index);
+      const move = moveEntry(source, entry, index, projectNames);
       if (move) entries.push(move);
       // Settlement's ctx.turn has already advanced; the log anchor still belongs to T.
       for (let i = 0; i < pending.length;) {
@@ -115,5 +123,5 @@ export function buildGameHistory(source: HistorySource, previous?: GameHistorySt
     // A reconnect can omit the anchor: keep the observation at the end of its round.
     entries.push(...pending);
   }
-  return { source, events, roundExtras, diffs, entries };
+  return { source, events, projectNames, roundExtras, diffs, entries };
 }
