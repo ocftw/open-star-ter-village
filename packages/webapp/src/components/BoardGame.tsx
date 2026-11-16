@@ -38,7 +38,8 @@ import { getActionAreaView } from './board/actionAreaView';
 import BoardProjectSlot from './board/BoardProjectSlot';
 import EventBanner from './board/EventBanner';
 import MobileSheet from './board/MobileSheet';
-import { ScorePanel, TurnOrderPanel } from './board/SidePanels';
+import { ScorePanel } from './board/SidePanels';
+import TurnStrip from './board/TurnStrip';
 import GameHistory, { useGameHistory } from './board/GameHistory';
 import { useIsMobile } from '@/lib/useIsMobile';
 import ProjectCatalogLink from './ProjectCatalogLink';
@@ -69,6 +70,7 @@ const Board: React.FC<GameContext> = (gameContext) => {
   }, [hasEnded, dispatch]);
   const isMobile = useIsMobile();
   const history = useGameHistory(gameContext);
+  const projectsRef = React.useRef<HTMLDivElement>(null);
 
   // 斜槓青年 target-position picker: during Recruit with a mismatched
   // job card and the event entitlement available, the selected project's
@@ -115,7 +117,7 @@ const Board: React.FC<GameContext> = (gameContext) => {
   const slotsAvailable = slotCapacity - occupiedSlots.length;
 
   const projectsSection = (
-    <div>
+    <div ref={projectsRef} data-testid="projects-section">
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, paddingLeft: 4, flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <span style={{ fontWeight: 800, fontSize: 14 }}>專案區</span>
@@ -191,6 +193,7 @@ const Board: React.FC<GameContext> = (gameContext) => {
 
   return isMobile ? (
     <div
+      data-game-board
       style={{
         minHeight: '100vh',
         display: 'flex',
@@ -201,6 +204,7 @@ const Board: React.FC<GameContext> = (gameContext) => {
       }}
     >
       <GameHeader gameContext={gameContext} compact />
+      <TurnStrip gameContext={gameContext} projectsRef={projectsRef} horizontal />
       <MobileSheet
         action={actionArea}
         hand={playerID !== null && <HandPanel gameContext={gameContext} layout="strip" />}
@@ -225,6 +229,7 @@ const Board: React.FC<GameContext> = (gameContext) => {
     </div>
   ) : (
     <div
+      data-game-board
       style={{
         minHeight: '100vh',
         display: 'flex',
@@ -239,7 +244,7 @@ const Board: React.FC<GameContext> = (gameContext) => {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: '250px minmax(0, 1fr) 231px',
+          gridTemplateColumns: '250px minmax(0, 1fr) 76px 231px',
           gap: 16,
           padding: 16,
           flex: 1,
@@ -260,10 +265,11 @@ const Board: React.FC<GameContext> = (gameContext) => {
           {jobMarket}
         </div>
 
-        {/* RIGHT — action panel + turn order */}
+        <TurnStrip gameContext={gameContext} projectsRef={projectsRef} />
+
+        {/* RIGHT — action panel */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {actionAreaView === 'context' && actionArea}
-          <TurnOrderPanel gameContext={gameContext} />
         </div>
       </div>
 

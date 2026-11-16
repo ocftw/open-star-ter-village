@@ -998,3 +998,77 @@ body:has(.modal[open]) {
   .game-history ul { height: auto; max-height: 180px; }
 }
 /* ===== end story 4 ===== */
+
+/* ===== story 5: turn queue and page project scroll ===== */
+.turn-strip {
+  position: sticky;
+  top: var(--turn-strip-top, 88px);
+  /* Figma/prototype board height, capped below the live sticky header. */
+  height: min(500px, calc(100dvh - var(--turn-strip-top, 88px) - 16px));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 112px 0 14px;
+  box-sizing: border-box;
+  border-left: 1px dashed var(--paper-3);
+}
+.turn-queue {
+  position: relative;
+  z-index: 0;
+  flex: 1;
+  align-self: stretch;
+  min-height: 0;
+}
+.turn-queue-dot {
+  position: absolute;
+  left: 50%;
+  bottom: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1.5px solid var(--ink);
+  box-sizing: border-box;
+  color: white;
+  font-weight: 700;
+  font-family: var(--font-en);
+  line-height: 1;
+  transition: transform .45s cubic-bezier(.3,.8,.3,1), width .45s cubic-bezier(.3,.8,.3,1), height .45s cubic-bezier(.3,.8,.3,1), font-size .45s;
+  animation: turnQueueIn .35s ease-out;
+}
+.turn-queue-exit { animation: turnQueueOut .4s ease-in forwards; }
+.turn-queue-name {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--font-zh);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.turn-project-scroll { box-shadow: 0 4px 10px -4px rgba(0,0,0,.45); }
+.turn-project-scroll .gr-icon-btn__icon { transition: transform .25s; }
+.turn-project-scroll-up .gr-icon-btn__icon { transform: rotate(180deg); }
+.turn-strip-horizontal {
+  position: static;
+  height: auto;
+  flex-direction: row;
+  flex: none;
+  padding: 8px 14px;
+  border: 0;
+  border-bottom: 1px solid var(--paper-3);
+}
+.turn-queue-horizontal { height: 40px; align-self: center; }
+.turn-queue-horizontal .turn-queue-dot { left: 0; top: 50%; bottom: auto; }
+@keyframes turnQueueIn { from { opacity: 0; scale: .4; } }
+@keyframes turnQueueOut { to { opacity: 0; scale: .6; } }
+@media (max-height: 520px) { .turn-strip:not(.turn-strip-horizontal) { padding-top: 14px; } }
+@media (prefers-reduced-motion: reduce) {
+  .turn-queue-dot, .turn-project-scroll .gr-icon-btn__icon { animation: none; transition: none; }
+  .turn-queue-exit { display: none; }
+}
+/* ===== end story 5 ===== */
