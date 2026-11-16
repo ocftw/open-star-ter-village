@@ -7,7 +7,7 @@ import TurnQueue from './TurnQueue';
 
 function context(position = 0, turn = 1): GameContext {
   return {
-    G: { playOrder: ['2', '0', '1'], players: { '0': {}, '1': {}, '2': {} } },
+    G: { playOrder: ['2', '0', '1'], starterRotation: 'clockwise', players: { '0': {}, '1': {}, '2': {} } },
     ctx: { playOrderPos: position, turn },
     matchData: [{ id: 0, name: '安安' }, { id: 1, name: 'Ben' }, { id: 2, name: 'Chris' }],
   } as unknown as GameContext;
