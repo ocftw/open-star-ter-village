@@ -7,8 +7,17 @@ type JobTileProps = {
   /**
    * `change`: remove mode, not yet removed (full colour + red ×).
    * `ghost`: already removed in remove mode (dashed, faded, no ×).
+   * `disabled`: the current selection cannot use this job (prototype
+   * `.jtile.disabled`, opacity .35). Never inferred from a missing `onClick`:
+   * idle tiles that are merely not interactive stay full colour.
    */
-  visualState?: 'default' | 'focused' | 'generalHint' | 'change' | 'ghost';
+  visualState?: 'default' | 'focused' | 'generalHint' | 'change' | 'ghost' | 'disabled';
+  /**
+   * Market motion (prototype pushUp / dropOut). `push-in` for tiles entering the
+   * market, `drop-out` for tiles leaving it; the delay staggers a batch.
+   */
+  motion?: 'push-in' | 'drop-out';
+  motionDelay?: number;
   /** Tile body is the control (select / recruit / create). Ignored while the × is shown. */
   onClick?: () => void;
   /** Remove mode: the × is the control; the tile body is not. */
@@ -21,12 +30,15 @@ export default function JobTile({
   name,
   selected = false,
   visualState,
+  motion,
+  motionDelay,
   onClick,
   onRemove,
 }: JobTileProps) {
   const meta = getJobMetaByName(name);
   const state = visualState ?? (selected ? 'focused' : 'default');
   const showRemove = !!onRemove && state !== 'ghost';
+  const leaving = motion === 'drop-out';
   const common = {
     className: 'job-tile',
     'data-testid': `job-card-${id}`,
@@ -42,7 +54,12 @@ export default function JobTile({
   );
 
   return (
-    <div className="job-tile-wrap">
+    <div
+      className="job-tile-wrap"
+      data-motion={motion}
+      aria-hidden={leaving || undefined}
+      style={motion && motionDelay ? { animationDelay: `${motionDelay}ms` } : undefined}
+    >
       {showRemove || state === 'ghost' ? (
         // Not a button: the × is a sibling control, so no nested interactives.
         <div
@@ -58,8 +75,8 @@ export default function JobTile({
           {...common}
           aria-label={name}
           aria-pressed={selected}
-          disabled={!onClick}
-          onClick={onClick}
+          disabled={!onClick || state === 'disabled' || leaving}
+          onClick={state === 'disabled' || leaving ? undefined : onClick}
         >
           {content}
         </button>

@@ -17,7 +17,7 @@ import { getContributions, updateContribute } from '@/lib/reducers/contributionS
 import { getPlayerName } from '@/components/playerNameMap';
 import { ProfessionPicker } from './professionPicker';
 
-export type ProjectCardVisualState = 'default' | 'focused' | 'generalHint' | 'jobHint';
+export type ProjectCardVisualState = 'default' | 'focused' | 'generalHint' | 'jobHint' | 'disabled';
 
 type BoardProjectSlotProps = {
   slot: ProjectSlotState;
@@ -79,7 +79,7 @@ export default function BoardProjectSlot({
     pendingContributions.find((c) => c.projectSlotId === slot.id && c.jobName === jobName)?.value ?? 0;
 
   const requiredJobs = Object.keys(card.requirements);
-  const clickable = slotsInteractive || (idle && !!onIdleTap);
+  const clickable = resolvedState !== 'disabled' && (slotsInteractive || (idle && !!onIdleTap));
 
   // contributor legend totals (committed only). Entries whose jobName is not a
   // requirement (orphans from the pre-fix bug) are ignored defensively.

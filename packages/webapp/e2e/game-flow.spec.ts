@@ -472,3 +472,111 @@ test.describe('四大自由 — pending discard is visible to everyone (#373)', 
     await expect(waitingAlert).not.toContainText('四大自由');
   });
 });
+
+test.describe('Prototype gaps — disabled tiles and market motion', () => {
+  const jobTiles = (page: Page) => page.locator('[data-testid^="job-card-"]');
+
+  test('START: tiles the picked project cannot use are disabled and ignore clicks', async ({ page }) => {
+    await page.goto('/dev?seed=e2e-2');
+    await waitForGameReady(page);
+    // Idle tiles are never faded just for being idle.
+    await expect(page.locator('[data-testid^="job-card-"][data-visual-state="disabled"]')).toHaveCount(0);
+
+    const hand = page.locator('[data-testid^="hand-card-"]').first();
+    const required = ((await hand.getAttribute('data-requirements')) ?? '').split(',');
+    await hand.click();
+    await expect(contextAction(page)).toHaveAttribute('data-mode', 'createProject');
+
+    const names = await jobTiles(page).evaluateAll((els) => els.map((el) => el.getAttribute('data-job-name') ?? ''));
+    expect(names.some((n) => !required.includes(n))).toBe(true);
+    const tiles = jobTiles(page);
+    for (let i = 0; i < names.length; i++) {
+      const usable = required.includes(names[i]);
+      await expect(tiles.nth(i)).toHaveAttribute('data-visual-state', usable ? 'default' : 'disabled');
+      if (!usable) {
+        await expect(tiles.nth(i)).toBeDisabled();
+        await expect(tiles.nth(i)).toHaveCSS('opacity', '0.35');
+      } else {
+        await expect(tiles.nth(i)).toHaveCSS('opacity', '1');
+      }
+    }
+    await tiles.nth(names.findIndex((n) => !required.includes(n))).click({ force: true }).catch(() => {});
+    await expect(page.locator('[data-testid^="job-card-"][data-selected]')).toHaveCount(0);
+  });
+
+  test('hand card: teal ★ pill, orange ring and no lift when selected or hovered', async ({ page }) => {
+    await page.goto('/dev?seed=e2e-2');
+    await waitForGameReady(page);
+    const hand = page.locator('[data-testid^="hand-card-"]').first();
+    await expect(hand.locator('.project-card__star-pill')).toBeVisible();
+    await expect(hand.locator('.project-card__tag')).toHaveCount(0);
+    await hand.hover();
+    await expect(hand).toHaveCSS('transform', 'none');
+    await hand.click();
+    await expect(hand).toHaveAttribute('data-visual-state', 'focused');
+    await expect(hand).toHaveCSS('transform', 'none');
+    await expect(hand).toHaveCSS('border-top-color', 'rgb(239, 88, 38)');
+  });
+
+  test('refill confirm pushes the new tiles up (motion on)', async ({ page }) => {
+    await page.goto('/dev?seed=e2e-2');
+    await waitForGameReady(page);
+    const before = await jobTiles(page).count();
+    await page.locator('[data-testid="refill-jobs"]').click();
+    const remove = page.locator('[data-testid^="job-remove-"]').first();
+    const removedId = (await remove.getAttribute('data-testid'))!.replace('job-remove-', '');
+    await remove.click();
+    await confirmButton(page).click();
+    const pushed = page.locator('[data-motion="push-in"]');
+    await expect(pushed.first()).toBeVisible();
+    await expect(pushed.first()).toHaveCSS('animation-name', 'pushUp');
+    await expect(page.locator(`[data-testid="job-card-${removedId}"]`)).toHaveCount(0);
+    await expect(jobTiles(page)).toHaveCount(before);
+    await expect(page.locator('[data-motion]')).toHaveCount(0); // settles
+  });
+
+  test.describe('prefers-reduced-motion: reduce', () => {
+    test.beforeEach(async ({ page }) => {
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+    });
+
+    test('refill confirm changes the market instantly with no animation', async ({ page }) => {
+      await page.goto('/dev?seed=e2e-2');
+      await waitForGameReady(page);
+      expect(await page.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches)).toBe(true);
+      const before = await jobTiles(page).count();
+      await page.locator('[data-testid="refill-jobs"]').click();
+      const remove = page.locator('[data-testid^="job-remove-"]').first();
+      const removedId = (await remove.getAttribute('data-testid'))!.replace('job-remove-', '');
+      await remove.click();
+      await confirmButton(page).click();
+
+      await expectActions(page, 'Alice', INITIAL_ACTION_TOKENS - TALENT_SCOUTING_COST);
+      // State change happened…
+      await expect(page.locator(`[data-testid="job-card-${removedId}"]`)).toHaveCount(0);
+      await expect(jobTiles(page)).toHaveCount(before);
+      // …without any motion: no push/drop markers, and every tile wrapper computes animation none.
+      await expect(page.locator('[data-motion]')).toHaveCount(0);
+      const animated = await page.locator('.job-tile-wrap').evaluateAll(
+        (els) => els.filter((el) => getComputedStyle(el).animationName !== 'none').length,
+      );
+      expect(animated).toBe(0);
+    });
+
+    test('drop-out and push-in keyframes are neutralised by CSS alone', async ({ page }) => {
+      await page.goto('/dev?seed=e2e-2&demo=four-freedoms');
+      await waitForGameReady(page);
+      // CSS rule alone also neutralises both keyframes, whatever markup carries them.
+      const names = await page.evaluate(() => {
+        const probe = document.createElement('div');
+        probe.className = 'job-tile-wrap';
+        probe.dataset.motion = 'drop-out';
+        document.body.appendChild(probe);
+        const name = getComputedStyle(probe).animationName;
+        probe.remove();
+        return name;
+      });
+      expect(names).toBe('none');
+    });
+  });
+});
