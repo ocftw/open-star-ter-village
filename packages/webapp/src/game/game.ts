@@ -42,7 +42,7 @@ export const OpenStarTerVillage: Game<GameState, Record<string, unknown>, GameSe
   /**
    * One self-restarting phase per round. CUSTOM_FROM reads G.playOrder only
    * when a phase begins, so ending the phase after the last player's turn is
-   * what makes passStartPlayerToken's rotation take effect. boardgame.io's
+   * what lets passStartPlayerToken's optional rotation (G.starterRotation) take effect. boardgame.io's
    * EndPhase runs that turn's onEnd (rotation included) before the next phase
    * reads G.playOrder.
    */

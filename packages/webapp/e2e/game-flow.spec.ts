@@ -15,8 +15,8 @@
  *   (data-mode) and the confirm/cancel buttons (ca-confirm / ca-cancel).
  *
  * The game boots in the unified game view at localhost:3000/dev.
- * Alice (player 0) goes first in round 1; the starter then rotates clockwise
- * each round (Bob starts round 2). The developer widget switches the
+ * Alice (player 0) goes first in every round (easy mode defaults to
+ * starterRotation 'none'; there is no setupData here). The developer widget switches the
  * mounted board client between player and observer perspectives.
  */
 import { test, expect, Page } from '@playwright/test';
@@ -226,10 +226,10 @@ test.describe('Simplified Mode — Action Flow', () => {
     await expect(peek.getByRole('heading')).toHaveText(eventName);
     await expect(peek.locator('p')).toHaveText(description);
     await page.getByRole('button', { name: '知道了', exact: true }).click();
-    // The start player token passed clockwise, so Bob starts round two.
-    await selectDevPerspective(page, 'player2');
+    // starterRotation defaults to 'none', so Alice still starts round two.
+    await selectDevPerspective(page, 'player1');
     await waitForGameReady(page);
-    await expect(page.locator('[data-testid="player-status-Bob"]')).toContainText('TURN');
+    await expect(page.locator('[data-testid="player-status-Alice"]')).toContainText('TURN');
     await expect(overlay).toHaveCount(0);
   });
 
@@ -519,18 +519,7 @@ test.describe('Simplified Mode — Action Flow', () => {
     // === Round 2: the round-start overlay announces it once. ===
     await expect(page.getByRole('heading', { name: '回合二', exact: true })).toBeVisible();
     await dismissRoundStartOverlay(page);
-    // === Round 2: the start player token passed clockwise, so Bob goes first,
-    // then Charlie, and Alice acts last. ===
-    await selectDevPerspective(page, 'player2');
-    await waitForGameReady(page);
-    await expect(page.locator('[data-testid="player-status-Bob"]')).toContainText('TURN');
-    await expect(page.locator('[data-testid="player-status-Alice"]')).not.toContainText('TURN');
-    await performEndTurn(page);
-    await selectDevPerspective(page, 'player3');
-    await waitForGameReady(page);
-    await expect(page.locator('[data-testid="player-status-Charlie"]')).toContainText('TURN');
-    await performEndTurn(page);
-
+    // === Round 2: starterRotation defaults to 'none', so Alice still goes first. ===
     await selectDevPerspective(page, 'player1');
     await waitForGameReady(page);
     await expect(page.locator('[data-testid="player-status-Alice"]')).toContainText('TURN');
@@ -617,8 +606,8 @@ test.describe('四大自由 — pending discard is visible to everyone (#373)', 
     await expect(page.getByRole('heading', { name: '回合二', exact: true })).toBeVisible();
     await dismissRoundStartOverlay(page);
 
-    // Round 2 starts with Bob (the start player token passes clockwise), not Charlie.
-    await expect(page.locator('[data-testid="player-status-Bob"]')).toContainText('TURN');
+    // Round 2 starts with Alice (starterRotation defaults to 'none'), not Charlie.
+    await expect(page.locator('[data-testid="player-status-Alice"]')).toContainText('TURN');
     await expect(waitingAlert).toHaveAttribute('data-pending-discard', 'false');
     await expect(waitingAlert).not.toContainText('四大自由');
   });
