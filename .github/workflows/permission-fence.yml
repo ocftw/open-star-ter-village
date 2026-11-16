@@ -1,0 +1,85 @@
+name: Permission Fence
+
+# Reusable gate: allows only repository collaborators whose role is admin,
+# maintain or write. Callers must `needs:` this job before any job that checks
+# out untrusted code or can read deployment secrets. It never checks out code.
+
+on:
+  workflow_call:
+    inputs:
+      actor:
+        description: GitHub login to authorize (for example github.event.sender.login).
+        required: true
+        type: string
+    outputs:
+      allowed:
+        description: "'true' when the actor has admin, maintain or write access; otherwise 'false'."
+        value: ${{ jobs.check.outputs.allowed }}
+      reason:
+        description: Human-readable explanation of the decision.
+        value: ${{ jobs.check.outputs.reason }}
+
+permissions: {}
+
+jobs:
+  check:
+    name: Check collaborator permission
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    outputs:
+      allowed: ${{ steps.fence.outputs.allowed }}
+      reason: ${{ steps.fence.outputs.reason }}
+    steps:
+      - name: Evaluate collaborator permission
+        id: fence
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ACTOR: ${{ inputs.actor }}
+        run: |
+          # Fail closed: every path that does not prove admin/maintain/write denies.
+          decide() {
+            echo "allowed=$1" >> "$GITHUB_OUTPUT"
+            echo "reason=$2" >> "$GITHUB_OUTPUT"
+            echo "Permission fence for '${ACTOR}': allowed=$1 ($2)"
+          }
+
+          # GitHub logins are alphanumeric plus single hyphens. Anything else
+          # (including bot accounts such as foo[bot]) is denied without an API call.
+          if ! [[ "$ACTOR" =~ ^[A-Za-z0-9]([A-Za-z0-9-]{0,38})$ ]]; then
+            decide false "actor is not a valid user login"
+            exit 0
+          fi
+
+          err_file="$(mktemp)"
+          if ! body="$(gh api "repos/${GITHUB_REPOSITORY}/collaborators/${ACTOR}/permission" 2>"$err_file")"; then
+            if grep -q 'HTTP 404' "$err_file"; then
+              decide false "actor is not a repository collaborator"
+            else
+              echo "::warning::Collaborator permission lookup failed: $(head -c 300 "$err_file")"
+              decide false "collaborator permission lookup failed"
+            fi
+            exit 0
+          fi
+
+          # role_name distinguishes maintain from triage; permission is the legacy
+          # field (maintain maps to write, triage maps to read). Custom roles are
+          # denied unless GitHub reports no role_name and a write-level permission.
+          role="$(jq -r '.role_name // ""' <<< "$body" | tr -d '\r\n')"
+          permission="$(jq -r '.permission // ""' <<< "$body" | tr -d '\r\n')"
+
+          case "$role" in
+            admin|maintain|write)
+              decide true "role_name=${role}"
+              ;;
+            "")
+              case "$permission" in
+                admin|write) decide true "permission=${permission}" ;;
+                *) decide false "permission=${permission:-none} is below write" ;;
+              esac
+              ;;
+            *)
+              decide false "role_name=${role} is not admin, maintain or write"
+              ;;
+          esac

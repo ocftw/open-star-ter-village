@@ -65,12 +65,21 @@ export default function DiscardPanel({ gameContext }: { gameContext: GameContext
           <span className="en-cap">Four freedoms · discard</span>
         </div>
         <div style={{ fontSize: 12, color: 'var(--ink-soft)', marginTop: 3 }}>
-          結束回合前，點選人力市場中要移除的 2 張卡。
+          結束回合前，點人力卡右上角的 × 棄掉 2 張。
           <span data-testid="discard-progress" style={{ fontWeight: 700, marginLeft: 8 }}>
             {selectedIds.length} / 2
           </span>
         </div>
       </div>
+      <button
+        type="button"
+        data-testid="discard-cancel"
+        className="btn-sticker sm ghost"
+        disabled={selectedIds.length === 0}
+        onClick={() => dispatch(resetJobSlotSelection())}
+      >
+        取消
+      </button>
       <button
         type="button"
         data-testid="discard-confirm"
