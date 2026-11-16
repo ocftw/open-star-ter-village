@@ -1,7 +1,8 @@
 import { GameHookHandler } from "../type";
 
 /**
- * Rotates the starting player clockwise by shifting G.playOrder.
+ * Optionally rotates the starting player by shifting G.playOrder, in the
+ * direction given by G.starterRotation ('none' leaves the order untouched).
  *
  * boardgame.io's ctx object is read-only inside hook functions — any mutation
  * to ctx (e.g. ctx.playOrder = ...) is silently discarded because the
@@ -11,9 +12,16 @@ import { GameHookHandler } from "../type";
  * `let ctx = { ...state.ctx, ... }`.
  *
  * The correct approach is to store the desired order in G.playOrder and
- * configure the turn with TurnOrder.CUSTOM_FROM('playOrder') so boardgame.io
- * re-reads it from G at the start of each turn.
+ * configure the turn with TurnOrder.CUSTOM_FROM('playOrder'). boardgame.io
+ * reads it only when a phase begins, so the game ends its round phase after
+ * this runs and the next round phase adopts G.playOrder (rotated or not).
  */
 export const passStartPlayerToken: GameHookHandler = ({ G }) => {
-  G.playOrder = G.playOrder.slice(1).concat(G.playOrder[0]);
+  const rotation = G.starterRotation ?? 'none';
+  if (rotation === 'counterclockwise') {
+    G.playOrder = G.playOrder.slice(-1).concat(G.playOrder.slice(0, -1));
+  } else if (rotation === 'clockwise') {
+    G.playOrder = G.playOrder.slice(1).concat(G.playOrder[0]);
+  }
+  // 'none' (or any unrecognized value) keeps G.playOrder as is.
 };

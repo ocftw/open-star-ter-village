@@ -19,10 +19,18 @@ export interface GameState {
    * boardgame.io's ctx.playOrder is read-only in hooks; mutations to it are
    * silently ignored. We store the desired order here and use
    * TurnOrder.CUSTOM_FROM('playOrder') so boardgame.io picks it up at the
-   * start of each turn.
+   * start of each round phase.
    */
   playOrder: PlayerID[];
+  /**
+   * How passStartPlayerToken moves the starting player at each round boundary.
+   * Always normalized by setup(); only an explicit 'clockwise' or
+   * 'counterclockwise' rotates.
+   */
+  starterRotation: StarterRotation;
 }
+
+export type StarterRotation = 'none' | 'clockwise' | 'counterclockwise';
 
 const initialState = (): GameState => ({
   rules: RuleSlice.initialState(),
@@ -30,6 +38,7 @@ const initialState = (): GameState => ({
   table: TableSlice.initialState(),
   players: PlayersSlice.initialState(),
   playOrder: [],
+  starterRotation: 'none',
 });
 
 const GameStore = {
