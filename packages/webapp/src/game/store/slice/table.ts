@@ -18,8 +18,9 @@ export interface Table {
   round: number;
   /** IDs of the 2 job cards added by 四大自由 that the last player must choose to discard. */
   fourFreedomsPendingDiscards: string[];
-  /** Set to true by endActionTurn when the last player still has AP but signals they are done
-   *  with their action phase and need to proceed to the 四大自由 discard step. */
+  /** Set to true when the round's last player ends their turn early (endActionTurn) or
+   *  resolves 四大自由 (discardExcessJobCards). The round phase ends once no discard is
+   *  pending; until then it shows the 四大自由 discard step. Reset when the round ends. */
   actionPhaseDone: boolean;
 }
 

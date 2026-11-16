@@ -19,7 +19,7 @@ export interface GameState {
    * boardgame.io's ctx.playOrder is read-only in hooks; mutations to it are
    * silently ignored. We store the desired order here and use
    * TurnOrder.CUSTOM_FROM('playOrder') so boardgame.io picks it up at the
-   * start of each turn.
+   * start of each round phase.
    */
   playOrder: PlayerID[];
 }
