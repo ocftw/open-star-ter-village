@@ -3,6 +3,15 @@ import { GameContext } from '@/components/GameContextHelpers';
 import { DoubleChevron, IconButton } from '@/components/design';
 import TurnQueue from './TurnQueue';
 
+// Scroll offsets and layout bounds can round to different CSS pixels.
+const SCROLL_TOLERANCE = 2;
+function projectScrollEnd(projects: HTMLElement) {
+  return Math.max(0, Math.min(
+    projects.getBoundingClientRect().bottom + window.scrollY,
+    document.documentElement.scrollHeight,
+  ) - window.innerHeight);
+}
+
 /** Page scroll for story 5; story 490 will bind this affordance to the projects scroller. */
 export default function TurnStrip({ gameContext, projectsRef, horizontal = false }: {
   gameContext: GameContext;
@@ -22,9 +31,9 @@ export default function TurnStrip({ gameContext, projectsRef, horizontal = false
     const measure = () => {
       const headerHeight = header?.getBoundingClientRect().height ?? 72;
       strip.style.setProperty('--turn-strip-top', `${headerHeight + 16}px`);
-      const { bottom } = projects.getBoundingClientRect();
-      setOverflow(bottom + window.scrollY > window.innerHeight + 1);
-      setAtEnd(bottom <= window.innerHeight + 1);
+      const end = projectScrollEnd(projects);
+      setOverflow(end > SCROLL_TOLERANCE);
+      setAtEnd(window.scrollY >= end - SCROLL_TOLERANCE);
     };
     measure();
     const observer = new ResizeObserver(measure);
@@ -42,12 +51,11 @@ export default function TurnStrip({ gameContext, projectsRef, horizontal = false
   const scrollProjects = () => {
     const projects = projectsRef.current;
     if (!projects) return;
-    const { top, bottom } = projects.getBoundingClientRect();
-    const stickyTop = parseFloat(stripRef.current?.style.getPropertyValue('--turn-strip-top') || '88');
+    const end = projectScrollEnd(projects);
     window.scrollTo({
-      top: Math.max(0, atEnd
-        ? top + window.scrollY - stickyTop
-        : Math.min(window.scrollY + window.innerHeight * 0.8, bottom + window.scrollY - window.innerHeight)),
+      top: window.scrollY >= end - SCROLL_TOLERANCE
+        ? 0
+        : Math.min(window.scrollY + window.innerHeight * 0.8, end),
       behavior: window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
     });
   };

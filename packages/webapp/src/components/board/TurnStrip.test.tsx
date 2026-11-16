@@ -6,6 +6,8 @@ import TurnStrip from './TurnStrip';
 
 const gameContext = { G: { playOrder: ['0', '1'] }, ctx: { playOrderPos: 0, turn: 1 } } as GameContext;
 let projectBottom: number;
+let projectTop: number;
+let documentBottom: number;
 let scrollY: number;
 let resize: ResizeObserverCallback;
 const disconnect = jest.fn();
@@ -23,7 +25,10 @@ function Harness({ horizontal = false }: { horizontal?: boolean }) {
 
 beforeEach(() => {
   projectBottom = 600;
+  projectTop = 88;
+  documentBottom = 2400;
   scrollY = 0;
+  Object.defineProperty(document.documentElement, 'scrollHeight', { configurable: true, get: () => documentBottom });
   Object.defineProperties(window, {
     innerHeight: { configurable: true, value: 800 },
     scrollY: { configurable: true, get: () => scrollY },
@@ -37,7 +42,7 @@ beforeEach(() => {
   jest.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
     return (this.tagName === 'HEADER'
       ? { height: 72, top: 0, bottom: 72 }
-      : { top: 88 - scrollY, bottom: projectBottom - scrollY }) as DOMRect;
+      : { top: projectTop - scrollY, bottom: projectBottom - scrollY }) as DOMRect;
   });
 });
 
@@ -84,6 +89,44 @@ it('uses instant page scroll under reduced motion', () => {
   render(<Harness />);
   fireEvent.click(screen.getByRole('button', { name: '專案區往下捲' }));
   expect(window.scrollTo).toHaveBeenCalledWith({ top: 640, behavior: 'instant' });
+});
+
+it('flips after a clamped final step within fractional scroll rounding tolerance', () => {
+  projectTop = 140;
+  projectBottom = 1800.5;
+  render(<Harness />);
+  scrollY = 640;
+  fireEvent.scroll(window);
+  fireEvent.click(screen.getByRole('button', { name: '專案區往下捲' }));
+  expect(window.scrollTo).toHaveBeenLastCalledWith({ top: 1000.5, behavior: 'smooth' });
+
+  scrollY = 998;
+  fireEvent.scroll(window);
+  expect(screen.getByRole('button', { name: '專案區往下捲' })).toBeTruthy();
+  scrollY = 999;
+  fireEvent.scroll(window);
+  fireEvent.click(screen.getByRole('button', { name: '專案區回到頂端' }));
+  expect(window.scrollTo).toHaveBeenLastCalledWith({ top: 0, behavior: 'smooth' });
+});
+
+it('uses the reachable document end for both the final step and the end label', () => {
+  projectBottom = 1802.25;
+  documentBottom = 1800;
+  render(<Harness />);
+  scrollY = 640;
+  fireEvent.scroll(window);
+  fireEvent.click(screen.getByRole('button', { name: '專案區往下捲' }));
+  expect(window.scrollTo).toHaveBeenLastCalledWith({ top: 1000, behavior: 'smooth' });
+  scrollY = 1000;
+  fireEvent.scroll(window);
+  expect(screen.getByRole('button', { name: '專案區回到頂端' })).toBeTruthy();
+
+  Object.defineProperty(window, 'innerHeight', { configurable: true, value: 600 });
+  fireEvent.resize(window);
+  expect(screen.getByRole('button', { name: '專案區往下捲' })).toBeTruthy();
+  Object.defineProperty(window, 'innerHeight', { configurable: true, value: 2000 });
+  fireEvent.resize(window);
+  expect(screen.queryByRole('button')).toBeNull();
 });
 
 it('keeps the page-scroll button out of the mobile strip', () => {

@@ -22,6 +22,10 @@ test.describe('Mobile layout', () => {
     await expect(upcoming.first()).toHaveCSS('width', '24px');
     await expect(strip).toHaveCSS('flex-direction', 'row');
     expect(await strip.evaluate((element) => element.previousElementSibling?.getAttribute('data-testid'))).toBe('app-header');
+    // Entry animations scale dots around their centres; measure settled boxes.
+    await queue.evaluate(async (element) => {
+      await Promise.all(element.getAnimations({ subtree: true }).map((animation) => animation.finished));
+    });
     const currentBox = await current.boundingBox();
     const nextBox = await upcoming.first().boundingBox();
     expect(Math.abs((currentBox!.y + currentBox!.height / 2) - (nextBox!.y + nextBox!.height / 2))).toBeLessThan(1);

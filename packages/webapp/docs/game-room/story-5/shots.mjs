@@ -82,6 +82,26 @@ try {
     await expect(current).toHaveAttribute('data-player-id', nextPlayer);
   }
 
+  // Call after observing scroll progress, then wait for a quiet period so the
+  // next click cannot interrupt an in-flight smooth scroll (including fallback browsers).
+  async function waitForScrollEnd() {
+    await page.evaluate(() => new Promise((resolve, reject) => {
+      let previous = window.scrollY;
+      let stableSince = performance.now();
+      const deadline = stableSince + 5000;
+      function sample(now) {
+        if (window.scrollY !== previous) {
+          previous = window.scrollY;
+          stableSince = now;
+        }
+        if (now - stableSince >= 100) resolve();
+        else if (now >= deadline) reject(new Error('Page scroll did not settle.'));
+        else requestAnimationFrame(sample);
+      }
+      requestAnimationFrame(sample);
+    }));
+  }
+
   async function capture(stem, prototype, referenceName) {
     await page.evaluate(() => document.fonts.ready);
     await expect(current).toBeVisible();
@@ -143,9 +163,14 @@ try {
     const before = await page.evaluate(() => window.scrollY);
     await down.click();
     await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(before);
+    await waitForScrollEnd();
   }
   await expect(up).toBeVisible();
+  const beforeTop = await page.evaluate(() => window.scrollY);
   await up.click();
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThan(beforeTop);
+  await waitForScrollEnd();
+  expect(await page.evaluate(() => window.scrollY)).toBe(0);
   await expect(down).toBeVisible();
   console.log(`Captured three real-game views and comparisons for ${candidateSHA} (${planHash}).`);
 } finally {
