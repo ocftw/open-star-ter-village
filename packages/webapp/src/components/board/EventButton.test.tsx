@@ -84,3 +84,18 @@ it('hides without an event and never auto-opens when the event changes or return
   expect(screen.getByTestId('event-button')).toBeTruthy();
   expect(screen.queryByRole('dialog')).toBeNull();
 });
+
+it('keeps white text on the event button and tag at WCAG AA contrast (>= 4.5:1)', () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const css: string = require('fs').readFileSync(require('path').join(__dirname, '../../app/globals.css'), 'utf8');
+  const story = css.slice(css.indexOf('story 6:'), css.indexOf('end story 6'));
+  const hex = story.match(/--event-orange:\s*(#[0-9a-f]{6})/i)![1];
+  const lum = (h: string) => {
+    const [r, g, b] = [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16) / 255)
+      .map((v) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  };
+  expect(1.05 / (lum(hex) + 0.05)).toBeGreaterThanOrEqual(4.5);
+  expect(story.match(/background: var\(--event-orange\)/g)).toHaveLength(2);
+  expect(story).not.toMatch(/background: var\(--orange\)/);
+});

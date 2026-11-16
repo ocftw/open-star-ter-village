@@ -82,6 +82,9 @@ html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
+  /* `clip` still prevents horizontal overflow but, unlike `hidden`, does not make
+     body a scroll container, which would break `position: sticky` descendants. */
+  overflow-x: clip;
 }
 
 /* .app-root keeps these rules winning over any library-injected `body { … }`
@@ -951,6 +954,9 @@ body:has(.modal[open]) {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+/* Viewer's name: --orange-deep (#d83d0a) is only 4.12:1 on paper-2 (WCAG AA needs 4.5:1), so this
+   story-scoped darker orange (#c53808: 4.80:1 on paper-2) is used here without changing the global token. */
+.influence-ranking-name-you { color: #c53808; }
 .influence-ranking-line {
   display: grid;
   grid-template-columns: 12px minmax(0, 1fr) 22px;
@@ -1074,6 +1080,8 @@ body:has(.modal[open]) {
 /* ===== end story 5 ===== */
 
 /* ===== story 6: event button and event card dialog ===== */
+/* White text on --orange (#ef5826) is 3.45:1; #c9400f keeps the hue at 4.97:1. */
+.event-btn, .event-tag { --event-orange: #c9400f; }
 .turn-strip:not(.turn-strip-horizontal):has(> .event-btn) { padding-top: 14px; }
 .event-btn {
   width: 56px;
@@ -1081,7 +1089,7 @@ body:has(.modal[open]) {
   flex-shrink: 0;
   border: 2px solid var(--ink);
   border-radius: 10px;
-  background: var(--orange);
+  background: var(--event-orange);
   color: white;
   font-family: var(--font-zh);
   font-size: 13px;
@@ -1124,7 +1132,7 @@ body:has(.modal[open]) {
   position: absolute;
   top: -13px;
   left: 20px;
-  background: var(--orange);
+  background: var(--event-orange);
   color: white;
   border: 2px solid var(--ink);
   border-radius: 99px;

@@ -143,6 +143,8 @@ try {
   await ranking.scrollIntoViewIfNeeded();
   expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
   await capture('ranking-mobile-390', mobilePrototype, '82-mobile-390-default', 'Same match, mobile bottom ranking');
+  // Tight crop of the mobile ranking card for the viewer-name contrast check.
+  await ranking.screenshot({ path: join(output, 'ranking-mobile-390-contrast.png'), animations: 'disabled' });
   console.log(`Captured three real-game states and their prototype comparisons in ${output}`);
   console.log('Missing evidence: four-player / long-name browser case (/dev currently supports only three fixed names).');
 } finally {
