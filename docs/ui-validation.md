@@ -37,7 +37,8 @@ Rules that keep the loop honest:
 
 ## When to run
 
-- One validation per final SHA. Re-run only when the head changes.
+- One judgement pass per final SHA, at the top of the stack. Rechecks cover
+  only the changes.
 - Non-visual PRs (docs, tests, `.github/**` only) do not need a visual
   validation.
 
@@ -48,9 +49,27 @@ In order of preference:
 | # | Target | Notes |
 | --- | --- | --- |
 | 1 | Local production build: `pnpm webapp build` + start, with `ENABLE_DEV_ROUTE`, offline, `/dev?seed=e2e-2` | Default. The seed only works offline. |
-| 2 | Staging `https://osv-pr-<n>.fly.dev/dev?seed=e2e-2` | Only when a maintainer has added the `staging` label. Limits (idle stop loses in-memory matches, 256 MB, 4 h reaper, at most 5 apps): see [`packages/webapp/docs/pr-staging.md`](../packages/webapp/docs/pr-staging.md). |
+| 2 | Staging `https://osv-pr-<n>.fly.dev/dev?seed=e2e-2` | For human inspection only, and only when a maintainer has added the `staging` label. Limits (idle stop loses in-memory matches, 256 MB, 4 h reaper, at most 5 apps): see [`packages/webapp/docs/pr-staging.md`](../packages/webapp/docs/pr-staging.md). |
 
 Never use `?ga_preview=1`.
+
+## Cost rules (tokens first)
+
+Token cost comes before wall-clock time. Prefer a cheaper token path even when
+it takes longer to run.
+
+- The default target is the local production build. Staging is only for humans
+  who want to look, and only when a maintainer has added the `staging` label.
+  Do not send a lens bot to staging as the default path.
+- The capture script runs headless, with no bot attached, and writes a compact
+  summary (states captured, axe violation count, changed diffs). The bot reads
+  that summary first.
+- Open only the screenshots that changed, never the full matrix.
+- Wait on CI with one blocking `gh pr checks --watch` call, then read only the
+  failing job logs. Never poll staging URLs or the pipeline repeatedly.
+- Every objective check moves into CI so the lens bot stops paying for it.
+- One judgement pass per final SHA, at the top of the stack. Rechecks cover
+  only the changes.
 
 ## Capture settings
 
@@ -126,7 +145,7 @@ Findings are labelled P0–P3.
 - Grade **Quality** (A–F) and **Spec**. Spec has been null on OSV so far
   because no PR linked a spec issue.
 - A flaw copied from the design still fails.
-- One validation per final SHA.
+- One judgement pass per final SHA, at the top of the stack.
 
 ## What CI already covers
 
