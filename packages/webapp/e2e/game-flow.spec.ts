@@ -32,6 +32,24 @@ const CONTRIBUTE_JOIN_COST     = 1;
 const CREATE_PROJECT_VP        = 2;
 const TALENT_SCOUTING_VP       = 1;
 
+test('desktop AppHeader shows round context and outline actions without player chips', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/dev?seed=e2e-2');
+  await dismissRoundStartOverlay(page);
+  const header = page.getByTestId('app-header');
+  await expect(header).toContainText('開源星手村');
+  await expect(header).toContainText('Open StarTer Village');
+  // table.ts: playEvent increments round from zero once at setup.
+  await expect(page.getByTestId('header-round')).toHaveText(/^第 1 輪 · .+/);
+  await page.getByTestId('event-button').click();
+  const eventName = await page.getByRole('dialog').getByRole('heading').innerText();
+  await page.getByRole('dialog').getByRole('button', { name: '知道了', exact: true }).click();
+  await expect(page.getByTestId('header-round')).toHaveText(`第 1 輪 · ${eventName}`);
+  await expect(header.getByRole('link', { name: '規則 RULES' })).toBeVisible();
+  await expect(header.getByRole('button', { name: '離開 LEAVE' })).toBeVisible();
+  await expect(header.locator('[data-testid^="player-status-"]')).toHaveCount(0);
+});
+
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 const contextAction = (page: Page) => page.locator('[data-testid="context-action"]:visible');

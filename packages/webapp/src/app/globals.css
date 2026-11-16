@@ -1203,3 +1203,25 @@ body:has(.modal[open]) {
   .round-start-overlay, .round-start-title { animation: none; transition: none; }
 }
 /* ===== end story 7 ===== */
+
+/* ===== story 2: game AppHeader ===== */
+.game-header-round {
+  margin-right: auto;
+  min-width: 0;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--gr-bg-dk);
+  color: var(--ink-soft);
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.game-header-action {
+  flex-shrink: 0;
+}
+.game-header-action .tag-en {
+  font-size: 10px;
+  color: var(--ink-mute);
+}
+/* ===== end story 2 ===== */
