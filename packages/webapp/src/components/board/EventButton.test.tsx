@@ -1,5 +1,7 @@
 /** @jest-environment jsdom */
 import React from 'react';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 import { fireEvent, render, screen } from '@testing-library/react';
 import type { EventCard } from '@/game';
 import events from '@/game/data/card/events.json';
@@ -86,8 +88,7 @@ it('hides without an event and never auto-opens when the event changes or return
 });
 
 it('keeps white text on the event button and tag at WCAG AA contrast (>= 4.5:1)', () => {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const css: string = require('fs').readFileSync(require('path').join(__dirname, '../../app/globals.css'), 'utf8');
+  const css = readFileSync(join(__dirname, '../../app/globals.css'), 'utf8');
   const story = css.slice(css.indexOf('story 6:'), css.indexOf('end story 6'));
   const hex = story.match(/--event-orange:\s*(#[0-9a-f]{6})/i)![1];
   const lum = (h: string) => {
