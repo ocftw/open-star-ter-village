@@ -1,4 +1,5 @@
 import { test, expect, Browser, BrowserContext, Page } from '@playwright/test';
+import RuleSlice from '../src/game/store/slice/rule';
 import {
   dismissRoundStartOverlay,
   closeDevTools,
@@ -25,7 +26,7 @@ test.describe('Landing page', () => {
     await dismissRoundStartOverlay(page);
     await expect(page.getByText(/^Developer View$/i)).toHaveCount(0);
     await expect(page.getByRole('tablist')).toHaveCount(0);
-    await expect(page.locator('[data-testid^="player-status-"]').first()).toBeVisible({ timeout: 10_000 });
+    await expect(page.locator('[data-testid^="ranking-row-"]').first()).toBeVisible({ timeout: 10_000 });
     await expect(page.getByTestId('dev-tools-open')).toBeVisible();
 
     await openDevTools(page);
@@ -115,12 +116,13 @@ test.describe('Developer widget', () => {
   test('switches player and observer perspectives without resetting the match', async ({ page }) => {
     await selectDevPerspective(page, 'player2');
     await expect(page).toHaveURL(/user=player2/);
-    await expect(page.getByTestId('player-status-Bob')).toContainText('YOU');
+    await expect(page.getByTestId('ranking-row-Bob')).toHaveAttribute('data-you', 'true');
     await expect(page.getByTestId('waiting-for-player-alert')).toContainText(/Waiting for Alice/i);
 
     await selectDevPerspective(page, 'observer');
     await expect(page).toHaveURL(/user=observer/);
     await expect(page.getByTestId('observer-mode-banner')).toBeVisible();
+    await expect(page.locator('[data-testid^="ranking-row-"][data-you="true"]')).toHaveCount(0);
     await expect(page.getByTestId('waiting-for-player-alert')).toContainText(/Waiting for Alice/i);
     await expect(page.locator('[data-testid="context-action"]')).toHaveCount(0);
     await expect(page.locator('[data-testid^="hand-card-"]')).toHaveCount(0);
@@ -133,19 +135,22 @@ test.describe('Developer widget', () => {
     await page.getByTestId('refill-jobs').click();
     await page.locator('[data-testid^="job-remove-"]').first().click();
     await page.getByTestId('ca-confirm').click();
-    await expect(page.getByTestId('player-status-Alice')).toHaveAttribute('data-actions', '3');
+    const rule = RuleSlice.initialState();
+    await expect(page.getByTestId('ranking-row-Alice')).toHaveAttribute(
+      'data-actions', String(rule.player.maxActionTokens - rule.action.removeAndRefillJobs.actionCost),
+    );
 
     await selectDevTransport(page, 'online');
     await expect(page).toHaveURL(/mode=online/);
-    await expect(page.locator('[data-testid^="player-status-"]')).toHaveCount(3, { timeout: 20_000 });
-    await expect(page.getByTestId('player-status-Alice')).toHaveAttribute('data-actions', '4');
+    await expect(page.locator('[data-testid^="ranking-row-"]')).toHaveCount(3, { timeout: 20_000 });
+    await expect(page.getByTestId('ranking-row-Alice')).toHaveAttribute('data-actions', String(rule.player.maxActionTokens));
   });
 
   test('initializes from valid query state and rejects invalid configuration', async ({ page }) => {
     await page.goto('/dev?user=player2&mode=online');
     await dismissRoundStartOverlay(page);
-    await expect(page.locator('[data-testid^="player-status-"]')).toHaveCount(3, { timeout: 20_000 });
-    await expect(page.getByTestId('player-status-Bob')).toContainText('YOU');
+    await expect(page.locator('[data-testid^="ranking-row-"]')).toHaveCount(3, { timeout: 20_000 });
+    await expect(page.getByTestId('ranking-row-Bob')).toHaveAttribute('data-you', 'true');
 
     await openDevTools(page);
     await expect(page.getByRole('radio', { name: /Bob · Player 2/i })).toBeChecked();
@@ -264,8 +269,8 @@ test.describe('Full multiplayer flow', () => {
     await alicePage.getByRole('button', { name: /start game/i }).click();
     // All should transition to game board — "Waiting Room" heading disappears
     await expect(alicePage.getByRole('heading', { name: /waiting room/i, level: 1 })).not.toBeVisible({ timeout: 20_000 });
-    // Board view shows the game header with player chips
-    await expect(alicePage.locator('[data-testid^="player-status-"]').first()).toBeVisible({ timeout: 20_000 });
+    // The board shows the influence ranking with the seated players.
+    await expect(alicePage.locator('[data-testid^="ranking-row-"]').first()).toBeVisible({ timeout: 20_000 });
     // Bob also transitions
     await expect(bobPage.getByRole('heading', { name: /waiting room/i, level: 1 })).not.toBeVisible({ timeout: 20_000 });
     await Promise.all([alicePage, bobPage, charliePage].map(dismissRoundStartOverlay));
@@ -276,9 +281,9 @@ test.describe('Full multiplayer flow', () => {
     const observerPage = await observer.newPage();
     await observerPage.goto(`/game/${matchID}`);
     await dismissRoundStartOverlay(observerPage);
-    // Should render the board in observer mode: banner + player chips, no hand/action controls
+    // Observers see the banner and ranking, without hand/action controls.
     await expect(observerPage.locator('[data-testid="observer-mode-banner"]')).toBeVisible({ timeout: 15_000 });
-    await expect(observerPage.locator('[data-testid^="player-status-"]').first()).toBeVisible({ timeout: 15_000 });
+    await expect(observerPage.locator('[data-testid^="ranking-row-"]').first()).toBeVisible({ timeout: 15_000 });
     await expect(observerPage.locator('[data-testid="waiting-for-player-alert"]')).toContainText(/Waiting for Alice/i);
     await expect(observerPage.locator('[data-testid="context-action"]')).toHaveCount(0);
     await observer.close();
@@ -317,7 +322,7 @@ test.describe('Full multiplayer flow', () => {
     await expect(alicePage.getByTestId('round-start-overlay')).toHaveCount(0);
 
     // Same seat resumed — board with her controls, not observer mode.
-    await expect(alicePage.locator('[data-testid^="player-status-"]').first()).toBeVisible({ timeout: 20_000 });
+    await expect(alicePage.locator('[data-testid^="ranking-row-"]').first()).toBeVisible({ timeout: 20_000 });
     await expect(alicePage.locator('[data-testid="observer-mode-banner"]')).toHaveCount(0);
   });
 

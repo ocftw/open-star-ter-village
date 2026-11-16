@@ -2,10 +2,16 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { render } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import LobbyNav from '@/components/lobby/LobbyNav';
 import GameHeader from '@/components/board/GameHeader';
 import { GameContext } from '@/components/GameContextHelpers';
+import events from '@/game/data/card/events.json';
+
+const pushMock = jest.fn();
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({ push: pushMock }),
+}));
 
 const gameContext = {
   G: {
@@ -13,11 +19,16 @@ const gameContext = {
       '0': { token: { workers: 12, actions: 4 } },
       '1': { token: { workers: 12, actions: 4 } },
     },
-    table: { scoreBoard: { '0': 2, '1': 0 } },
+    table: {
+      scoreBoard: { '0': 2, '1': 0 },
+      round: 2,
+      eventSlot: { ...events.find((card) => card.name === '四大自由')!, id: 'event-2' },
+    },
   },
   ctx: { currentPlayer: '0' },
   playerID: '0',
   matchData: undefined,
+  matchID: 'room-1',
 } as unknown as GameContext;
 
 const shellOf = (ui: React.ReactElement) => {
@@ -58,18 +69,41 @@ describe('shared application header shell', () => {
     expect(game.style).toEqual(lobbyStyle);
   });
 
-  it('game surface exposes player chips and Leave inside the shared shell', () => {
-    const { getByTestId, getByText, getByRole } = render(<GameHeader gameContext={gameContext} />);
-    expect(getByTestId('player-status-Alice')).toBeTruthy();
-    expect(getByTestId('player-status-Bob')).toBeTruthy();
-    expect(getByText('離開')).toBeTruthy();
-    expect(getByRole('link', { name: /規則 Rules/ }).getAttribute('href')).toBe('/rules');
+  it('shows the round and current event with Rules and Leave, without player chips', () => {
+    render(<GameHeader gameContext={gameContext} />);
+    expect(screen.getByTestId('header-round').textContent).toBe('第 2 輪 · 四大自由');
+    expect(screen.getByRole('button', { name: '離開 LEAVE' })).toBeTruthy();
+    const rules = screen.getByRole('link', { name: '規則 RULES' });
+    expect(rules.getAttribute('href')).toBe('/rules');
+    expect(rules.getAttribute('target')).toBe('_blank');
+    expect(screen.getByTestId('app-header').querySelector('[data-testid^="player-status-"]')).toBeNull();
   });
 
-  it('compact mobile variant keeps only the star tile so chips get the width', () => {
+  it.each([false, true])('shows just the round when no event is on the table (compact=%s)', (compact) => {
+    const withoutEvent = {
+      ...gameContext,
+      G: { ...gameContext.G, table: { ...gameContext.G.table, eventSlot: null } },
+    };
+    render(<GameHeader gameContext={withoutEvent} compact={compact} />);
+    expect(screen.getByTestId('header-round').textContent).toBe('第 2 輪');
+  });
+
+  it('follows round updates', () => {
+    const { rerender } = render(<GameHeader gameContext={gameContext} />);
+    rerender(<GameHeader gameContext={{
+      ...gameContext,
+      G: { ...gameContext.G, table: { ...gameContext.G.table, round: 3 } },
+    }} />);
+    expect(screen.getByTestId('header-round').textContent).toBe('第 3 輪 · 四大自由');
+  });
+
+  it('compact mobile variant keeps the star tile and round without the wordmark or event', () => {
     const compact = shellOf(<GameHeader gameContext={gameContext} compact />);
     expect(compact.hasLogoLink).toBe(true);
     expect(compact.el.textContent).not.toContain('開源星手村');
+    expect(screen.getByTestId('header-round').textContent).toBe('第 2 輪');
+    expect(screen.queryByTestId('header-leave')).toBeNull();
+    expect(screen.queryByRole('menu')).toBeNull();
     expect(compact.style.minHeight).toBe('52px');
     expect(compact.style.background).toBe('var(--paper)');
     expect(compact.style.borderBottom).toBe('1.5px solid var(--paper-3)');
@@ -78,5 +112,25 @@ describe('shared application header shell', () => {
   it('desktop surfaces keep the full wordmark', () => {
     const desktop = shellOf(<GameHeader gameContext={gameContext} />);
     expect(desktop.el.textContent).toContain('開源星手村');
+  });
+
+  it.each([false, true])('Leave opens the existing exit dialog and cancel stays in the game (compact=%s)', (compact) => {
+    pushMock.mockClear();
+    render(<GameHeader gameContext={gameContext} compact={compact} />);
+    expect(screen.queryByTestId('exit-dialog')).toBeNull();
+    if (compact) {
+      const menu = screen.getByTestId('header-menu');
+      fireEvent.click(menu);
+      expect(menu.getAttribute('aria-expanded')).toBe('true');
+      const rules = screen.getByRole('menuitem', { name: /遊戲規則/ });
+      expect(rules.getAttribute('href')).toBe('/rules');
+      expect(rules.getAttribute('target')).toBe('_blank');
+    }
+    fireEvent.click(screen.getByTestId(compact ? 'menu-leave' : 'header-leave'));
+    expect(screen.getByRole('dialog', { name: '要離開嗎？' })).toBeTruthy();
+    expect(screen.queryByRole('menu')).toBeNull();
+    fireEvent.click(screen.getByTestId('exit-cancel'));
+    expect(screen.queryByTestId('exit-dialog')).toBeNull();
+    expect(pushMock).not.toHaveBeenCalled();
   });
 });

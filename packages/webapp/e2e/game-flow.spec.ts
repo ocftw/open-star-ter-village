@@ -33,6 +33,24 @@ const CONTRIBUTE_JOIN_COST     = 1;
 const CREATE_PROJECT_VP        = 2;
 const TALENT_SCOUTING_VP       = 1;
 
+test('desktop AppHeader shows round context and outline actions without player chips', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/dev?seed=e2e-2');
+  await dismissRoundStartOverlay(page);
+  const header = page.getByTestId('app-header');
+  await expect(header).toContainText('開源星手村');
+  await expect(header).toContainText('Open StarTer Village');
+  // table.ts: playEvent increments round from zero once at setup.
+  await expect(page.getByTestId('header-round')).toHaveText(/^第 1 輪 · .+/);
+  await page.getByTestId('event-button').click();
+  const eventName = await page.getByRole('dialog').getByRole('heading').innerText();
+  await page.getByRole('dialog').getByRole('button', { name: '知道了', exact: true }).click();
+  await expect(page.getByTestId('header-round')).toHaveText(`第 1 輪 · ${eventName}`);
+  await expect(header.getByRole('link', { name: '規則 RULES' })).toBeVisible();
+  await expect(header.getByRole('button', { name: '離開 LEAVE' })).toBeVisible();
+  await expect(header.locator('[data-testid^="player-status-"]')).toHaveCount(0);
+});
+
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 const contextAction = (page: Page) => page.locator('[data-testid="context-action"]:visible');
@@ -231,7 +249,7 @@ test.describe('Simplified Mode — Action Flow', () => {
     // starterRotation defaults to 'none', so Alice still starts round two.
     await selectDevPerspective(page, 'player1');
     await waitForGameReady(page);
-    await expect(page.locator('[data-testid="player-status-Alice"]')).toContainText('TURN');
+    await expect(page.getByTestId('turn-queue-current')).toHaveAttribute('data-player-id', '0'); // Alice
     await expect(overlay).toHaveCount(0);
   });
 
@@ -526,7 +544,7 @@ test.describe('Simplified Mode — Action Flow', () => {
     // === Round 2: starterRotation defaults to 'none', so Alice still goes first. ===
     await selectDevPerspective(page, 'player1');
     await waitForGameReady(page);
-    await expect(page.locator('[data-testid="player-status-Alice"]')).toContainText('TURN');
+    await expect(page.getByTestId('turn-queue-current')).toHaveAttribute('data-player-id', '0'); // Alice
 
     // Alice recruits onto Bob's project (she is NOT the owner).
     // preferHighRequirement=true ensures the slot still has room after the
@@ -613,7 +631,7 @@ test.describe('四大自由 — pending discard is visible to everyone (#373)', 
     await dismissRoundStartOverlay(page);
 
     // Round 2 starts with Alice (starterRotation defaults to 'none'), not Charlie.
-    await expect(page.locator('[data-testid="player-status-Alice"]')).toContainText('TURN');
+    await expect(page.getByTestId('turn-queue-current')).toHaveAttribute('data-player-id', '0'); // Alice
     await expect(waitingAlert).toHaveAttribute('data-pending-discard', 'false');
     await expect(waitingAlert).not.toContainText('四大自由');
   });

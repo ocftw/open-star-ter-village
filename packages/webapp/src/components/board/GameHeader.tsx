@@ -1,17 +1,10 @@
 import React from 'react';
 import Link from 'next/link';
-import { PlayerID } from 'boardgame.io';
-import { AppHeader, PLAYER_COLORS } from '@/components/design';
+import { AppHeader, Button } from '@/components/design';
 import { GameContext } from '@/components/GameContextHelpers';
-import { PlayersSelector } from '@/game/store/slice/players';
-import { ScoreBoardSelector } from '@/game/store/slice/scoreBoard';
-import { getPlayerName } from '@/components/playerNameMap';
 import ExitDialog from './ExitDialog';
 
-/** Sticky table header: shared app shell + per-player status chips (design: GameHeader).
- *  `compact` (mobile): only the seated player's chip + a ⋯ menu holding the
- *  secondary actions; desktop shows every chip and a Leave button. Leaving
- *  always goes through the explicit exit-choice dialog (#420). */
+/** Shared app shell with round context; compact bars keep actions in the ⋯ menu. */
 export default function GameHeader({
   gameContext,
   compact = false,
@@ -19,15 +12,9 @@ export default function GameHeader({
   gameContext: GameContext;
   compact?: boolean;
 }) {
-  const { G, ctx, playerID, matchData, matchID } = gameContext;
+  const { G, matchID } = gameContext;
   const [exitOpen, setExitOpen] = React.useState(false);
   const [menuOpen, setMenuOpen] = React.useState(false);
-
-  // Mobile shows only your own chip; observers keep the full row.
-  const chipIDs =
-    compact && playerID !== null && G.players[playerID]
-      ? [playerID]
-      : Object.keys(G.players);
 
   const openExit = () => {
     setMenuOpen(false);
@@ -40,33 +27,10 @@ export default function GameHeader({
       compact={compact}
       right={
         <>
-          <div
-            style={{
-              display: 'flex',
-              gap: 8,
-              alignItems: 'center',
-              flexWrap: compact ? 'nowrap' : 'wrap',
-              overflowX: compact ? 'auto' : 'visible',
-              minWidth: 0,
-              flex: compact ? 1 : undefined,
-              justifyContent: compact ? 'flex-end' : undefined,
-              // Headroom for the TURN badge that overflows the active chip.
-              paddingTop: 8,
-            }}
-          >
-            {chipIDs.map((id) => (
-              <PlayerHeaderChip
-                key={id}
-                id={id}
-                name={getPlayerName(matchData, id)}
-                workers={PlayersSelector.getNumWorkerTokens(G.players, id)}
-                actions={PlayersSelector.getNumActionTokens(G.players, id)}
-                score={ScoreBoardSelector.getPlayerPoints(G.table.scoreBoard, id)}
-                active={id === ctx.currentPlayer}
-                you={id === playerID}
-              />
-            ))}
-          </div>
+          <span className="game-header-round" data-testid="header-round">
+            第 {G.table.round} 輪
+            {!compact && G.table.eventSlot && ` · ${G.table.eventSlot.name}`}
+          </span>
           {compact ? (
             <div style={{ position: 'relative', flexShrink: 0 }}>
               <button
@@ -106,7 +70,7 @@ export default function GameHeader({
                     }}
                   >
                     <Link href="/rules" target="_blank" rel="noreferrer" role="menuitem" className="menu-item" data-analytics-id="game_rules">
-                      📖 遊戲規則 <span className="tag-en">Rules</span>
+                      📖 遊戲規則 <span className="tag-en">RULES</span>
                     </Link>
                     <button type="button" role="menuitem" className="menu-item" data-testid="menu-leave" onClick={openExit}>
                       🚪 離開遊戲 <span className="tag-en">Leave</span>
@@ -117,18 +81,17 @@ export default function GameHeader({
             </div>
           ) : (
             <>
-              <Link href="/rules" target="_blank" rel="noreferrer" className="btn-sticker sm ghost" data-analytics-id="game_rules">
-                規則 <span className="tag-en">Rules</span>
+              <Link href="/rules" target="_blank" rel="noreferrer" className="gr-btn gr-btn--medium gr-btn--sec game-header-action" data-analytics-id="game_rules">
+                規則 <span className="tag-en">RULES</span>
               </Link>
-              <button
-                type="button"
-                className="btn-sticker sm ghost"
-                style={{ flexShrink: 0 }}
+              <Button
+                variant="sec"
+                className="game-header-action"
                 data-testid="header-leave"
                 onClick={openExit}
               >
-                離開 <span className="tag-en">Leave</span>
-              </button>
+                離開 <span className="tag-en">LEAVE</span>
+              </Button>
             </>
           )}
           {/* Mounted lazily: ExitDialog uses the app router, which only exists
@@ -137,101 +100,5 @@ export default function GameHeader({
         </>
       }
     />
-  );
-}
-
-function PlayerHeaderChip({
-  id,
-  name,
-  workers,
-  actions,
-  score,
-  active,
-  you,
-}: {
-  id: PlayerID;
-  name: string;
-  workers: number;
-  actions: number;
-  score: number;
-  active: boolean;
-  you: boolean;
-}) {
-  return (
-    <div
-      data-testid={`player-status-${name}`}
-      data-workers={workers}
-      data-actions={actions}
-      data-score={score}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 6,
-        padding: '4px 10px 4px 4px',
-        background: active ? '#fff5ef' : 'white',
-        border: active ? '2px solid var(--orange)' : '1.5px solid var(--ink)',
-        borderRadius: 999,
-        boxShadow: active ? '0 3px 0 var(--orange)' : '0 2px 0 var(--ink)',
-        position: 'relative',
-        flexShrink: 0,
-      }}
-    >
-      <span
-        style={{
-          width: 28,
-          height: 28,
-          borderRadius: 999,
-          background: PLAYER_COLORS[Number(id) % PLAYER_COLORS.length],
-          color: 'white',
-          border: '1.5px solid var(--ink)',
-          display: 'grid',
-          placeItems: 'center',
-          fontFamily: 'var(--font-en)',
-          fontWeight: 800,
-          fontSize: 12,
-        }}
-      >
-        {name[0]}
-      </span>
-      <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
-        <div style={{ fontSize: 12, fontWeight: 800 }}>
-          {name}
-          {you && <span style={{ color: 'var(--orange)', marginLeft: 4 }}>YOU</span>}
-        </div>
-        <div
-          style={{
-            display: 'flex',
-            gap: 8,
-            marginTop: 2,
-            fontFamily: 'var(--font-en)',
-            fontSize: 10,
-            color: 'var(--ink-soft)',
-          }}
-        >
-          <span title="工人 Workers">👥 {workers}</span>
-          <span title="行動點 Actions">⚡ {actions}</span>
-          <span title="影響力 Score">★ {score}</span>
-        </div>
-      </div>
-      {active && (
-        <div
-          style={{
-            position: 'absolute',
-            top: -8,
-            right: -6,
-            background: 'var(--orange)',
-            color: 'white',
-            fontSize: 9,
-            fontWeight: 800,
-            letterSpacing: '0.06em',
-            padding: '1px 6px',
-            borderRadius: 999,
-            border: '1.5px solid var(--ink)',
-          }}
-        >
-          TURN
-        </div>
-      )}
-    </div>
   );
 }

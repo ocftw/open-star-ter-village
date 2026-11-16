@@ -210,14 +210,34 @@ test.describe('Mobile layout', () => {
   });
 
   test('compact header ⋯ menu opens the exit-choice dialog (#420)', async ({ page }) => {
-    await page.goto('/dev');
+    await page.goto('/dev?seed=e2e-2');
     await dismissRoundStartOverlay(page);
     await page.locator('[data-testid="mobile-sheet"]').waitFor({ state: 'visible', timeout: 20000 });
 
+    const header = page.getByTestId('app-header');
+    // table.ts: round starts at zero and setup plays one event.
+    await expect(header.getByTestId('header-round')).toHaveText('第 1 輪');
+    await expect(header).not.toContainText('開源星手村');
+    await expect(header.getByRole('link', { name: '回首頁 Home' })).toBeVisible();
+    await expect(header.locator('[data-testid^="player-status-"]')).toHaveCount(0);
+    await expect(page.getByTestId('header-leave')).toHaveCount(0);
+    const devGear = page.getByTestId('dev-tools-open');
+    await expect(devGear).toBeVisible();
+    await page.locator('[data-testid="header-menu"]').first().click();
+    // Dev-only gear must not overlap the open menu.
+    await expect(devGear).toBeHidden();
+    const rules = page.getByRole('menuitem', { name: /遊戲規則/ });
+    await expect(rules).toBeVisible();
+    await expect(rules).toHaveAttribute('target', '_blank');
+    const headerBox = await header.boundingBox();
+    expect(headerBox!.width).toBeLessThanOrEqual(390);
+    // Closing the menu brings the gear back; reopen to continue.
+    await page.mouse.click(10, 600); // backdrop
+    await expect(rules).toHaveCount(0);
+    await expect(devGear).toBeVisible();
     await page.locator('[data-testid="header-menu"]').first().click();
     await page.locator('[data-testid="menu-leave"]').first().click();
     await expect(page.locator('[data-testid="exit-dialog"]')).toBeVisible();
-
     // Cancel closes safely with no navigation or state change.
     await page.locator('[data-testid="exit-cancel"]').click();
     await expect(page.locator('[data-testid="exit-dialog"]')).toHaveCount(0);
