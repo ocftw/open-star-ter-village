@@ -5,6 +5,10 @@ import {
   parseDevConfig,
   type SearchParamValue,
 } from '@/components/dev/devConfig';
+import { isDevRouteEnabled } from '@/components/dev/devRoute';
+
+// Read ENABLE_DEV_ROUTE per request so the image's runtime env decides.
+export const dynamic = 'force-dynamic';
 
 function getFirstValue(value: SearchParamValue): string | undefined {
   return Array.isArray(value) ? value[0] : value;
@@ -20,7 +24,7 @@ export default function DevPage({
     user?: SearchParamValue;
   };
 }) {
-  if (process.env.NODE_ENV === 'production') {
+  if (!isDevRouteEnabled()) {
     notFound();
   }
 
