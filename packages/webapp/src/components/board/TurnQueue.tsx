@@ -9,7 +9,7 @@ export default function TurnQueue({ gameContext, horizontal = false }: {
   horizontal?: boolean;
 }) {
   const { G, ctx, matchData } = gameContext;
-  const queue = buildTurnQueue(G.playOrder, ctx.playOrderPos);
+  const queue = buildTurnQueue(G.playOrder, ctx.playOrderPos, G.starterRotation ?? 'none');
   const current = queue[0];
   const previous = React.useRef({ turn: ctx.turn, player: current });
   const [leaving, setLeaving] = React.useState<string | null>(null);
