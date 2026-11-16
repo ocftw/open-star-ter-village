@@ -82,6 +82,9 @@ html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
+  /* `clip` still prevents horizontal overflow but, unlike `hidden`, does not make
+     body a scroll container, which would break `position: sticky` descendants. */
+  overflow-x: clip;
 }
 
 /* .app-root keeps these rules winning over any library-injected `body { … }`
