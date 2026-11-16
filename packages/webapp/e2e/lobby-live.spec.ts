@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { mkdir, writeFile } from 'node:fs/promises';
+import { dismissRoundStartOverlay } from './devTools';
 
 const server = `http://localhost:${process.env.PLAYWRIGHT_GAME_SERVER_PORT ?? '3001'}`;
 const game = 'OpenStarTerVillage';
@@ -37,6 +38,7 @@ test('another lobby receives room creation, start and removal, then resyncs afte
     await host.getByRole('button', {name:/start game/i}).click();
     await expect(row.getByTestId('match-spectate')).toBeVisible({timeout:1000});
     await watcher.screenshot({path:'test-results/lobby-live.png',fullPage:true});
+    await dismissRoundStartOverlay(host);
     await host.getByTestId('header-leave').click();
     await host.getByTestId('exit-leave-seat').click();
     await expect(row).toHaveCount(0,{timeout:1000});

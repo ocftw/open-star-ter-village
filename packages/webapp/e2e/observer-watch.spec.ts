@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import { Client, LobbyClient } from 'boardgame.io/client';
 import { SocketIO } from 'boardgame.io/multiplayer';
 import { OpenStarTerVillage } from '../src/game/game';
+import { dismissRoundStartOverlay } from './devTools';
 
 const gameName = 'OpenStarTerVillage';
 const server = `http://localhost:${process.env.PLAYWRIGHT_GAME_SERVER_PORT ?? '3001'}`;
@@ -42,11 +43,13 @@ test('observers 繼續觀戰 into the next room and can pick an open seat there 
 
     const alicePage = await alice.newPage();
     await alicePage.goto(`/game/${matchID}`);
+    await dismissRoundStartOverlay(alicePage);
     await expect(alicePage.getByTestId('play-again')).toBeVisible();
 
     // Dana arms 繼續觀戰 before the next room exists.
     const danaPage = await dana.newPage();
     await danaPage.goto(`/game/${matchID}`);
+    await dismissRoundStartOverlay(danaPage);
     await expect(danaPage.getByTestId('observer-mode-banner')).toBeVisible({ timeout: 15_000 });
     const danaWatch = danaPage.getByTestId('observer-watch');
     await expect(danaWatch).toContainText('繼續觀戰');
@@ -62,6 +65,7 @@ test('observers 繼續觀戰 into the next room and can pick an open seat there 
 
     const mobilePage = await mobileObserver.newPage();
     await mobilePage.goto(`/game/${matchID}`);
+    await dismissRoundStartOverlay(mobilePage);
     await mobilePage.getByTestId('observer-watch').click({ timeout: 15_000 });
     await expect(mobilePage.getByTestId('observer-waiting')).toBeVisible();
     await mobilePage.screenshot({ path: 'test-results/observer-watch-armed-mobile.png', fullPage: true });
@@ -69,6 +73,7 @@ test('observers 繼續觀戰 into the next room and can pick an open seat there 
     // Eve watches without arming.
     const evePage = await eve.newPage();
     await evePage.goto(`/game/${matchID}`);
+    await dismissRoundStartOverlay(evePage);
     const eveWatch = evePage.getByTestId('observer-watch');
     await expect(eveWatch).toContainText('繼續觀戰', { timeout: 15_000 });
 
@@ -104,6 +109,7 @@ test('observers 繼續觀戰 into the next room and can pick an open seat there 
     await expect(evePage.getByTestId('seat-1-filled')).toBeVisible({ timeout: 10_000 });
     await expect(evePage.getByTestId('seat-2-filled')).toBeVisible();
     await alicePage.getByRole('button', { name: /開始遊戲/ }).click({ timeout: 10_000 });
+    await Promise.all([alicePage, danaPage, mobilePage, evePage].map(dismissRoundStartOverlay));
     await expect(evePage.getByTestId('observer-mode-banner')).toBeVisible({ timeout: 15_000 });
     next = await lobby.getMatch(gameName, nextMatchID);
     expect(next.players.map(player => player.name)).toEqual(['Alice', 'Bob', 'Dana']);

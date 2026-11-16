@@ -42,12 +42,18 @@ import TurnStrip from './board/TurnStrip';
 import GameHistory, { useGameHistory } from './board/GameHistory';
 import { useIsMobile } from '@/lib/useIsMobile';
 import ProjectCatalogLink from './ProjectCatalogLink';
+import RoundStartOverlay from './board/RoundStartOverlay';
+import { useRoundStartOverlay } from './board/useRoundStartOverlay';
 
 const Board: React.FC<GameContext> = (gameContext) => {
   const { G, playerID, ctx, matchData } = gameContext;
   const dispatch = useAppDispatch();
   const currentAction = useAppSelector(getCurrentAction);
   const gameover = ctx.gameover as { winners: string[] } | undefined;
+  const roundStart = useRoundStartOverlay(gameContext.matchID, G.table.round, !!gameover, G.table.eventSlot !== null);
+  const roundStartOverlay = (
+    <RoundStartOverlay event={G.table.eventSlot} round={G.table.round} open={roundStart.open} onClose={roundStart.close} />
+  );
 
   const [showGameOver, setShowGameOver] = React.useState(true);
   // 四大自由: the last player owes a 2-card discard. They get the discard panel instead of
@@ -193,6 +199,7 @@ const Board: React.FC<GameContext> = (gameContext) => {
   return isMobile ? (
     <div
       data-game-board
+      data-round-start-ready={roundStart.ready}
       style={{
         minHeight: '100vh',
         display: 'flex',
@@ -224,10 +231,12 @@ const Board: React.FC<GameContext> = (gameContext) => {
       </div>
 
       <GameOverDialog gameContext={gameContext} open={!!gameover && showGameOver} onClose={() => setShowGameOver(false)} />
+      {roundStartOverlay}
     </div>
   ) : (
     <div
       data-game-board
+      data-round-start-ready={roundStart.ready}
       style={{
         minHeight: '100vh',
         display: 'flex',
@@ -243,6 +252,7 @@ const Board: React.FC<GameContext> = (gameContext) => {
         style={{
           display: 'grid',
           gridTemplateColumns: '250px minmax(0, 1fr) 76px 231px',
+          position: 'relative',
           gap: 16,
           padding: 16,
           flex: 1,
@@ -269,6 +279,7 @@ const Board: React.FC<GameContext> = (gameContext) => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {actionAreaView === 'context' && actionArea}
         </div>
+        {roundStartOverlay}
       </div>
 
       <GameOverDialog gameContext={gameContext} open={!!gameover && showGameOver} onClose={() => setShowGameOver(false)} />

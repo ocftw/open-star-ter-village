@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import { Client, LobbyClient } from 'boardgame.io/client';
 import { SocketIO } from 'boardgame.io/multiplayer';
 import { OpenStarTerVillage } from '../src/game/game';
+import { dismissRoundStartOverlay } from './devTools';
 
 const gameName = 'OpenStarTerVillage';
 const server = `http://localhost:${process.env.PLAYWRIGHT_GAME_SERVER_PORT ?? '3001'}`;
@@ -30,6 +31,8 @@ test('finished players discover, dismiss, recover and join one shared rematch', 
       const page = await context.newPage();
       await page.goto(`/game/${matchID}`);
       await expect(page.getByTestId('play-again')).toBeVisible();
+      await expect(page.getByTestId('round-start-overlay')).toHaveCount(0);
+      await dismissRoundStartOverlay(page);
       return page;
     }));
     // Bob is looking at the final board when Alice creates the next game.
@@ -49,6 +52,7 @@ test('finished players discover, dismiss, recover and join one shared rematch', 
     await expect(pages[2]).toHaveURL(new RegExp(`${matchID}$`));
     await pages[2].reload();
     await expect(pages[2].getByTestId('rematch-invitation')).toBeVisible();
+    await dismissRoundStartOverlay(pages[2]);
     await pages[2].screenshot({path:'test-results/rematch-invitation-desktop.png',fullPage:true});
     await pages[2].getByTestId('play-again').click();
     await expect(pages[2]).toHaveURL(nextURL);

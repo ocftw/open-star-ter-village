@@ -3,23 +3,26 @@ import type { EventCard } from '@/game';
 import { Modal, StickerButton } from '@/components/design';
 
 /** Shared event card; story 7 can also present it at the start of a round. */
-export default function EventCardDialog({ event, open, onClose }: {
+export default function EventCardDialog({ event, open, onClose, roundTitle }: {
   event: EventCard;
   open: boolean;
   onClose: () => void;
+  roundTitle?: string;
 }) {
   const titleId = React.useId();
   const descriptionId = React.useId();
+  const roundTitleId = React.useId();
 
   return (
     <Modal
       open={open}
       onClose={onClose}
-      ariaLabelledBy={titleId}
+      ariaLabelledBy={roundTitle ? `${roundTitleId} ${titleId}` : titleId}
       ariaDescribedBy={descriptionId}
       width="min(640px, 100%)"
       dataTestid="event-card-dialog"
     >
+      {roundTitle && <h1 key={roundTitle} id={roundTitleId} className="round-start-title">{roundTitle}</h1>}
       <div className="event-card" data-testid="event-card-banner">
         <span className="event-tag">事件 EVENT</span>
         <div className="event-art" aria-hidden="true">

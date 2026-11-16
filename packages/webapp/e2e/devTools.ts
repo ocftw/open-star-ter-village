@@ -9,6 +9,16 @@ const PERSPECTIVE_LABELS = {
 
 export type DevPerspective = keyof typeof PERSPECTIVE_LABELS;
 
+/** Wait for the show-once decision, including seen rounds and finished games. */
+export async function dismissRoundStartOverlay(page: Page): Promise<void> {
+  await expect(page.locator('[data-game-board]')).toHaveAttribute('data-round-start-ready', 'true', { timeout: 20_000 });
+  const overlay = page.getByTestId('round-start-overlay');
+  if (await overlay.isVisible()) {
+    await overlay.getByRole('button', { name: '知道了', exact: true }).click();
+    await expect(overlay).toHaveCount(0);
+  }
+}
+
 export async function openDevTools(page: Page): Promise<void> {
   const drawer = page.getByTestId('dev-tools-drawer');
   await page.getByTestId('dev-tools-open').click();
@@ -39,5 +49,7 @@ export async function selectDevTransport(
   const label = transport === 'offline' ? /Offline · Local/i : /Online · SocketIO/i;
   await page.getByRole('radio', { name: label }).check();
   await expect(page.getByRole('radio', { name: label })).toBeChecked();
+  // A transport change mounts a new match while the drawer is still open.
+  await dismissRoundStartOverlay(page);
   await closeDevTools(page);
 }

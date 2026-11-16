@@ -2,6 +2,7 @@ import { test, expect, type Page } from '@playwright/test';
 import { Client, LobbyClient } from 'boardgame.io/client';
 import { SocketIO } from 'boardgame.io/multiplayer';
 import { OpenStarTerVillage } from '../src/game/game';
+import { dismissRoundStartOverlay } from './devTools';
 
 const gameName = 'OpenStarTerVillage';
 const server = `http://localhost:${process.env.PLAYWRIGHT_GAME_SERVER_PORT ?? '3001'}`;
@@ -11,6 +12,8 @@ const lobby = new LobbyClient({ server });
 async function reopenResultsFromNote(page: Page, shot: string) {
   const results = page.getByLabel('遊戲結束');
   await expect(results.getByText(/Alice 獲勝/)).toBeVisible();
+  await expect(page.getByTestId('round-start-overlay')).toHaveCount(0);
+  await dismissRoundStartOverlay(page);
   await page.getByText(/關閉，查看最終盤面/).click();
   await expect(results).toHaveCount(0);
 

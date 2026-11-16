@@ -3,13 +3,32 @@
  * (design: MobileVariantA, Webapp Visual Redesign RFC (#399), PR 4) plus responsive lobby screens.
  */
 import { test, expect } from '@playwright/test';
-import { closeDevTools, openDevTools } from './devTools';
+import { dismissRoundStartOverlay, closeDevTools, openDevTools } from './devTools';
 
 test.use({ viewport: { width: 390, height: 844 } });
 
 test.describe('Mobile layout', () => {
+  test('round intro has a 44px Chinese title, respects reduced motion and closes on the mask', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto('/dev?seed=e2e-2');
+    const overlay = page.getByTestId('round-start-overlay');
+    const title = overlay.getByRole('heading', { name: '回合一', exact: true });
+    await expect(title).toBeVisible({ timeout: 20000 });
+    await expect(title).toHaveCSS('font-size', '44px');
+    await expect(title).toHaveCSS('animation-name', 'none');
+    await expect(overlay).toHaveCSS('animation-name', 'none');
+    const box = await overlay.getByTestId('event-card-banner').boundingBox();
+    expect(box!.x).toBeGreaterThanOrEqual(0);
+    expect(box!.x + box!.width).toBeLessThanOrEqual(390);
+    // The native dialog routes backdrop clicks to its dialog element.
+    await page.getByTestId('event-card-dialog').click({ position: { x: -10, y: -10 } });
+    await expect(overlay).toHaveCount(0);
+    await dismissRoundStartOverlay(page);
+  });
+
   test('event button leads the strip and opens a dismissible card at 390px', async ({ page }) => {
     await page.goto('/dev?seed=e2e-2');
+    await dismissRoundStartOverlay(page);
     const button = page.getByTestId('event-button');
     const card = page.getByTestId('event-card-banner');
     await expect(button).toBeVisible({ timeout: 20000 });
@@ -46,6 +65,7 @@ test.describe('Mobile layout', () => {
 
   test('turn queue is horizontal directly under the header at 390px', async ({ page }) => {
     await page.goto('/dev?seed=e2e-2');
+    await dismissRoundStartOverlay(page);
     const strip = page.getByTestId('turn-strip');
     const queue = page.getByTestId('turn-queue');
     const current = page.getByTestId('turn-queue-current');
@@ -90,6 +110,7 @@ test.describe('Mobile layout', () => {
 
   test('board uses the bottom sheet; action-first create works', async ({ page }) => {
     await page.goto('/dev?user=player1&mode=offline');
+    await dismissRoundStartOverlay(page);
     const sheet = page.locator('[data-testid="mobile-sheet"]');
     await sheet.waitFor({ state: 'visible', timeout: 20000 });
 
@@ -139,6 +160,7 @@ test.describe('Mobile layout', () => {
 
   test('observer sees the waiting note in the bottom sheet (#478)', async ({ page }) => {
     await page.goto('/dev?user=observer&mode=offline');
+    await dismissRoundStartOverlay(page);
     const sheet = page.locator('[data-testid="mobile-sheet"]');
     await sheet.waitFor({ state: 'visible', timeout: 20000 });
     await expect(page.getByTestId('observer-mode-banner')).toBeVisible();
@@ -151,6 +173,7 @@ test.describe('Mobile layout', () => {
 
   test('influence ranking stays in the bottom stack as a readable paper card', async ({ page }) => {
     await page.goto('/dev?seed=e2e-2');
+    await dismissRoundStartOverlay(page);
     const ranking = page.getByTestId('influence-ranking');
     await expect(ranking).toBeVisible({ timeout: 20000 });
     await ranking.scrollIntoViewIfNeeded();
@@ -186,6 +209,7 @@ test.describe('Mobile layout', () => {
 
   test('compact header ⋯ menu opens the exit-choice dialog (#420)', async ({ page }) => {
     await page.goto('/dev');
+    await dismissRoundStartOverlay(page);
     await page.locator('[data-testid="mobile-sheet"]').waitFor({ state: 'visible', timeout: 20000 });
 
     await page.locator('[data-testid="header-menu"]').first().click();
