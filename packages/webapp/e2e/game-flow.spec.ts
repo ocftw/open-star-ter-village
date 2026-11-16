@@ -379,7 +379,7 @@ test.describe('Simplified Mode — Action Flow', () => {
     await performEndTurn(page);
     await expect(currentDot).toHaveAttribute('data-player-id', '1');
     await expect(currentDot).toHaveAttribute('title', 'Bob');
-    await expect(page.getByTestId('turn-queue')).toHaveAttribute('aria-label', /^玩家順序：目前 Bob，接著 Charlie、Bob、Charlie、Alice、Charlie、Alice$/);
+    await expect(page.getByTestId('turn-queue')).toHaveAttribute('aria-label', /^玩家順序：目前 Bob，接著 Charlie、Alice、Bob、Charlie、Alice、Bob$/);
 
     // It is now Bob's turn — his idle contextual bar must be visible.
     await selectDevPerspective(page, 'player2');
