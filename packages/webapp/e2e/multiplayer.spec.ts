@@ -133,7 +133,7 @@ test.describe('Developer widget', () => {
 
   test('switches to a fresh three-player online match', async ({ page }) => {
     await page.getByTestId('refill-jobs').click();
-    await page.locator('[data-testid^="job-card-"]').first().click();
+    await page.locator('[data-testid^="job-remove-"]').first().click();
     await page.getByTestId('ca-confirm').click();
     const rule = RuleSlice.initialState();
     await expect(page.getByTestId('ranking-row-Alice')).toHaveAttribute(
