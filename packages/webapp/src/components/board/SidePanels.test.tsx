@@ -86,10 +86,10 @@ describe('ScorePanel influence ranking', () => {
     expect(barWidth('Alice 剩餘人力')).toBe('100%');
   });
 
-  it('highlights only the viewing player’s name in orange-deep', () => {
+  it('highlights only the viewing player’s name with the AA-contrast orange class', () => {
     render(<ScorePanel gameContext={context()} />);
-    expect(screen.getByText('Bob').style.color).toBe('var(--orange-deep)');
-    expect(screen.getByText('Alice').style.color).toBe('');
+    expect(screen.getByText('Bob').className).toContain('influence-ranking-name-you');
+    expect(screen.getByText('Alice').className).not.toContain('influence-ranking-name-you');
     expect(screen.getByTestId('ranking-row-Alice').getAttribute('data-you')).toBe('false');
   });
 
