@@ -120,6 +120,8 @@ test.describe('Mobile layout', () => {
       .toBeLessThanOrEqual(0);
     await expect(page.getByTestId('ranking-row-Bob')).toHaveAttribute('data-actions', '4');
     await expect(page.getByTestId('ranking-row-Bob')).toHaveAttribute('data-you', 'false');
+    // Viewer's name: #c53808 on paper-2 (#fbf2e6) is 4.80:1, above WCAG AA 4.5:1 (was #d83d0a, 4.12:1).
+    await expect(ranking.getByTitle('Alice')).toHaveCSS('color', 'rgb(197, 56, 8)');
   });
 
   test('compact header ⋯ menu opens the exit-choice dialog (#420)', async ({ page }) => {

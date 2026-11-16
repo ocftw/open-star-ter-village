@@ -11,6 +11,22 @@ import { PlayersSelector } from './store/slice/players';
 import { settleProjects } from './core/handler/settleProjects';
 import { scoreLeftoverActionTokens } from './core/handler/scoreLeftoverActionTokens';
 import { refill } from './core/handler/refill';
+import type { Ctx } from 'boardgame.io';
+
+const isLastPlayerOfRound = (ctx: Pick<Ctx, 'playOrderPos' | 'numPlayers'>) =>
+  ctx.playOrderPos === ctx.numPlayers - 1;
+
+/**
+ * The round is over once its last player's turn is ending: they ran out of AP
+ * or pressed End Turn (endActionTurn/discardExcessJobCards set actionPhaseDone
+ * for the last player instead of calling events.endTurn), and any 四大自由
+ * discard is resolved. The phase endIf owns this so the last turn ends only
+ * once, through EndPhase.
+ */
+const isRoundOver = (G: GameState, ctx: Ctx) =>
+  isLastPlayerOfRound(ctx) &&
+  G.table.fourFreedomsPendingDiscards.length === 0 &&
+  (G.table.actionPhaseDone || PlayersSelector.getNumActionTokens(G.players, ctx.currentPlayer) === 0);
 
 export const OpenStarTerVillage: Game<GameState, Record<string, unknown>, GameSetupData> = {
   name: 'OpenStarTerVillage',
@@ -23,13 +39,22 @@ export const OpenStarTerVillage: Game<GameState, Record<string, unknown>, GameSe
       ? undefined
       : 'numPlayers must be 2 to 4',
   setup: setup,
+  /**
+   * One self-restarting phase per round. CUSTOM_FROM reads G.playOrder only
+   * when a phase begins, so ending the phase after the last player's turn is
+   * what makes passStartPlayerToken's rotation take effect. boardgame.io's
+   * EndPhase runs that turn's onEnd (rotation included) before the next phase
+   * reads G.playOrder.
+   */
+  phases: {
+    round: {
+      start: true,
+      next: 'round',
+      endIf: ({ G, ctx }) => isRoundOver(G, ctx),
+    },
+  },
   turn: {
-    /**
-     * Use CUSTOM_FROM so boardgame.io re-reads G.playOrder at the start of
-     * each turn. This lets passStartPlayerToken rotate the starting player by
-     * mutating G.playOrder (which is safe) rather than ctx.playOrder (which
-     * is read-only in hooks and would be silently ignored).
-     */
+    // Read at each round phase's start; ctx.playOrder is read-only in hooks.
     order: TurnOrder.CUSTOM_FROM('playOrder'),
     onBegin: (context) => {
       const { G, ctx } = context;
@@ -56,20 +81,18 @@ export const OpenStarTerVillage: Game<GameState, Record<string, unknown>, GameSe
       action,
     },
     endIf: ({ G, ctx }) => {
-      const outOfAP = PlayersSelector.getNumActionTokens(G.players, ctx.currentPlayer) === 0;
-      if (!outOfAP) return undefined;
-      // Last player must discard 2 job cards (四大自由) before the turn can end.
-      const isLastPlayer = ctx.playOrderPos === ctx.numPlayers - 1;
-      if (isLastPlayer && G.table.fourFreedomsPendingDiscards.length > 0) return undefined;
-      return true;
+      // The round phase ends the last player's turn (see isRoundOver).
+      if (isLastPlayerOfRound(ctx)) return undefined;
+      return PlayersSelector.getNumActionTokens(G.players, ctx.currentPlayer) === 0 || undefined;
     },
     onEnd: (context) => {
       const { ctx } = context;
       settleProjects(context);
       scoreLeftoverActionTokens(context);
       refill(context);
-      if (ctx.playOrderPos === ctx.numPlayers - 1) {
+      if (isLastPlayerOfRound(ctx)) {
         removeEventCard(context);
+        context.G.table.actionPhaseDone = false;
 
         passStartPlayerToken(context);
       }
