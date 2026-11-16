@@ -1074,6 +1074,8 @@ body:has(.modal[open]) {
 /* ===== end story 5 ===== */
 
 /* ===== story 6: event button and event card dialog ===== */
+/* White text on --orange (#ef5826) is 3.45:1; #c9400f keeps the hue at 4.97:1. */
+.event-btn, .event-tag { --event-orange: #c9400f; }
 .turn-strip:not(.turn-strip-horizontal):has(> .event-btn) { padding-top: 14px; }
 .event-btn {
   width: 56px;
@@ -1081,7 +1083,7 @@ body:has(.modal[open]) {
   flex-shrink: 0;
   border: 2px solid var(--ink);
   border-radius: 10px;
-  background: var(--orange);
+  background: var(--event-orange);
   color: white;
   font-family: var(--font-zh);
   font-size: 13px;
@@ -1124,7 +1126,7 @@ body:has(.modal[open]) {
   position: absolute;
   top: -13px;
   left: 20px;
-  background: var(--orange);
+  background: var(--event-orange);
   color: white;
   border: 2px solid var(--ink);
   border-radius: 99px;
