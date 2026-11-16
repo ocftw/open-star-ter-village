@@ -214,7 +214,7 @@ test.describe('Simplified Mode — Action Flow', () => {
       .toEqual(['ranking-row-Alice', 'ranking-row-Bob', 'ranking-row-Charlie']);
     await expect(page.getByTestId('ranking-row-Alice')).toHaveAttribute('data-you', 'true');
     await expect(page.getByTestId('ranking-row-Alice')).toHaveAttribute('data-workers', '12');
-    await expect(ranking.getByTitle('Alice')).toHaveCSS('color', 'rgb(216, 61, 10)');
+    await expect(ranking.getByTitle('Alice')).toHaveCSS('color', 'rgb(197, 56, 8)');
     const rankingBox = await ranking.boundingBox();
     const handBox = await page.locator('[data-testid^="hand-card-"]').first().boundingBox();
     expect(rankingBox).not.toBeNull();

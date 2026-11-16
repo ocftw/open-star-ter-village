@@ -43,9 +43,8 @@ export function ScorePanel({ gameContext }: { gameContext: GameContext }) {
               <div className="influence-ranking-details">
                 <div className="influence-ranking-topline">
                   <span
-                    className="influence-ranking-name"
+                    className={you ? 'influence-ranking-name influence-ranking-name-you' : 'influence-ranking-name'}
                     title={name}
-                    style={{ color: you ? 'var(--orange-deep)' : undefined }}
                   >
                     {name}
                   </span>
