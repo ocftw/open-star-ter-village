@@ -347,12 +347,33 @@ test.describe('Simplified Mode — Action Flow', () => {
 
   // ── Scenario 7: endActionTurn ─────────────────────────────────────────────
   test('Scenario 7: endActionTurn — Alice ends early, Bob\'s bar appears', async ({ page }) => {
+    const currentDot = page.getByTestId('turn-queue-current');
+    await expect(currentDot).toHaveAttribute('data-player-id', '0');
+    await expect(currentDot).toHaveAttribute('title', 'Alice');
+    await expect(currentDot).toHaveCSS('width', '64px');
+    await expect(currentDot).toHaveCSS('animation-name', 'turnQueueIn');
+    await expect(page.getByTestId('turn-strip')).toHaveCSS('width', '76px');
+    await expect(page.getByTestId('turn-queue-next')).toHaveCount(6);
     // Alice ends her turn without spending any AP.
     await performEndTurn(page);
+    await expect(currentDot).toHaveAttribute('data-player-id', '1');
+    await expect(currentDot).toHaveAttribute('title', 'Bob');
+    await expect(page.getByTestId('turn-queue')).toHaveAttribute('aria-label', /^玩家順序：目前 Bob，接著 Charlie、Alice、Bob、Charlie、Alice、Bob$/);
 
     // It is now Bob's turn — his idle contextual bar must be visible.
     await selectDevPerspective(page, 'player2');
     await expect(page.locator('[data-testid="context-action"][data-mode="idle"]')).toBeVisible({ timeout: 5000 });
+  });
+
+  test('turn queue updates without motion when reduced motion is requested', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    const currentDot = page.getByTestId('turn-queue-current');
+    await expect(currentDot).toHaveCSS('animation-name', 'none');
+    await expect(currentDot).toHaveCSS('transition-duration', '0s');
+    await performEndTurn(page);
+    await expect(currentDot).toHaveAttribute('data-player-id', '1');
+    await expect(page.getByTestId('turn-queue-exit')).toHaveCount(0);
+    await expect(currentDot).toHaveCSS('animation-name', 'none');
   });
 
   // ── Scenario 8: contributeOwnedProjects ───────────────────────────────────

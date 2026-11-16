@@ -27,6 +27,10 @@ jest.mock('@/app/lobby/actions', () => ({
 
 let mobileMediaQuery: MediaQueryList;
 beforeEach(() => {
+  // jsdom has no layout observer; TurnStrip measures real geometry in the browser.
+  global.ResizeObserver = jest.fn(() => ({
+    observe: jest.fn(), unobserve: jest.fn(), disconnect: jest.fn(),
+  }));
   mobileMediaQuery = Object.assign(new EventTarget(), {
     matches: false,
     media: '(max-width: 899px)',

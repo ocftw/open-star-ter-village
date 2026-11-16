@@ -8,6 +8,32 @@ import { closeDevTools, openDevTools } from './devTools';
 test.use({ viewport: { width: 390, height: 844 } });
 
 test.describe('Mobile layout', () => {
+  test('turn queue is horizontal directly under the header at 390px', async ({ page }) => {
+    await page.goto('/dev?seed=e2e-2');
+    const strip = page.getByTestId('turn-strip');
+    const queue = page.getByTestId('turn-queue');
+    const current = page.getByTestId('turn-queue-current');
+    await expect(current).toBeVisible({ timeout: 20000 });
+    await expect(current).toHaveAttribute('data-player-id', '0');
+    await expect(queue).toHaveAttribute('aria-label', /^玩家順序：目前 Alice，接著 Bob、Charlie、Alice、Bob、Charlie、Alice$/);
+    await expect(current).toHaveCSS('width', '34px');
+    const upcoming = page.getByTestId('turn-queue-next');
+    await expect(upcoming).toHaveCount(6);
+    await expect(upcoming.first()).toHaveCSS('width', '24px');
+    await expect(strip).toHaveCSS('flex-direction', 'row');
+    expect(await strip.evaluate((element) => element.previousElementSibling?.getAttribute('data-testid'))).toBe('app-header');
+    // Entry animations scale dots around their centres; measure settled boxes.
+    await queue.evaluate(async (element) => {
+      await Promise.all(element.getAnimations({ subtree: true }).map((animation) => animation.finished));
+    });
+    const currentBox = await current.boundingBox();
+    const nextBox = await upcoming.first().boundingBox();
+    expect(Math.abs((currentBox!.y + currentBox!.height / 2) - (nextBox!.y + nextBox!.height / 2))).toBeLessThan(1);
+    expect(nextBox!.x).toBeGreaterThan(currentBox!.x + currentBox!.width);
+    await expect(page.getByRole('button', { name: /專案區往下捲|專案區回到頂端/ })).toHaveCount(0);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
+  });
+
   test('homepage stacks and keeps the Play CTA reachable', async ({ page }) => {
     await page.goto('/');
     const cta = page.getByRole('link', { name: /play online/i });
