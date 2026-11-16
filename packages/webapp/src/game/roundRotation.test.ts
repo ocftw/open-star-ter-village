@@ -15,6 +15,20 @@ const FOUR_FREEDOMS = 'add_two_worker_slots';
 // dropped so tests can read the decks. 四大自由 (which correctly holds the round
 // open until the last player discards) is pinned to round 1 or neutralized,
 // keeping the deck size and so the number of rounds unchanged.
+const testTurn: Game<GameState>['turn'] = {
+  ...OpenStarTerVillage.turn,
+  stages: {
+    action: {
+      moves: {
+        ...OpenStarTerVillage.turn!.stages!.action.moves,
+        spendAllActionPoints: ({ G, playerID }) => {
+          G.players[playerID].token.actions = 0;
+        },
+      },
+    },
+  },
+};
+
 const makeGame = (opts: { fourFreedomsFirst?: boolean } = {}): Game<GameState> => ({
   ...OpenStarTerVillage,
   playerView: undefined,
@@ -30,19 +44,10 @@ const makeGame = (opts: { fourFreedomsFirst?: boolean } = {}): Game<GameState> =
     }
     return G;
   },
-  turn: {
-    ...OpenStarTerVillage.turn,
-    stages: {
-      action: {
-        moves: {
-          ...OpenStarTerVillage.turn!.stages!.action.moves,
-          spendAllActionPoints: ({ G, playerID }) => {
-            G.players[playerID].token.actions = 0;
-          },
-        },
-      },
-    },
-  },
+  turn: testTurn,
+  // boardgame.io writes the top-level turn into the (shared) phase object in
+  // place, so this game needs its own round phase carrying its own turn.
+  phases: { round: { ...OpenStarTerVillage.phases!.round, turn: testTurn } },
 });
 
 const start = (numPlayers: number, opts?: { fourFreedomsFirst?: boolean }): TestClient => {
