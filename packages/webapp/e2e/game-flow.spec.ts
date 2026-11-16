@@ -41,15 +41,12 @@ async function waitForGameReady(page: Page) {
   await page.locator('[data-testid="context-action"][data-mode="idle"]').waitFor({ state: 'visible', timeout: 20000 });
 }
 
-/** Alice's header status chip; AP and score are exposed as data attributes. */
-const aliceStatus = (page: Page) => page.locator('[data-testid="player-status-Alice"]');
-
 async function expectActions(page: Page, name: string, actions: number) {
-  await expect(page.locator(`[data-testid="player-status-${name}"]`)).toHaveAttribute('data-actions', String(actions));
+  await expect(page.getByTestId(`ranking-row-${name}`)).toHaveAttribute('data-actions', String(actions));
 }
 
 async function expectScore(page: Page, name: string, score: number) {
-  await expect(page.locator(`[data-testid="player-status-${name}"]`)).toHaveAttribute('data-score', String(score));
+  await expect(page.getByTestId(`ranking-row-${name}`)).toHaveAttribute('data-score', String(score));
 }
 
 /**
@@ -206,6 +203,31 @@ test.describe('Simplified Mode — Action Flow', () => {
     await expectActions(page, 'Alice', INITIAL_ACTION_TOKENS);
   });
 
+  test('influence ranking retains seat order on zero ties and sits above the hand', async ({ page }) => {
+    const ranking = page.getByRole('region', { name: '影響力排行' });
+    const rows = ranking.getByRole('listitem');
+    await expect(rows).toHaveCount(3);
+    for (const row of await rows.all()) {
+      await expect(row).toHaveAttribute('data-score', '0');
+    }
+    expect(await rows.evaluateAll((items) => items.map((item) => item.getAttribute('data-testid'))))
+      .toEqual(['ranking-row-Alice', 'ranking-row-Bob', 'ranking-row-Charlie']);
+    await expect(page.getByTestId('ranking-row-Alice')).toHaveAttribute('data-you', 'true');
+    await expect(page.getByTestId('ranking-row-Alice')).toHaveAttribute('data-workers', '12');
+    await expect(ranking.getByTitle('Alice')).toHaveCSS('color', 'rgb(216, 61, 10)');
+    const rankingBox = await ranking.boundingBox();
+    const handBox = await page.locator('[data-testid^="hand-card-"]').first().boundingBox();
+    expect(rankingBox).not.toBeNull();
+    expect(handBox).not.toBeNull();
+    expect(rankingBox!.x).toBeLessThan(handBox!.x + handBox!.width);
+    expect(rankingBox!.y + rankingBox!.height).toBeLessThanOrEqual(handBox!.y);
+
+    await selectDevPerspective(page, 'observer');
+    await expect(ranking).toBeVisible();
+    await expect(page.locator('[data-testid^="hand-card-"]')).toHaveCount(0);
+    await expect(ranking.locator('[data-you="true"]')).toHaveCount(0);
+  });
+
   // ── Scenario 2: Initiate a Project ────────────────────────────────────────
   test('Scenario 2: Initiate a Project — costs 2 AP and awards 2 VP', async ({ page }) => {
     await expectActions(page, 'Alice', INITIAL_ACTION_TOKENS);
@@ -220,6 +242,11 @@ test.describe('Simplified Mode — Action Flow', () => {
     // Verify outcome: 2 AP spent, 2 VP gained
     await expectActions(page, 'Alice', INITIAL_ACTION_TOKENS - CREATE_PROJECT_COST);
     await expectScore(page, 'Alice', CREATE_PROJECT_VP);
+    const ranking = page.getByTestId('influence-ranking');
+    await expect(ranking.getByRole('listitem').first()).toHaveAttribute('data-testid', 'ranking-row-Alice');
+    expect(await ranking.getByRole('meter', { name: 'Alice 影響力' }).locator('i')
+      .evaluate((fill) => (fill as HTMLElement).style.width)).toBe('100%');
+    await expect(page.getByTestId('ranking-row-Alice')).toHaveAttribute('data-workers', '10');
   });
 
   // ── Scenario 3: Recruit Talents ───────────────────────────────────────────

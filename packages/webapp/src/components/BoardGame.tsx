@@ -236,15 +236,18 @@ const Board: React.FC<GameContext> = (gameContext) => {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: playerID !== null ? '250px minmax(0, 1fr) 231px' : 'minmax(0, 1fr) 231px',
+          gridTemplateColumns: '250px minmax(0, 1fr) 231px',
           gap: 16,
           padding: 16,
           flex: 1,
           alignItems: 'start',
         }}
       >
-        {/* LEFT — hand + event (players only) */}
-        {playerID !== null && <HandPanel gameContext={gameContext} />}
+        {/* LEFT — ranking, then hand (players only) */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14, minWidth: 0 }}>
+          <ScorePanel gameContext={gameContext} />
+          {playerID !== null && <HandPanel gameContext={gameContext} />}
+        </div>
 
         {/* CENTER — notices + projects + job market */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14, minWidth: 0 }}>
@@ -253,10 +256,9 @@ const Board: React.FC<GameContext> = (gameContext) => {
           {jobMarket}
         </div>
 
-        {/* RIGHT — action panel + score + turn order */}
+        {/* RIGHT — action panel + turn order */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {actionAreaView === 'context' && actionArea}
-          <ScorePanel gameContext={gameContext} />
           <TurnOrderPanel gameContext={gameContext} />
         </div>
       </div>

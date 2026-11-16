@@ -903,3 +903,70 @@ body:has(.modal[open]) {
   .gr-panel-action__label > strong { white-space: nowrap; }
   .gr-action-panel__footer > .gr-btn { min-height: 44px; }
 }
+
+/* ===== story 3: influence ranking (#484) ===== */
+.influence-ranking {
+  min-width: 0;
+  padding: 12px;
+}
+.influence-ranking h3 { margin: 0; font-size: 16px; font-weight: 700; }
+.influence-ranking ol {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.influence-ranking-row {
+  display: grid;
+  grid-template-columns: 12px 26px minmax(0, 1fr);
+  gap: 6px;
+  align-items: center;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--paper-3);
+}
+.influence-ranking-row:last-child { border-bottom: 0; padding-bottom: 0; }
+.influence-ranking-rank { font-family: var(--font-en); font-size: 13px; font-weight: 700; }
+.influence-ranking-badge {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 1.5px solid var(--ink);
+  border-radius: 50%;
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: var(--font-en);
+}
+.influence-ranking-details { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.influence-ranking-topline { display: flex; align-items: center; gap: 4px; min-width: 0; }
+.influence-ranking-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.influence-ranking-line {
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr) 22px;
+  gap: 3px;
+  align-items: center;
+  font-size: 11px;
+  color: var(--ink-soft);
+}
+.influence-ranking-topline .influence-ranking-line { flex: 0 0 86px; }
+.influence-ranking-line > span:first-child { font-size: 10px; text-align: center; }
+.influence-ranking-line b { font-family: var(--font-en); font-weight: 400; text-align: right; font-variant-numeric: tabular-nums; }
+.influence-ranking-bar { display: block; height: 5px; background: var(--paper-3); border-radius: 9px; overflow: hidden; }
+.influence-ranking-bar i { display: block; height: 100%; border-radius: inherit; }
+.influence-ranking-score i { background: var(--ink-mute); }
+.influence-ranking-workers i { background: var(--orange); }
+@media (max-width: 899px) {
+  .influence-ranking { background: var(--paper-2); border-radius: 16px; }
+}
+/* ===== end story 3 ===== */
