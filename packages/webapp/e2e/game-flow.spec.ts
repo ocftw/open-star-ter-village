@@ -247,7 +247,7 @@ test.describe('Simplified Mode — Action Flow', () => {
     // The start player token passed clockwise, so Bob starts round two.
     await selectDevPerspective(page, 'player2');
     await waitForGameReady(page);
-    await expect(page.locator('[data-testid="player-status-Bob"]')).toContainText('TURN');
+    await expect(page.getByTestId('turn-queue-current')).toHaveAttribute('data-player-id', '1'); // Bob
     await expect(overlay).toHaveCount(0);
   });
 
@@ -541,17 +541,16 @@ test.describe('Simplified Mode — Action Flow', () => {
     // then Charlie, and Alice acts last. ===
     await selectDevPerspective(page, 'player2');
     await waitForGameReady(page);
-    await expect(page.locator('[data-testid="player-status-Bob"]')).toContainText('TURN');
-    await expect(page.locator('[data-testid="player-status-Alice"]')).not.toContainText('TURN');
+    await expect(page.getByTestId('turn-queue-current')).toHaveAttribute('data-player-id', '1'); // Bob
     await performEndTurn(page);
     await selectDevPerspective(page, 'player3');
     await waitForGameReady(page);
-    await expect(page.locator('[data-testid="player-status-Charlie"]')).toContainText('TURN');
+    await expect(page.getByTestId('turn-queue-current')).toHaveAttribute('data-player-id', '2'); // Charlie
     await performEndTurn(page);
 
     await selectDevPerspective(page, 'player1');
     await waitForGameReady(page);
-    await expect(page.locator('[data-testid="player-status-Alice"]')).toContainText('TURN');
+    await expect(page.getByTestId('turn-queue-current')).toHaveAttribute('data-player-id', '0'); // Alice
 
     // Alice recruits onto Bob's project (she is NOT the owner).
     // preferHighRequirement=true ensures the slot still has room after the
@@ -636,7 +635,7 @@ test.describe('四大自由 — pending discard is visible to everyone (#373)', 
     await dismissRoundStartOverlay(page);
 
     // Round 2 starts with Bob (the start player token passes clockwise), not Charlie.
-    await expect(page.locator('[data-testid="player-status-Bob"]')).toContainText('TURN');
+    await expect(page.getByTestId('turn-queue-current')).toHaveAttribute('data-player-id', '1'); // Bob
     await expect(waitingAlert).toHaveAttribute('data-pending-discard', 'false');
     await expect(waitingAlert).not.toContainText('四大自由');
   });
