@@ -15,7 +15,8 @@
  *   (data-mode) and the confirm/cancel buttons (ca-confirm / ca-cancel).
  *
  * The game boots in the unified game view at localhost:3000/dev.
- * Alice (player 0) always goes first. The developer widget switches the
+ * Alice (player 0) goes first in round 1; the starter then rotates clockwise
+ * each round (Bob starts round 2). The developer widget switches the
  * mounted board client between player and observer perspectives.
  */
 import { test, expect, Page } from '@playwright/test';
@@ -382,9 +383,21 @@ test.describe('Simplified Mode — Action Flow', () => {
     await waitForGameReady(page);
     await performEndTurn(page);
 
-    // === Round 2: Alice still goes first. ===
+    // === Round 2: the start player token passed clockwise, so Bob goes first,
+    // then Charlie, and Alice acts last. ===
+    await selectDevPerspective(page, 'player2');
+    await waitForGameReady(page);
+    await expect(page.locator('[data-testid="player-status-Bob"]')).toContainText('TURN');
+    await expect(aliceStatus(page)).not.toContainText('TURN');
+    await performEndTurn(page);
+    await selectDevPerspective(page, 'player3');
+    await waitForGameReady(page);
+    await expect(page.locator('[data-testid="player-status-Charlie"]')).toContainText('TURN');
+    await performEndTurn(page);
+
     await selectDevPerspective(page, 'player1');
     await waitForGameReady(page);
+    await expect(aliceStatus(page)).toContainText('TURN');
 
     // Alice recruits onto Bob's project (she is NOT the owner).
     // preferHighRequirement=true ensures the slot still has room after the
@@ -463,7 +476,8 @@ test.describe('四大自由 — pending discard is visible to everyone (#373)', 
     await page.locator('[data-testid="discard-confirm"]').click();
     await expect(discardPanel).toHaveCount(0);
 
-    // Charlie is not first in round 2 whichever seat holds the start player token.
+    // Round 2 starts with Bob (the start player token passes clockwise), not Charlie.
+    await expect(page.locator('[data-testid="player-status-Bob"]')).toContainText('TURN');
     await expect(waitingAlert).toHaveAttribute('data-pending-discard', 'false');
     await expect(waitingAlert).not.toContainText('四大自由');
   });
