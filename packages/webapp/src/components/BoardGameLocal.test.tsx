@@ -59,9 +59,14 @@ const actionFirstGame: typeof game = {
     ProjectSlotMutator.assignWorker(slot, '工程師', '0', 1);
     return G;
   },
-  // Keep this UI regression fixture independent of the random first event.
-  turn: { ...game.turn, onBegin: () => {} },
 };
+// Keep this UI regression fixture independent of the random first event (e.g.
+// 人力釋出 replaces every job slot). The turn must also be set on the round
+// phase: boardgame.io's ProcessGameConfig writes `phases.round.turn = game.turn`
+// into the phase object in place, and `...game` shares that object, so once any
+// test processes the real game its turn would win over a top-level override.
+actionFirstGame.turn = { ...game.turn, onBegin: () => {} };
+actionFirstGame.phases = { round: { ...game.phases!.round, turn: actionFirstGame.turn } };
 
 // Offline dev games run on Local(), where boardgame.io still reports isMultiplayer.
 it('offers no observer 繼續觀戰 and polls no lobby in an offline game (#373)', async () => {
