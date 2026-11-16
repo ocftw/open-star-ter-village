@@ -542,7 +542,7 @@ test.describe('Simplified Mode — Action Flow', () => {
     await selectDevPerspective(page, 'player2');
     await waitForGameReady(page);
     await expect(page.locator('[data-testid="player-status-Bob"]')).toContainText('TURN');
-    await expect(aliceStatus(page)).not.toContainText('TURN');
+    await expect(page.locator('[data-testid="player-status-Alice"]')).not.toContainText('TURN');
     await performEndTurn(page);
     await selectDevPerspective(page, 'player3');
     await waitForGameReady(page);
@@ -551,7 +551,7 @@ test.describe('Simplified Mode — Action Flow', () => {
 
     await selectDevPerspective(page, 'player1');
     await waitForGameReady(page);
-    await expect(aliceStatus(page)).toContainText('TURN');
+    await expect(page.locator('[data-testid="player-status-Alice"]')).toContainText('TURN');
 
     // Alice recruits onto Bob's project (she is NOT the owner).
     // preferHighRequirement=true ensures the slot still has room after the
