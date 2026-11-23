@@ -83,24 +83,28 @@ try {
     await capture('success');
     await page.close();
 
-    const slashPage = await browser.newPage({ viewport: { width, height: width === 390 ? 844 : 832 } });
-    await slashPage.goto('http://localhost:3540/dev?seed=e2e-2');
-    for (const round of [1, 2, 3]) await advanceRound(slashPage, round);
-    await dismissRound(slashPage);
-    await slashPage.getByTestId('dev-tools-open').click();
-    await slashPage.getByRole('radio', { name: /Alice · Player 1/i }).check();
-    await slashPage.getByTestId('dev-tools-close').click();
-    await slashPage.getByTestId('action-createProject').click();
-    // The natural three-player seed produces this legal pair in round four.
-    await slashPage.getByTestId('hand-card-d15rtg').click();
-    await slashPage.getByTestId('job-card-cehihv').click();
-    const picker = slashPage.getByTestId('start-slash-picker');
-    await picker.waitFor();
-    await slashPage.screenshot({ path: `${output}/${width}-slash-picker.png`, animations: 'disabled' });
-    await picker.getByRole('button', { name: '工程師' }).click();
-    await slashPage.getByTestId('start-assign').scrollIntoViewIfNeeded();
-    await slashPage.screenshot({ path: `${output}/${width}-slash-assigned.png`, animations: 'disabled' });
-    await slashPage.close();
+    try {
+      const slashPage = await browser.newPage({ viewport: { width, height: width === 390 ? 844 : 832 } });
+      await slashPage.goto('http://localhost:3540/dev?seed=e2e-2');
+      for (const round of [1, 2, 3]) await advanceRound(slashPage, round);
+      await dismissRound(slashPage);
+      await slashPage.getByTestId('dev-tools-open').click();
+      await slashPage.getByRole('radio', { name: /Alice · Player 1/i }).check();
+      await slashPage.getByTestId('dev-tools-close').click();
+      await slashPage.getByTestId('action-createProject').click();
+      // The natural three-player seed produces this legal pair in round four.
+      await slashPage.getByTestId('hand-card-d15rtg').click();
+      await slashPage.getByTestId('job-card-cehihv').click();
+      const picker = slashPage.getByTestId('start-slash-picker');
+      await picker.waitFor({ timeout: 15000 });
+      await slashPage.screenshot({ path: `${output}/${width}-slash-picker.png`, animations: 'disabled' });
+      await picker.getByRole('button', { name: '工程師' }).click();
+      await slashPage.getByTestId('start-assign').scrollIntoViewIfNeeded();
+      await slashPage.screenshot({ path: `${output}/${width}-slash-assigned.png`, animations: 'disabled' });
+      await slashPage.close();
+    } catch (err) {
+      console.warn(`slash not captured at ${width} (record as a gap; do not inject G):`, err);
+    }
   }
 } finally {
   await browser.close();

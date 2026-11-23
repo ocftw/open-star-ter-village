@@ -56,6 +56,18 @@ for (const width of [1280, 390]) {
       await expect(confirm).toBeDisabled();
       await expect(page.getByTestId('projects-section')).toHaveAttribute('inert', '');
       await checkRows(baseHand, baseMarket);
+      const assertDesktopFit = async () => {
+        if (width !== 1280) return;
+        const hostBox = (await host.boundingBox())!;
+        const bottom = (await page.getByTestId('board-bottom-row').boundingBox())!;
+        expect(hostBox.y + hostBox.height).toBeLessThanOrEqual(bottom.y + 1);
+        expect(bottom.y + bottom.height).toBeLessThanOrEqual(832);
+        for (const rail of [hand, market]) {
+          const box = (await rail.boundingBox())!;
+          expect(box.y).toBeGreaterThanOrEqual(0);
+          expect(box.y + box.height).toBeLessThanOrEqual(832);
+        }
+      };
       if (width === 390) {
         await expect(host.getByTestId('hand-panel')).toHaveCount(1);
         await expect(host.getByTestId('job-market')).toHaveCount(1);
@@ -65,11 +77,7 @@ for (const width of [1280, 390]) {
           '[data-testid="start-project-slots"], [data-testid="hand-panel"], [data-testid="job-market"], [data-testid="start-project-actions"]',
         ), (el) => el.getAttribute('data-testid')))).toEqual(['start-project-slots', 'hand-panel', 'job-market', 'start-project-actions']);
       } else {
-        for (const rail of [hand, market]) {
-          const box = (await rail.boundingBox())!;
-          expect(box.y).toBeGreaterThanOrEqual(0);
-          expect(box.y + box.height).toBeLessThanOrEqual(832);
-        }
+        await assertDesktopFit();
       }
       for (const rail of [hand, market]) {
         for (let tab = 0; tab < 24 && !(await rail.evaluate((el) => el.contains(document.activeElement))); tab++) {
@@ -88,6 +96,7 @@ for (const width of [1280, 390]) {
 
       await page.getByTestId(job.id).click();
       await expect(confirm).toBeEnabled();
+      await assertDesktopFit();
       await checkRows(filteredHand, filteredMarket);
       await host.getByTestId('start-clear-project').click();
       await checkRows(filteredHand, baseMarket);

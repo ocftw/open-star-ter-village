@@ -2012,6 +2012,25 @@ body:has([data-testid='header-menu'][aria-expanded='true']) [data-testid='dev-to
 
 /* ===== #497: start project ===== */
 .start-project-mount:empty { display: none; }
+@media (min-width: 900px) {
+  /* Keep the START host inside the #492 upper budget so a tall assignment
+     row cannot overlap the bottom rails or extend the page. */
+  .board-desktop:has(.start-project-mount:not(:empty)) {
+    height: 100dvh;
+    overflow-x: clip;
+    overflow-y: hidden;
+  }
+  .board-desktop:has(.start-project-mount:not(:empty)) .board-upper {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: var(--board-upper-h, calc(100dvh - 320px));
+  }
+  .board-col--center > .start-project-mount:not(:empty) {
+    flex-shrink: 1;
+    min-height: 0;
+    overflow-y: auto;
+  }
+}
 .start-project {
   display: grid;
   gap: 10px;
