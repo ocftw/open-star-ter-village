@@ -95,6 +95,20 @@ for (const [width, height, slot] of [[1280, 832, 124], [390, 844, 96]] as const)
   });
 }
 
+test('keyboard paging keeps focus when an arrow disappears', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 832 });
+  await page.goto('/dev?seed=e2e-2');
+  await dismissRoundStartOverlay(page);
+  const next = page.getByTestId('job-market-next');
+  await next.focus();
+  for (let i = 0; i < 8 && (await next.count()); i++) {
+    await page.keyboard.press('Enter');
+    await page.waitForTimeout(450);
+  }
+  await expect(next).toHaveCount(0);
+  await expect(page.getByTestId('job-market-row')).toBeFocused();
+});
+
 test('observer has no REFILL but keeps the market', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 832 });
   await page.goto('/dev?seed=e2e-2');

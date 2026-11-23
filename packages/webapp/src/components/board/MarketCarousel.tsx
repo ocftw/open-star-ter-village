@@ -27,6 +27,11 @@ export default function MarketCarousel({
     if (!row) return;
     const prev = canScrollPrev(row);
     const next = canScrollNext(row);
+    // An arrow that disappears under keyboard focus hands focus to the row.
+    const active = document.activeElement;
+    if ((!prev && active?.closest('.market-carousel__btn--prev')) || (!next && active?.closest('.market-carousel__btn--next'))) {
+      row.focus({ preventScroll: true });
+    }
     setSides((current) => (current.prev === prev && current.next === next ? current : { prev, next }));
   }, []);
 
