@@ -19,7 +19,7 @@ import JobTile from './JobTile';
 import MarketCarousel from './MarketCarousel';
 import { canSelectAction, remainingActionUses } from './actionPanel';
 import { useRefillFlow } from './RefillFlow';
-import { REFILL_TIMING } from './refillFlow';
+import { REFILL_TIMING } from './refillFlowModel';
 
 /** Local shrink of a just-removed OLD card before its ghost appears (ms). */
 const SHRINK_MS = 260;
@@ -83,7 +83,7 @@ export default function JobMarket({
         });
       }, SHRINK_MS),
     );
-    target?.focus({ preventScroll: true });
+    target?.focus();
   };
 
   const handleTap = (id: string) => {

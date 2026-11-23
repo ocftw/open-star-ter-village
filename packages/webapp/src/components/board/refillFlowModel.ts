@@ -10,8 +10,8 @@ export const REFILL_TIMING = {
   empty: 240,
   /** Survivors slide left to close every gap. */
   shift: 300,
-  /** One incoming card flying from the deal origin to the rightmost slot. */
-  deal: 450,
+  /** One incoming card flying from the deal origin to the rightmost slot (60ms delay + 420ms flight + slack). */
+  deal: 520,
   /** Stagger inside a deal step before the flight starts. */
   dealDelay: 60,
   popup: 2000,

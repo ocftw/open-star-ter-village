@@ -2,7 +2,7 @@ import GameStore from '@/game/store/store';
 import { PlayersMutator } from '@/game/store/slice/players';
 import { ActionSlotMutator } from '@/game/store/slice/actionSlot';
 import { JobSlotsMutator } from '@/game/store/slice/jobSlots';
-import { RefillPending, buildRefillView, isRefillAccepted, splitAccepted } from './refillFlow';
+import { RefillPending, buildRefillView, isRefillAccepted, splitAccepted } from './refillFlowModel';
 
 const tiles = ['A', 'B', 'C', 'D', 'E'].map((id) => ({ id, name: id }));
 const pending: RefillPending = { removedIds: ['B', 'C'], tiles, apBefore: 4, playerID: '0', currentPlayer: '0', turn: 1 };

@@ -14,7 +14,7 @@ import {
   buildRefillView,
   isRefillAccepted,
   splitAccepted,
-} from './refillFlow';
+} from './refillFlowModel';
 
 type FlowState = { phase: RefillPhase; pending: RefillPending | null; sequence: RefillSequence | null };
 const IDLE: FlowState = { phase: 'idle', pending: null, sequence: null };

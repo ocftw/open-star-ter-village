@@ -495,13 +495,13 @@ describe('換人力 refill flow (#496)', () => {
     expect(screen.getByTestId('job-card-n1').getAttribute('data-motion')).toBe('deal');
     expect(screen.queryByTestId('job-card-n2')).toBeNull();
     // It lands before the next one flies; survivors never move.
-    advance(450);
+    advance(520);
     expect(rowIds()).toEqual(['A', 'D', 'E', 'n1', 'n2']);
     expect(screen.getByTestId('job-card-n1').getAttribute('data-motion')).toBeNull();
     expect(screen.getByTestId('job-card-n2').getAttribute('data-motion')).toBe('deal');
     expect(screen.queryByText('已更換成新人力')).toBeNull();
     // The last landing opens the toast, separate from the score popup.
-    advance(450);
+    advance(520);
     expect(rowIds()).toEqual(['A', 'D', 'E', 'n1', 'n2']);
     expect(screen.getByText('已更換成新人力')).toBeTruthy();
     expect(screen.getByTestId('score-popup').textContent).toBe('影響力+1');
