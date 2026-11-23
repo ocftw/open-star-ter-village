@@ -52,7 +52,9 @@ function setup({
     Array.from({ length: jobs }, (_, i) => ({ id: `job-${i}`, name: NAMES[i % NAMES.length] })),
   );
   change?.(G);
-  const matchData = players.map((id, i) => ({ id: Number(id), name: names?.[i] ?? ['Alice', 'Bob', 'Charlie', 'Dana'][i] }));
+  const matchData = players.map((id, i) => ({
+    id: Number(id), name: names?.[i] ?? ['Alice', 'Bob', 'Charlie', 'Dana'][i],
+  })).sort((a, b) => a.id - b.id);
   const gameContext = {
     G, ctx: { currentPlayer: '0', playOrder: players, turn: 1, numMoves: 0 }, moves: {}, playerID, matchData,
   } as unknown as GameContext;
