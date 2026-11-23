@@ -2,7 +2,7 @@ import { GameContext } from '@/components/GameContextHelpers';
 import { ProjectCard } from '@/game';
 import { PlayersSelector } from '@/game/store/slice/players';
 import { JobSlotsSelector } from '@/game/store/slice/jobSlots';
-import { RuleSelector } from '@/game/store/slice/rule';
+import { requiresAssignedJobName } from '@/game/core/slashWildJob';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import {
   UserActionMoves,
@@ -42,19 +42,20 @@ export default function HandPanel({
   if (playerID === null) return null;
   const hand = PlayersSelector.getProjectCards(G.players, playerID);
 
-  // 斜槓青年 target-position picker: during Create Project with a
-  // mismatched job card and the event entitlement available, the selected hand
-  // card's requirement rows become tappable targets (all positions are open on
-  // a new project).
+  // 斜槓青年 target-position picker: during Create Project, only when the
+  // selected job card is the player's wild card (legacy games: a mismatched card
+  // while the entitlement is unspent), the selected hand card's requirement rows
+  // become tappable targets (all positions are open on a new project).
   const selectedJobId = Object.keys(jobSelectionMap).find((id) => jobSelectionMap[id]);
   const selectedJobCard = selectedJobId
     ? JobSlotsSelector.getJobCardById(G.table.jobSlots, selectedJobId)
     : undefined;
-  const overrideAvailable = RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, playerID);
   const professionPickerFor = (card: ProjectCard): ProfessionPicker | undefined => {
     if (currentAction !== UserActionMoves.CreateProject) return undefined;
-    if (!overrideAvailable || !selectedJobCard || !selectedCards[card.id]) return undefined;
-    if (Object.keys(card.requirements).includes(selectedJobCard.name)) return undefined;
+    if (!selectedJobCard || !selectedCards[card.id]) return undefined;
+    if (!requiresAssignedJobName(G.rules, playerID, selectedJobCard, Object.keys(card.requirements))) {
+      return undefined;
+    }
     return {
       eligibleJobNames: Object.keys(card.requirements),
       selectedJobName: assignedJobName,
