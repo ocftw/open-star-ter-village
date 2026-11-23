@@ -1,5 +1,5 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
-import { errors, jwtVerify } from 'jose';
+import { jwtVerify } from 'jose';
 
 /**
  * Audience shared by the (future, #452) token issuer and this verifier. A host
@@ -56,8 +56,9 @@ export async function verifyHostToken(token: string | undefined, secret: Uint8Ar
     if (typeof payload.sub !== 'string' || payload.sub.trim() === '') return { rejected: 'claims' };
     return { userId: payload.sub };
   } catch (error) {
-    if (error instanceof errors.JWTExpired) return { rejected: 'expired' };
-    if (error instanceof errors.JWTClaimValidationFailed) return { rejected: 'claims' };
+    const code = (error as { code?: unknown } | null)?.code;
+    if (code === 'ERR_JWT_EXPIRED') return { rejected: 'expired' };
+    if (code === 'ERR_JWT_CLAIM_VALIDATION_FAILED') return { rejected: 'claims' };
     return { rejected: 'invalid' };
   }
 }

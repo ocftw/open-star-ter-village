@@ -7,16 +7,13 @@ const config = {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   modulePathIgnorePatterns: ['<rootDir>/dist/', '<rootDir>/.next/'],
-  // jose 6 is ESM-only; let ts-jest compile it to CommonJS for these tests.
+  // jose 6 is ESM-only; compile it to CommonJS for these tests.
   transformIgnorePatterns: [
     '/node_modules/.pnpm/(?!jose@)',
     '/node_modules/(?!\\.pnpm/|jose/)',
   ],
   transform: {
-    '^.+/jose/dist/.+\\.js$': ['ts-jest', {
-      tsconfig: { allowJs: true, module: 'commonjs', target: 'es2022' },
-      diagnostics: false,
-    }],
+    '^.+/jose/dist/.+\\.js$': '<rootDir>/jest.esm-transform.js',
     '^.+\\.tsx?$': ['ts-jest', {
       tsconfig: {
         module: 'commonjs',
