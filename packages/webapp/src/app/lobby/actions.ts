@@ -1,5 +1,6 @@
 import { LobbyClientError } from 'boardgame.io/client';
 import { GAME_NAME, lobbyClient } from '@/lib/lobbyClient';
+import { hostTokenInit } from '@/lib/getHostToken';
 import type { MatchCredentials } from '@/lib/matchCredentials';
 
 export type LobbyMatch = Awaited<ReturnType<typeof lobbyClient.getMatch>>;
@@ -45,6 +46,25 @@ export function getOpenSeatID(match: Pick<LobbyMatch, 'players'>): string | null
 
 export function getFilledSeatCount(match: Pick<LobbyMatch, 'players'>): number {
   return match.players.filter(hasPlayerName).length;
+}
+
+/**
+ * After the original host declines a rematch, the server moves the earliest
+ * joiner to the host seat (0) and marks it with `promotedFromSeat` (#445
+ * DB-P4). Returns the credentials re-pointed at seat 0 when that happened to
+ * this player, otherwise null.
+ */
+export function getPromotedCredentials(
+  match: Pick<LobbyMatch, 'players'>,
+  credentials: MatchCredentials,
+): MatchCredentials | null {
+  if (credentials.playerID === '0') return null;
+  const host = match.players.find((player) => player.id === 0);
+  const previous = match.players.find((player) => String(player.id) === credentials.playerID);
+  const data = host?.data as Record<string, unknown> | undefined;
+  if (!host || data?.promotedFromSeat !== credentials.playerID || host.name !== credentials.playerName) return null;
+  if (previous && hasPlayerName(previous)) return null;
+  return { ...credentials, playerID: '0' };
 }
 
 export function hasHostStarted(match: Pick<LobbyMatch, 'players'>): boolean {
@@ -126,7 +146,8 @@ export async function getMatch(matchID: string): Promise<LobbyMatch> {
 }
 
 export async function createRoom(playerName: string, numPlayers: number): Promise<MatchCredentials> {
-  const { matchID } = await lobbyClient.createMatch(GAME_NAME, { numPlayers });
+  // A member host token (none until sign-in exists) makes the match member-hosted.
+  const { matchID } = await lobbyClient.createMatch(GAME_NAME, { numPlayers }, await hostTokenInit());
   try {
     return await joinRoom(matchID, playerName, '0');
   } catch (error) {
