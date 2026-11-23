@@ -1,7 +1,7 @@
 import * as Sentry from "@sentry/node";
 import game from "./game";
 import { loadWebappEnv } from "./env";
-import { startGameServer } from "./server/gameServer";
+import { exitOnSignals, startGameServer } from "./server/gameServer";
 import { PersistenceConfigError } from "./server/persistence/config";
 import { HostTokenConfigError } from "./server/persistence/hostToken";
 
@@ -37,15 +37,7 @@ async function serve() {
   });
   console.log(`Match persistence: ${running.persistence.status()}`);
 
-  // Fly sends SIGTERM (start-production.sh forwards it here) and kills after
-  // kill_timeout (default 5s): finish in-flight writes, then exit.
-  const shutdown = async () => {
-    const clean = await running.stop(4_000);
-    await Sentry.flush(500).catch(() => false);
-    process.exit(clean ? 0 : 1);
-  };
-  process.once('SIGTERM', () => void shutdown());
-  process.once('SIGINT', () => void shutdown());
+  exitOnSignals(running, () => Sentry.flush(500));
 }
 
 serve().catch(async (error: unknown) => {

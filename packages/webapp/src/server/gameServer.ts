@@ -77,7 +77,13 @@ export async function startGameServer(options: GameServerOptions): Promise<Runni
   const port = typeof address === 'object' && address ? address.port : options.port;
 
   let stopping: Promise<boolean> | undefined;
+  const matchQueues = () =>
+    Array.from((server.transport as unknown as { perMatchQueue?: Map<string, { onIdle(): Promise<void> }> })
+      .perMatchQueue?.values() ?? []);
   const stop = (timeoutMs?: number) => {
+    // Closing Socket.IO empties the rooms, and boardgame.io then drops their
+    // move queues: take them first so queued moves still finish.
+    const queuedMoves = matchQueues();
     stopping ??= shutdownGracefully({
       timeoutMs,
       stopAccepting: async () => {
@@ -88,9 +94,7 @@ export async function startGameServer(options: GameServerOptions): Promise<Runni
         await new Promise<void>((resolve) => setImmediate(resolve));
       },
       waitForMoves: async () => {
-        const queues = (server.transport as unknown as { perMatchQueue?: Map<string, { onIdle(): Promise<void> }> })
-          .perMatchQueue;
-        await Promise.all(Array.from(queues?.values() ?? []).map((queue) => queue.onIdle()));
+        await Promise.all([...queuedMoves, ...matchQueues()].map((queue) => queue.onIdle()));
       },
       flushWrites: () => persistence.close(),
     });
@@ -98,4 +102,19 @@ export async function startGameServer(options: GameServerOptions): Promise<Runni
   };
 
   return { server, persistence, port, stop };
+}
+
+/**
+ * Fly sends SIGTERM (start-production.sh forwards it to this process) and
+ * kills after kill_timeout (5s by default): finish in-flight and pending
+ * latest-state writes, then exit (0 when nothing was left unsaved).
+ */
+export function exitOnSignals(running: RunningGameServer, beforeExit: () => Promise<unknown> = async () => undefined) {
+  const shutdown = async () => {
+    const clean = await running.stop(4_000);
+    await beforeExit().catch(() => undefined);
+    process.exit(clean ? 0 : 1);
+  };
+  process.once('SIGTERM', () => void shutdown());
+  process.once('SIGINT', () => void shutdown());
 }
