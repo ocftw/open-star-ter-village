@@ -811,6 +811,7 @@ div.job-tile,
   line-height: 1.3;
   color: var(--ink-mute);
   text-align: center;
+  text-wrap: balance;
   overflow-wrap: anywhere;
   margin-top: -3px;
 }
