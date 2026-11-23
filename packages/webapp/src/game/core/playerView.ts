@@ -1,6 +1,7 @@
 import { Ctx, PlayerID } from "boardgame.io";
 import { ClientGameState, GameState } from "../store/store";
 import { ClientPlayers } from "../store/slice/players";
+import { getSlashWildJobCardOwner, isSlashWildJobCard } from "./slashWildJob";
 
 export const playerView = ({ G, playerID }: { G: GameState; ctx: Ctx; playerID: PlayerID | null }): ClientGameState => {
   const { decks, players, ...view } = G;
@@ -15,8 +16,19 @@ export const playerView = ({ G, playerID }: { G: GameState; ctx: Ctx; playerID: 
     }
   }
 
+  // 斜槓青年: only the entitled player sees their synthetic wild job card.
+  const table = view.table.jobSlots.some(isSlashWildJobCard)
+    ? {
+      ...view.table,
+      jobSlots: view.table.jobSlots.filter(
+        (card) => !isSlashWildJobCard(card) || getSlashWildJobCardOwner(card) === playerID,
+      ),
+    }
+    : view.table;
+
   return {
     ...view,
+    table,
     players: publicPlayers,
   };
 }
