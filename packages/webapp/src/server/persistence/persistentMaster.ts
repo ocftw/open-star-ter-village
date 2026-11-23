@@ -99,8 +99,7 @@ export class PersistentMaster extends Master {
 type Socket = {
   id: string;
   emit(event: string, ...args: unknown[]): void;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  on(event: string, listener: (...args: any[]) => unknown): void;
+  on(event: string, listener: (...args: never[]) => unknown): void;
   join(room: string): void;
 };
 type Namespace = {
