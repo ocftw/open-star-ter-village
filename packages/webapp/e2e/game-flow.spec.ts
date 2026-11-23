@@ -305,8 +305,51 @@ test.describe('Simplified Mode — Action Flow', () => {
     const historyBox = await history.boundingBox();
     expect(historyBox!.y).toBeGreaterThanOrEqual(rankingBox!.y + rankingBox!.height);
 
+    // The new card sits under 你的專案 for Alice, 他人的專案 for Bob, and observers see no 你的專案.
+    await expect(page.getByTestId('projects-yours').locator('[data-testid^="project-slot-"]')).toHaveCount(1);
+    await expect(page.getByTestId('projects-others').locator('[data-testid^="project-slot-"]')).toHaveCount(0);
+    await selectDevPerspective(page, 'player2');
+    await expect(page.getByTestId('projects-yours').locator('[data-testid^="project-slot-"]')).toHaveCount(0);
+    await expect(page.getByTestId('projects-others').locator('[data-testid^="project-slot-"]')).toHaveCount(1);
+
     await selectDevPerspective(page, 'observer');
+    await expect(page.getByTestId('projects-yours')).toHaveCount(0);
+    await expect(page.getByTestId('projects-others').locator('[data-testid^="project-slot-"]')).toHaveCount(1);
     await expect(history.getByRole('listitem').filter({ hasText: /^Alice · 發起專案：/ })).toHaveCount(1);
+  });
+
+  test('展開鈕 scrolls the projects box, not the page, at 1280x560', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 560 });
+    const toggle = page.getByRole('button', { name: /專案區往下捲|專案區回到頂端/ });
+    await expect(toggle).toHaveCount(0);
+    await selectCompatibleHandAndJobCard(page);
+    await confirmButton(page).click();
+    await waitForGameReady(page);
+    await performEndTurn(page);
+    await selectDevPerspective(page, 'player2');
+    await waitForGameReady(page);
+    await selectCompatibleHandAndJobCard(page);
+    await confirmButton(page).click();
+    await waitForGameReady(page);
+
+    const box = page.getByTestId('projects-section');
+    await expect(toggle).toBeVisible();
+    await expect(toggle).toHaveAccessibleName('專案區往下捲');
+    expect(await box.evaluate((el) => getComputedStyle(el).overflowY)).toBe('auto');
+    const pageY = await page.evaluate(() => window.scrollY);
+    await toggle.click();
+    await expect.poll(() => box.evaluate((el) => el.scrollTop)).toBeGreaterThan(0);
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(pageY);
+    // Keep stepping until the end; the label flips there.
+    for (let i = 0; i < 6 && (await toggle.getAttribute('aria-label')) !== '專案區回到頂端'; i++) {
+      await toggle.click();
+      await page.waitForTimeout(500);
+    }
+    await expect(toggle).toHaveAccessibleName('專案區回到頂端');
+    await toggle.click();
+    await expect.poll(() => box.evaluate((el) => el.scrollTop)).toBe(0);
+    await expect(toggle).toHaveAccessibleName('專案區往下捲');
+    expect(await page.evaluate(() => window.scrollY)).toBe(pageY);
   });
 
   test('history uses a paper card after the ranking on mobile with internal scroll', async ({ page }) => {

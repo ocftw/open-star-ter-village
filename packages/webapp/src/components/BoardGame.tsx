@@ -35,7 +35,7 @@ import WaitingForPlayerAlert from './board/WaitingForPlayerAlert';
 import GameOverNote from './board/GameOverNote';
 import { isFourFreedomsDiscardPending } from './board/fourFreedomsDiscard';
 import { getActionAreaView } from './board/actionAreaView';
-import BoardProjectSlot from './board/BoardProjectSlot';
+import ProjectArea from './board/ProjectArea';
 import MobileSheet from './board/MobileSheet';
 import { ScorePanel } from './board/SidePanels';
 import TurnStrip from './board/TurnStrip';
@@ -116,83 +116,8 @@ const Board: React.FC<GameContext> = (gameContext) => {
       />
     );
 
-  // Only occupied slots take card space; capacity is one compact indicator (F-003).
-  const occupiedSlots = G.table.projectBoard.filter((slot) => slot.card);
-  const slotCapacity = G.table.projectBoard.length;
-  const slotsAvailable = slotCapacity - occupiedSlots.length;
-
   const projectsSection = (
-    <div ref={projectsRef} data-testid="projects-section">
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, paddingLeft: 4, flexWrap: 'wrap' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <span style={{ fontWeight: 800, fontSize: 14 }}>專案區</span>
-          <span className="en-cap">Projects</span>
-        </div>
-        <span
-          style={{
-            fontSize: 11,
-            color: 'var(--ink-mute)',
-            background: 'white',
-            border: '1.5px solid var(--paper-3)',
-            borderRadius: 999,
-            padding: '3px 10px',
-          }}
-        >
-          ⓘ 先選行動，再選擇專案
-        </span>
-        <span
-          className="sticker"
-          data-testid="project-capacity"
-          data-available={slotsAvailable}
-          style={
-            slotsAvailable === 0
-              ? { background: 'var(--orange-soft)', borderColor: 'var(--orange-deep)', color: 'var(--orange-deep)' }
-              : undefined
-          }
-        >
-          {slotsAvailable > 0
-            ? `專案空位 ${slotsAvailable}/${slotCapacity} · ${slotsAvailable} slots available`
-            : '專案區已滿 · No slots available'}
-        </span>
-      </div>
-      {occupiedSlots.length > 0 ? (
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
-            gap: 14,
-            // +10px room for the floating star pill above each card.
-            marginTop: 22,
-          }}
-        >
-          {occupiedSlots.map((slot) => (
-            <BoardProjectSlot
-              key={slot.id}
-              slot={slot}
-              playerID={playerID}
-              matchData={matchData}
-              idle={false}
-              professionPicker={professionPickerFor(slot)}
-            />
-          ))}
-        </div>
-      ) : (
-        <div
-          className="hatch"
-          style={{
-            marginTop: 12,
-            border: '2px dashed var(--ink-mute)',
-            borderRadius: 18,
-            padding: '18px 16px',
-            textAlign: 'center',
-            color: 'var(--ink-mute)',
-            fontSize: 12,
-          }}
-        >
-          還沒有專案 — 選擇「發起專案」開始。 No projects yet — choose START to create one.
-        </div>
-      )}
-    </div>
+    <ProjectArea gameContext={gameContext} projectsRef={projectsRef} professionPickerFor={professionPickerFor} />
   );
 
   const jobMarket = <JobMarket gameContext={gameContext} idle={idle} discardActive={showDiscardPanel} />;
