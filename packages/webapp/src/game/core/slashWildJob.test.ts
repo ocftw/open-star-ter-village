@@ -29,6 +29,8 @@ import {
 } from '@/game/core/stage/action/validate';
 import { EventCard, JobCard, ProjectCard } from '@/game/card';
 import {
+  SLASH_EVENT_FUNCTION_NAME,
+  SLASH_WILD_EVENT_DESCRIPTION,
   SLASH_WILD_JOB_NAME,
   getNumRealJobSlots,
   getRealJobCards,
@@ -39,6 +41,9 @@ import {
   requiresAssignedJobName,
   stripSlashWildJobCards,
 } from './slashWildJob';
+import rawEventCards from '@/game/data/card/events.json';
+
+const rawSlashEvent = rawEventCards.find((c) => c.function_name === SLASH_EVENT_FUNCTION_NAME);
 
 const PROJECT: ProjectCard = {
   id: 'p1',
@@ -155,6 +160,17 @@ describe('setup marker', () => {
       random: { Number: Math.random, Shuffle: <T,>(a: T[]) => a },
     } as never);
     expect(RuleSelector.isSlashWildJobCardEnabled(G.rules)).toBe(true);
+  });
+
+  it('setup() gives the 斜槓青年 event the wild-tile description in new games', () => {
+    const G = setup({
+      ctx: { numPlayers: 2, playOrder: ['0', '1'] } as Ctx,
+      random: { Number: Math.random, Shuffle: <T,>(a: T[]) => a },
+    } as never, { forcedFirstEvent: SLASH_EVENT_FUNCTION_NAME });
+    const slashEvent = G.decks.events.drawPile.find((c) => c.function_name === SLASH_EVENT_FUNCTION_NAME);
+    expect(slashEvent?.description).toBe(SLASH_WILD_EVENT_DESCRIPTION);
+    expect(slashEvent?.description).not.toBe(rawSlashEvent?.description);
+    expect(slashEvent?.description).toContain(SLASH_WILD_JOB_NAME);
   });
 
   it('a state without the marker is legacy', () => {

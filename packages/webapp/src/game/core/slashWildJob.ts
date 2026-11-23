@@ -19,6 +19,12 @@ import { GameHookHandler } from './type';
 export const SLASH_WILD_JOB_NAME = '斜槓青年';
 export const SLASH_WILD_JOB_ID_PREFIX = 'slash-';
 export const SLASH_EVENT_FUNCTION_NAME = 'ignore_first_worker_requirement';
+/**
+ * Event text for marked games. events.json keeps the legacy wording, which in-flight
+ * (unmarked) games already carry in their state; setup() swaps this in for new games.
+ */
+export const SLASH_WILD_EVENT_DESCRIPTION =
+  `本輪每位玩家在自己的回合，人力市場會多出一張「${SLASH_WILD_JOB_NAME}」人力卡，發起專案或招募人力時可當作專案需要的任一職業使用（每位玩家限用一次，未使用則回合結束時移除）`;
 
 /** Real job card ids are base-32 strings without '-', so the prefix cannot collide. */
 export const isSlashWildJobCard = (card: Pick<JobCard, 'id' | 'name'>): boolean =>
