@@ -64,6 +64,18 @@ describe('JobMarket', () => {
     expect(screen.queryByText(/先選加入專案/)).toBeNull();
   });
 
+  it('counts real cards only when the synthetic 斜槓青年 card is present', () => {
+    setup({
+      change: (G) => {
+        G.table.jobSlots.unshift({ id: 'slash-0-1', name: '斜槓青年' });
+      },
+    });
+    const count = screen.getByTestId('job-market-count');
+    expect(count.textContent).toBe('JOB MARKET · 8 CARDS');
+    expect(count.getAttribute('data-count')).toBe('8');
+    expect(screen.getByTestId('job-card-slash-0-1').getAttribute('data-wild')).toBe('true');
+  });
+
   it('names every player on the badge group and hides the dots from assistive tech', () => {
     setup();
     const badges = screen.getByTestId('job-market-players');
