@@ -113,6 +113,39 @@ export default function ContextAction({
     wasStarting.current = startActive;
   }, [startActive]);
 
+  const lastContributionStepperRef = React.useRef<HTMLButtonElement | null>(null);
+  React.useEffect(() => {
+    if (!contributionActive) {
+      lastContributionStepperRef.current = null;
+      return;
+    }
+    const remember = (event: FocusEvent) => {
+      const target = event.target;
+      if (
+        target instanceof HTMLButtonElement
+        && (target.dataset.testid === 'contribution-increment' || target.dataset.testid === 'contribution-decrement')
+      ) {
+        lastContributionStepperRef.current = target;
+      }
+    };
+    document.addEventListener('focusin', remember);
+    return () => document.removeEventListener('focusin', remember);
+  }, [contributionActive]);
+
+  const hadPendingContribution = React.useRef(false);
+  const hasPendingContribution = contributions.length > 0;
+  React.useLayoutEffect(() => {
+    const wasPending = hadPendingContribution.current;
+    hadPendingContribution.current = hasPendingContribution;
+    if (!wasPending || hasPendingContribution || !contributionActive) return;
+    const last = lastContributionStepperRef.current;
+    const available = last && last.isConnected && !last.disabled ? last : null;
+    const sibling = last?.closest('[data-testid="contribution-controls"]')
+      ?.querySelector<HTMLButtonElement>('[data-testid="contribution-increment"]:not(:disabled)');
+    const firstPlus = document.querySelector<HTMLButtonElement>('[data-testid="contribution-increment"]:not(:disabled)');
+    (available ?? sibling ?? firstPlus ?? panelRef.current)?.focus();
+  }, [hasPendingContribution, contributionActive]);
+
   useEffect(() => {
     if (!startActive) return;
     const handleEscape = (event: KeyboardEvent) => {

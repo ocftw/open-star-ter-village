@@ -309,6 +309,20 @@ it('clears pending only from the bar and leaves the whole-action cancel availabl
   expect(getContributions(store.getState())).toEqual([]);
 });
 
+it('returns keyboard focus to the last stepper after cancelling pending contribution', () => {
+  setup();
+  fireEvent.click(actionButton(UserActionMoves.ContributeOwnedProjects));
+  const increment = screen.getByRole('button', { name: '增加 工程師 貢獻' });
+  increment.focus();
+  fireEvent.click(increment);
+  const cancel = screen.getByTestId('contribution-cancel-pending');
+  cancel.focus();
+  fireEvent.click(cancel);
+  expect(screen.queryByTestId('contribution-confirm-bar')).toBeNull();
+  expect(screen.getByTestId('context-action').getAttribute('data-mode')).toBe(UserActionMoves.ContributeOwnedProjects);
+  expect(document.activeElement).toBe(increment);
+});
+
 it.each(['worker lost', 'row filled', 'card replaced'] as const)('blocks confirmation when the live board changes: %s', (change) => {
   const { G, gameContext, moves, slots, update } = setup();
   fireEvent.click(actionButton(UserActionMoves.ContributeOwnedProjects));
