@@ -16,6 +16,7 @@ import { usePolling } from '@/lib/usePolling';
 import { useSnackbar } from '@/lib/useSnackbar';
 import {
   getFilledSeatCount,
+  getPromotedCredentials,
   getLobbyErrorMessage,
   getMatch,
   hasHostStarted,
@@ -122,7 +123,12 @@ export default function GameRoomPage() {
       const serverMatch = await getMatch(matchID).catch(() => null);
 
       if (serverMatch) {
-        const slot = serverMatch.players.find((player) => player.id === Number(creds.playerID));
+        const promoted = getPromotedCredentials(serverMatch, creds);
+        if (promoted) {
+          saveCredentials(promoted);
+          nextCredentials = promoted;
+        }
+        const slot = serverMatch.players.find((player) => player.id === Number(nextCredentials!.playerID));
         if (!slot?.name || slot.name !== creds.playerName) {
           clearCredentials(matchID);
           nextCredentials = null;
@@ -141,6 +147,15 @@ export default function GameRoomPage() {
       cancelled = true;
     };
   }, [matchID]);
+
+  // A rematch host who declined hands the host seat to the earliest joiner (#445).
+  React.useEffect(() => {
+    if (!match || !credentials) return;
+    const promoted = getPromotedCredentials(match, credentials);
+    if (!promoted) return;
+    saveCredentials(promoted);
+    setCredentials(promoted);
+  }, [match, credentials]);
 
   const allSeatsFilled = match ? getFilledSeatCount(match) === match.players.length : false;
   const hasStarted = match ? hasHostStarted(match) : false;
