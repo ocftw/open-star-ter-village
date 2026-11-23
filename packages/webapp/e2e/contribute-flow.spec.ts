@@ -97,6 +97,10 @@ for (const width of [1280, 390]) {
     const output = process.env.ISSUE_499_SCREENSHOTS;
     const capture = async (name: string) => {
       if (!output) return;
+      if (await bar(page).count()) {
+        if (mobile) await expect(bar(page)).toHaveCSS('animation-name', 'none');
+        else await expect(bar(page)).toHaveCSS('transform', 'none');
+      }
       await mkdir(output, { recursive: true });
       await page.screenshot({ path: join(output, `${width}-${name}.png`), fullPage: mobile });
     };
