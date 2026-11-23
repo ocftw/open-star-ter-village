@@ -49,6 +49,7 @@ it('hides the button without overflow and sets the strip offset', () => {
   expect(screen.queryByRole('button')).toBeNull();
   expect(screen.getByTestId('turn-strip').style.getPropertyValue('--turn-strip-top')).toBe('88px');
   expect(screen.getByTestId('projects').style.getPropertyValue('--turn-strip-top')).toBe('88px');
+  expect(screen.getByTestId('projects').style.getPropertyValue('--project-area-above')).toBe('0px');
 });
 
 it('appears on overflow, scrolls 80% of the box, flips at the end and returns to the top', () => {

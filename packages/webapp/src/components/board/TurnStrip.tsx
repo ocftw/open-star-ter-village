@@ -26,6 +26,10 @@ export default function TurnStrip({ gameContext, projectsRef, horizontal = false
       const headerHeight = header?.getBoundingClientRect().height ?? 72;
       strip.style.setProperty('--turn-strip-top', `${headerHeight + 16}px`);
       projects.style.setProperty('--turn-strip-top', `${headerHeight + 16}px`);
+      // Notices stacked above the scroller in the same column also eat viewport height.
+      const column = projects.parentElement;
+      const above = column ? Math.max(0, projects.offsetTop - column.offsetTop) : 0;
+      projects.style.setProperty('--project-area-above', `${above}px`);
       const end = projects.scrollHeight - projects.clientHeight;
       setOverflow(end > SCROLL_TOLERANCE);
       setAtEnd(projects.scrollTop >= end - SCROLL_TOLERANCE);
@@ -35,6 +39,7 @@ export default function TurnStrip({ gameContext, projectsRef, horizontal = false
     observer.observe(projects);
     // Content growth inside a height-capped box does not resize the box itself.
     Array.from(projects.children).forEach((child) => observer.observe(child));
+    Array.from(projects.parentElement?.children ?? []).forEach((sibling) => sibling !== projects && observer.observe(sibling));
     if (header) observer.observe(header);
     window.addEventListener('resize', measure);
     projects.addEventListener('scroll', measure, { passive: true });

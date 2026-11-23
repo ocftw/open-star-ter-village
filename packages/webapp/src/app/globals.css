@@ -1674,7 +1674,7 @@ body:has([data-testid='header-menu'][aria-expanded='true']) [data-testid='dev-to
 @media (min-width: 900px) {
   .project-area {
     overflow-y: auto;
-    max-height: calc(100vh - var(--turn-strip-top, 88px) - 16px);
+    max-height: calc(100vh - var(--turn-strip-top, 88px) - var(--project-area-above, 0px) - 16px);
   }
 }
 @media (max-width: 899px) {
