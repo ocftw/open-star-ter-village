@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Alert, Snackbar } from '@mui/material';
-import { Button } from '@/components/design';
+import { Button, Toast } from '@/components/design';
 import { PANEL_ACTIONS, canSelectAction } from './actionPanel';
 import { GameContext } from '@/components/GameContextHelpers';
 import { useSnackbar } from '@/lib/useSnackbar';
@@ -25,6 +25,7 @@ import {
   getCurrentAction,
   resetAction,
   setCurrentAction,
+  setAssignedJobName,
   setHandProjectCardsInteractive,
   setJobSlotsInteractive,
   setProjectSlotsInteractive,
@@ -41,6 +42,10 @@ import { RuleSelector } from '@/game/store/slice/rule';
 import { ActionSlotSelector } from '@/game/store/slice/actionSlot';
 import { PlayersSelector } from '@/game/store/slice/players';
 import { useRefillFlow } from './RefillFlow';
+import StartProjectFlow from './StartProjectFlow';
+import { useStartProjectSession } from './useStartProject';
+import { isSlashPair } from './startProjectOrder';
+import { useStartProjectDeparture } from './useStartProjectDeparture';
 
 type ExtendedMoves = ActionMoves & { endActionTurn: () => void };
 type RegularActionName = ActionMoveName;
@@ -54,7 +59,14 @@ type ModeCopy = {
 /**
  * Action-first panel with the existing selection, preflight, and move dispatch flow.
  */
-export default function ContextAction({ gameContext }: { gameContext: GameContext }) {
+export default function ContextAction({
+  gameContext, startMountRef, startHand, startMarket,
+}: {
+  gameContext: GameContext;
+  startMountRef?: React.RefObject<HTMLDivElement>;
+  startHand?: React.ReactNode;
+  startMarket?: React.ReactNode;
+}) {
   const { G, ctx, moves, playerID } = gameContext;
   const typedMoves = moves as unknown as ExtendedMoves;
   const dispatch = useAppDispatch();
@@ -65,12 +77,36 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
   const projectSelection = useAppSelector(getSelectedProjectSlots);
   const contributions = useAppSelector(getContributions);
   const assignedJobName = useAppSelector(getAssignedJobName);
+  const start = useStartProjectSession();
+  const startActive = currentAction === UserActionMoves.CreateProject;
+  const panelRef = React.useRef<HTMLElement>(null);
+  const captureDeparture = useStartProjectDeparture(gameContext);
+  const wasStarting = React.useRef(false);
+  React.useLayoutEffect(() => {
+    if (!startActive && wasStarting.current) {
+      const startButton = panelRef.current?.querySelector<HTMLButtonElement>('[data-testid="action-createProject"]');
+      if (startButton && !startButton.disabled) startButton.focus();
+      else panelRef.current?.focus();
+    }
+    wasStarting.current = startActive;
+  }, [startActive]);
+
+  useEffect(() => {
+    if (!startActive) return;
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape' || event.defaultPrevented || document.querySelector('dialog[open]')) return;
+      event.preventDefault();
+      dispatch(resetAction());
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [startActive, dispatch]);
 
   const selectionState = {
-    selectedHandProjectCards: Object.keys(handSelection).filter((id) => handSelection[id]),
-    selectedJobSlots: Object.keys(jobSelection).filter((id) => jobSelection[id]),
+    selectedHandProjectCards: start ? (start.picks.projectId ? [start.picks.projectId] : []) : Object.keys(handSelection).filter((id) => handSelection[id]),
+    selectedJobSlots: start ? (start.picks.jobId ? [start.picks.jobId] : []) : Object.keys(jobSelection).filter((id) => jobSelection[id]),
     selectedProjectSlots: Object.keys(projectSelection).filter((id) => projectSelection[id]),
-    assignedJobName,
+    assignedJobName: start ? start.assignedJobName : assignedJobName,
     contributions,
     totalContributionValue: getTotalContributionValue(contributions),
     getMaxContributionValue: (name: RegularActionName) => RuleSelector.getMaxContributionValue(G.rules, name),
@@ -107,6 +143,7 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
   // ctx.numMoves after a dispatch. If it never advances, tell the player their
   // action did not happen.
   const { snackbar, showSnackbar, closeSnackbar } = useSnackbar();
+  const [startRejected, setStartRejected] = React.useState(false);
   const latestMoveStateRef = React.useRef({ numMoves: ctx.numMoves ?? 0, turn: ctx.turn });
   useEffect(() => {
     latestMoveStateRef.current = { numMoves: ctx.numMoves ?? 0, turn: ctx.turn };
@@ -116,10 +153,11 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
     window.setTimeout(() => {
       const latest = latestMoveStateRef.current;
       if (latest.turn === captured.turn && latest.numMoves === captured.numMoves) {
+        setStartRejected(startActive);
         showSnackbar(GENERIC_ACTION_ERROR_MESSAGE, 'error');
       }
     }, 2000);
-  }, [ctx.numMoves, ctx.turn, showSnackbar]);
+  }, [ctx.numMoves, ctx.turn, showSnackbar, startActive]);
 
   // Entering an action enables the matching board elements; leaving it clears
   // all selections and interactivity.
@@ -268,6 +306,7 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
     const options = overtime ? { useOvertime: true } : undefined;
     switch (actionName) {
       case 'createProject':
+        captureDeparture(selectionState.selectedHandProjectCards[0], selectionState.selectedJobSlots[0]);
         typedMoves.createProject(
           selectionState.selectedHandProjectCards[0],
           selectionState.selectedJobSlots[0],
@@ -312,8 +351,6 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
   const selectionProgress = (name: RegularActionName): string => {
     const s = selectionState;
     switch (name) {
-      case 'createProject':
-        return `已選專案 ${s.selectedHandProjectCards.length}/1 · 指派人力 ${s.selectedJobSlots.length}/1`;
       case 'recruit':
         return `已選人力 ${s.selectedJobSlots.length}/1 · 目標專案 ${s.selectedProjectSlots.length}/1`;
       case 'contributeOwnedProjects':
@@ -321,6 +358,8 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
         return `已分配 ${s.totalContributionValue}/${s.getMaxContributionValue(name)} 點`;
       case 'removeAndRefillJobs':
         return `已選 ${s.selectedJobSlots.length} 張（至少 1 張）`;
+      case 'createProject':
+        return '';
     }
   };
 
@@ -335,7 +374,7 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
       case UserActionMoves.CreateProject:
         return {
           title: '發起專案',
-          hint: `選擇一張手牌專案與一張人力卡。${selectionProgress('createProject')}`,
+          hint: '',
           cta: '確認發起',
         };
       case UserActionMoves.Recruit:
@@ -421,104 +460,158 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
     </>
   ) : null;
 
+  const overtimeControl = showOvertimePrompt && (
+    <Button data-testid="overtime-confirm" onClick={() => setOvertime(true)}>
+      加班重複 · Overtime
+    </Button>
+  );
+
+  const startProjectId = selectionState.selectedHandProjectCards[0];
+  const startJobId = selectionState.selectedJobSlots[0];
+  const startProject = startProjectId ? PlayersSelector.getProjectCardById(G.players, playerID, startProjectId) : undefined;
+  const startJob = G.table.jobSlots.find((card) => card.id === startJobId);
+  const startFlow = startActive && (
+    <StartProjectFlow
+      cost={RuleSelector.getActionTokenCost(G.rules, 'createProject')}
+      project={startProject}
+      job={startJob}
+      slash={isSlashPair(G, playerID, { projectId: startProjectId ?? null, jobId: startJobId ?? null })}
+      assignment={selectionState.assignedJobName}
+      onAssign={(name) => dispatch(setAssignedJobName(name))}
+      onClearProject={() => {
+        if (start) start.pick('project', startProjectId);
+        else {
+          dispatch(resetHandProjectCardSelection());
+          dispatch(setAssignedJobName(null));
+        }
+      }}
+      onClearJob={() => {
+        if (start) start.pick('job', startJobId);
+        else {
+          dispatch(resetJobSlotSelection());
+          dispatch(setAssignedJobName(null));
+        }
+      }}
+      hand={startHand}
+      market={startMarket}
+      actions={
+        <>
+          {(preflightFailure || copy.hint) && (
+            <p role="status" data-testid={preflightFailure ? 'preflight-error' : undefined}>
+              {preflightFailure ? getActionErrorMessage(preflightFailure) : copy.hint}
+            </p>
+          )}
+          {overtimeControl}
+          <Button variant="sec" data-testid="ca-cancel" onClick={handleCancel}>取消行動</Button>
+          {confirmButton}
+        </>
+      }
+    />
+  );
+
   return (
     <section
-      className="gr-action-panel"
+      ref={panelRef}
+      tabIndex={-1}
+      className={startActive && startHand ? 'gr-action-panel gr-action-panel--start-mobile' : 'gr-action-panel'}
       aria-label="行動面板"
       data-testid="context-action"
       data-mode={currentAction ?? 'idle'}
       data-overtime={overtime || undefined}
     >
-      <div className="gr-action-panel__ap">
-        <strong>AP</strong>
-        <div
-          className="gr-action-panel__dots"
-          data-testid="ap-dots"
-          data-ap={actionTokens}
-          role="img"
-          aria-label={`剩餘 ${actionTokens} AP`}
-        >
-          {Array.from({ length: Math.max(actionTokens, RuleSelector.getPlayerMaxActionTokens(G.rules)) }, (_, i) => (
-            <span key={i} className="gr-action-panel__dot" data-remaining={i < actionTokens} aria-hidden="true" />
-          ))}
+      <div className="start-project-panel-main" hidden={startActive && !!startHand}>
+        <div className="gr-action-panel__ap">
+          <strong>AP</strong>
+          <div
+            className="gr-action-panel__dots"
+            data-testid="ap-dots"
+            data-ap={actionTokens}
+            role="img"
+            aria-label={`剩餘 ${actionTokens} AP`}
+          >
+            {Array.from({ length: Math.max(actionTokens, RuleSelector.getPlayerMaxActionTokens(G.rules)) }, (_, i) => (
+              <span key={i} className="gr-action-panel__dot" data-remaining={i < actionTokens} aria-hidden="true" />
+            ))}
+          </div>
         </div>
-      </div>
-      <div className="gr-action-panel__heading">
-        <h2>行動</h2>
-        <span>本回合剩餘次數</span>
-      </div>
-      <div className="gr-action-panel__actions">
-        {PANEL_ACTIONS.map(({ name, title, en }) => {
-          const available = canSelectAction(G, playerID, name);
-          // The game exposes one normal slot per action, not the mockup's two-use counters.
-          const remaining = RuleSelector.isActionSlotAvailable(G.rules, name) && !isSlotOccupied(name) ? 1 : 0;
-          const maxContribution = name === UserActionMoves.ContributeOwnedProjects || name === UserActionMoves.ContributeJoinedProjects
-            ? RuleSelector.getMaxContributionValue(G.rules, name) : null;
-          return (
-            <Button
-              key={name}
-              variant="sec"
-              className="gr-panel-action"
-              data-testid={`action-${name}`}
-              aria-pressed={currentAction === name}
-              disabled={!available}
-              onClick={() => {
-                if (currentAction !== name && canSelectAction(G, playerID, name)) {
-                  dispatch(setCurrentAction(name));
-                }
-              }}
-            >
-              <span className="gr-panel-action__cost" aria-label={`COST ${RuleSelector.getActionTokenCost(G.rules, name)}`}>
-                <span>COST</span>
-                <strong>{RuleSelector.getActionTokenCost(G.rules, name)}</strong>
-              </span>
-              <span className="gr-panel-action__label">
-                <strong>{title}</strong>
-                <span className="gr-panel-action__en">{en}</span>
-                <span className="gr-action-panel__dots" aria-label={`本回合剩餘 ${remaining} 次`} data-remaining-uses={remaining}>
-                  <span className="gr-action-panel__dot" data-remaining={remaining > 0} aria-hidden="true" />
+        <div className="gr-action-panel__heading">
+          <h2>行動</h2>
+          <span>本回合剩餘次數</span>
+        </div>
+        <div className="gr-action-panel__actions">
+          {PANEL_ACTIONS.map(({ name, title, en }) => {
+            const available = !(name === UserActionMoves.CreateProject && refillFlow.busy) && canSelectAction(G, playerID, name);
+            // The game exposes one normal slot per action, not the mockup's two-use counters.
+            const remaining = RuleSelector.isActionSlotAvailable(G.rules, name) && !isSlotOccupied(name) ? 1 : 0;
+            const maxContribution = name === UserActionMoves.ContributeOwnedProjects || name === UserActionMoves.ContributeJoinedProjects
+              ? RuleSelector.getMaxContributionValue(G.rules, name) : null;
+            return (
+              <Button
+                key={name}
+                variant="sec"
+                className="gr-panel-action"
+                data-testid={`action-${name}`}
+                aria-pressed={currentAction === name}
+                disabled={!available}
+                onClick={() => {
+                  if (currentAction !== name && available) {
+                    dispatch(setCurrentAction(name));
+                  }
+                }}
+              >
+                <span className="gr-panel-action__cost" aria-label={`COST ${RuleSelector.getActionTokenCost(G.rules, name)}`}>
+                  <span>COST</span>
+                  <strong>{RuleSelector.getActionTokenCost(G.rules, name)}</strong>
                 </span>
-              </span>
-              {maxContribution !== null && (
-                <span className="gr-panel-action__gain">
-                  <strong>+{maxContribution}</strong>
-                  <span>最大貢獻</span>
+                <span className="gr-panel-action__label">
+                  <strong>{title}</strong>
+                  <span className="gr-panel-action__en">{en}</span>
+                  <span className="gr-action-panel__dots" aria-label={`本回合剩餘 ${remaining} 次`} data-remaining-uses={remaining}>
+                    <span className="gr-action-panel__dot" data-remaining={remaining > 0} aria-hidden="true" />
+                  </span>
                 </span>
-              )}
-            </Button>
-          );
-        })}
-      </div>
+                {maxContribution !== null && (
+                  <span className="gr-panel-action__gain">
+                    <strong>+{maxContribution}</strong>
+                    <span>最大貢獻</span>
+                  </span>
+                )}
+              </Button>
+            );
+          })}
+        </div>
 
-      <div className="gr-action-panel__selection" role="status" aria-live="polite">
-        {currentAction ? (
-          <>
-            <strong>{copy.title}</strong>
-            <p>{copy.hint}</p>
-            {preflightFailure && (
-              <p data-testid="preflight-error">{getActionErrorMessage(preflightFailure)}</p>
-            )}
-          </>
-        ) : <p>{copy.hint}</p>}
+        {!startActive && <><div className="gr-action-panel__selection" role="status" aria-live="polite">
+          {currentAction ? (
+            <>
+              <strong>{copy.title}</strong>
+              <p>{copy.hint}</p>
+              {preflightFailure && (
+                <p data-testid="preflight-error">{getActionErrorMessage(preflightFailure)}</p>
+              )}
+            </>
+          ) : <p>{copy.hint}</p>}
+        </div>
+        {overtimeControl}
+        {inMarket
+          ? (marketActions ? createPortal(refillControls, marketActions) : refillControls)
+          : confirmButton}
+        <div className="gr-action-panel__footer">
+          <Button variant="sec" data-testid="ca-cancel" onClick={handleCancel} disabled={!currentAction}>
+            取消行動
+          </Button>
+          <Button data-testid="end-turn" onClick={() => dispatch(setCurrentAction(UserActionMoves.EndActionTurn))}>
+            結束我的回合
+          </Button>
+        </div>
+        </>}
       </div>
-      {showOvertimePrompt && (
-        <Button data-testid="overtime-confirm" onClick={() => setOvertime(true)}>
-          加班重複 · Overtime
-        </Button>
-      )}
-      {inMarket
-        ? (marketActions ? createPortal(refillControls, marketActions) : refillControls)
-        : confirmButton}
-      <div className="gr-action-panel__footer">
-        <Button variant="sec" data-testid="ca-cancel" onClick={handleCancel} disabled={!currentAction}>
-          取消行動
-        </Button>
-        <Button data-testid="end-turn" onClick={() => dispatch(setCurrentAction(UserActionMoves.EndActionTurn))}>
-          結束我的回合
-        </Button>
-      </div>
+      {startMountRef?.current ? createPortal(startFlow, startMountRef.current) : startFlow}
+      <Toast open={startRejected && snackbar.open} tone="alert" onClose={closeSnackbar} className="start-project__toast">
+        {startRejected && snackbar.open && <span data-testid="action-error-toast">{snackbar.message}</span>}
+      </Toast>
       <Snackbar
-        open={snackbar.open}
+        open={!startRejected && snackbar.open}
         autoHideDuration={6000}
         onClose={closeSnackbar}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}

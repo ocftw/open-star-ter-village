@@ -7,6 +7,8 @@ import { Provider } from 'react-redux';
 import { GameContext } from '@/components/GameContextHelpers';
 import GameStore from '@/game/store/store';
 import { PlayersMutator } from '@/game/store/slice/players';
+import { RuleMutator } from '@/game/store/slice/rule';
+import { toggleJobSlotSelection } from '@/lib/reducers/jobSlotSlice';
 import { ProjectCard } from '@/game/card';
 import { makeStore } from '@/lib/store';
 import { UserActionMoves, setCurrentAction, setHandProjectCardsInteractive } from '@/lib/reducers/actionStepSlice';
@@ -16,11 +18,15 @@ const cards: ProjectCard[] = ['a', 'b', 'c'].map((id, i) => ({
   id, name: `專案${id}`, type: '開放政府', difficulty: i + 1, description: '', requirements: { 工程師: 2 + i },
 }));
 
-function setup(opts: { hand?: ProjectCard[]; playerID?: string | null; layout?: 'rail' | 'strip' } = {}) {
-  const { hand = cards, playerID = '0', layout } = opts;
+function setup(opts: { slash?: boolean; hand?: ProjectCard[]; playerID?: string | null; layout?: 'rail' | 'strip' } = {}) {
+  const { hand = cards, playerID = '0', layout, slash = false } = opts;
   const G = GameStore.initialState();
   PlayersMutator.initialize(G.players, ['0', '1']);
   PlayersMutator.addProjects(G.players, '0', hand);
+  if (slash) {
+    RuleMutator.setEventIgnoreFirstWorkerRequirement(G.rules, ['0'], true);
+    G.table.jobSlots = [{ id: 'legal', name: '法務專家' }];
+  }
   const gameContext = { G, ctx: { currentPlayer: '0' }, moves: {}, playerID } as unknown as GameContext;
   const store = makeStore();
   const view = render(
@@ -84,4 +90,15 @@ test('while creating a project the hand is single-select and keyboard operable',
   expect(b.getAttribute('aria-pressed')).toBe('true');
   fireEvent.keyDown(b, { key: ' ' });
   expect(b.getAttribute('aria-pressed')).toBe('false');
+});
+
+test('START leaves profession target controls out of the hand', () => {
+  const { store } = setup({ slash: true });
+  act(() => {
+    store.dispatch(setCurrentAction(UserActionMoves.CreateProject));
+    store.dispatch(setHandProjectCardsInteractive());
+    store.dispatch(toggleJobSlotSelection('legal'));
+  });
+  fireEvent.click(screen.getByTestId('hand-card-a'));
+  expect(screen.queryAllByTestId(/^profession-target-/)).toHaveLength(0);
 });

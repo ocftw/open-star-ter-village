@@ -28,7 +28,7 @@ export function remainingActionUses(G: ValidatableState, name: ActionMoveName): 
 }
 
 /** A move is selectable if it is legal now, or legal with an overtime token. */
-function canPass(check: (opts?: ActionExecutionOptions) => ValidationResult): boolean {
+export function canPass(check: (opts?: ActionExecutionOptions) => ValidationResult): boolean {
   return check().valid || check({ useOvertime: true }).valid;
 }
 

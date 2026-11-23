@@ -5,6 +5,8 @@ import { ProfessionPicker } from './professionPicker';
 type ProjectCardFaceProps = {
   card: ProjectCard;
   selected?: boolean;
+  disabled?: boolean;
+  visualState?: 'generalHint';
   onClick?: () => void;
   'data-testid'?: string;
   /** 斜槓青年: makes requirement rows tappable target positions. */
@@ -19,11 +21,14 @@ type ProjectCardFaceProps = {
 export default function ProjectCardFace({
   card,
   selected = false,
+  disabled = false,
+  visualState,
   onClick,
   professionPicker,
   ...rest
 }: ProjectCardFaceProps) {
-  const interactive = !!onClick;
+  const interactive = !!onClick && !disabled;
+  const state = disabled ? 'disabled' : selected ? 'focused' : visualState ?? 'default';
   const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     // Rows inside the card handle their own keys; only act on the card itself.
     if (e.target !== e.currentTarget) return;
@@ -34,9 +39,10 @@ export default function ProjectCardFace({
   };
   return (
     <div
-      onClick={onClick}
-      className={`project-card project-card--compact project-card--hand project-card--${selected ? 'focused' : 'default'}${interactive ? ' project-card--hand-interactive' : ''}`}
-      data-visual-state={selected ? 'focused' : 'default'}
+      onClick={interactive ? onClick : undefined}
+      aria-disabled={disabled || undefined}
+      className={`project-card project-card--compact project-card--hand project-card--${state}${interactive ? ' project-card--hand-interactive' : ''}`}
+      data-visual-state={state}
       data-requirements={Object.keys(card.requirements).join(',')}
       data-job-requirements={JSON.stringify(card.requirements)}
       {...(interactive && {
@@ -57,7 +63,7 @@ export default function ProjectCardFace({
       <dl className="project-card__hand-jobs project-card__jobs">
         {Object.entries(card.requirements).map(([jobName, need]) => {
           // 斜槓青年 target picking: rows become tap targets.
-          const pickerEligible = !!professionPicker?.eligibleJobNames.includes(jobName);
+          const pickerEligible = !disabled && !!professionPicker?.eligibleJobNames.includes(jobName);
           const pickerSelected = pickerEligible && professionPicker!.selectedJobName === jobName;
           const pick = () => professionPicker!.onPick(jobName);
           return (

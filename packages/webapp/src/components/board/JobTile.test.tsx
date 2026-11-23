@@ -140,3 +140,15 @@ describe('JobTile refill motion (#496)', () => {
     expect(screen.getByRole('group', { name: '工程師（已移除）' })).toBeTruthy();
   });
 });
+
+it('makes an explicitly disabled job inert even if passed a click handler', () => {
+  const onClick = jest.fn();
+  render(<JobTile id="blocked" name="工程師" visualState="disabled" onClick={onClick} />);
+  const card = screen.getByTestId('job-card-blocked') as HTMLButtonElement;
+  expect(card.disabled).toBe(true);
+  card.focus();
+  expect(document.activeElement).not.toBe(card);
+  fireEvent.click(card);
+  fireEvent.keyDown(card, { key: 'Enter' });
+  expect(onClick).not.toHaveBeenCalled();
+});

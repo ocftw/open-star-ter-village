@@ -9,9 +9,11 @@ type JobTileProps = {
    * `change`: remove mode, not yet removed (full colour + red ×).
    * `ghost`: already removed in remove mode (dashed, faded, no ×).
    */
-  visualState?: 'default' | 'focused' | 'generalHint' | 'change' | 'ghost';
+  visualState?: 'default' | 'focused' | 'generalHint' | 'change' | 'ghost' | 'disabled';
   /** Tile body is the control (select / recruit / create). Ignored while the × is shown. */
   onClick?: () => void;
+  /** Static face in a START slot. Rail selectors only identify market cards. */
+  preview?: boolean;
   /** Remove mode: the × is the control; the tile body is not. */
   onRemove?: () => void;
   /**
@@ -32,6 +34,7 @@ export default function JobTile({
   selected = false,
   visualState,
   onClick,
+  preview = false,
   onRemove,
   motion,
   motionDelay,
@@ -39,10 +42,11 @@ export default function JobTile({
 }: JobTileProps) {
   const meta = getJobMetaByName(name);
   const state = visualState ?? (selected ? 'focused' : 'default');
-  const showRemove = !!onRemove && state !== 'ghost' && !shrinking;
+  const disabled = state === 'disabled';
+  const showRemove = !disabled && !!onRemove && state !== 'ghost' && !shrinking;
   const common = {
     className: 'job-tile',
-    'data-testid': `job-card-${id}`,
+    'data-testid': preview ? undefined : `job-card-${id}`,
     'data-job-name': name,
     'data-selected': selected || undefined,
     'data-visual-state': state,
@@ -59,11 +63,12 @@ export default function JobTile({
   return (
     <div
       className="job-tile-wrap"
-      data-job-id={id}
+      data-job-id={preview ? undefined : id}
+      data-start-id={preview ? undefined : id}
       data-motion={motion}
       style={motionDelay ? ({ '--motion-delay': `${motionDelay}ms` } as React.CSSProperties) : undefined}
     >
-      {showRemove || state === 'ghost' || shrinking ? (
+      {preview || showRemove || state === 'ghost' || shrinking ? (
         // Not a button: the × is a sibling control, so no nested interactives.
         <div
           {...common}
@@ -78,8 +83,8 @@ export default function JobTile({
           {...common}
           aria-label={name}
           aria-pressed={selected}
-          disabled={!onClick}
-          onClick={onClick}
+          disabled={disabled || !onClick}
+          onClick={disabled ? undefined : onClick}
         >
           {content}
         </button>

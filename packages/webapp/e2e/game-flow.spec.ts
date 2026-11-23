@@ -100,14 +100,14 @@ async function performEndTurn(page: Page): Promise<void> {
 }
 
 /**
- * Choose START, then tap a compatible hand card and matching job card.
+ * Choose START, select a compatible pair, and confirm it once.
  * Returns the job name used.
  *
  * @param requireMultipleJobTypes - when true, prefer hand cards with 2+ different
  *   job requirements — and (pass 1) an unclaimed job needing > 2 points — so a
  *   recruit + contribute on this project stays possible afterwards.
  */
-async function selectCompatibleHandAndJobCard(page: Page, requireMultipleJobTypes = false): Promise<string> {
+async function createProject(page: Page, requireMultipleJobTypes = false): Promise<string> {
   await contextAction(page).locator('[data-testid="action-createProject"]').click();
   await expect(contextAction(page)).toHaveAttribute('data-mode', 'createProject');
   const handCards = page.locator('[data-testid^="hand-card-"]');
@@ -154,8 +154,13 @@ async function selectCompatibleHandAndJobCard(page: Page, requireMultipleJobType
           );
         if (pass === 'multi-with-room' && !hasRecruitableOther(true)) continue;
         if (pass === 'multi' && !hasRecruitableOther(false)) continue;
+        // Picking the project reorders the market. Keep the worker identity.
+        const jobTestId = (await jobCard.getAttribute('data-testid'))!;
         await handCard.click();
-        await jobCard.click();
+        await page.getByTestId(jobTestId).click();
+        await expect(confirmButton(page)).toHaveCount(1);
+        await expect(confirmButton(page)).toBeEnabled();
+        await confirmButton(page).click();
         return jobName;
       }
     }
@@ -294,8 +299,7 @@ test.describe('Simplified Mode — Action Flow', () => {
       for (let n = 0; n < 2 && !(await overflowing()); n++) {
         // Out of AP, hand cards or room: just end the turn.
         if (!(await contextAction(page).locator('[data-testid="action-createProject"]').isEnabled())) break;
-        await selectCompatibleHandAndJobCard(page);
-        await confirmButton(page).click();
+        await createProject(page);
         await waitForGameReady(page);
       }
       await performEndTurn(page);
@@ -389,10 +393,7 @@ test.describe('Simplified Mode — Action Flow', () => {
     await expectScore(page, 'Alice', 0);
 
     // Choose START → tap hand card → tap job card.
-    await selectCompatibleHandAndJobCard(page);
-
-    await expect(confirmButton(page)).toBeEnabled();
-    await confirmButton(page).click();
+    await createProject(page);
 
     // Verify outcome: 2 AP spent, 2 VP gained
     await expectActions(page, 'Alice', INITIAL_ACTION_TOKENS - CREATE_PROJECT_COST);
@@ -427,14 +428,12 @@ test.describe('Simplified Mode — Action Flow', () => {
     await page.setViewportSize({ width: 1280, height: 560 });
     const toggle = page.getByRole('button', { name: /專案區往下捲|專案區回到頂端/ });
     await expect(toggle).toHaveCount(0);
-    await selectCompatibleHandAndJobCard(page);
-    await confirmButton(page).click();
+    await createProject(page);
     await waitForGameReady(page);
     await performEndTurn(page);
     await selectDevPerspective(page, 'player2');
     await waitForGameReady(page);
-    await selectCompatibleHandAndJobCard(page);
-    await confirmButton(page).click();
+    await createProject(page);
     await waitForGameReady(page);
 
     const box = page.getByTestId('projects-section');
@@ -483,9 +482,7 @@ test.describe('Simplified Mode — Action Flow', () => {
   // ── Scenario 3: Recruit Talents ───────────────────────────────────────────
   test('Scenario 3: Recruit Talents — costs 1 AP and places a token on a project', async ({ page }) => {
     // Prerequisite: put a project on the board with a second job type.
-    const ownerJobName = await selectCompatibleHandAndJobCard(page, true);
-    await expect(confirmButton(page)).toBeEnabled();
-    await confirmButton(page).click();
+    const ownerJobName = await createProject(page, true);
 
     // Back to idle, then choose JOIN → tap job card → tap project slot.
     await waitForGameReady(page);
@@ -596,9 +593,7 @@ test.describe('Simplified Mode — Action Flow', () => {
   // ── Scenario 8: contributeOwnedProjects ───────────────────────────────────
   test('Scenario 8: contributeOwnedProjects — costs 1 AP and records contribution', async ({ page }) => {
     // Prerequisite: Alice must have at least one worker token on her own project.
-    await selectCompatibleHandAndJobCard(page);
-    await expect(confirmButton(page)).toBeEnabled();
-    await confirmButton(page).click();
+    await createProject(page);
 
     await expectActions(page, 'Alice', INITIAL_ACTION_TOKENS - CREATE_PROJECT_COST);
     await waitForGameReady(page);
@@ -675,9 +670,7 @@ test.describe('Simplified Mode — Action Flow', () => {
     // Bob: create a project with 2+ job types so Alice can recruit on it later.
     await selectDevPerspective(page, 'player2');
     await waitForGameReady(page);
-    await selectCompatibleHandAndJobCard(page, true); // requireMultipleJobTypes
-    await expect(confirmButton(page)).toBeEnabled();
-    await confirmButton(page).click();
+    await createProject(page, true); // requireMultipleJobTypes
     await waitForGameReady(page);
     await performEndTurn(page);
 
@@ -744,8 +737,7 @@ test.describe('四大自由 — pending discard is visible to everyone (#373)', 
     // actionPhaseDone unset, so other clients must read Charlie's AP, not their own.
     await selectDevPerspective(page, 'player3');
     await waitForGameReady(page);
-    const ownerJobName = await selectCompatibleHandAndJobCard(page, true);
-    await confirmButton(page).click();
+    const ownerJobName = await createProject(page, true);
     await waitForGameReady(page);
     await selectCompatibleJobAndProjectSlot(page, ownerJobName);
     await confirmButton(page).click();

@@ -53,7 +53,7 @@ function setup(change?: (G: GameState) => void, playerID: string | null = '0') {
     removeAndRefillJobs: jest.fn(), endActionTurn: jest.fn(),
   };
   const gameContext = {
-    G, ctx: { currentPlayer: '0', turn: 1, numMoves: 0 }, moves, playerID,
+    G, ctx: { currentPlayer: '0', playOrder: ['0', '1'], turn: 1, numMoves: 0 }, moves, playerID,
   } as unknown as GameContext;
   const store = makeStore();
   const view = render(
@@ -175,6 +175,7 @@ it('selects the action first, then cards, and dispatches the existing create mov
   fireEvent.click(screen.getByTestId('job-card-engineer'));
   expect(confirmButton().disabled).toBe(false);
   fireEvent.click(confirmButton());
+  expect(moves.createProject).toHaveBeenCalledTimes(1);
   expect(moves.createProject).toHaveBeenCalledWith('hand-project', 'engineer', undefined, undefined);
   expect(screen.getByTestId('context-action').getAttribute('data-mode')).toBe('idle');
 });
@@ -349,7 +350,7 @@ describe('換人力 refill flow (#496)', () => {
     };
     const store = makeStore();
     const tree = (g: GameState, t = turn, numMoves = g.table.actionSlots.removeAndRefillJobs.isOccupied ? 1 : 0) => {
-      const gameContext = { G: g, ctx: { currentPlayer: '0', turn: t, numMoves }, moves, playerID: '0' } as unknown as GameContext;
+      const gameContext = { G: g, ctx: { currentPlayer: '0', playOrder: ['0', '1'], turn: t, numMoves }, moves, playerID: '0' } as unknown as GameContext;
       return (
         <Provider store={store}>
           <RefillFlowProvider gameContext={gameContext}>
