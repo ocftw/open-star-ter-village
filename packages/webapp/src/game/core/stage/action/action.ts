@@ -28,18 +28,22 @@ export const action: GameStageConfig = {
       client: false,
       move: withErrorBoundary(recruit, INVALID_MOVE),
     },
+    // Public-only (#445 DB-P6): the body reads only the mover's own player
+    // state, the project board and rules, so the client predicts it right
+    // away; the server broadcast (including any turn end) reconciles.
     contributeOwnedProjects: {
-      client: false,
       move: withErrorBoundary(contributeOwnedProjects, INVALID_MOVE),
     },
     contributeJoinedProjects: {
-      client: false,
       move: withErrorBoundary(contributeJoinedProjects, INVALID_MOVE),
     },
     removeAndRefillJobs: {
       client: false,
       move: withErrorBoundary(removeAndRefillJobs, INVALID_MOVE),
     },
+    // Hidden-info moves (#445 DB-C5-H): deck draws/discards, or a result that is
+    // the server-side turn end (refill, settle, event draw). The client shows a
+    // pending visual and the server broadcast fills the result.
     endActionTurn: {
       client: false,
       move: withErrorBoundary(endActionTurn, INVALID_MOVE),
