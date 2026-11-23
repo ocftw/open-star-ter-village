@@ -1,12 +1,12 @@
 import { ProjectBoardMutator, ProjectBoardSelector } from '@/game/store/slice/projectBoard';
-import { DeckMutator, DeckSelector } from '@/game/store/slice/deck';
 import { ProjectSlotMutator } from '@/game/store/slice/projectSlot/projectSlot';
 import { GameMove } from '@/game/core/type';
 import { ScoreBoardMutator } from '@/game/store/slice/scoreBoard';
 import { PlayersMutator, PlayersSelector } from '@/game/store/slice/players';
 import { JobSlotsMutator, JobSlotsSelector } from '@/game/store/slice/jobSlots';
 import { RuleMutator, RuleSelector } from '@/game/store/slice/rule';
-import { ActionExecutionOptions, ActionValidationError, validateCreateProject } from '@/game/core/stage/action/validate';
+import { discardJobCards, refillJobSlots } from '@/game/core/slashWildJob';
+import { ActionExecutionOptions, ActionValidationError, resolveJobAssignment, validateCreateProject } from '@/game/core/stage/action/validate';
 import { applyActionCost } from './applyActionCost';
 
 export type CreateProject = (
@@ -29,7 +29,12 @@ export const createProject: GameMove<CreateProject> = ({ G, playerID }, projectC
   const assignWorkerTokenCosts = RuleSelector.getAssignWorkerTokenCost(G.rules, 'createProject');
   const projectCard = PlayersSelector.getProjectCardById(G.players, playerID, projectCardId)!;
   const jobCard = JobSlotsSelector.getJobCardById(G.table.jobSlots, jobCardId)!;
-  const ignoreRequirement = RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, playerID);
+  const assignment = resolveJobAssignment(
+    G, playerID, jobCard, Object.keys(projectCard.requirements), assignedJobName,
+  );
+  if (!assignment.valid) {
+    throw new ActionValidationError(assignment);
+  }
 
   // All checks passed — now mutate state
   applyActionCost(G, playerID, 'createProject', options);
@@ -42,26 +47,21 @@ export const createProject: GameMove<CreateProject> = ({ G, playerID }, projectC
   ProjectSlotMutator.assignOwner(projectSlot, playerID, projectOwnerWorkerTokenCosts);
 
   JobSlotsMutator.removeJobCard(G.table.jobSlots, jobCard);
-  DeckMutator.discard(G.decks.jobs, [jobCard]);
+  // The synthetic 斜槓青年 wild card never enters the discard pile.
+  discardJobCards(G, [jobCard]);
 
-  if (ignoreRequirement) {
+  if (assignment.consumesEntitlement) {
     RuleMutator.consumeIgnoreFirstWorkerRequirement(G.rules, playerID);
   }
 
   PlayersMutator.useWorkerTokens(G.players, playerID, assignWorkerTokenCosts);
   const initialContributionValue = RuleSelector.getAssignWorkerInitialContributionValue(G.rules, 'createProject');
-  // 斜槓青年: a mismatched card records its contribution under the
-  // player-chosen required position, never under an unrequired profession.
-  const matchesRequirement = Object.keys(projectCard.requirements).includes(jobCard.name);
-  const effectiveJobName = matchesRequirement ? jobCard.name : assignedJobName!;
-  ProjectSlotMutator.assignWorker(projectSlot, effectiveJobName, playerID, initialContributionValue);
+  // 斜槓青年: the wild card (or a legacy override) records its contribution
+  // under the player-chosen required position, never under its own name.
+  ProjectSlotMutator.assignWorker(projectSlot, assignment.jobName, playerID, initialContributionValue);
 
-  // Refill job card
-  const maxJobSlots = RuleSelector.getTableMaxJobSlots(G.rules);
-  const refillCardNumber = maxJobSlots - G.table.jobSlots.length;
-  const jobCards = DeckSelector.peek(G.decks.jobs, refillCardNumber);
-  DeckMutator.draw(G.decks.jobs, refillCardNumber);
-  JobSlotsMutator.addJobCards(G.table.jobSlots, jobCards);
+  // Refill job card (counts real cards only; the wild card is not a market slot)
+  refillJobSlots(G);
 
   const victoryPoints = RuleSelector.getActionVictoryPoints(G.rules, 'createProject');
   ScoreBoardMutator.add(G.table.scoreBoard, playerID, victoryPoints);

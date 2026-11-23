@@ -15,6 +15,7 @@ import {
 import { Button, PLAYER_COLORS, Toast } from '@/components/design';
 import { RuleSelector } from '@/game/store/slice/rule';
 import { getPlayerName } from '@/components/playerNameMap';
+import { getNumRealJobSlots, isSlashWildJobCard } from '@/game/core/slashWildJob';
 import JobTile from './JobTile';
 import MarketCarousel from './MarketCarousel';
 import { canSelectAction, remainingActionUses } from './actionPanel';
@@ -101,7 +102,7 @@ export default function JobMarket({
 
   const playerIds = ctx.playOrder;
   const playerNames = playerIds.map((id) => getPlayerName(matchData, id));
-  const cardCount = flow.view?.count ?? G.table.jobSlots.length;
+  const cardCount = flow.view?.count ?? getNumRealJobSlots(G.table.jobSlots);
   const refillName = UserActionMoves.RemoveAndRefillJobs;
   const refillEnabled = idle && currentAction === null && cardCount > 0 && playerID !== null && canSelectAction(G, playerID, refillName) && !flow.busy;
   const remaining = remainingActionUses(G, refillName);
@@ -175,7 +176,8 @@ export default function JobMarket({
         // 四大自由 discard: marked tiles leave the row (prototype); the
         // × disappears once 2 are marked. Refill: removed tiles stay as ghosts.
         if (discardMode && removed) return null;
-        const canRemove = !removed && !(discardMode && removedCount >= 2);
+        // The 斜槓青年 wild card is turn-only and can be neither replaced nor discarded.
+        const canRemove = !removed && !(discardMode && removedCount >= 2) && !isSlashWildJobCard(job);
         const settling = refillMode && removed && !!shrinking[job.id];
         return (
           <JobTile
