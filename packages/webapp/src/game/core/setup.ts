@@ -49,6 +49,9 @@ export interface GameSetupData {
 export const setup: SetupFn<GameState> = ({ ctx, random }, setupData?: GameSetupData) => {
   // get default game state
   const G = GameStore.initialState();
+  // New games use the 斜槓青年 per-turn wild job card. Games created before this
+  // marker existed stay on the legacy entitlement semantics (see Rule.slashWildJobCard).
+  RuleMutator.enableSlashWildJobCard(G.rules);
 
   // Set event card count based on player count (Simplified Mode rulebook):
   // 2 players → 6 cards, 3 players → 5 cards, 4+ players → 4 cards
