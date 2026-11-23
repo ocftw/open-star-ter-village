@@ -7,7 +7,12 @@ import { ProjectBoardSelector } from '@/game/store/slice/projectBoard';
 import { ProjectSlotSelector } from '@/game/store/slice/projectSlot/projectSlot';
 import { ContributionAction, getTotalContributionValue } from '@/game/core/ContributionAction';
 import { ActionMoveName } from '@/game/core/stage/action/move/type';
-import { ActionExecutionOptions, invalid, VALID, ValidatableState, ValidationResult } from './types';
+import { JobCard } from '@/game/card';
+import {
+  canPlaySlashWildJobCard,
+  isSlashWildJobCard,
+} from '@/game/core/slashWildJob';
+import { ActionExecutionOptions, invalid, VALID, ValidatableState, ValidationFailure, ValidationResult } from './types';
 
 /**
  * Shared pure validators for every action move. The server moves and
@@ -39,6 +44,76 @@ const validateSlotAndActionTokens = (
     return invalid('INSUFFICIENT_ACTION_TOKENS', { required, available });
   }
   return VALID;
+};
+
+/** How a job card is placed onto a project, once validated. */
+export type JobAssignment = {
+  valid: true;
+  /** Profession the contribution is recorded under. */
+  jobName: string;
+  /** Marked games: the synthetic wild card (removed, never discarded). */
+  wild: boolean;
+  /** Whether placing this card spends the player's 斜槓青年 entitlement. */
+  consumesEntitlement: boolean;
+};
+
+/**
+ * Resolve which profession `jobCard` fills on a project requiring
+ * `requirementNames`. Shared by validators and moves.
+ *
+ * Marked games (Rule.slashWildJobCard): only the player's own synthetic wild
+ * card is wild; it needs an assignedJobName among the requirements and is the
+ * only thing that consumes the entitlement. An ordinary card must match.
+ * Legacy games: a mismatched ordinary card is accepted through the entitlement
+ * with an assignedJobName, and the first placement consumes it even when matching.
+ */
+export const resolveJobAssignment = (
+  G: ValidatableState,
+  playerID: PlayerID,
+  jobCard: JobCard,
+  requirementNames: string[],
+  assignedJobName?: string,
+): JobAssignment | ValidationFailure => {
+  const entitled = RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, playerID);
+
+  if (RuleSelector.isSlashWildJobCardEnabled(G.rules)) {
+    if (isSlashWildJobCard(jobCard)) {
+      // Someone else's / spent wild card is not playable: treat as gone.
+      if (!canPlaySlashWildJobCard(G.rules, playerID, jobCard)) {
+        return invalid('JOB_CARD_NOT_ON_TABLE');
+      }
+      if (!assignedJobName) {
+        return invalid('PROFESSION_TARGET_REQUIRED');
+      }
+      if (!requirementNames.includes(assignedJobName)) {
+        return invalid('PROFESSION_TARGET_UNAVAILABLE');
+      }
+      return { valid: true, jobName: assignedJobName, wild: true, consumesEntitlement: true };
+    }
+    if (!requirementNames.includes(jobCard.name)) {
+      return invalid('PROJECT_JOB_NOT_REQUIRED', { jobName: jobCard.name });
+    }
+    return { valid: true, jobName: jobCard.name, wild: false, consumesEntitlement: false };
+  }
+
+  // Legacy (unmarked) game. A synthetic card can only be stray state here.
+  if (isSlashWildJobCard(jobCard)) {
+    return invalid('JOB_CARD_NOT_ON_TABLE');
+  }
+  // Matching cards use their own profession; assignedJobName is ignored.
+  if (requirementNames.includes(jobCard.name)) {
+    return { valid: true, jobName: jobCard.name, wild: false, consumesEntitlement: entitled };
+  }
+  if (!entitled) {
+    return invalid('PROJECT_JOB_NOT_REQUIRED', { jobName: jobCard.name });
+  }
+  if (!assignedJobName) {
+    return invalid('PROFESSION_TARGET_REQUIRED');
+  }
+  if (!requirementNames.includes(assignedJobName)) {
+    return invalid('PROFESSION_TARGET_UNAVAILABLE');
+  }
+  return { valid: true, jobName: assignedJobName, wild: false, consumesEntitlement: true };
 };
 
 export const validateCreateProject = (
@@ -74,21 +149,10 @@ export const validateCreateProject = (
     return invalid('JOB_CARD_NOT_ON_TABLE');
   }
 
-  // Matching cards use their own profession; assignedJobName is ignored.
-  if (Object.keys(projectCard.requirements).includes(jobCard.name)) {
-    return VALID;
-  }
-
-  // Mismatched card: only valid through 斜槓青年, and it must name a target position.
-  if (!RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, playerID)) {
-    return invalid('PROJECT_JOB_NOT_REQUIRED', { jobName: jobCard.name });
-  }
-  if (!assignedJobName) {
-    return invalid('PROFESSION_TARGET_REQUIRED');
-  }
-  if (!Object.keys(projectCard.requirements).includes(assignedJobName)) {
-    return invalid('PROFESSION_TARGET_UNAVAILABLE');
-  }
+  const assignment = resolveJobAssignment(
+    G, playerID, jobCard, Object.keys(projectCard.requirements), assignedJobName,
+  );
+  if (!assignment.valid) return assignment;
 
   return VALID;
 };
@@ -120,35 +184,19 @@ export const validateRecruit = (
     return invalid('PROJECT_SLOT_NOT_FOUND');
   }
 
-  // Matching cards use their own profession; assignedJobName is ignored.
-  if (Object.keys(activeProject.card.requirements).includes(jobCard.name)) {
-    if (ProjectSlotSelector.hasWorker(activeProject, jobCard.name, playerID)) {
-      return invalid('WORKER_ALREADY_ASSIGNED', { jobName: jobCard.name });
-    }
-    const jobContribution = ProjectSlotSelector.getJobContribution(activeProject, jobCard.name);
-    if (jobContribution >= activeProject.card.requirements[jobCard.name]) {
-      return invalid('JOB_REQUIREMENT_FULFILLED', { jobName: jobCard.name });
-    }
-    return VALID;
+  const assignment = resolveJobAssignment(
+    G, playerID, jobCard, Object.keys(activeProject.card.requirements), assignedJobName,
+  );
+  if (!assignment.valid) return assignment;
+  // Per-player duplicate / fulfilled checks apply to the profession actually filled
+  // (the card's own, or the wild card's / legacy override's chosen target).
+  const { jobName } = assignment;
+  if (ProjectSlotSelector.hasWorker(activeProject, jobName, playerID)) {
+    return invalid('WORKER_ALREADY_ASSIGNED', { jobName });
   }
-
-  // Mismatched card: only valid through 斜槓青年, targeting a chosen position.
-  if (!RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, playerID)) {
-    return invalid('PROJECT_JOB_NOT_REQUIRED', { jobName: jobCard.name });
-  }
-  if (!assignedJobName) {
-    return invalid('PROFESSION_TARGET_REQUIRED');
-  }
-  if (!Object.keys(activeProject.card.requirements).includes(assignedJobName)) {
-    return invalid('PROFESSION_TARGET_UNAVAILABLE');
-  }
-  // Per-player duplicate restriction applies to the TARGET profession.
-  if (ProjectSlotSelector.hasWorker(activeProject, assignedJobName, playerID)) {
-    return invalid('WORKER_ALREADY_ASSIGNED', { jobName: assignedJobName });
-  }
-  const targetContribution = ProjectSlotSelector.getJobContribution(activeProject, assignedJobName);
-  if (targetContribution >= activeProject.card.requirements[assignedJobName]) {
-    return invalid('JOB_REQUIREMENT_FULFILLED', { jobName: assignedJobName });
+  const jobContribution = ProjectSlotSelector.getJobContribution(activeProject, jobName);
+  if (jobContribution >= activeProject.card.requirements[jobName]) {
+    return invalid('JOB_REQUIREMENT_FULFILLED', { jobName });
   }
 
   return VALID;
@@ -222,6 +270,9 @@ export const validateRemoveAndRefillJobs = (
   }
 
   const jobCardsToRemove = JobSlotsSelector.getJobCardsByIds(G.table.jobSlots, jobCardIds);
+  if (jobCardsToRemove.some(isSlashWildJobCard)) {
+    return invalid('SLASH_WILD_JOB_NOT_REMOVABLE');
+  }
   if (jobCardsToRemove.length !== jobCardIds.length) {
     return invalid('JOB_CARDS_NOT_ON_TABLE');
   }
@@ -240,7 +291,11 @@ export const validateDiscardExcessJobCards = (
     return invalid('DISCARD_COUNT_INVALID', { required: 2, selected: cardIds.length });
   }
   for (const id of cardIds) {
-    if (!G.table.jobSlots.find((c) => c.id === id)) {
+    const card = G.table.jobSlots.find((c) => c.id === id);
+    if (card && isSlashWildJobCard(card)) {
+      return invalid('SLASH_WILD_JOB_NOT_REMOVABLE');
+    }
+    if (!card) {
       return invalid('JOB_CARDS_NOT_ON_TABLE');
     }
   }

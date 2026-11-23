@@ -11,6 +11,7 @@ import {
   resetJobSlotSelection,
   toggleJobSlotSelection,
 } from '@/lib/reducers/jobSlotSlice';
+import { getNumRealJobSlots, isSlashWildJobCard } from '@/game/core/slashWildJob';
 import JobTile from './JobTile';
 import { canSelectAction } from './actionPanel';
 
@@ -50,7 +51,7 @@ export default function JobMarket({
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, paddingLeft: 4, flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
           <span style={{ fontWeight: 800, fontSize: 14 }}>人力市場</span>
-          <span className="en-cap">Job market · {G.table.jobSlots.length} cards</span>
+          <span className="en-cap">Job market · {getNumRealJobSlots(G.table.jobSlots)} cards</span>
         </div>
         <span
           style={{
@@ -92,7 +93,8 @@ export default function JobMarket({
             // 四大自由 discard: marked tiles leave the row (prototype); the
             // × disappears once 2 are marked. Refill: removed tiles stay as ghosts.
             if (discardMode && removed) return null;
-            const canRemove = !removed && !(discardMode && removedCount >= 2);
+            // The 斜槓青年 wild card is turn-only and can be neither replaced nor discarded.
+            const canRemove = !removed && !(discardMode && removedCount >= 2) && !isSlashWildJobCard(job);
             return (
               <JobTile
                 key={job.id}
