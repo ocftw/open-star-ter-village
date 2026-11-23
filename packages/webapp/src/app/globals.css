@@ -1716,7 +1716,14 @@ body:has([data-testid='header-menu'][aria-expanded='true']) [data-testid='dev-to
   box-sizing: border-box;
   padding: 0 16px 16px;
 }
+/* Narrower desktops: the hand yields width so the market keeps more cards per row. */
+@media (min-width: 900px) and (max-width: 1199px) {
+  .board-bottom-row { grid-template-columns: minmax(280px, 34%) minmax(0, 1fr); }
+}
 .board-bottom-row--observer { grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) and (max-width: 1199px) {
+  .board-bottom-row--observer { grid-template-columns: minmax(0, 1fr); }
+}
 .board-bottom-row__market { min-width: 0; }
 /* Secondary text on the #fff0e2 hand fill: #6e6556 is 5.14:1 (Figma's ink-mute is below AA). */
 .board-bottom-row .en-cap { color: #6e6556; }
