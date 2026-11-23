@@ -2130,7 +2130,7 @@ body:has([data-testid='header-menu'][aria-expanded='true']) [data-testid='dev-to
   }
   .contribution-mount {
     position: absolute;
-    inset: auto 8px 8px;
+    inset: auto 8px 16px;
     z-index: 6;
   }
 }
@@ -2239,7 +2239,7 @@ body:has([data-testid='header-menu'][aria-expanded='true']) [data-testid='dev-to
 }
 
 @keyframes contribution-bar-up {
-  from { opacity: 0; transform: translateY(14px); }
+  from { opacity: 0; transform: translateY(8px); }
 }
 @keyframes contribution-bump {
   0% { transform: translateY(70%); opacity: 0; color: #c53808; }

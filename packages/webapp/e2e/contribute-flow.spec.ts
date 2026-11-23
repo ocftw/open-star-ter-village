@@ -59,6 +59,7 @@ async function verifyLastRowClearsBar(page: Page, mobile: boolean) {
     await last.evaluate((element) => element.scrollIntoView({ block: 'center' }));
     await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(before);
   } else {
+    await expect(bar(page)).toHaveCSS('transform', 'none');
     await expect.poll(async () => {
       const box = await bar(page).boundingBox();
       const padding = await projects.evaluate((element) => parseFloat(getComputedStyle(element).paddingBottom));
