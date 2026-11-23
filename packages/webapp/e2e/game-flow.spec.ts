@@ -8,11 +8,11 @@
  * Interaction model: choose an action in the panel before selecting cards.
  * - START → create-project mode → compatible hand card and job card
  * - JOIN → recruit mode → compatible job card and project slot
- * - CONTRIBUTE (own or joined) → project slot → worker contribution steppers
+ * - CONTRIBUTE (own or joined) → eligible worker steppers → confirmation strip
  * - 換人力 Refill is an affordance next to the job market; 加班 Overtime is
  *   offered contextually when re-tapping an occupied 1-AP action
- * - The contextual bar [data-testid="context-action"] carries mode
- *   (data-mode) and the confirm/cancel buttons (ca-confirm / ca-cancel).
+ * - The contextual bar [data-testid="context-action"] carries mode (data-mode)
+ *   and the whole-action cancel (ca-cancel). Confirm follows the active action.
  *
  * The game boots in the unified game view at localhost:3000/dev.
  * Alice (player 0) goes first in every round (easy mode defaults to
@@ -20,7 +20,7 @@
  * mounted board client between player and observer perspectives.
  */
 import { test, expect, Page } from '@playwright/test';
-import { dismissRoundStartOverlay, selectDevPerspective } from './devTools';
+import { confirmButton, dismissRoundStartOverlay, selectDevPerspective } from './devTools';
 import RuleSlice from '../src/game/store/slice/rule';
 
 // ── Constants from the rulebook (Simplified Mode) ────────────────────────────
@@ -54,9 +54,6 @@ test('desktop AppHeader shows round context and outline actions without player c
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 const contextAction = (page: Page) => page.locator('[data-testid="context-action"]:visible');
-// 換人力's 確認人力 is portalled into the 人力市場 header, outside context-action;
-// there is exactly one ca-confirm on the page at a time.
-const confirmButton = (page: Page) => page.locator('[data-testid="ca-confirm"]:visible');
 
 /** Wait until the idle contextual bar is visible — game initialised, current player's turn. */
 async function waitForGameReady(page: Page) {
@@ -598,18 +595,19 @@ test.describe('Simplified Mode — Action Flow', () => {
     await expectActions(page, 'Alice', INITIAL_ACTION_TOKENS - CREATE_PROJECT_COST);
     await waitForGameReady(page);
 
-    // Choose contribution to her own projects, then tap her project.
+    // The card body itself does not allocate anything.
     await contextAction(page).locator('[data-testid="action-contributeOwnedProjects"]').click();
     await expect(contextAction(page)).toHaveAttribute('data-mode', 'contributeOwnedProjects');
     await page.locator('[data-testid^="project-slot-"][data-requirements]').first().click();
 
-    // Before any interaction the contribution delta is 0 → confirm disabled.
-    await expect(confirmButton(page)).toBeDisabled();
+    await expect(confirmButton(page)).toHaveCount(0);
 
     // Increment Alice's first visible worker contribution by 1 (steppers live on the card).
     await page.locator('[data-testid="contribution-increment"]').first().waitFor({ state: 'visible' });
     await page.locator('[data-testid="contribution-increment"]').first().click();
 
+    await expect(page.getByTestId('contribution-confirm-bar')).toContainText('貢獻 +1');
+    await expect(confirmButton(page)).toHaveCount(1);
     await expect(confirmButton(page)).toBeEnabled();
     await confirmButton(page).click();
 
@@ -698,17 +696,19 @@ test.describe('Simplified Mode — Action Flow', () => {
     await expectActions(page, 'Alice', INITIAL_ACTION_TOKENS - RECRUIT_COST);
     await waitForGameReady(page);
 
-    // Choose contribution to joined projects, then tap Bob's project.
+    // Only the joined worker row can allocate.
     await contextAction(page).locator('[data-testid="action-contributeJoinedProjects"]').click();
     await expect(contextAction(page)).toHaveAttribute('data-mode', 'contributeJoinedProjects');
     await page.locator('[data-testid^="project-slot-"][data-requirements]').first().click();
-    await expect(confirmButton(page)).toBeDisabled();
+    await expect(confirmButton(page)).toHaveCount(0);
 
     // Increment Alice's contribution on a row that still has remaining capacity.
     const incrementWithRoom = page.locator('[data-testid="contribution-increment"]:not([data-remaining="0"])');
     await incrementWithRoom.first().waitFor({ state: 'visible' });
     await incrementWithRoom.first().click();
 
+    await expect(page.getByTestId('contribution-confirm-bar')).toContainText('最多 +5');
+    await expect(confirmButton(page)).toHaveCount(1);
     await expect(confirmButton(page)).toBeEnabled();
     await confirmButton(page).click();
 
