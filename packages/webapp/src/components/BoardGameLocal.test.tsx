@@ -119,6 +119,49 @@ it('starts actions from the panel rather than idle cards in the real board', asy
   expect(panel.getAttribute('data-mode')).toBe('idle');
 });
 
+it('announces a reached cap for 2000ms and shows gain after the actual Local move', async () => {
+  const board = (
+    <StoreProvider>
+      <Boardgame isLocal matchID="contribution-feedback" playerID="0" numPlayers={2} gameConfig={actionFirstGame} />
+    </StoreProvider>
+  );
+  const view = render(board);
+  await screen.findByTestId('context-action');
+  jest.useFakeTimers();
+  try {
+    fireEvent.click(screen.getByTestId('action-contributeOwnedProjects'));
+    const plus = screen.getByTestId('contribution-increment') as HTMLButtonElement;
+    const minus = screen.getByTestId('contribution-decrement');
+    for (let i = 0; i < 4; i++) fireEvent.click(plus);
+    expect(plus.disabled).toBe(true);
+    expect(screen.getAllByTestId('contribution-cap-notice')).toHaveLength(1);
+
+    act(() => jest.advanceTimersByTime(1500));
+    fireEvent.click(minus);
+    act(() => jest.advanceTimersByTime(499));
+    expect(screen.getByTestId('contribution-cap-notice')).toBeTruthy();
+    act(() => jest.advanceTimersByTime(1));
+    expect(screen.queryByTestId('contribution-cap-notice')).toBeNull();
+
+    fireEvent.click(plus);
+    expect(screen.getByTestId('contribution-cap-notice')).toBeTruthy();
+    fireEvent.click(screen.getByTestId('contribution-cancel-pending'));
+    expect(screen.queryByTestId('contribution-cap-notice')).toBeNull();
+    expect(screen.getByTestId('context-action').getAttribute('data-mode')).toBe('contributeOwnedProjects');
+
+    act(() => jest.advanceTimersByTime(2000));
+    fireEvent.click(plus);
+    expect(screen.queryByTestId('contribution-gain')).toBeNull();
+    await act(async () => fireEvent.click(screen.getByTestId('ca-confirm')));
+    expect(screen.getByTestId('contribution-gain').textContent).toBe('+1');
+    expect(screen.getByTestId('ap-dots').getAttribute('data-ap')).toBe('3');
+    expect(screen.queryByTestId('contribution-confirm-bar')).toBeNull();
+  } finally {
+    view.unmount();
+    jest.useRealTimers();
+  }
+});
+
 it('clears action and interaction flags when the board swaps from desktop to mobile', async () => {
   const store = makeStore();
   render(

@@ -20,10 +20,12 @@ import {
 } from '@/lib/reducers/actionStepSlice';
 import { getSelectedJobSlots } from '@/lib/reducers/jobSlotSlice';
 import { getSelectedProjectSlots } from '@/lib/reducers/projectSlotSlice';
+import { getContributions } from '@/lib/reducers/contributionSlice';
+import { getTotalContributionValue } from '@/game/core/ContributionAction';
 import { JobSlotsSelector } from '@/game/store/slice/jobSlots';
 import { RuleSelector } from '@/game/store/slice/rule';
 import { ProfessionPicker, getEligibleTargetJobNames } from './board/professionPicker';
-import { Modal, PLAYER_COLORS, StickerButton } from '@/components/design';
+import { Modal, PLAYER_COLORS, StickerButton, Toast } from '@/components/design';
 import { ScoreBoardSelector } from '@/game/store/slice/scoreBoard';
 import { getPlayerName } from './playerNameMap';
 import GameHeader from './board/GameHeader';
@@ -46,6 +48,7 @@ import { useIsMobile } from '@/lib/useIsMobile';
 import ProjectCatalogLink from './ProjectCatalogLink';
 import RoundStartOverlay from './board/RoundStartOverlay';
 import { useRoundStartOverlay } from './board/useRoundStartOverlay';
+import { isContributionAction, useContributionFeedback } from './board/useContributionFeedback';
 
 /**
  * Desktop height budget: the upper grid gets whatever the viewport leaves after
@@ -117,6 +120,38 @@ const Board: React.FC<GameContext> = (gameContext) => {
   const startMountRef = React.useRef<HTMLDivElement>(null);
   const history = useGameHistory(gameContext);
   const projectsRef = React.useRef<HTMLDivElement>(null);
+  const [contributionMount, setContributionMount] = React.useState<HTMLDivElement | null>(null);
+  const contributions = useAppSelector(getContributions);
+  const contributionActive = actionAreaView === 'context' && isContributionAction(currentAction);
+  const contributionTotal = contributionActive ? getTotalContributionValue(contributions) : 0;
+  const contributionMax = contributionActive ? RuleSelector.getMaxContributionValue(G.rules, currentAction) : null;
+  const hasPendingContribution = contributionTotal > 0;
+  const { record: recordContribution, feedback: contributionFeedback } = useContributionFeedback(gameContext);
+  const [capNotice, setCapNotice] = React.useState<number | null>(null);
+  const capSequence = React.useRef(0);
+  const closeCapNotice = () => setCapNotice(null);
+  React.useLayoutEffect(() => setCapNotice(null), [
+    currentAction, ctx.turn, ctx.currentPlayer, playerID, gameContext.matchID,
+  ]);
+  React.useLayoutEffect(() => {
+    if (!hasPendingContribution) setCapNotice(null);
+  }, [hasPendingContribution]);
+
+  React.useLayoutEffect(() => {
+    const projects = projectsRef.current;
+    if (!projects || !contributionMount || isMobile) return;
+    const measure = () => {
+      const height = contributionMount.offsetHeight;
+      projects.style.setProperty('--contribution-bar-space', height ? `${height + 16}px` : '0px');
+    };
+    measure();
+    const observer = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(measure);
+    observer?.observe(contributionMount);
+    return () => {
+      observer?.disconnect();
+      projects.style.removeProperty('--contribution-bar-space');
+    };
+  }, [contributionMount, isMobile, hasPendingContribution]);
   const shellRef = React.useRef<HTMLDivElement>(null);
   const bottomRowRef = React.useRef<HTMLDivElement>(null);
   useUpperTrackHeight(shellRef, bottomRowRef, isMobile);
@@ -158,6 +193,9 @@ const Board: React.FC<GameContext> = (gameContext) => {
         startMountRef={isMobile ? undefined : startMountRef}
         startHand={isMobile ? hand : undefined}
         startMarket={isMobile ? jobMarket : undefined}
+        contributionMount={contributionMount}
+        onContributionSubmit={recordContribution}
+        onContributionCancel={closeCapNotice}
       />
     ) : actionAreaView === 'gameover' ? (
       <GameOverNote onShowResults={() => setShowGameOver(true)} />
@@ -168,8 +206,34 @@ const Board: React.FC<GameContext> = (gameContext) => {
       />
     );
 
+  const contributionNotice = (
+    <Toast
+      className="contribution-cap-toast"
+      open={hasPendingContribution && capNotice !== null}
+      resetKey={capNotice ?? undefined}
+      tone="alert"
+      duration={2000}
+      onClose={closeCapNotice}
+    >
+      <span data-testid="contribution-cap-notice">已達到貢獻值上限</span>
+    </Toast>
+  );
   const projectsSection = (
-    <ProjectArea gameContext={gameContext} projectsRef={projectsRef} professionPickerFor={professionPickerFor} veiled={startActive} />
+    <div className="contribution-stage" data-testid="contribution-stage">
+      <ProjectArea
+        gameContext={gameContext}
+        projectsRef={projectsRef}
+        professionPickerFor={professionPickerFor}
+        veiled={startActive}
+        contributionMax={contributionMax}
+        onContributionCap={() => setCapNotice(++capSequence.current)}
+        contributionFeedback={contributionFeedback}
+      />
+      <div ref={setContributionMount} className="contribution-mount">
+        {isMobile && contributionNotice}
+      </div>
+      {!isMobile && contributionNotice}
+    </div>
   );
 
   const layout = isMobile ? (

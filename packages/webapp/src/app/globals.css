@@ -2110,3 +2110,148 @@ body:has([data-testid='header-menu'][aria-expanded='true']) [data-testid='dev-to
   [data-start-placed] { animation: start-project-placed .9s ease-out; }
 }
 /* ===== end #497 ===== */
+
+/* ===== issue 499: contribute flow ===== */
+.contribution-stage {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+}
+
+@media (min-width: 900px) {
+  .board-col--center > .contribution-stage {
+    display: flex;
+    flex-direction: column;
+    flex: 0 1 auto;
+  }
+  .contribution-stage > .project-area {
+    padding-bottom: var(--contribution-bar-space, 0);
+    scroll-padding-bottom: var(--contribution-bar-space, 0);
+  }
+  .contribution-mount {
+    position: absolute;
+    inset: auto 8px 8px;
+    z-index: 6;
+  }
+}
+
+.contribution-confirm {
+  box-sizing: border-box;
+  width: min(660px, 100%);
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: #fff0e2;
+  border: 2px solid #edd7c3;
+  border-radius: 16px;
+  box-shadow: 0 16px 34px -18px rgba(42, 36, 34, .55);
+  animation: contribution-bar-up .22s ease-out;
+}
+.contribution-confirm__summary,
+.contribution-confirm__actions {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+}
+.contribution-confirm__summary {
+  color: #6e6556;
+  font-size: 12px;
+  font-weight: 700;
+}
+.contribution-confirm__summary strong {
+  color: #c53808;
+  font-size: 16px;
+}
+.contribution-confirm .gr-btn { border-radius: 999px; box-shadow: none; }
+.contribution-confirm .gr-btn--primary { background: var(--ink); }
+.contribution-confirm .gr-btn--primary:not(:disabled):hover { background: #c53808; }
+.contribution-confirm__error {
+  flex-basis: 100%;
+  margin: 0;
+  color: #a2120d;
+  font-size: 12px;
+}
+.contribution-cap-toast {
+  position: absolute;
+  z-index: 7;
+  top: 6px;
+  left: 50%;
+  width: max-content;
+  max-width: 100%;
+  transform: translateX(-50%);
+}
+
+.project-card[data-contribution-faded] {
+  --ink-soft: var(--ink);
+  opacity: .7;
+  filter: grayscale(.4);
+}
+.project-card[data-contribution-faded] .project-card__own { color: var(--ink); }
+.project-card[data-contribution-faded] .project-card__star-pill { background: #093e47; }
+.project-card__stepper.gr-icon-btn {
+  width: 22px;
+  height: 22px;
+  border: 1.5px solid var(--ink);
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 1.5px 0 var(--ink);
+}
+.project-card__stepper.gr-icon-btn:not(:disabled):hover {
+  background: #fff0e2;
+  color: #c53808;
+}
+.project-card__stepper.gr-icon-btn:disabled { border-style: dashed; box-shadow: none; }
+.project-card__stepper .gr-icon-btn__icon { line-height: 1; }
+.contribution-pending-segment {
+  height: 100%;
+  background: repeating-linear-gradient(45deg, #c53808 0 4px, #fff0e2 4px 8px);
+}
+.contribution-row-count { position: relative; }
+.contribution-row-count[data-contribution-pending] { color: #c53808; }
+.contribution-row-count[data-contribution-bump] { animation: contribution-bump .7s cubic-bezier(.2, 1.5, .4, 1); }
+.contribution-row-gain {
+  position: absolute;
+  z-index: 3;
+  right: 0;
+  bottom: 100%;
+  padding-inline: 3px;
+  border-radius: 4px;
+  background: #fff0e2;
+  color: #c53808;
+  font-size: 12px;
+  font-weight: 900;
+  animation: contribution-gain .5s ease-out;
+}
+
+@media (max-width: 899px) {
+  .contribution-mount {
+    position: sticky;
+    bottom: 8px;
+    z-index: 6;
+  }
+  .contribution-confirm { margin-top: 12px; }
+  .contribution-cap-toast { top: auto; bottom: calc(100% + 6px); }
+}
+
+@keyframes contribution-bar-up {
+  from { opacity: 0; transform: translateY(14px); }
+}
+@keyframes contribution-bump {
+  0% { transform: translateY(70%); opacity: 0; color: #c53808; }
+  55% { transform: scale(1.5); color: #c53808; }
+  100% { transform: none; }
+}
+@keyframes contribution-gain {
+  from { opacity: 0; transform: translateY(6px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .contribution-confirm,
+  .contribution-row-count[data-contribution-bump],
+  .contribution-row-gain { animation: none; }
+}
+/* ===== end issue 499 ===== */

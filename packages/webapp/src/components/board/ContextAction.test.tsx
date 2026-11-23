@@ -4,7 +4,7 @@
 import React from 'react';
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { GameContext } from '@/components/GameContextHelpers';
 import GameStore, { GameState } from '@/game/store/store';
@@ -12,17 +12,20 @@ import { PlayersMutator } from '@/game/store/slice/players';
 import { ProjectBoardMutator, ProjectBoardSelector } from '@/game/store/slice/projectBoard';
 import { ProjectSlotMutator } from '@/game/store/slice/projectSlot/projectSlot';
 import { JobSlotsMutator } from '@/game/store/slice/jobSlots';
-import { RuleMutator } from '@/game/store/slice/rule';
+import { RuleMutator, RuleSelector } from '@/game/store/slice/rule';
 import { ActionSlotMutator } from '@/game/store/slice/actionSlot';
 import { ProjectCard } from '@/game/card';
 import { makeStore } from '@/lib/store';
-import { UserActionMoves } from '@/lib/reducers/actionStepSlice';
+import { getCurrentAction, UserActionMoves } from '@/lib/reducers/actionStepSlice';
+import { getContributions, updateContribute } from '@/lib/reducers/contributionSlice';
+import { useAppSelector } from '@/lib/hooks';
 import ContextAction from './ContextAction';
 import HandPanel from './HandPanel';
 import JobMarket from './JobMarket';
 import { RefillFlowProvider } from './RefillFlow';
 import BoardProjectSlot from './BoardProjectSlot';
 import MobileSheet from './MobileSheet';
+import { isContributionAction, useContributionFeedback } from './useContributionFeedback';
 
 const card: ProjectCard = {
   id: 'hand-project', name: '測試專案', type: '開放政府', difficulty: 1,
@@ -53,20 +56,41 @@ function setup(change?: (G: GameState) => void, playerID: string | null = '0') {
     removeAndRefillJobs: jest.fn(), endActionTurn: jest.fn(),
   };
   const gameContext = {
-    G, ctx: { currentPlayer: '0', playOrder: ['0', '1'], turn: 1, numMoves: 0 }, moves, playerID,
+    G, ctx: { currentPlayer: '0', playOrder: ['0', '1'], turn: 1, numMoves: 0 }, moves, playerID, _stateID: 4, log: [],
   } as unknown as GameContext;
   const store = makeStore();
-  const view = render(
-    <Provider store={store}>
-      <ContextAction gameContext={gameContext} />
+  const ui = (context: GameContext) => (
+    <Provider store={store}><ActionBoard gameContext={context} /></Provider>
+  );
+  const view = render(ui(gameContext));
+  return { ...view, G, moves, store, slots, gameContext, update: (context: GameContext) => view.rerender(ui(context)) };
+}
+
+function ActionBoard({ gameContext }: { gameContext: GameContext }) {
+  const [mount, setMount] = React.useState<HTMLDivElement | null>(null);
+  const { G, playerID } = gameContext;
+  const action = useAppSelector(getCurrentAction);
+  const { feedback, record } = useContributionFeedback(gameContext);
+  return (
+    <>
+      <ContextAction gameContext={gameContext} contributionMount={mount} onContributionSubmit={record} />
       {playerID === '0' && <>
         <HandPanel gameContext={gameContext} />
         <JobMarket gameContext={gameContext} idle discardActive={false} />
-        {slots.map((slot) => <BoardProjectSlot key={slot.id} slot={slot} playerID="0" idle={false} />)}
+        {G.table.projectBoard.filter((slot) => slot.card).map((slot) => (
+          <BoardProjectSlot
+            key={slot.id}
+            slot={slot}
+            playerID={playerID}
+            idle={false}
+            contributionMax={isContributionAction(action) ? RuleSelector.getMaxContributionValue(G.rules, action) : null}
+            contributionFeedback={feedback}
+          />
+        ))}
       </>}
-    </Provider>,
+      <div ref={setMount} data-testid="test-contribution-host" />
+    </>
   );
-  return { ...view, G, moves, store, slots };
 }
 
 const actionButton = (name: UserActionMoves) => screen.getByTestId(`action-${name}`) as HTMLButtonElement;
@@ -208,18 +232,33 @@ it.each(['project-first', 'job-first'])('joins a project through the existing mo
 });
 
 it.each([
-  [UserActionMoves.ContributeOwnedProjects, 0, 'contributeOwnedProjects'],
-  [UserActionMoves.ContributeJoinedProjects, 1, 'contributeJoinedProjects'],
-] as const)('dispatches %s with the selected contributions', (action, slotIndex, move) => {
-  const { moves, slots } = setup();
+  [UserActionMoves.ContributeOwnedProjects, 0, 'contributeOwnedProjects', 7],
+  [UserActionMoves.ContributeJoinedProjects, 1, 'contributeJoinedProjects', 9],
+] as const)('dispatches %s once with the selected contributions and live limit', (action, slotIndex, move, max) => {
+  const { moves, slots } = setup((G) => { G.rules.action[move].maxContributionValue = max; });
   fireEvent.click(actionButton(action));
+  expect(screen.queryByTestId('ca-confirm')).toBeNull();
+  expect(screen.getByText(`在你有人力的職位旁按 ＋ 分配貢獻（本次 0/${max}）`)).toBeTruthy();
   const project = screen.getByTestId(slots[slotIndex].id);
+  fireEvent.click(project);
+  expect(screen.queryByTestId('ca-confirm')).toBeNull();
   fireEvent.click(within(project).getByRole('button', { name: '增加 工程師 貢獻' }));
+  const bar = within(screen.getByTestId('test-contribution-host')).getByTestId('contribution-confirm-bar');
+  ['貢獻 +1', `最多 +${max}`, `剩餘 ${max - 1}`].forEach((text) => {
+    expect(within(bar).getByText(text)).toBeTruthy();
+  });
+  expect(screen.getByText(`在你有人力的職位旁按 ＋ 分配貢獻（本次 1/${max}）`)).toBeTruthy();
   expect(confirmButton().disabled).toBe(false);
-  fireEvent.click(confirmButton());
+  const confirm = confirmButton();
+  act(() => {
+    fireEvent.click(confirm);
+    fireEvent.click(confirm);
+  });
+  expect(moves[move]).toHaveBeenCalledTimes(1);
   expect(moves[move]).toHaveBeenCalledWith([
     { projectSlotId: slots[slotIndex].id, jobName: '工程師', value: 1 },
   ], undefined);
+  expect(screen.queryByTestId('contribution-gain')).toBeNull();
 });
 
 it('keeps refill as a separate market action with the existing move', () => {
@@ -233,13 +272,92 @@ it('keeps refill as a separate market action with the existing move', () => {
 });
 
 it('rejects contribution selections above the current rule limit', () => {
-  setup();
+  const { gameContext, G, slots, moves, update } = setup();
   fireEvent.click(actionButton(UserActionMoves.ContributeOwnedProjects));
   const increment = screen.getByRole('button', { name: '增加 工程師 貢獻' });
   for (let i = 0; i < 4; i++) fireEvent.click(increment);
   expect(confirmButton().disabled).toBe(false);
-  fireEvent.click(increment);
+  expect((increment as HTMLButtonElement).disabled).toBe(true);
+  const rules = { ...G.rules, action: { ...G.rules.action, contributeOwnedProjects: {
+    ...G.rules.action.contributeOwnedProjects, maxContributionValue: 3,
+  } } };
+  update({ ...gameContext, G: { ...G, rules } });
   expect(confirmButton().disabled).toBe(true);
+  expect(screen.getByTestId('preflight-error')).toBeTruthy();
+  fireEvent.click(confirmButton());
+  expect(moves.contributeOwnedProjects).not.toHaveBeenCalled();
+  expect(within(screen.getByTestId(slots[0].id)).getByRole('img', { name: /貢獻 1$/ })).toBeTruthy();
+});
+
+it('clears pending only from the bar and leaves the whole-action cancel available', () => {
+  const { store, moves } = setup();
+  const action = UserActionMoves.ContributeOwnedProjects;
+  fireEvent.click(actionButton(action));
+  const increment = screen.getByTestId('contribution-increment');
+  fireEvent.click(increment);
+  fireEvent.click(screen.getByTestId('contribution-cancel-pending'));
+  expect(screen.queryByTestId('contribution-confirm-bar')).toBeNull();
+  expect(screen.getByTestId('context-action').getAttribute('data-mode')).toBe(action);
+  expect(screen.getByTestId('ap-dots').getAttribute('data-ap')).toBe('4');
+  expect(getContributions(store.getState())).toEqual([]);
+  expect(moves.contributeOwnedProjects).not.toHaveBeenCalled();
+  fireEvent.click(increment);
+  fireEvent.click(screen.getByTestId('ca-cancel'));
+  expect(screen.getByTestId('context-action').getAttribute('data-mode')).toBe('idle');
+  expect(screen.queryByTestId('contribution-confirm-bar')).toBeNull();
+  expect(screen.queryByTestId('contribution-increment')).toBeNull();
+  expect(getContributions(store.getState())).toEqual([]);
+});
+
+it.each(['worker lost', 'row filled', 'card replaced'] as const)('blocks confirmation when the live board changes: %s', (change) => {
+  const { G, gameContext, moves, slots, update } = setup();
+  fireEvent.click(actionButton(UserActionMoves.ContributeOwnedProjects));
+  fireEvent.click(screen.getByTestId('contribution-increment'));
+  expect(confirmButton().disabled).toBe(false);
+  const next = { ...slots[0], contributions: slots[0].contributions.map((row) => ({ ...row })) };
+  if (change === 'worker lost') next.contributions = [];
+  if (change === 'row filled') next.contributions[0].value = 8;
+  if (change === 'card replaced') next.card = { ...next.card!, id: 'replacement' };
+  const projectBoard = G.table.projectBoard.map((slot) => slot.id === next.id ? next : slot);
+  update({ ...gameContext, G: { ...G, table: { ...G.table, projectBoard } } });
+  expect(confirmButton().disabled).toBe(true);
+  expect(screen.getByTestId('preflight-error')).toBeTruthy();
+  fireEvent.click(confirmButton());
+  expect(moves.contributeOwnedProjects).not.toHaveBeenCalled();
+  expect(screen.queryByTestId('contribution-gain')).toBeNull();
+});
+
+it.each([true, false])('plays feedback only for the accepted contribution (accepted %s)', (accepted) => {
+  const { G, slots, store, gameContext, moves, update } = setup();
+  fireEvent.click(actionButton(UserActionMoves.ContributeOwnedProjects));
+  // A decremented row remains in Redux with value zero and must stay out of the move.
+  act(() => store.dispatch(updateContribute({ slotId: slots[1].id, jobName: '工程師', diffAmount: 0 })));
+  fireEvent.click(screen.getByTestId('contribution-increment'));
+  fireEvent.click(confirmButton());
+  const pick = [{ projectSlotId: slots[0].id, jobName: '工程師', value: 1 }];
+  expect(moves.contributeOwnedProjects).toHaveBeenCalledWith(pick, undefined);
+  expect(screen.queryByTestId('contribution-gain')).toBeNull();
+  if (accepted) {
+    const updated = { ...slots[0], contributions: [{ ...slots[0].contributions[0], value: 2 }] };
+    update({
+      ...gameContext,
+      _stateID: 5,
+      ctx: { ...gameContext.ctx, numMoves: 1 },
+      G: { ...G, table: { ...G.table, projectBoard: [updated, ...G.table.projectBoard.slice(1)] } },
+      log: [{
+        _stateID: 4, turn: 1, phase: '',
+        action: { type: 'MAKE_MOVE', payload: { type: 'contributeOwnedProjects', args: [pick], playerID: '0' } },
+      }],
+    });
+    expect(screen.getByTestId('contribution-gain').textContent).toBe('+1');
+    expect(screen.getByText('2/8', { exact: false })).toBeTruthy();
+    act(() => jest.advanceTimersByTime(700));
+  } else {
+    act(() => jest.advanceTimersByTime(2000));
+    expect(screen.getByTestId('action-error-toast')).toBeTruthy();
+    expect(screen.getByTestId('ap-dots').getAttribute('data-ap')).toBe('4');
+  }
+  expect(screen.queryByTestId('contribution-gain')).toBeNull();
 });
 
 it('clears selections and interactivity when switching actions and cancelling', () => {

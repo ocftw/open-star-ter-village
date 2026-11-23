@@ -1,8 +1,9 @@
 import React from 'react';
 import { FilteredMetadata, PlayerID } from 'boardgame.io';
 import { ProjectSlotState } from '@/game';
-import { CharacterAvatar, getJobMetaByName } from '@/components/design';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { CharacterAvatar, getJobMetaByName, IconButton } from '@/components/design';
+import { getTotalContributionValue } from '@/game/core/ContributionAction';
+import { useAppDispatch, useAppSelector, useAppStore } from '@/lib/hooks';
 import {
   isJoinedContributionInteractive,
   isOwnedContributionInteractive,
@@ -16,6 +17,7 @@ import {
 import { getContributions, updateContribute } from '@/lib/reducers/contributionSlice';
 import { getPlayerName } from '@/components/playerNameMap';
 import { ProfessionPicker } from './professionPicker';
+import type { ContributionFeedback } from './useContributionFeedback';
 
 export type ProjectCardVisualState = 'default' | 'focused' | 'generalHint' | 'jobHint';
 
@@ -32,6 +34,9 @@ type BoardProjectSlotProps = {
   visualState?: ProjectCardVisualState;
   placed?: boolean;
   hintJobName?: string;
+  contributionMax?: number | null;
+  onContributionCap?: () => void;
+  contributionFeedback?: ContributionFeedback | null;
 };
 
 const seatColor = (worker: PlayerID) => `var(--p${worker})`;
@@ -47,8 +52,12 @@ export default function BoardProjectSlot({
   visualState,
   hintJobName,
   placed,
+  contributionMax,
+  onContributionCap,
+  contributionFeedback,
 }: BoardProjectSlotProps) {
   const dispatch = useAppDispatch();
+  const store = useAppStore();
   const slotsInteractive = useAppSelector(isProjectSlotsInteractive);
   const ownedInteractive = useAppSelector(isOwnedContributionInteractive);
   const joinedInteractive = useAppSelector(isJoinedContributionInteractive);
@@ -65,7 +74,13 @@ export default function BoardProjectSlot({
   const ownerName = getPlayerName(matchData, slot.owner);
   // In contribute mode, only this player's worker rows on the right slots are adjustable.
   const contributionEditable =
-    playerID !== null && ((ownedInteractive && isOwn) || (joinedInteractive && !isOwn));
+    contributionMax !== null && playerID !== null && ((ownedInteractive && isOwn) || (joinedInteractive && !isOwn));
+  const faded = contributionMax !== null && (
+    (ownedInteractive && !isOwn) ||
+    (joinedInteractive && (!contributionEditable || !slot.contributions.some(({ worker, jobName }) =>
+      worker === playerID && Object.hasOwn(card.requirements, jobName),
+    )))
+  );
 
   const handleClick = () => {
     if (slotsInteractive) {
@@ -77,8 +92,20 @@ export default function BoardProjectSlot({
     }
   };
 
-  const pendingFor = (jobName: string) =>
-    pendingContributions.find((c) => c.projectSlotId === slot.id && c.jobName === jobName)?.value ?? 0;
+  const pendingFor = (jobName: string, entries = pendingContributions) =>
+    entries.find((c) => c.projectSlotId === slot.id && c.jobName === jobName)?.value ?? 0;
+  const max = contributionMax ?? Infinity;
+  const budgetRemaining = max - getTotalContributionValue(pendingContributions);
+  const changePending = (jobName: string, rowCapacity: number, change: -1 | 1) => {
+    const state = store.getState();
+    if (!(isOwn ? isOwnedContributionInteractive(state) : isJoinedContributionInteractive(state))) return;
+    const entries = getContributions(state);
+    const pending = pendingFor(jobName, entries);
+    const remaining = Math.min(rowCapacity - pending, max - getTotalContributionValue(entries));
+    if (change === 1 ? remaining < 1 : pending <= 0) return;
+    dispatch(updateContribute({ slotId: slot.id, jobName, diffAmount: pending + change }));
+    if (change === 1 && remaining === 1) onContributionCap?.();
+  };
 
   const requiredJobs = Object.keys(card.requirements);
   const clickable = slotsInteractive || (idle && !!onIdleTap);
@@ -96,6 +123,7 @@ export default function BoardProjectSlot({
     <div
       data-testid={slot.id}
       data-start-placed={placed || undefined}
+      data-contribution-faded={faded || undefined}
       data-visual-state={resolvedState}
       className={`project-card project-card--in-play project-card--compact project-card--${resolvedState}`}
       data-requirements={requiredJobs.join(',')}
@@ -153,10 +181,15 @@ export default function BoardProjectSlot({
           const jobMeta = getJobMetaByName(jobName);
           const jobContributions = slot.contributions.filter((c) => c.jobName === jobName);
           const committed = jobContributions.reduce((acc, c) => acc + c.value, 0);
-          const pending = pendingFor(jobName);
           const myRow = playerID !== null && jobContributions.some((c) => c.worker === playerID);
           const showStepper = contributionEditable && myRow;
-          const remaining = need - committed - pending;
+          const pending = showStepper ? pendingFor(jobName) : 0;
+          const rowCapacity = need - committed;
+          const remaining = rowCapacity - pending;
+          const pendingShown = Math.max(0, Math.min(pending, rowCapacity));
+          const gain = contributionFeedback?.rows.find((row) =>
+            row.projectSlotId === slot.id && row.cardId === card.id && row.jobName === jobName,
+          );
           // 斜槓青年 target picking: eligible rows become tap targets.
           const pickerActive = !!professionPicker;
           const pickerEligible = pickerActive && professionPicker!.eligibleJobNames.includes(jobName);
@@ -230,13 +263,10 @@ export default function BoardProjectSlot({
                       />
                     ),
                 )}
-                {pending > 0 && (
+                {pendingShown > 0 && (
                   <div
-                    style={{
-                      width: `${(pending / need) * 100}%`,
-                      height: '100%',
-                      background: 'repeating-linear-gradient(45deg, var(--orange) 0 4px, var(--orange-soft) 4px 8px)',
-                    }}
+                    className="contribution-pending-segment"
+                    style={{ width: `${(pendingShown / need) * 100}%` }}
                   />
                 )}
               </div>
@@ -250,35 +280,33 @@ export default function BoardProjectSlot({
               >
                 {showStepper && (
                   <>
-                    <button
-                      type="button"
-                      aria-label={`減少 ${jobName} 貢獻`}
+                    <IconButton
+                      label={`減少 ${jobName} 貢獻`}
                       data-testid="contribution-decrement"
                       disabled={pending <= 0}
-                      onClick={() =>
-                        dispatch(updateContribute({ slotId: slot.id, jobName, diffAmount: pending - 1 }))
-                      }
+                      onClick={() => changePending(jobName, rowCapacity, -1)}
                       className="project-card__stepper"
                     >
                       −
-                    </button>
-                    <button
-                      type="button"
-                      aria-label={`增加 ${jobName} 貢獻`}
+                    </IconButton>
+                    <IconButton
+                      label={`增加 ${jobName} 貢獻`}
                       data-testid="contribution-increment"
                       data-remaining={remaining}
-                      disabled={remaining <= 0}
-                      onClick={() =>
-                        dispatch(updateContribute({ slotId: slot.id, jobName, diffAmount: pending + 1 }))
-                      }
+                      disabled={Math.min(remaining, budgetRemaining) < 1}
+                      onClick={() => changePending(jobName, rowCapacity, 1)}
                       className="project-card__stepper"
                     >
                       ＋
-                    </button>
+                    </IconButton>
                   </>
                 )}
               </span>
               <span
+                key={gain ? `gain-${contributionFeedback?.stateId}` : 'count'}
+                className="contribution-row-count"
+                data-contribution-pending={pendingShown > 0 || undefined}
+                data-contribution-bump={gain ? true : undefined}
                 style={{
                   fontFamily: 'var(--font-en)',
                   fontSize: 11,
@@ -289,7 +317,8 @@ export default function BoardProjectSlot({
                   textAlign: 'right',
                 }}
               >
-                {committed + pending}/{need}
+                {committed + pendingShown}/{need}
+                {gain && <span className="contribution-row-gain" data-testid="contribution-gain">+{gain.value}</span>}
               </span>
             </div>
           );

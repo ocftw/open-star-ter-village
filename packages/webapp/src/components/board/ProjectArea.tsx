@@ -5,15 +5,21 @@ import { ProjectSlotState } from '@/game';
 import BoardProjectSlot from './BoardProjectSlot';
 import { ProfessionPicker } from './professionPicker';
 import { capacityHint, splitProjectSlots } from './projectArea';
+import type { ContributionFeedback } from './useContributionFeedback';
 
 const YOURS_EMPTY = '還沒有發起專案。按右側「發起專案」開始。';
 const OTHERS_EMPTY = '其他玩家還沒有發起專案。';
 
-export default function ProjectArea({ gameContext, projectsRef, professionPickerFor, veiled = false }: {
+export default function ProjectArea({
+  gameContext, projectsRef, professionPickerFor, veiled = false, contributionMax, onContributionCap, contributionFeedback,
+}: {
   gameContext: GameContext;
   projectsRef: React.RefObject<HTMLDivElement>;
   veiled?: boolean;
   professionPickerFor: (slot: ProjectSlotState) => ProfessionPicker | undefined;
+  contributionMax?: number | null;
+  onContributionCap?: () => void;
+  contributionFeedback?: ContributionFeedback | null;
 }) {
   const { G, ctx, playerID, matchData } = gameContext;
   const { yours, others } = splitProjectSlots(G.table.projectBoard, playerID);
@@ -61,6 +67,9 @@ export default function ProjectArea({ gameContext, projectsRef, professionPicker
             idle={false}
             professionPicker={professionPickerFor(slot)}
             placed={placed.includes(slot.id)}
+            contributionMax={contributionMax}
+            onContributionCap={onContributionCap}
+            contributionFeedback={contributionFeedback}
           />
         ))}
       </div>
