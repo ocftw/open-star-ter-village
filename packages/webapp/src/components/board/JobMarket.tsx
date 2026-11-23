@@ -102,9 +102,9 @@ export default function JobMarket({
               <span className="gr-panel-action__label">
                 <strong>換人力</strong>
                 <span className="gr-panel-action__en">REFILL</span>
-              </span>
-              <span className="gr-action-panel__dots" aria-label={`換人力本回合剩餘 ${remaining} 次`} data-remaining-uses={remaining}>
-                <span className="gr-action-panel__dot" data-remaining={remaining > 0} aria-hidden="true" />
+                <span className="gr-action-panel__dots" aria-label={`換人力本回合剩餘 ${remaining} 次`} data-remaining-uses={remaining}>
+                  <span className="gr-action-panel__dot" data-remaining={remaining > 0} aria-hidden="true" />
+                </span>
               </span>
             </Button>
           )}
