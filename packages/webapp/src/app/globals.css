@@ -1919,3 +1919,93 @@ body:has([data-testid='header-menu'][aria-expanded='true']) [data-testid='dev-to
   .market-carousel__row { scroll-behavior: auto; }
 }
 /* ===== end story 13 ===== */
+
+/* ===== issue 496: refill flow ===== */
+.job-market { position: relative; }
+/* CANCEL / DONE are portalled into the header actions; the REFILL pill stays last. */
+.job-market__actions { flex-wrap: wrap; justify-content: flex-end; }
+.job-market__actions .job-market__refill { order: 3; }
+.job-market__actions .job-market__cancel { order: 1; }
+.job-market__actions [data-testid='ca-confirm'] { order: 2; }
+.job-market__en { font-family: var(--font-en); font-size: 11px; letter-spacing: 0.06em; }
+/* #6e6556 on #fff0e2 = 5.14:1 */
+.job-market__hint { margin: 0; font-size: 13px; font-weight: 700; color: #6e6556; }
+
+/* × shrinks the OLD identity locally, then it settles as a ghost. */
+.job-tile[data-shrinking] {
+  pointer-events: none;
+  animation: refill-shrink 0.26s ease-in forwards;
+}
+@keyframes refill-shrink {
+  to { transform: scale(0.6); opacity: 0.35; }
+}
+
+/* Accepted slots that are waiting for a card. Only exists after 確認人力. */
+.job-slot-empty {
+  box-sizing: border-box;
+  flex: none;
+  width: 124px;
+  min-height: 106px;
+  align-self: stretch;
+  border: 2px dashed rgba(42, 36, 34, 0.25);
+  border-radius: var(--radius);
+}
+
+/* Deal: face-up flight from the proposed header edge D to the rightmost slot.
+   Never translateY(100%) / pushUp. --deal-from-x/y are measured in JobMarket. */
+.job-tile-wrap[data-motion='deal'] {
+  animation: refill-deal 0.42s cubic-bezier(0.2, 0.8, 0.2, 1) var(--motion-delay, 0ms) both;
+}
+@keyframes refill-deal {
+  from {
+    transform: translate(var(--deal-from-x, 0px), var(--deal-from-y, -48px)) scale(0.55);
+    opacity: 0;
+  }
+  to { transform: none; opacity: 1; }
+}
+
+.job-market__score {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  z-index: 4;
+  translate: -50% 0;
+  pointer-events: none;
+}
+.job-market__score-popup {
+  display: inline-block;
+  padding: 4px 12px;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  animation: refill-score 2s ease-out both;
+}
+@keyframes refill-score {
+  0% { transform: translateY(8px); opacity: 0; }
+  12% { transform: none; opacity: 1; }
+  80% { opacity: 1; }
+  100% { transform: translateY(-6px); opacity: 0; }
+}
+.job-market__toast {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  z-index: 4;
+  translate: -50% 0;
+  max-width: calc(100% - 24px);
+}
+@media (max-width: 600px) {
+  .job-slot-empty { width: 96px; min-height: 94px; }
+  /* Larger hit area that stays inside the 10px tile gap. */
+  .market-carousel__row .job-remove::after { inset: -6px; }
+  .job-market__actions { width: 100%; justify-content: flex-start; margin-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .job-tile[data-shrinking] { animation: none; transform: scale(0.6); opacity: 0.35; }
+  .job-tile-wrap[data-motion='deal'] { animation: none; }
+  .job-market__score-popup { animation: none; }
+}
+/* ===== end issue 496 ===== */

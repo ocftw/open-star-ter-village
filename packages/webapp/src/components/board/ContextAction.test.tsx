@@ -2,6 +2,8 @@
  * @jest-environment jsdom
  */
 import React from 'react';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { GameContext } from '@/components/GameContextHelpers';
@@ -18,6 +20,7 @@ import { UserActionMoves } from '@/lib/reducers/actionStepSlice';
 import ContextAction from './ContextAction';
 import HandPanel from './HandPanel';
 import JobMarket from './JobMarket';
+import { RefillFlowProvider } from './RefillFlow';
 import BoardProjectSlot from './BoardProjectSlot';
 import MobileSheet from './MobileSheet';
 
@@ -321,4 +324,242 @@ it('keeps a spent 1-AP action disabled when no overtime token remains', () => {
     PlayersMutator.resetOvertimeTokens(G.players, '0', 0);
   });
   expect(actionButton(UserActionMoves.ContributeOwnedProjects).disabled).toBe(true);
+});
+
+describe('換人力 refill flow (#496)', () => {
+  const NAMES = ['工程師', '美術設計', '公務人員', '法務專家', '文字工作者'];
+  const ids = (selector = '[data-testid^="job-card-"]') =>
+    Array.from(document.querySelectorAll(selector)).map((el) => (el as HTMLElement).dataset.testid!.replace('job-card-', ''));
+  const rowIds = () => Array.from(document.querySelectorAll('[data-testid="job-market-row"] > *')).map((el) => {
+    const id = (el as HTMLElement).dataset.jobId;
+    return id ?? 'EMPTY';
+  });
+  const advance = (ms: number) => React.act(() => { jest.advanceTimersByTime(ms); });
+
+  function refillSetup({ reduced = false, turn = 1 }: { reduced?: boolean; turn?: number } = {}) {
+    window.matchMedia = jest.fn(() => ({ matches: reduced })) as unknown as typeof window.matchMedia;
+    const G = GameStore.initialState();
+    PlayersMutator.initialize(G.players, ['0', '1']);
+    PlayersMutator.resetActionTokens(G.players, '0', 4);
+    ProjectBoardMutator.initialize(G.table.projectBoard, 8);
+    JobSlotsMutator.addJobCards(G.table.jobSlots, ['A', 'B', 'C', 'D', 'E'].map((id, i) => ({ id, name: NAMES[i] })));
+    const moves = {
+      createProject: jest.fn(), recruit: jest.fn(), contributeOwnedProjects: jest.fn(),
+      contributeJoinedProjects: jest.fn(), removeAndRefillJobs: jest.fn(), endActionTurn: jest.fn(),
+    };
+    const store = makeStore();
+    const tree = (g: GameState, t = turn, numMoves = g.table.actionSlots.removeAndRefillJobs.isOccupied ? 1 : 0) => {
+      const gameContext = { G: g, ctx: { currentPlayer: '0', turn: t, numMoves }, moves, playerID: '0' } as unknown as GameContext;
+      return (
+        <Provider store={store}>
+          <RefillFlowProvider gameContext={gameContext}>
+            <ContextAction gameContext={gameContext} />
+            <JobMarket gameContext={gameContext} idle={store.getState().actionSteps.currentAction === null} discardActive={false} />
+          </RefillFlowProvider>
+        </Provider>
+      );
+    };
+    const view = render(tree(G));
+    const accepted = (removed: string[], incoming: string[]) => {
+      const next = JSON.parse(JSON.stringify(G)) as GameState;
+      next.table.jobSlots = next.table.jobSlots.filter((c) => !removed.includes(c.id));
+      JobSlotsMutator.addJobCards(next.table.jobSlots, incoming.map((id) => ({ id, name: '工程師' })));
+      PlayersMutator.resetActionTokens(next.players, '0', 3);
+      ActionSlotMutator.occupy(next.table.actionSlots.removeAndRefillJobs);
+      return next;
+    };
+    const start = () => fireEvent.click(screen.getByTestId('refill-jobs'));
+    const remove = (id: string) => fireEvent.click(screen.getByTestId(`job-remove-${id}`));
+    return { G, moves, store, tree, view, accepted, start, remove };
+  }
+  const incomingAbsent = () => {
+    expect(screen.queryByTestId('job-card-n1')).toBeNull();
+    expect(screen.queryByTestId('job-card-n2')).toBeNull();
+    expect(document.querySelector('[data-motion]')).toBeNull();
+  };
+
+  it('puts 取消 / 確認人力 in the market header: one ca-confirm, REFILL inactive, DONE off at zero', () => {
+    const { start } = refillSetup();
+    start();
+    const actions = screen.getByTestId('job-market-actions');
+    expect(screen.getAllByTestId('ca-confirm')).toHaveLength(1);
+    expect(actions.contains(screen.getByTestId('ca-confirm'))).toBe(true);
+    expect(actions.contains(screen.getByTestId('refill-cancel'))).toBe(true);
+    expect((screen.getByTestId('refill-jobs') as HTMLButtonElement).disabled).toBe(true);
+    expect(confirmButton().disabled).toBe(true);
+    expect(screen.getByTestId('ca-cancel')).toBeTruthy();
+    expect(screen.getAllByText(/點人力卡右上角的 ×/).length).toBeGreaterThan(0);
+  });
+
+  it('shrinks the old card inertly, then shows a ghost; count stays; no incoming face ever mounts', () => {
+    const { start, remove } = refillSetup();
+    start();
+    remove('B');
+    expect(screen.queryByTestId('job-remove-B')).toBeNull();
+    expect(screen.getByTestId('job-card-B').getAttribute('data-shrinking')).toBe('true');
+    expect(screen.getByTestId('job-market-count').textContent).toBe('JOB MARKET · 5 CARDS');
+    advance(260);
+    const ghost = screen.getByTestId('job-card-B');
+    expect(ghost.getAttribute('data-visual-state')).toBe('ghost');
+    expect(ghost.getAttribute('aria-label')).toBe('美術設計（已移除）');
+    expect(screen.getByTestId('job-market-count').textContent).toBe('JOB MARKET · 5 CARDS');
+    expect(confirmButton().disabled).toBe(false);
+    incomingAbsent();
+    ['A', 'C', 'D', 'E'].forEach((id) => remove(id));
+    advance(260);
+    expect(document.querySelectorAll('[data-visual-state="ghost"]')).toHaveLength(5);
+    expect(document.querySelector('.job-remove')).toBeNull();
+    incomingAbsent();
+  });
+
+  it('moves keyboard focus to the next live × and then to CANCEL', () => {
+    const { start } = refillSetup();
+    start();
+    const first = screen.getByTestId('job-remove-D');
+    first.focus();
+    fireEvent.click(first);
+    expect(document.activeElement).toBe(screen.getByTestId('job-remove-E'));
+    fireEvent.click(screen.getByTestId('job-remove-E'));
+    expect(document.activeElement).toBe(screen.getByTestId('refill-cancel'));
+  });
+
+  it.each(['refill-cancel', 'ca-cancel'])('%s restores the originals: no move, AP, reveal or timers left', (testid) => {
+    const { start, remove, moves, store, G } = refillSetup();
+    start();
+    remove('B');
+    remove('C');
+    fireEvent.click(screen.getByTestId(testid));
+    expect(store.getState().actionSteps.currentAction).toBeNull();
+    expect(Object.keys(store.getState().jobSlots.selectedSlots)).toHaveLength(0);
+    expect(moves.removeAndRefillJobs).not.toHaveBeenCalled();
+    expect(ids()).toEqual(['A', 'B', 'C', 'D', 'E']);
+    expect(document.querySelectorAll('[data-visual-state="ghost"], [data-shrinking]')).toHaveLength(0);
+    expect(screen.getByTestId('ap-dots').getAttribute('data-ap')).toBe(String(4));
+    expect(G.table.jobSlots).toHaveLength(5);
+    incomingAbsent();
+    advance(5000);
+    expect(jest.getTimerCount()).toBe(0);
+  });
+
+  it('dispatches once on DONE, keeps ghosts, and does not treat rejected/unrelated G as success', () => {
+    const { start, remove, moves, view, tree, G } = refillSetup();
+    start();
+    remove('B');
+    remove('C');
+    advance(260);
+    fireEvent.click(confirmButton());
+    expect(moves.removeAndRefillJobs).toHaveBeenCalledTimes(1);
+    expect(moves.removeAndRefillJobs).toHaveBeenCalledWith(['B', 'C'], undefined);
+    expect(document.querySelectorAll('[data-visual-state="ghost"]')).toHaveLength(2);
+    // numMoves moved but nothing else did: still not accepted.
+    view.rerender(tree(G, 1, 1));
+    expect(document.querySelectorAll('[data-visual-state="ghost"]')).toHaveLength(2);
+    // The cards left but no AP was paid / slot not occupied: unrelated G.
+    const unrelated = JSON.parse(JSON.stringify(G)) as GameState;
+    unrelated.table.jobSlots = unrelated.table.jobSlots.filter((c) => !['B', 'C'].includes(c.id));
+    JobSlotsMutator.addJobCards(unrelated.table.jobSlots, [{ id: 'n1', name: '工程師' }, { id: 'n2', name: '工程師' }]);
+    view.rerender(tree(unrelated));
+    incomingAbsent();
+    expect(rowIds()).toEqual(['A', 'B', 'C', 'D', 'E']);
+    advance(2500);
+    // Gave up waiting: G is simply shown, no toast, no success.
+    expect(screen.queryByText('已更換成新人力')).toBeNull();
+    expect(screen.queryByTestId('score-popup')).toBeNull();
+    expect(screen.queryByTestId('refill-cancel')).toBeNull();
+  });
+
+  it('after acceptance: empty slots, survivors slide left, then new cards deal one at a time at the right end', () => {
+    const { start, remove, moves, view, tree, accepted } = refillSetup();
+    start();
+    remove('B');
+    remove('C');
+    advance(260);
+    fireEvent.click(confirmButton());
+    expect(moves.removeAndRefillJobs).toHaveBeenCalledTimes(1);
+    expect(confirmButton).toThrow(); // controls left the header with the action
+    incomingAbsent();
+    view.rerender(tree(accepted(['B', 'C'], ['n1', 'n2'])));
+    // Ghosts clear to empty slots without a face flash; incoming stay hidden.
+    expect(rowIds()).toEqual(['A', 'EMPTY', 'EMPTY', 'D', 'E']);
+    expect(screen.queryByTestId('job-card-B')).toBeNull();
+    incomingAbsent();
+    expect(screen.getByTestId('score-popup').textContent).toBe('影響力+1');
+    expect(screen.queryByText('已更換成新人力')).toBeNull();
+    // Survivors close every gap, relative order kept, before any card is dealt.
+    advance(240);
+    expect(rowIds()).toEqual(['A', 'D', 'E', 'EMPTY', 'EMPTY']);
+    incomingAbsent();
+    // First new card flies in right after the last card on the table.
+    advance(300);
+    expect(rowIds()).toEqual(['A', 'D', 'E', 'n1', 'EMPTY']);
+    expect(screen.getByTestId('job-card-n1').getAttribute('data-motion')).toBe('deal');
+    expect(screen.queryByTestId('job-card-n2')).toBeNull();
+    // It lands before the next one flies; survivors never move.
+    advance(450);
+    expect(rowIds()).toEqual(['A', 'D', 'E', 'n1', 'n2']);
+    expect(screen.getByTestId('job-card-n1').getAttribute('data-motion')).toBeNull();
+    expect(screen.getByTestId('job-card-n2').getAttribute('data-motion')).toBe('deal');
+    expect(screen.queryByText('已更換成新人力')).toBeNull();
+    // The last landing opens the toast, separate from the score popup.
+    advance(450);
+    expect(rowIds()).toEqual(['A', 'D', 'E', 'n1', 'n2']);
+    expect(screen.getByText('已更換成新人力')).toBeTruthy();
+    expect(screen.getByTestId('score-popup').textContent).toBe('影響力+1');
+    expect(screen.getByTestId('job-market-count').textContent).toBe('JOB MARKET · 5 CARDS');
+    expect(document.querySelector('[data-motion]')).toBeNull();
+    expect(document.querySelector('.push-in, [data-motion="push-in"]')).toBeNull();
+    advance(2000);
+    expect(screen.queryByText('已更換成新人力')).toBeNull();
+    expect(screen.queryByTestId('score-popup')).toBeNull();
+        expect(jest.getTimerCount()).toBe(0);
+  });
+
+  it('never enters a refill card with translateY(100%) or the pushUp keyframes', () => {
+    const css = readFileSync(join(__dirname, '../../app/globals.css'), 'utf8');
+    const section = css.slice(css.indexOf('/* ===== issue 496: refill flow'), css.indexOf('/* ===== end issue 496'));
+    expect(section).toContain("data-motion='deal'");
+    expect(section.replace(/\/\*[\s\S]*?\*\//g, '')).not.toMatch(/pushUp|push-in|translateY\(100%\)/);
+  });
+
+  it('reduced motion: acceptance-only in-place faces in the same final order, no flight or stagger', () => {
+    const { start, remove, view, tree, accepted } = refillSetup({ reduced: true });
+    start();
+    remove('B');
+    remove('C');
+    advance(260);
+    fireEvent.click(confirmButton());
+    incomingAbsent();
+    expect(rowIds()).toEqual(['A', 'B', 'C', 'D', 'E']);
+    view.rerender(tree(accepted(['B', 'C'], ['n1', 'n2'])));
+    expect(rowIds()).toEqual(['A', 'D', 'E', 'n1', 'n2']);
+    expect(document.querySelector('[data-motion], [data-testid="job-slot-empty"]')).toBeNull();
+    expect(screen.getByText('已更換成新人力')).toBeTruthy();
+    expect(screen.getByTestId('score-popup').textContent).toBe('影響力+1');
+  });
+
+  it('drops the pending refill on a turn change and when another action is chosen', () => {
+    const { start, remove, view, tree, G } = refillSetup();
+    start();
+    remove('B');
+    advance(260);
+    fireEvent.click(confirmButton());
+    expect(document.querySelectorAll('[data-visual-state="ghost"]')).toHaveLength(1);
+    view.rerender(tree(G, 2));
+    expect(document.querySelectorAll('[data-visual-state="ghost"]')).toHaveLength(0);
+    advance(2500); // the pre-existing silent-rejection watch is the only timer left
+    expect(jest.getTimerCount()).toBe(0);
+  });
+
+  it('unmounting mid-deal leaves no timers behind', () => {
+    const { start, remove, view, tree, accepted } = refillSetup();
+    start();
+    remove('B');
+    advance(260);
+    fireEvent.click(confirmButton());
+    view.rerender(tree(accepted(['B'], ['n1'])));
+    advance(300);
+    view.unmount();
+    jest.advanceTimersByTime(2500); // ContextAction's own silent-rejection watch
+    expect(jest.getTimerCount()).toBe(0);
+  });
 });

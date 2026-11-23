@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Alert, Snackbar } from '@mui/material';
 import { Button } from '@/components/design';
 import { PANEL_ACTIONS, canSelectAction } from './actionPanel';
@@ -39,6 +40,7 @@ import { ActionMoveName, ActionMoves } from '@/game/core/stage/action/move/type'
 import { RuleSelector } from '@/game/store/slice/rule';
 import { ActionSlotSelector } from '@/game/store/slice/actionSlot';
 import { PlayersSelector } from '@/game/store/slice/players';
+import { useRefillFlow } from './RefillFlow';
 
 type ExtendedMoves = ActionMoves & { endActionTurn: () => void };
 type RegularActionName = ActionMoveName;
@@ -73,6 +75,18 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
     totalContributionValue: getTotalContributionValue(contributions),
     getMaxContributionValue: (name: RegularActionName) => RuleSelector.getMaxContributionValue(G.rules, name),
   };
+
+  const refillFlow = useRefillFlow();
+  // 換人力 controls live in the 人力市場 header (job-market-actions); without a
+  // market on the page they fall back into this panel, so there is always
+  // exactly one ca-confirm.
+  const [marketActions, setMarketActions] = React.useState<Element | null>(null);
+  // Runs every commit on purpose (the market may mount later); it bails when unchanged.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  React.useLayoutEffect(() => {
+    const el = document.querySelector('[data-testid="job-market-actions"]');
+    setMarketActions((current) => (current === el ? current : el));
+  });
 
   const resetSelections = React.useCallback(() => {
     dispatch(resetHandProjectCardSelection());
@@ -229,6 +243,7 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
     if (!currentAction || ruleUnavailable) return false;
     if (currentAction === UserActionMoves.EndActionTurn) return true;
     if (createBlockedByCapacity) return false;
+    if (currentAction === UserActionMoves.RemoveAndRefillJobs && refillFlow.busy) return false;
     if (occupied && !overtime) return false;
     if (preflightFailure) return false;
     return isSelectionComplete(actionName!);
@@ -275,6 +290,16 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
         typedMoves.contributeJoinedProjects(selectionState.contributions, options);
         break;
       case 'removeAndRefillJobs':
+        // Snapshot first: resetAction below clears the selection, but the
+        // market keeps ghosts (and hides incoming faces) until G accepts it.
+        refillFlow.begin({
+          removedIds: selectionState.selectedJobSlots,
+          tiles: G.table.jobSlots.map(({ id, name }) => ({ id, name })),
+          apBefore: actionTokens,
+          playerID,
+          currentPlayer: ctx.currentPlayer,
+          turn: ctx.turn,
+        });
         typedMoves.removeAndRefillJobs(selectionState.selectedJobSlots, options);
         break;
     }
@@ -334,8 +359,8 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
       case UserActionMoves.RemoveAndRefillJobs:
         return {
           title: '換掉這些人力卡？',
-          hint: `點選要移除的人力卡，會補滿新卡。${selectionProgress('removeAndRefillJobs')}`,
-          cta: '確認更換',
+          hint: `點人力卡右上角的 × 換掉，換好後按「確認人力」。${selectionProgress('removeAndRefillJobs')}`,
+          cta: '確認人力',
         };
       case UserActionMoves.EndActionTurn:
         return {
@@ -378,6 +403,23 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
       hint: '專案區已滿，等專案完成釋出空位後再發起。 The project board is full — no slot for a new project.',
     };
   }
+
+  const inMarket = currentAction === UserActionMoves.RemoveAndRefillJobs && !ruleUnavailable;
+  const confirmButton = currentAction && copy.cta && (
+    <Button data-testid="ca-confirm" onClick={handleConfirm} disabled={!isValid()}>
+      {inMarket && !overtime ? (
+        <>確認人力 <span className="job-market__en">DONE</span></>
+      ) : copy.cta}
+    </Button>
+  );
+  const refillControls = inMarket ? (
+    <>
+      <Button variant="sec" className="job-market__cancel" data-testid="refill-cancel" onClick={handleCancel}>
+        取消 <span className="job-market__en">CANCEL</span>
+      </Button>
+      {confirmButton}
+    </>
+  ) : null;
 
   return (
     <section
@@ -464,11 +506,9 @@ export default function ContextAction({ gameContext }: { gameContext: GameContex
           加班重複 · Overtime
         </Button>
       )}
-      {currentAction && copy.cta && (
-        <Button data-testid="ca-confirm" onClick={handleConfirm} disabled={!isValid()}>
-          {copy.cta}
-        </Button>
-      )}
+      {inMarket
+        ? (marketActions ? createPortal(refillControls, marketActions) : refillControls)
+        : confirmButton}
       <div className="gr-action-panel__footer">
         <Button variant="sec" data-testid="ca-cancel" onClick={handleCancel} disabled={!currentAction}>
           取消行動

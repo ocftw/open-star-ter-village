@@ -54,7 +54,9 @@ test('desktop AppHeader shows round context and outline actions without player c
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 const contextAction = (page: Page) => page.locator('[data-testid="context-action"]:visible');
-const confirmButton = (page: Page) => contextAction(page).locator('[data-testid="ca-confirm"]');
+// 換人力's 確認人力 is portalled into the 人力市場 header, outside context-action;
+// there is exactly one ca-confirm on the page at a time.
+const confirmButton = (page: Page) => page.locator('[data-testid="ca-confirm"]:visible');
 
 /** Wait until the idle contextual bar is visible — game initialised, current player's turn. */
 async function waitForGameReady(page: Page) {

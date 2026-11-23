@@ -1,0 +1,102 @@
+import type { ClientGameState as GameState } from '@/game/store/store';
+import { ActionSlotSelector } from '@/game/store/slice/actionSlot';
+import { PlayersSelector } from '@/game/store/slice/players';
+
+/** Timings (ms) of the accepted-refill sequence. Reduced motion skips all of them. */
+export const REFILL_TIMING = {
+  /** Wait for the server to accept before the client gives up and restores the originals. */
+  reject: 2500,
+  /** Ghosts have cleared to empty slots; hold before the survivors slide. */
+  empty: 240,
+  /** Survivors slide left to close every gap. */
+  shift: 300,
+  /** One incoming card flying from the deal origin to the rightmost slot. */
+  deal: 450,
+  /** Stagger inside a deal step before the flight starts. */
+  dealDelay: 60,
+  popup: 2000,
+} as const;
+
+export type RefillCard = { id: string; name: string };
+
+/** Everything captured when 確認人力 dispatches the move; survives resetAction. */
+export type RefillPending = {
+  removedIds: string[];
+  /** The table as the player saw it (old identities, old order). */
+  tiles: RefillCard[];
+  apBefore: number;
+  playerID: string;
+  currentPlayer: string;
+  turn: number;
+};
+
+export type RefillPhase = 'idle' | 'awaiting' | 'emptying' | 'shifting' | 'dealing';
+
+export type RefillTile =
+  | { kind: 'card'; id: string; name: string; ghost?: boolean; motion?: 'deal'; delay?: number }
+  | { kind: 'empty'; key: string };
+
+export type RefillView = { phase: Exclude<RefillPhase, 'idle'>; tiles: RefillTile[]; count: number };
+
+export type RefillSequence = { survivors: RefillCard[]; incoming: RefillCard[]; dealt: number };
+
+/**
+ * G confirms THIS pending action only when every selected card has left the
+ * table, the acting player paid AP and the refill action slot is occupied.
+ * ctx.numMoves alone, or unrelated G changes, never count.
+ */
+export function isRefillAccepted(pending: RefillPending, G: GameState, playerID: string | null): boolean {
+  if (playerID === null || playerID !== pending.playerID) return false;
+  const onTable = new Set(G.table.jobSlots.map((card) => card.id));
+  if (pending.removedIds.some((id) => onTable.has(id))) return false;
+  if (PlayersSelector.getNumActionTokens(G.players, playerID) >= pending.apBefore) return false;
+  return ActionSlotSelector.isOccupied(G.table.actionSlots.removeAndRefillJobs);
+}
+
+/** Frozen at acceptance: survivors keep their relative order, new cards are those never seen before. */
+export function splitAccepted(pending: RefillPending, G: GameState): Pick<RefillSequence, 'survivors' | 'incoming'> {
+  const removed = new Set(pending.removedIds);
+  const seen = new Set(pending.tiles.map((card) => card.id));
+  return {
+    survivors: pending.tiles.filter((card) => !removed.has(card.id)),
+    incoming: G.table.jobSlots.filter((card) => !seen.has(card.id)).map(({ id, name }) => ({ id, name })),
+  };
+}
+
+const empties = (count: number, from = 0): RefillTile[] =>
+  Array.from({ length: Math.max(0, count) }, (_, i) => ({ kind: 'empty', key: `empty-${from + i}` }));
+
+const card = (c: RefillCard, extra: Partial<Extract<RefillTile, { kind: 'card' }>> = {}): RefillTile => ({
+  kind: 'card', id: c.id, name: c.name, ...extra,
+});
+
+/**
+ * The market row for each phase. Incoming faces exist only from `dealing`
+ * onwards, and each enters after the last card already on the table.
+ */
+export function buildRefillView(
+  phase: Exclude<RefillPhase, 'idle'>,
+  pending: RefillPending,
+  sequence: RefillSequence | null,
+): RefillView {
+  const removed = new Set(pending.removedIds);
+  const total = pending.tiles.length;
+  let tiles: RefillTile[];
+  if (phase === 'awaiting' || !sequence) {
+    tiles = pending.tiles.map((c) => card(c, removed.has(c.id) ? { ghost: true } : {}));
+  } else if (phase === 'emptying') {
+    tiles = pending.tiles.map((c, i) => (removed.has(c.id) ? { kind: 'empty', key: `empty-${i}` } : card(c)));
+  } else if (phase === 'shifting') {
+    tiles = [...sequence.survivors.map((c) => card(c)), ...empties(total - sequence.survivors.length)];
+  } else {
+    const seated = sequence.incoming.slice(0, sequence.dealt);
+    const flying = sequence.incoming[sequence.dealt];
+    const shown = [
+      ...sequence.survivors.map((c) => card(c)),
+      ...seated.map((c) => card(c)),
+      ...(flying ? [card(flying, { motion: 'deal' as const, delay: REFILL_TIMING.dealDelay })] : []),
+    ];
+    tiles = [...shown, ...empties(total - shown.length)];
+  }
+  return { phase, tiles, count: total };
+}

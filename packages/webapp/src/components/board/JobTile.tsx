@@ -1,3 +1,4 @@
+import type React from 'react';
 import { CharacterAvatar, getJobMetaByName } from '@/components/design';
 
 type JobTileProps = {
@@ -13,6 +14,15 @@ type JobTileProps = {
   onClick?: () => void;
   /** Remove mode: the × is the control; the tile body is not. */
   onRemove?: () => void;
+  /**
+   * Entry/exit motion. `deal` is the 換人力 entry: a face-up flight from the
+   * deal origin (never translateY(100%)). `drop-out` is reserved for event release.
+   */
+  motion?: 'drop-out' | 'deal';
+  /** Delay in ms before the motion starts. */
+  motionDelay?: number;
+  /** Local .26s shrink of the OLD identity right after × (inert, no ×), before it becomes a ghost. */
+  shrinking?: boolean;
 };
 
 /** JobCard: avatar + name. Selection and removal remain owned by JobMarket. */
@@ -23,16 +33,21 @@ export default function JobTile({
   visualState,
   onClick,
   onRemove,
+  motion,
+  motionDelay,
+  shrinking = false,
 }: JobTileProps) {
   const meta = getJobMetaByName(name);
   const state = visualState ?? (selected ? 'focused' : 'default');
-  const showRemove = !!onRemove && state !== 'ghost';
+  const showRemove = !!onRemove && state !== 'ghost' && !shrinking;
   const common = {
     className: 'job-tile',
     'data-testid': `job-card-${id}`,
     'data-job-name': name,
     'data-selected': selected || undefined,
     'data-visual-state': state,
+    'data-motion': motion,
+    'data-shrinking': shrinking || undefined,
   };
   const content = (
     <>
@@ -42,8 +57,13 @@ export default function JobTile({
   );
 
   return (
-    <div className="job-tile-wrap">
-      {showRemove || state === 'ghost' ? (
+    <div
+      className="job-tile-wrap"
+      data-job-id={id}
+      data-motion={motion}
+      style={motionDelay ? ({ '--motion-delay': `${motionDelay}ms` } as React.CSSProperties) : undefined}
+    >
+      {showRemove || state === 'ghost' || shrinking ? (
         // Not a button: the × is a sibling control, so no nested interactives.
         <div
           {...common}

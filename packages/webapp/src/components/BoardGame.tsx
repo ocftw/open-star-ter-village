@@ -30,6 +30,7 @@ import GameHeader from './board/GameHeader';
 import HandPanel from './board/HandPanel';
 import JobMarket from './board/JobMarket';
 import ContextAction from './board/ContextAction';
+import { RefillFlowProvider } from './board/RefillFlow';
 import DiscardPanel from './board/DiscardPanel';
 import WaitingForPlayerAlert from './board/WaitingForPlayerAlert';
 import GameOverNote from './board/GameOverNote';
@@ -161,7 +162,7 @@ const Board: React.FC<GameContext> = (gameContext) => {
 
   const jobMarket = <JobMarket gameContext={gameContext} idle={idle} discardActive={showDiscardPanel} />;
 
-  return isMobile ? (
+  const layout = isMobile ? (
     <div
       data-game-board
       data-round-start-ready={roundStart.ready}
@@ -260,6 +261,7 @@ const Board: React.FC<GameContext> = (gameContext) => {
       <GameOverDialog gameContext={gameContext} open={!!gameover && showGameOver} onClose={() => setShowGameOver(false)} />
     </div>
   );
+  return <RefillFlowProvider gameContext={gameContext}>{layout}</RefillFlowProvider>;
 };
 
 // Offline dev games run on Local(), where boardgame.io still reports

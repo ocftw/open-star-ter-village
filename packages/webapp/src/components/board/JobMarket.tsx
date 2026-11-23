@@ -1,3 +1,4 @@
+import React from 'react';
 import { GameContext } from '@/components/GameContextHelpers';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import {
@@ -11,12 +12,17 @@ import {
   resetJobSlotSelection,
   toggleJobSlotSelection,
 } from '@/lib/reducers/jobSlotSlice';
-import { Button, PLAYER_COLORS } from '@/components/design';
+import { Button, PLAYER_COLORS, Toast } from '@/components/design';
 import { RuleSelector } from '@/game/store/slice/rule';
 import { getPlayerName } from '@/components/playerNameMap';
 import JobTile from './JobTile';
 import MarketCarousel from './MarketCarousel';
 import { canSelectAction, remainingActionUses } from './actionPanel';
+import { useRefillFlow } from './RefillFlow';
+import { REFILL_TIMING } from './refillFlow';
+
+/** Local shrink of a just-removed OLD card before its ghost appears (ms). */
+const SHRINK_MS = 260;
 
 /**
  * Shared job market: player badges, a persistent refill pill and a one-row carousel; cards become selectable after an action is chosen.
@@ -42,6 +48,42 @@ export default function JobMarket({
   const multiSelect = removeMode;
   const removedCount = Object.values(selectedSlots).filter(Boolean).length;
 
+  const flow = useRefillFlow();
+  const sectionRef = React.useRef<HTMLElement>(null);
+
+  // × shrinks the OLD identity locally, then it settles as a ghost. The tile
+  // body stays inert; selection itself is dispatched immediately.
+  const [shrinking, setShrinking] = React.useState<Record<string, true>>({});
+  const shrinkTimers = React.useRef<number[]>([]);
+  React.useEffect(() => {
+    if (refillMode) return;
+    shrinkTimers.current.forEach((t) => window.clearTimeout(t));
+    shrinkTimers.current = [];
+    setShrinking((current) => (Object.keys(current).length ? {} : current));
+  }, [refillMode]);
+  React.useEffect(() => () => shrinkTimers.current.forEach((t) => window.clearTimeout(t)), []);
+
+  const handleRefillRemove = (id: string) => {
+    // Hand focus to the next live × (or CANCEL) before this one unmounts.
+    const wrap = Array.from(sectionRef.current?.querySelectorAll<HTMLElement>('.job-tile-wrap[data-job-id]') ?? [])
+      .find((el) => el.dataset.jobId === id);
+    let next: Element | null = wrap?.nextElementSibling ?? null;
+    while (next && !next.querySelector('.job-remove')) next = next.nextElementSibling;
+    const target = (next?.querySelector('.job-remove') ??
+      sectionRef.current?.querySelector('[data-testid="refill-cancel"]')) as HTMLElement | null;
+    dispatch(toggleJobSlotSelection(id));
+    setShrinking((current) => ({ ...current, [id]: true }));
+    shrinkTimers.current.push(
+      window.setTimeout(() => {
+        setShrinking((current) => {
+          const { [id]: _done, ...rest } = current;
+          return rest;
+        });
+      }, SHRINK_MS),
+    );
+    target?.focus({ preventScroll: true });
+  };
+
   const handleTap = (id: string) => {
     if (jobsInteractive) {
       if (!multiSelect && !selectedSlots[id]) dispatch(resetJobSlotSelection());
@@ -51,14 +93,98 @@ export default function JobMarket({
 
   const playerIds = Object.keys(G.players);
   const playerNames = playerIds.map((id) => getPlayerName(matchData, id));
-  const cardCount = G.table.jobSlots.length;
+  const cardCount = flow.view?.count ?? G.table.jobSlots.length;
   const refillName = UserActionMoves.RemoveAndRefillJobs;
-  const refillEnabled = idle && cardCount > 0 && playerID !== null && canSelectAction(G, playerID, refillName);
+  const refillEnabled = idle && currentAction === null && cardCount > 0 && playerID !== null && canSelectAction(G, playerID, refillName) && !flow.busy;
   const remaining = remainingActionUses(G, refillName);
   const cost = RuleSelector.getActionTokenCost(G.rules, refillName);
 
+  // Deal origin D (the header edge by REFILL) and the left-shift slide: DOM
+  // measurement only, driven by the flow phase.
+  const rectsRef = React.useRef(new Map<string, DOMRect>());
+  const lastPhaseRef = React.useRef<string | null>(null);
+  const phase = flow.view?.phase ?? null;
+  React.useLayoutEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+    const wraps = Array.from(section.querySelectorAll<HTMLElement>('.job-tile-wrap[data-job-id]'));
+    const next = new Map<string, DOMRect>();
+    wraps.forEach((el) => next.set(el.dataset.jobId!, el.getBoundingClientRect()));
+    if (phase === 'shifting' && lastPhaseRef.current !== 'shifting') {
+      wraps.forEach((el) => {
+        const before = rectsRef.current.get(el.dataset.jobId!);
+        const after = next.get(el.dataset.jobId!);
+        if (!before || !after || typeof el.animate !== 'function') return;
+        const dx = before.left - after.left;
+        if (Math.abs(dx) > 0.5) {
+          el.animate(
+            [{ transform: `translateX(${dx}px)` }, { transform: 'translateX(0)' }],
+            { duration: REFILL_TIMING.shift - 40, easing: 'cubic-bezier(0.3, 0.7, 0.3, 1)' },
+          );
+        }
+      });
+    }
+    const origin = section.querySelector('[data-testid="job-market-actions"]')?.getBoundingClientRect();
+    wraps.filter((el) => el.dataset.motion === 'deal').forEach((el) => {
+      const rect = el.getBoundingClientRect();
+      if (origin) {
+        el.style.setProperty('--deal-from-x', `${Math.round(origin.right - rect.right)}px`);
+        el.style.setProperty('--deal-from-y', `${Math.round(origin.top - rect.top)}px`);
+      }
+      if (typeof el.scrollIntoView === 'function') el.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    });
+    lastPhaseRef.current = phase;
+    rectsRef.current = next;
+  });
+
+  // One keyed list for both paths, so cards that stay on the table are never
+  // remounted when a refill sequence hands the row back to G.
+  const rows = flow.view ? flow.view.tiles.map((tile) =>
+    tile.kind === 'empty' ? (
+      <div key={tile.key} className="job-slot-empty" data-testid="job-slot-empty" aria-hidden="true" />
+    ) : (
+      <JobTile
+        key={tile.id}
+        id={tile.id}
+        name={tile.name}
+        visualState={tile.ghost ? 'ghost' : undefined}
+        motion={tile.motion}
+        motionDelay={tile.delay}
+        onClick={jobsInteractive && !tile.ghost ? () => handleTap(tile.id) : undefined}
+      />
+    ),
+  ) : G.table.jobSlots.map((job) => {
+      const removed = !!selectedSlots[job.id];
+      if (removeMode) {
+        // 四大自由 discard: marked tiles leave the row (prototype); the
+        // × disappears once 2 are marked. Refill: removed tiles stay as ghosts.
+        if (discardMode && removed) return null;
+        const canRemove = !removed && !(discardMode && removedCount >= 2);
+        const settling = refillMode && removed && !!shrinking[job.id];
+        return (
+          <JobTile
+            key={job.id}
+            id={job.id}
+            name={job.name}
+            visualState={removed && !settling ? 'ghost' : 'change'}
+            shrinking={settling}
+            onRemove={canRemove ? () => (refillMode ? handleRefillRemove(job.id) : handleTap(job.id)) : undefined}
+          />
+        );
+      }
+      return (
+        <JobTile
+          key={job.id}
+          id={job.id}
+          name={job.name}
+          selected={jobsInteractive && removed}
+          onClick={jobsInteractive ? () => handleTap(job.id) : undefined}
+        />
+      );
+    });
+
   return (
-    <section className="job-market" aria-label="人力市場" data-testid="job-market">
+    <section ref={sectionRef} className="job-market" aria-label="人力市場" data-testid="job-market" data-refill-phase={phase ?? undefined}>
       <header className="job-market__head">
         <div className="job-market__title">
           <div className="job-market__title-line">
@@ -110,34 +236,28 @@ export default function JobMarket({
           )}
         </div>
       </header>
-      <MarketCarousel label="人力市場">
-        {G.table.jobSlots.map((job) => {
-          const removed = !!selectedSlots[job.id];
-          if (removeMode) {
-            // 四大自由 discard: marked tiles leave the row (prototype); the
-            // × disappears once 2 are marked. Refill: removed tiles stay as ghosts.
-            if (discardMode && removed) return null;
-            const canRemove = !removed && !(discardMode && removedCount >= 2);
-            return (
-              <JobTile
-                key={job.id}
-                id={job.id}
-                name={job.name}
-                visualState={removed ? 'ghost' : 'change'}
-                onRemove={canRemove ? () => handleTap(job.id) : undefined}
-              />
-            );
-          }
-          return (
-            <JobTile
-              key={job.id}
-              id={job.id}
-              name={job.name}
-              selected={jobsInteractive && removed}
-              onClick={jobsInteractive ? () => handleTap(job.id) : undefined}
-            />
-          );
-        })}
+      {refillMode && (
+        <p className="job-market__hint" data-testid="refill-hint">
+          點人力卡右上角的 × 換掉，換好後按「確認人力」。
+        </p>
+      )}
+      <div className="job-market__score" role="status" aria-live="polite">
+        {flow.popup && (
+          <span key={flow.popup.key} className="job-market__score-popup" data-testid="score-popup">
+            影響力+{flow.popup.amount}
+          </span>
+        )}
+      </div>
+      <Toast
+        className="job-market__toast"
+        open={flow.toastKey !== null}
+        resetKey={flow.toastKey ?? undefined}
+        onClose={flow.closeToast}
+      >
+        已更換成新人力
+      </Toast>
+      <MarketCarousel label="人力市場" resetKey={currentAction}>
+        {rows}
       </MarketCarousel>
     </section>
   );
