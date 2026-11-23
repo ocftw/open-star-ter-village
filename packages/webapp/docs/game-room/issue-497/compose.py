@@ -1,5 +1,6 @@
 """Side-by-side sheets: ours (left) vs Figma / prototype / wireframe (right). Usage: compose.py SHOT_DIR OUT_DIR SHA"""
 import sys
+from pathlib import Path
 from PIL import Image, ImageDraw
 shots, out, sha = sys.argv[1], sys.argv[2], sys.argv[3]
 P = '/workspace/osv-prototype-capture'
@@ -28,4 +29,8 @@ sheet('compare-pair-vs-prototype-36.png', '1280-pair.png', f'{P}/36-start-projec
 sheet('compare-success-vs-prototype-39.png', '1280-success.png', f'{P}/39-project-placed-settled-1280-crop.png', 'prototype 39 (project placed settled)', '1280 success')
 sheet('compare-mobile-idle-vs-prototype-82.png', '390-idle.png', f'{P}/82-mobile-390-default.png', 'prototype 82 (mobile default)', '390 idle', h=700)
 sheet('compare-mobile-enter-vs-prototype-87.png', '390-enter.png', f'{P}/87-mobile-390-start-project-mode.png', 'prototype 87 (mobile START)', '390 enter START', h=700)
+
+if Path(f'{shots}/1280-slash-picker.png').exists():
+    sheet('compare-slash-picker-vs-wireframe.png', '1280-slash-picker.png', f'{W}/state-slash-picker-desktop.png', 'plan wireframe: slash picker (Figma 110-176/105-43; tiers proposed)', '1280 slash picker')
+
 print('composed')
