@@ -23,6 +23,8 @@ import { REFILL_TIMING } from './refillFlow';
 
 /** Local shrink of a just-removed OLD card before its ghost appears (ms). */
 const SHRINK_MS = 260;
+/** Room kept right of the landing slot for the carousel's › button and fade. */
+const DEAL_EDGE_ROOM = 56;
 
 /**
  * Shared job market: player badges, a persistent refill pill and a one-row carousel; cards become selectable after an action is chosen.
@@ -126,12 +128,20 @@ export default function JobMarket({
     }
     const origin = section.querySelector('[data-testid="job-market-actions"]')?.getBoundingClientRect();
     wraps.filter((el) => el.dataset.motion === 'deal').forEach((el) => {
+      // Bring the landing slot into view first (instant: the flight is the motion).
+      const row = el.parentElement;
+      if (row) {
+        const needed = el.offsetLeft + el.offsetWidth + DEAL_EDGE_ROOM - row.clientWidth;
+        if (needed > row.scrollLeft) row.scrollLeft = needed;
+      }
+      // Measure the slot without the animation's own transform.
+      el.style.animation = 'none';
       const rect = el.getBoundingClientRect();
+      el.style.animation = '';
       if (origin) {
         el.style.setProperty('--deal-from-x', `${Math.round(origin.right - rect.right)}px`);
         el.style.setProperty('--deal-from-y', `${Math.round(origin.top - rect.top)}px`);
       }
-      if (typeof el.scrollIntoView === 'function') el.scrollIntoView({ block: 'nearest', inline: 'nearest' });
     });
     lastPhaseRef.current = phase;
     rectsRef.current = next;

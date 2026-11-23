@@ -54,6 +54,8 @@ for (const [width, height] of [[1280, 832], [390, 844]] as const) {
       await page.waitForSelector(`[data-testid="job-market"][data-refill-phase="${name}"]`, { timeout: 10000 });
     };
     await phase('shifting');
+    // Eight 124px slots overflow the market at 1280; show the right end where the empty slots are.
+    await page.getByTestId('job-market-row').evaluate((row) => { row.scrollLeft = row.scrollWidth; });
     await shot('5-confirm-empty-slots');
     await phase('dealing');
     await page.waitForTimeout(150);
