@@ -23,8 +23,17 @@ async function captureStartupError(error: Error) {
   }
 }
 
+// Errors whose messages are fixed configuration text, safe to print as-is.
+const configErrors = new WeakSet<object>();
+
 async function serve() {
-  const env = loadWebappEnv();
+  let env: ReturnType<typeof loadWebappEnv>;
+  try {
+    env = loadWebappEnv();
+  } catch (error) {
+    if (error instanceof Error) configErrors.add(error);
+    throw error;
+  }
   const dev = !env.isProduction;
 
   console.log(`Starting server on port ${env.port} in ${dev ? 'dev' : 'production'} mode...`);
@@ -43,7 +52,8 @@ async function serve() {
 serve().catch(async (error: unknown) => {
   // Config errors carry fixed messages; any other error may contain secrets
   // (for example a connection string), so it is replaced before logging.
-  const safe = error instanceof PersistenceConfigError || error instanceof HostTokenConfigError
+  const safe = error instanceof PersistenceConfigError || error instanceof HostTokenConfigError ||
+    (error instanceof Error && configErrors.has(error))
     ? error
     : new Error('Game server startup failed');
   console.error(safe.message);
