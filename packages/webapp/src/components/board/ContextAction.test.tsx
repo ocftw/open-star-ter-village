@@ -135,13 +135,50 @@ it('shows spent and unavailable normal action slots as zero remaining uses', () 
   expect(within(actionButton(UserActionMoves.Recruit)).getByLabelText('本回合剩餘 0 次')).toBeTruthy();
 });
 
-it('keeps the event profession override available for mismatched job cards', () => {
+it('legacy (unmarked) game: keeps the event profession override available for mismatched job cards', () => {
   setup((G) => {
     G.table.jobSlots[0].name = '法務專家';
     RuleMutator.setEventIgnoreFirstWorkerRequirement(G.rules, ['0'], true);
   });
   expect(actionButton(UserActionMoves.CreateProject).disabled).toBe(false);
   expect(actionButton(UserActionMoves.Recruit).disabled).toBe(false);
+});
+
+describe('斜槓青年 wild job card (marked game)', () => {
+  const WILD = { id: 'slash-0-1', name: '斜槓青年' };
+  const marked = (withWild: boolean) => (G: GameState) => {
+    RuleMutator.enableSlashWildJobCard(G.rules);
+    G.table.jobSlots[0].name = '法務專家'; // the only ordinary card is mismatched
+    RuleMutator.setEventIgnoreFirstWorkerRequirement(G.rules, ['0'], true);
+    if (withWild) G.table.jobSlots.unshift({ ...WILD });
+  };
+
+  it('an ordinary mismatched card gets no override even while entitled', () => {
+    setup(marked(false));
+    expect(actionButton(UserActionMoves.CreateProject).disabled).toBe(true);
+    expect(actionButton(UserActionMoves.Recruit).disabled).toBe(true);
+  });
+
+  it('renders the wild tile and counts only real market cards', () => {
+    setup(marked(true));
+    expect(screen.getByTestId('job-card-slash-0-1').getAttribute('data-job-name')).toBe('斜槓青年');
+    expect(screen.getByTestId('job-market-count').textContent).toBe('JOB MARKET · 1 CARDS');
+    expect(actionButton(UserActionMoves.CreateProject).disabled).toBe(false);
+  });
+
+  it('offers the profession picker only for the wild tile and sends assignedJobName', () => {
+    const { moves } = setup(marked(true));
+    fireEvent.click(actionButton(UserActionMoves.CreateProject));
+    fireEvent.click(screen.getByTestId('hand-card-hand-project'));
+    fireEvent.click(screen.getByTestId('job-card-engineer')); // ordinary mismatched (法務專家)
+    expect(screen.queryByTestId('profession-target-工程師')).toBeNull();
+
+    fireEvent.click(screen.getByTestId('job-card-slash-0-1'));
+    fireEvent.click(screen.getByTestId('profession-target-美術設計'));
+    expect(confirmButton().disabled).toBe(false);
+    fireEvent.click(confirmButton());
+    expect(moves.createProject).toHaveBeenCalledWith('hand-project', 'slash-0-1', '美術設計', undefined);
+  });
 });
 
 it('requires an owned/joined worker with an unfinished requirement for each contribution action', () => {
