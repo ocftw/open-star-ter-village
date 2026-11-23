@@ -148,6 +148,10 @@ test.describe('Mobile layout', () => {
     await expect(handCards.first()).toBeHidden();
     await handle.click();
     await expect(handCards.first()).toBeVisible();
+    // Landscape face at 220px with its stars, and no page-level horizontal overflow.
+    expect((await handCards.first().boundingBox())!.width).toBeCloseTo(220, 0);
+    await expect(handCards.first().locator('.project-card__stars')).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
 
     // Choose START in the sheet before selecting any cards.
     const panel = sheet.locator('[data-testid="context-action"]:visible');

@@ -1,5 +1,5 @@
+import type { KeyboardEvent } from 'react';
 import { ProjectCard } from '@/game';
-import { CharacterAvatar, getJobMetaByName, getProjectTypeMetaByName } from '@/components/design';
 import { ProfessionPicker } from './professionPicker';
 
 type ProjectCardFaceProps = {
@@ -12,8 +12,9 @@ type ProjectCardFaceProps = {
 };
 
 /**
- * Portrait project card (design: ProjectCardA) — the requirement-only face
- * used for hand cards. Active projects (BoardProjectSlot) show progress.
+ * Landscape hand card (Figma Main1.1.1 你的手牌, prototype .hcard): stars and
+ * the project name on the left, one requirement row per job on the right.
+ * Active projects (BoardProjectSlot) use their own face with progress.
  */
 export default function ProjectCardFace({
   card,
@@ -22,81 +23,77 @@ export default function ProjectCardFace({
   professionPicker,
   ...rest
 }: ProjectCardFaceProps) {
-  const typeMeta = getProjectTypeMetaByName(card.type);
+  const interactive = !!onClick;
+  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    // Rows inside the card handle their own keys; only act on the card itself.
+    if (e.target !== e.currentTarget) return;
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onClick?.();
+    }
+  };
   return (
     <div
       onClick={onClick}
-      className={`project-card project-card--compact project-card--${selected ? 'focused' : 'default'}`}
+      className={`project-card project-card--compact project-card--hand project-card--${selected ? 'focused' : 'default'}${interactive ? ' project-card--hand-interactive' : ''}`}
       data-visual-state={selected ? 'focused' : 'default'}
       data-requirements={Object.keys(card.requirements).join(',')}
       data-job-requirements={JSON.stringify(card.requirements)}
+      {...(interactive && {
+        role: 'button',
+        tabIndex: 0,
+        'aria-pressed': selected,
+        onKeyDown: handleKeyDown,
+      })}
       {...rest}
-      style={{
-        cursor: onClick ? 'pointer' : 'default',
-      }}
     >
-      <div className="project-card__tag">
-        <span className="project-card__type">
-          <span className="project-card__type-dot" style={{ background: typeMeta?.color ?? 'var(--ink-soft)' }} />
-          {card.type}
-        </span>
+      <div className="project-card__hand-left">
         <span className="project-card__stars" aria-label={`難度 ${card.difficulty}`}>
           {'★'.repeat(card.difficulty)}
         </span>
-      </div>
-
-      <div>
         <h3 className="project-card__title">{card.name}</h3>
-        {typeMeta && (
-          <div className="tag-en" style={{ marginTop: 3 }}>
-            {typeMeta.en}
-          </div>
-        )}
-
-        <div className="project-card__jobs" style={{ marginTop: 10 }}>
-          {Object.entries(card.requirements).map(([jobName, need]) => {
-            const jobMeta = getJobMetaByName(jobName);
-            // 斜槓青年 target picking: rows become tap targets.
-            const pickerEligible = !!professionPicker?.eligibleJobNames.includes(jobName);
-            const pickerSelected = pickerEligible && professionPicker!.selectedJobName === jobName;
-            return (
-              <div
-                key={jobName}
-                role={pickerEligible ? 'button' : undefined}
-                aria-pressed={pickerEligible ? pickerSelected : undefined}
-                data-testid={pickerEligible ? `profession-target-${jobName}` : undefined}
-                onClick={
-                  pickerEligible
-                    ? (e) => {
-                        e.stopPropagation();
-                        professionPicker!.onPick(jobName);
-                      }
-                    : undefined
-                }
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  background: pickerSelected ? 'var(--orange-soft)' : jobMeta?.softColor ?? 'var(--paper-2)',
-                  border: '1.5px solid var(--ink)',
-                  borderRadius: 999,
-                  padding: '3px 10px 3px 3px',
-                  ...(pickerEligible && {
-                    outline: pickerSelected ? '2px solid var(--orange)' : '2px dashed var(--orange)',
-                    cursor: 'pointer',
-                  }),
-                }}
-              >
-                {jobMeta && <CharacterAvatar role={jobMeta.role} size="sm" />}
-                <span style={{ fontSize: 12, fontWeight: 600, flex: 1, minWidth: 0, overflowWrap: 'anywhere' }}>{jobName}</span>
-                <span style={{ fontFamily: 'var(--font-en)', fontWeight: 800, fontSize: 12 }}>
-                  ×{need}
-                </span>
-              </div>
-            );
-          })}
-        </div>
       </div>
+
+      <dl className="project-card__hand-jobs project-card__jobs">
+        {Object.entries(card.requirements).map(([jobName, need]) => {
+          // 斜槓青年 target picking: rows become tap targets.
+          const pickerEligible = !!professionPicker?.eligibleJobNames.includes(jobName);
+          const pickerSelected = pickerEligible && professionPicker!.selectedJobName === jobName;
+          const pick = () => professionPicker!.onPick(jobName);
+          return (
+            <div
+              key={jobName}
+              className={`project-card__hand-row${pickerEligible ? ' project-card__hand-row--target' : ''}${pickerSelected ? ' project-card__hand-row--picked' : ''}`}
+              role={pickerEligible ? 'button' : undefined}
+              tabIndex={pickerEligible ? 0 : undefined}
+              aria-pressed={pickerEligible ? pickerSelected : undefined}
+              data-testid={pickerEligible ? `profession-target-${jobName}` : undefined}
+              onClick={
+                pickerEligible
+                  ? (e) => {
+                      e.stopPropagation();
+                      pick();
+                    }
+                  : undefined
+              }
+              onKeyDown={
+                pickerEligible
+                  ? (e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        pick();
+                      }
+                    }
+                  : undefined
+              }
+            >
+              <dt>{jobName}</dt>
+              <dd>{need}</dd>
+            </div>
+          );
+        })}
+      </dl>
     </div>
   );
 }

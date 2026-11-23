@@ -278,6 +278,109 @@ test.describe('Simplified Mode — Action Flow', () => {
     await expect(ranking.locator('[data-you="true"]')).toHaveCount(0);
   });
 
+  // ── Hand + bottom row (#492) ──────────────────────────────────────────────
+  test('hand and market sit in the bottom row, fully visible, while projects scroll', async ({ page }) => {
+    test.setTimeout(240_000);
+    await page.setViewportSize({ width: 1280, height: 832 });
+    const projects = page.getByTestId('projects-section');
+    const overflowing = () => projects.evaluate((el) => el.scrollHeight > el.clientHeight);
+    // Legal moves only: each player starts projects (2 AP each) until the scroller overflows.
+    const perspectives = ['player1', 'player2', 'player3'] as const;
+    for (let turn = 0; turn < 12 && !(await overflowing()); turn++) {
+      await selectDevPerspective(page, perspectives[turn % 3]);
+      await waitForGameReady(page);
+      for (let n = 0; n < 2 && !(await overflowing()); n++) {
+        // Out of AP, hand cards or room: just end the turn.
+        if (!(await contextAction(page).locator('[data-testid="action-createProject"]').isEnabled())) break;
+        await selectCompatibleHandAndJobCard(page);
+        await confirmButton(page).click();
+        await waitForGameReady(page);
+      }
+      await performEndTurn(page);
+    }
+    expect(await overflowing()).toBe(true);
+    await selectDevPerspective(page, 'player1');
+
+    const check = async () => {
+      const vh = await page.evaluate(() => window.innerHeight);
+      const row = (await page.getByTestId('board-bottom-row').boundingBox())!;
+      const hand = (await page.getByTestId('hand-panel').boundingBox())!;
+      const market = (await page.locator('[data-testid^="job-card-"]').first().boundingBox())!;
+      const proj = (await projects.boundingBox())!;
+      const strip = (await page.getByTestId('turn-strip').boundingBox())!;
+      expect(proj.y).toBeGreaterThanOrEqual(0);
+      expect(proj.y).toBeLessThan(proj.y + proj.height);
+      expect(proj.y + proj.height).toBeLessThanOrEqual(row.y + 0.5);
+      expect(hand.y + hand.height).toBeLessThanOrEqual(vh);
+      expect(market.y + market.height).toBeLessThanOrEqual(vh);
+      expect(row.y + row.height).toBeLessThanOrEqual(vh + 0.5);
+      expect(hand.x + hand.width).toBeLessThanOrEqual(market.x);
+      expect(hand.y).toBeGreaterThanOrEqual(proj.y + proj.height);
+      expect(strip.y + strip.height).toBeLessThanOrEqual(row.y + 0.5);
+      // Hand and first market card live in the bottom row.
+      expect(await page.getByTestId('board-bottom-row').locator('[data-testid="hand-panel"]').count()).toBe(1);
+      expect(await page.getByTestId('board-bottom-row').locator('[data-testid^="job-card-"]').count()).toBeGreaterThan(0);
+    };
+    await expect(check).toPass();
+    await projects.evaluate((el) => { el.scrollTop = el.scrollHeight; });
+    await expect(check).toPass();
+    await expect(page.locator('[data-testid^="hand-card-"]').first()).toBeInViewport();
+    await expect(page.locator('[data-testid^="job-card-"]').first()).toBeInViewport();
+    await page.setViewportSize({ width: 1280, height: 700 });
+    await expect(check).toPass();
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await expect(check).toPass();
+  });
+
+  test('YOUR HAND and the empty message keep AA contrast on the hand fill', async ({ page }) => {
+    const ratio = await page.getByTestId('hand-panel').evaluate((panel) => {
+      const lum = (c: string) => {
+        const [r, g, b] = c.match(/[\d.]+/g)!.slice(0, 3).map(Number).map((v) => {
+          const x = v / 255;
+          return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4;
+        });
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+      };
+      const cap = panel.querySelector('.en-cap')!;
+      const fg = lum(getComputedStyle(cap).color);
+      const bg = lum(getComputedStyle(panel).backgroundColor);
+      return (Math.max(fg, bg) + 0.05) / (Math.min(fg, bg) + 0.05);
+    });
+    expect(ratio).toBeGreaterThanOrEqual(4.5);
+  });
+
+  test('keyboard: Tab to a hand card, Enter selects it, then the create flow completes', async ({ page }) => {
+    await contextAction(page).locator('[data-testid="action-createProject"]').click();
+    await expect(contextAction(page)).toHaveAttribute('data-mode', 'createProject');
+    const handCards = page.locator('[data-testid^="hand-card-"]');
+    const jobCards = page.locator('[data-testid^="job-card-"]');
+    const marketJobs = (await jobCards.evaluateAll((els) => els.map((e) => e.getAttribute('data-job-name')?.trim()))) as string[];
+    let index = -1;
+    for (let h = 0; h < await handCards.count(); h++) {
+      const reqs = ((await handCards.nth(h).getAttribute('data-requirements')) ?? '').split(',').map((r) => r.trim());
+      if (reqs.some((r) => marketJobs.includes(r))) { index = h; break; }
+    }
+    expect(index).toBeGreaterThanOrEqual(0);
+    const target = handCards.nth(index);
+    for (let i = 0; i < 80 && !(await target.evaluate((el) => el === document.activeElement)); i++) {
+      await page.keyboard.press('Tab');
+    }
+    await expect(target).toBeFocused();
+    await expect(target).toHaveAttribute('aria-pressed', 'false');
+    await page.keyboard.press('Enter');
+    await expect(target).toHaveAttribute('aria-pressed', 'true');
+    const reqs = ((await target.getAttribute('data-requirements')) ?? '').split(',').map((r) => r.trim());
+    for (let j = 0; j < await jobCards.count(); j++) {
+      if (reqs.includes(((await jobCards.nth(j).getAttribute('data-job-name')) ?? '').trim())) {
+        await jobCards.nth(j).click();
+        break;
+      }
+    }
+    await expect(confirmButton(page)).toBeEnabled();
+    await confirmButton(page).click();
+    await expectActions(page, 'Alice', INITIAL_ACTION_TOKENS - CREATE_PROJECT_COST);
+  });
+
   // ── Scenario 2: Initiate a Project ────────────────────────────────────────
   test('Scenario 2: Initiate a Project — costs 2 AP and awards 2 VP', async ({ page }) => {
     await expectActions(page, 'Alice', INITIAL_ACTION_TOKENS);
