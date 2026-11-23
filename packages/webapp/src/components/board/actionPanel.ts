@@ -12,6 +12,8 @@ import {
 } from '@/game/core/stage/action/validate';
 import { ActionMoveName } from '@/game/core/stage/action/move/type';
 import { UserActionMoves } from '@/lib/reducers/actionStepSlice';
+import { RuleSelector } from '@/game/store/slice/rule';
+import { ActionSlotSelector } from '@/game/store/slice/actionSlot';
 
 export const PANEL_ACTIONS = [
   { name: UserActionMoves.CreateProject, title: '發起專案', en: 'START' },
@@ -20,6 +22,10 @@ export const PANEL_ACTIONS = [
   { name: UserActionMoves.Recruit, title: '加入專案', en: 'JOIN' },
 ] as const;
 
+/** Remaining uses this round: the slot is enabled by the rules and not yet occupied (one slot per action). */
+export function remainingActionUses(G: ValidatableState, name: ActionMoveName): number {
+  return RuleSelector.isActionSlotAvailable(G.rules, name) && !ActionSlotSelector.isOccupied(G.table.actionSlots[name]) ? 1 : 0;
+}
 
 /** A move is selectable if it is legal now, or legal with an overtime token. */
 function canPass(check: (opts?: ActionExecutionOptions) => ValidationResult): boolean {

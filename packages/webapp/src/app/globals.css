@@ -1819,3 +1819,99 @@ body:has([data-testid='header-menu'][aria-expanded='true']) [data-testid='dev-to
   .project-card--hand { transition: none; }
 }
 /* ===== end issue 492 ===== */
+
+/* ===== story 13: job market (#494) ===== */
+/* Secondary text on the #fff0e2 fill uses #6e6556 (5.14:1); Figma's ink-mute is below AA. */
+.job-market {
+  box-sizing: border-box;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 16px;
+  border-radius: 16px;
+  background: #fff0e2;
+}
+.job-market__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+.job-market__title { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.job-market__title-line { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.job-market__heading { margin: 0; font-size: 16px; font-weight: 800; }
+.job-market__players { display: inline-flex; align-items: center; padding-left: 5px; }
+.job-market__pdot {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  box-sizing: border-box;
+  width: 16px;
+  height: 16px;
+  margin-left: -5px;
+  border: 1.5px solid var(--ink);
+  border-radius: 50%;
+  color: #fff;
+  font-family: var(--font-en);
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+}
+.job-market__count { font-size: 11px; letter-spacing: 0.06em; color: #6e6556; }
+.job-market__actions { display: flex; align-items: center; gap: 8px; margin-left: auto; min-height: 0; }
+.job-market__refill.gr-panel-action { width: auto; min-height: 48px; padding: 4px 10px 4px 6px; }
+.job-market__refill .gr-action-panel__dots { display: inline-flex; margin-left: 4px; }
+
+.market-carousel { position: relative; min-width: 0; }
+.market-carousel__row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  scroll-snap-type: x proximity;
+  scroll-padding-inline: 44px;
+  /* room for the focused lift, outline and the remove × overhanging the corner */
+  padding: 12px 4px 8px;
+  min-height: 0;
+}
+.market-carousel__row::-webkit-scrollbar { display: none; }
+.market-carousel__row:focus-visible { outline: 3px solid var(--ink); outline-offset: -3px; border-radius: 12px; }
+.market-carousel__row > .job-tile-wrap {
+  flex: none;
+  width: 124px;
+  scroll-snap-align: start;
+}
+.market-carousel__fade {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+  width: 64px;
+  pointer-events: none;
+}
+.market-carousel__fade--prev { left: 0; background: linear-gradient(to right, #fff0e2, rgba(255, 240, 226, 0)); }
+.market-carousel__fade--next { right: 0; background: linear-gradient(to left, #fff0e2, rgba(255, 240, 226, 0)); }
+.market-carousel__btn.gr-icon-btn {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  width: 40px;
+  height: 40px;
+  translate: 0 -50%;
+}
+.market-carousel__btn--prev { left: 2px; }
+.market-carousel__btn--next { right: 2px; }
+@media (max-width: 600px) {
+  .job-market { padding: 12px; }
+  .market-carousel__row > .job-tile-wrap { width: 96px; }
+  .market-carousel__btn.gr-icon-btn { width: 32px; height: 32px; }
+  .market-carousel__row { scroll-padding-inline: 36px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .market-carousel__row { scroll-behavior: auto; }
+}
+/* ===== end story 13 ===== */

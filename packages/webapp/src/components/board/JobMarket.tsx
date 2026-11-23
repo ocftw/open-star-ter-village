@@ -11,11 +11,15 @@ import {
   resetJobSlotSelection,
   toggleJobSlotSelection,
 } from '@/lib/reducers/jobSlotSlice';
+import { Button, PLAYER_COLORS } from '@/components/design';
+import { RuleSelector } from '@/game/store/slice/rule';
+import { getPlayerName } from '@/components/playerNameMap';
 import JobTile from './JobTile';
-import { canSelectAction } from './actionPanel';
+import MarketCarousel from './MarketCarousel';
+import { canSelectAction, remainingActionUses } from './actionPanel';
 
 /**
- * Existing market grid and refill entry; cards become selectable after an action is chosen.
+ * Shared job market: player badges, a persistent refill pill and a one-row carousel; cards become selectable after an action is chosen.
  */
 export default function JobMarket({
   gameContext,
@@ -26,7 +30,7 @@ export default function JobMarket({
   idle: boolean;
   discardActive: boolean;
 }) {
-  const { G, playerID } = gameContext;
+  const { G, playerID, matchData } = gameContext;
   const dispatch = useAppDispatch();
   const jobsInteractive = useAppSelector(isJobSlotsInteractive);
   const selectedSlots = useAppSelector(getSelectedJobSlots);
@@ -45,47 +49,68 @@ export default function JobMarket({
     }
   };
 
+  const playerIds = Object.keys(G.players);
+  const playerNames = playerIds.map((id) => getPlayerName(matchData, id));
+  const cardCount = G.table.jobSlots.length;
+  const refillName = UserActionMoves.RemoveAndRefillJobs;
+  const refillEnabled = idle && cardCount > 0 && playerID !== null && canSelectAction(G, playerID, refillName);
+  const remaining = remainingActionUses(G, refillName);
+  const cost = RuleSelector.getActionTokenCost(G.rules, refillName);
+
   return (
-    <div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, paddingLeft: 4, flexWrap: 'wrap' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <span style={{ fontWeight: 800, fontSize: 14 }}>人力市場</span>
-          <span className="en-cap">Job market · {G.table.jobSlots.length} cards</span>
-        </div>
-        <span
-          style={{
-            fontSize: 11,
-            color: 'var(--ink-mute)',
-            background: 'white',
-            border: '1.5px solid var(--paper-3)',
-            borderRadius: 999,
-            padding: '3px 10px',
-          }}
-        >
-          ⓘ 先選加入專案，再選人力卡
-        </span>
-        {idle && (
-          <div style={{ marginLeft: 'auto', display: 'flex', gap: 8 }}>
-            <button
-              type="button"
-              data-testid="refill-jobs"
-              className="btn-sticker sm ghost"
-              disabled={playerID === null || !canSelectAction(G, playerID, UserActionMoves.RemoveAndRefillJobs)}
-              onClick={() => dispatch(setCurrentAction(UserActionMoves.RemoveAndRefillJobs))}
+    <section className="job-market" aria-label="人力市場" data-testid="job-market">
+      <header className="job-market__head">
+        <div className="job-market__title">
+          <div className="job-market__title-line">
+            <h2 className="job-market__heading">人力市場</h2>
+            <span
+              className="job-market__players"
+              role="img"
+              aria-label={`共用人力市場：${playerNames.join('、')}`}
+              data-testid="job-market-players"
             >
-              🔄 換人力 <span className="tag-en">Refill</span>
-            </button>
+              {playerIds.map((id, index) => (
+                <span
+                  key={id}
+                  className="job-market__pdot"
+                  style={{ background: PLAYER_COLORS[Number(id) % PLAYER_COLORS.length] }}
+                  aria-hidden="true"
+                >
+                  {playerNames[index][0]}
+                </span>
+              ))}
+            </span>
           </div>
-        )}
-      </div>
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(96px, 1fr))',
-          gap: 10,
-          marginTop: 10,
-        }}
-      >
+          <span className="job-market__count" data-testid="job-market-count" data-count={cardCount}>
+            JOB MARKET · {cardCount} CARDS
+          </span>
+        </div>
+        <div className="job-market__actions" data-testid="job-market-actions">
+          {playerID !== null && (
+            <Button
+              variant="sec"
+              className="gr-panel-action job-market__refill"
+              data-testid="refill-jobs"
+              aria-pressed={currentAction === refillName}
+              disabled={!refillEnabled}
+              onClick={() => dispatch(setCurrentAction(refillName))}
+            >
+              <span className="gr-panel-action__cost" aria-label={`COST ${cost}`}>
+                <span>COST</span>
+                <strong>{cost}</strong>
+              </span>
+              <span className="gr-panel-action__label">
+                <strong>換人力</strong>
+                <span className="gr-panel-action__en">REFILL</span>
+              </span>
+              <span className="gr-action-panel__dots" aria-label={`換人力本回合剩餘 ${remaining} 次`} data-remaining-uses={remaining}>
+                <span className="gr-action-panel__dot" data-remaining={remaining > 0} aria-hidden="true" />
+              </span>
+            </Button>
+          )}
+        </div>
+      </header>
+      <MarketCarousel label="人力市場">
         {G.table.jobSlots.map((job) => {
           const removed = !!selectedSlots[job.id];
           if (removeMode) {
@@ -113,7 +138,7 @@ export default function JobMarket({
             />
           );
         })}
-      </div>
-    </div>
+      </MarketCarousel>
+    </section>
   );
 }
