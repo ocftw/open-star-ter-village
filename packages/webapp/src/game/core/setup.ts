@@ -11,6 +11,7 @@ import { JobSlotsMutator } from '../store/slice/jobSlots';
 import { RuleMutator, RuleSelector } from '../store/slice/rule';
 import { reservoirSampling } from '../utils';
 import { ProjectBoardMutator } from '../store/slice/projectBoard';
+import { SLASH_EVENT_FUNCTION_NAME, SLASH_WILD_EVENT_DESCRIPTION } from './slashWildJob';
 
 type SetupFn<G extends any = any,
   PluginAPIs extends Record<string, unknown> = Record<string, unknown>,
@@ -49,6 +50,9 @@ export interface GameSetupData {
 export const setup: SetupFn<GameState> = ({ ctx, random }, setupData?: GameSetupData) => {
   // get default game state
   const G = GameStore.initialState();
+  // New games use the 斜槓青年 per-turn wild job card. Games created before this
+  // marker existed stay on the legacy entitlement semantics (see Rule.slashWildJobCard).
+  RuleMutator.enableSlashWildJobCard(G.rules);
 
   // Set event card count based on player count (Simplified Mode rulebook):
   // 2 players → 6 cards, 3 players → 5 cards, 4+ players → 4 cards
@@ -85,7 +89,12 @@ export const setup: SetupFn<GameState> = ({ ctx, random }, setupData?: GameSetup
   DeckMutator.initialize(G.decks.jobs, shuffledJobCards);
 
   // TODO: Validate event card function names
-  const eventCards = rawEventCards.map(rawEventCard => ({ id: getUuid(random.Number), ...rawEventCard }) as unknown as EventCard);
+  const eventCards = rawEventCards.map(rawEventCard => ({
+    id: getUuid(random.Number),
+    ...rawEventCard,
+    // New games are marked for the wild job card, so 斜槓青年 must describe it.
+    ...(rawEventCard.function_name === SLASH_EVENT_FUNCTION_NAME && { description: SLASH_WILD_EVENT_DESCRIPTION }),
+  }) as unknown as EventCard);
   // find end game event card
   // pick N random event cards based on rule and shuffle them
   // add end game event card to the end

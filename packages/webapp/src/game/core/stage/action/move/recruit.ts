@@ -1,11 +1,11 @@
 import { ProjectBoardSelector } from '@/game/store/slice/projectBoard';
-import { DeckMutator, DeckSelector } from '@/game/store/slice/deck';
 import { ProjectSlotMutator } from '@/game/store/slice/projectSlot/projectSlot';
 import { GameMove } from '@/game/core/type';
 import { PlayersMutator } from '@/game/store/slice/players';
 import { RuleMutator, RuleSelector } from '@/game/store/slice/rule';
 import { JobSlotsMutator, JobSlotsSelector } from '@/game/store/slice/jobSlots';
-import { ActionExecutionOptions, ActionValidationError, validateRecruit } from '@/game/core/stage/action/validate';
+import { discardJobCards, refillJobSlots } from '@/game/core/slashWildJob';
+import { ActionExecutionOptions, ActionValidationError, resolveJobAssignment, validateRecruit } from '@/game/core/stage/action/validate';
 import { applyActionCost } from './applyActionCost';
 
 export type Recruit = (
@@ -15,11 +15,11 @@ export type Recruit = (
   options?: ActionExecutionOptions,
 ) => void;
 
-export const recruit: GameMove<Recruit> = ({ G, playerID }, jobCardId, projectSlotId, assignedJobName, options) => {
+export const recruit: GameMove<Recruit> = ({ G, ctx, playerID }, jobCardId, projectSlotId, assignedJobName, options) => {
   // Shared validation: same predicates the client preflight runs. Whether
   // assignedJobName may override the requirement is derived from
   // authoritative event state inside the validator.
-  const result = validateRecruit(G, playerID, jobCardId, projectSlotId, assignedJobName, options);
+  const result = validateRecruit(G, playerID, jobCardId, projectSlotId, assignedJobName, options, ctx.currentPlayer);
   if (!result.valid) {
     throw new ActionValidationError(result);
   }
@@ -27,31 +27,31 @@ export const recruit: GameMove<Recruit> = ({ G, playerID }, jobCardId, projectSl
   const assignWorkerTokenCosts = RuleSelector.getAssignWorkerTokenCost(G.rules, 'recruit');
   const jobCard = JobSlotsSelector.getJobCardById(G.table.jobSlots, jobCardId)!;
   const activeProject = ProjectBoardSelector.getBySlotId(G.table.projectBoard, projectSlotId)!;
-  const ignoreRequirement = RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, playerID);
+  const assignment = resolveJobAssignment(
+    G, playerID, ctx.currentPlayer, jobCard, Object.keys(activeProject.card!.requirements), assignedJobName,
+  );
+  if (!assignment.valid) {
+    throw new ActionValidationError(assignment);
+  }
 
   // All checks passed — now mutate state
   applyActionCost(G, playerID, 'recruit', options);
 
   JobSlotsMutator.removeJobCard(G.table.jobSlots, jobCard);
-  DeckMutator.discard(G.decks.jobs, [jobCard]);
+  // The synthetic 斜槓青年 wild card never enters the discard pile.
+  discardJobCards(G, [jobCard]);
 
-  if (ignoreRequirement) {
+  if (assignment.consumesEntitlement) {
     RuleMutator.consumeIgnoreFirstWorkerRequirement(G.rules, playerID);
   }
 
   PlayersMutator.useWorkerTokens(G.players, playerID, assignWorkerTokenCosts);
 
   const initialContributionValue = RuleSelector.getAssignWorkerInitialContributionValue(G.rules, 'recruit');
-  // 斜槓青年: a mismatched card records its contribution under the
-  // player-chosen required position, never under an unrequired profession.
-  const matchesRequirement = Object.keys(activeProject.card!.requirements).includes(jobCard.name);
-  const effectiveJobName = matchesRequirement ? jobCard.name : assignedJobName!;
-  ProjectSlotMutator.assignWorker(activeProject, effectiveJobName, playerID, initialContributionValue);
+  // 斜槓青年: the wild card (or a legacy override) records its contribution
+  // under the player-chosen required position, never under its own name.
+  ProjectSlotMutator.assignWorker(activeProject, assignment.jobName, playerID, initialContributionValue);
 
-  // Refill job card
-  const maxJobSlots = RuleSelector.getTableMaxJobSlots(G.rules);
-  const refillCardNumber = maxJobSlots - G.table.jobSlots.length;
-  const jobCards = DeckSelector.peek(G.decks.jobs, refillCardNumber);
-  DeckMutator.draw(G.decks.jobs, refillCardNumber);
-  JobSlotsMutator.addJobCards(G.table.jobSlots, jobCards);
+  // Refill job card (counts real cards only; the wild card is not a market slot)
+  refillJobSlots(G);
 };

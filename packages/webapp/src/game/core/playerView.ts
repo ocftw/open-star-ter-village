@@ -1,8 +1,9 @@
 import { Ctx, PlayerID } from "boardgame.io";
 import { ClientGameState, GameState } from "../store/store";
 import { ClientPlayers } from "../store/slice/players";
+import { isLiveSlashWildJobCard, isSlashWildJobCard } from "./slashWildJob";
 
-export const playerView = ({ G, playerID }: { G: GameState; ctx: Ctx; playerID: PlayerID | null }): ClientGameState => {
+export const playerView = ({ G, ctx, playerID }: { G: GameState; ctx: Ctx; playerID: PlayerID | null }): ClientGameState => {
   const { decks, players, ...view } = G;
   const publicPlayers: ClientPlayers = {};
   for (let id in players) {
@@ -15,8 +16,23 @@ export const playerView = ({ G, playerID }: { G: GameState; ctx: Ctx; playerID: 
     }
   }
 
+  // 斜槓青年 is visible only to its owner while the card is live.
+  const table = view.table.jobSlots.some(isSlashWildJobCard)
+    ? {
+      ...view.table,
+      jobSlots: view.table.jobSlots.filter(
+        (card) => !isSlashWildJobCard(card) || (
+          ctx.gameover === undefined &&
+          playerID === ctx.currentPlayer &&
+          isLiveSlashWildJobCard(G, ctx.currentPlayer, card)
+        ),
+      ),
+    }
+    : view.table;
+
   return {
     ...view,
+    table,
     players: publicPlayers,
   };
 }

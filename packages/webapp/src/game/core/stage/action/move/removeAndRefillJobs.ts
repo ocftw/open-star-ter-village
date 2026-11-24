@@ -1,4 +1,4 @@
-import { DeckMutator, DeckSelector } from '@/game/store/slice/deck';
+import { discardJobCards, refillJobSlots } from '@/game/core/slashWildJob';
 import { GameMove } from '@/game/core/type';
 import { RuleSelector } from '@/game/store/slice/rule';
 import { ScoreBoardMutator } from '@/game/store/slice/scoreBoard';
@@ -21,15 +21,10 @@ export const removeAndRefillJobs: GameMove<RemoveAndRefillJobs> = ({ G, playerID
 
   // remove and discard job card
   JobSlotsMutator.removeJobCards(G.table.jobSlots, jobCardsToRemove);
-  DeckMutator.discard(G.decks.jobs, jobCardsToRemove);
+  discardJobCards(G, jobCardsToRemove);
 
-  // refill job cards
-  const maxJobCards = RuleSelector.getTableMaxJobSlots(G.rules);
-  const filledJobSlots = JobSlotsSelector.getNumFilledSlots(G.table.jobSlots);
-  const refillCardNumber = maxJobCards - filledJobSlots;
-  const jobCardsToRefill = DeckSelector.peek(G.decks.jobs, refillCardNumber);
-  DeckMutator.draw(G.decks.jobs, refillCardNumber);
-  JobSlotsMutator.addJobCards(G.table.jobSlots, jobCardsToRefill);
+  // refill job cards up to maxJobSlots real cards
+  refillJobSlots(G);
 
   const victoryPoints = RuleSelector.getActionVictoryPoints(G.rules, 'removeAndRefillJobs');
   ScoreBoardMutator.add(G.table.scoreBoard, playerID, victoryPoints);

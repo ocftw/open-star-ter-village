@@ -56,9 +56,24 @@ export interface Rule {
     projectOwnerVictoryPoints: number;
     lastContributorVictoryPoints: number;
   },
+  /**
+   * 斜槓青年 rules version marker. setup() sets it to true for every NEW game:
+   * the event's entitlement is then spent through a synthetic per-turn wild job
+   * card (see core/slashWildJob.ts) and ordinary job cards never get an override.
+   * In-flight games created before this change have no marker (undefined) and
+   * keep the legacy semantics: the entitled player's first createProject/recruit
+   * may use a mismatched ordinary card, and that first use consumes the
+   * entitlement even when the card matches. No migration is attempted, because
+   * rewriting a running round's market/entitlement would change a game mid-round.
+   */
+  slashWildJobCard?: boolean;
   event?: {
     extraOwnerVictoryPoints?: number;
-    /** Per-player flag: each player independently gets one free worker placement ignoring job requirements. */
+    /**
+     * 斜槓青年 per-player entitlement, granted at the event's start and cleared at its end.
+     * Marked games (slashWildJobCard): one use of the synthetic wild job card, forfeited
+     * if unused at turn end. Legacy games: the first createProject/recruit ignores job matching.
+     */
     ignoreFirstWorkerRequirement?: Record<string, boolean>;
   },
 }
@@ -185,6 +200,15 @@ const consumeIgnoreFirstWorkerRequirement = (rule: Rule, playerId: string): void
 
 const canIgnoreFirstWorkerRequirement = (rule: Rule, playerId: string): boolean => {
   return rule.event?.ignoreFirstWorkerRequirement?.[playerId] ?? false;
+};
+
+const enableSlashWildJobCard = (rule: Rule): void => {
+  rule.slashWildJobCard = true;
+};
+
+/** True only for games whose setup() wrote the marker; see Rule.slashWildJobCard. */
+const isSlashWildJobCardEnabled = (rule: Rule): boolean => {
+  return rule.slashWildJobCard === true;
 };
 
 const setTableMaxJobSlots = (rule: Rule, value: number): void => {
@@ -319,6 +343,7 @@ const RuleSlice = {
     setEventExtraOwnerVictoryPoints,
     setEventIgnoreFirstWorkerRequirement,
     consumeIgnoreFirstWorkerRequirement,
+    enableSlashWildJobCard,
     setTableMaxJobSlots,
   },
   selectors: {
@@ -332,6 +357,7 @@ const RuleSlice = {
     getAssignWorkerInitialContributionValue,
     getMaxContributionValue,
     canIgnoreFirstWorkerRequirement,
+    isSlashWildJobCardEnabled,
     getTableMaxJobSlots,
     getTableMaxProjectSlots,
     getPlayerMaxActionTokens,

@@ -21,7 +21,7 @@ import {
 import { getSelectedJobSlots } from '@/lib/reducers/jobSlotSlice';
 import { getSelectedProjectSlots } from '@/lib/reducers/projectSlotSlice';
 import { JobSlotsSelector } from '@/game/store/slice/jobSlots';
-import { RuleSelector } from '@/game/store/slice/rule';
+import { isLiveSlashWildJobCard, isSlashWildJobCard, requiresAssignedJobName } from '@/game/core/slashWildJob';
 import { ProfessionPicker, getEligibleTargetJobNames } from './board/professionPicker';
 import { Modal, PLAYER_COLORS, StickerButton } from '@/components/design';
 import { ScoreBoardSelector } from '@/game/store/slice/scoreBoard';
@@ -77,9 +77,9 @@ const Board: React.FC<GameContext> = (gameContext) => {
   const history = useGameHistory(gameContext);
   const projectsRef = React.useRef<HTMLDivElement>(null);
 
-  // 斜槓青年 target-position picker: during Recruit with a mismatched
-  // job card and the event entitlement available, the selected project's
-  // eligible requirement rows become tappable targets.
+  // 斜槓青年 target-position picker: during Recruit, only when the selected
+  // job card is the player's live wild card (legacy games: a mismatched card while
+  // the entitlement is unspent), the selected project's eligible rows become targets.
   const jobSelectionMap = useAppSelector(getSelectedJobSlots);
   const projectSelectionMap = useAppSelector(getSelectedProjectSlots);
   const assignedJobName = useAppSelector(getAssignedJobName);
@@ -87,13 +87,14 @@ const Board: React.FC<GameContext> = (gameContext) => {
   const selectedJobCard = selectedJobId
     ? JobSlotsSelector.getJobCardById(G.table.jobSlots, selectedJobId)
     : undefined;
-  const overrideAvailable =
-    playerID !== null && RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, playerID);
   const professionPickerFor = (slot: ProjectSlotState): ProfessionPicker | undefined => {
     if (currentAction !== UserActionMoves.Recruit) return undefined;
-    if (!overrideAvailable || !selectedJobCard || !slot.card) return undefined;
+    if (playerID === null || !selectedJobCard || !slot.card) return undefined;
     if (!projectSelectionMap[slot.id]) return undefined;
-    if (Object.keys(slot.card.requirements).includes(selectedJobCard.name)) return undefined;
+    const needsProfession = isSlashWildJobCard(selectedJobCard)
+      ? playerID === ctx.currentPlayer && isLiveSlashWildJobCard(G, ctx.currentPlayer, selectedJobCard)
+      : requiresAssignedJobName(G.rules, playerID, selectedJobCard, Object.keys(slot.card.requirements));
+    if (!needsProfession) return undefined;
     return {
       eligibleJobNames: getEligibleTargetJobNames(slot, playerID!),
       selectedJobName: assignedJobName,

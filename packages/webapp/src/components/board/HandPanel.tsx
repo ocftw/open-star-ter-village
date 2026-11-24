@@ -2,7 +2,7 @@ import { GameContext } from '@/components/GameContextHelpers';
 import { ProjectCard } from '@/game';
 import { PlayersSelector } from '@/game/store/slice/players';
 import { JobSlotsSelector } from '@/game/store/slice/jobSlots';
-import { RuleSelector } from '@/game/store/slice/rule';
+import { isLiveSlashWildJobCard, isSlashWildJobCard, requiresAssignedJobName } from '@/game/core/slashWildJob';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import {
   UserActionMoves,
@@ -31,7 +31,7 @@ export default function HandPanel({
   gameContext: GameContext;
   layout?: 'rail' | 'strip';
 }) {
-  const { G, playerID } = gameContext;
+  const { G, ctx, playerID } = gameContext;
   const dispatch = useAppDispatch();
   const handInteractive = useAppSelector(isHandProjectCardsInteractive);
   const selectedCards = useAppSelector(getSelectedHandProjectCards);
@@ -42,19 +42,21 @@ export default function HandPanel({
   if (playerID === null) return null;
   const hand = PlayersSelector.getProjectCards(G.players, playerID);
 
-  // 斜槓青年 target-position picker: during Create Project with a
-  // mismatched job card and the event entitlement available, the selected hand
-  // card's requirement rows become tappable targets (all positions are open on
-  // a new project).
+  // 斜槓青年 target-position picker: during Create Project, only when the
+  // selected job card is the player's live wild card (legacy games: a mismatched card
+  // while the entitlement is unspent), the selected hand card's requirement rows
+  // become tappable targets (all positions are open on a new project).
   const selectedJobId = Object.keys(jobSelectionMap).find((id) => jobSelectionMap[id]);
   const selectedJobCard = selectedJobId
     ? JobSlotsSelector.getJobCardById(G.table.jobSlots, selectedJobId)
     : undefined;
-  const overrideAvailable = RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, playerID);
   const professionPickerFor = (card: ProjectCard): ProfessionPicker | undefined => {
     if (currentAction !== UserActionMoves.CreateProject) return undefined;
-    if (!overrideAvailable || !selectedJobCard || !selectedCards[card.id]) return undefined;
-    if (Object.keys(card.requirements).includes(selectedJobCard.name)) return undefined;
+    if (!selectedJobCard || !selectedCards[card.id]) return undefined;
+    const needsProfession = isSlashWildJobCard(selectedJobCard)
+      ? playerID === ctx.currentPlayer && isLiveSlashWildJobCard(G, ctx.currentPlayer, selectedJobCard)
+      : requiresAssignedJobName(G.rules, playerID, selectedJobCard, Object.keys(card.requirements));
+    if (!needsProfession) return undefined;
     return {
       eligibleJobNames: Object.keys(card.requirements),
       selectedJobName: assignedJobName,
