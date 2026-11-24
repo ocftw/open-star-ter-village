@@ -30,10 +30,11 @@ export function errorCode(error: unknown): string | undefined {
 
 export function reportPersistenceFailure(
   operation: PersistenceOperation,
-  details: { matchID?: string; error?: unknown; level?: 'warning' | 'error' } = {},
+  details: { matchID?: string; error?: unknown; level?: 'warning' | 'error'; sentry?: boolean } = {},
 ): void {
   const code = errorCode(details.error);
   console.warn('Match persistence operation failed', { operation, matchID: details.matchID, code });
+  if (details.sentry === false) return;
   Sentry.captureException(new Error(`Match persistence: ${operation}`), {
     level: details.level ?? 'error',
     tags: { component: 'match-persistence', operation },

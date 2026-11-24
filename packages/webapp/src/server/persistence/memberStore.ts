@@ -47,7 +47,12 @@ interface Entry {
   endGameUnsaved: boolean;
   retryTimer?: ReturnType<typeof setTimeout>;
   retryDelayMs?: number;
+  /** Consecutive failed writes; mid-game failures reach Sentry once repeated. */
+  failures: number;
 }
+
+/** A mid-game write failure is reported to Sentry when it repeats (2nd, then every 20th). */
+const reportToSentry = (failures: number) => failures === 2 || (failures > 2 && failures % 20 === 0);
 
 const isGameover = (state: State) => state.ctx.gameover !== undefined;
 const delay = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
@@ -193,6 +198,7 @@ export class MemberPostgresStore extends PostgresStore {
       log: [],
       dirty: false,
       endGameUnsaved: false,
+      failures: 0,
     });
     // Guest-hosted (DB-C1): nothing is written, in any table.
     if (hostUserId) await this.persist(matchID);
@@ -326,6 +332,7 @@ export class MemberPostgresStore extends PostgresStore {
       try {
         await this.writeWithRetry(row, finalState && endGameRetries ? this.opts.endGameRetryDelaysMs : []);
         this.lastOperationFailed = false;
+        entry.failures = 0;
         if (finalState && entry.endGameUnsaved) {
           entry.endGameUnsaved = false;
           console.info('End-game state persisted after retry', { matchID });
@@ -338,12 +345,13 @@ export class MemberPostgresStore extends PostgresStore {
           throw error;
         }
         entry.dirty = true;
+        entry.failures += 1;
         if (finalState) {
           entry.endGameUnsaved = true;
           this.failed('end-game-write', matchID, error);
           this.scheduleEndGameRetry(matchID, entry);
         } else {
-          this.failed('write', matchID, error);
+          this.failed('write', matchID, error, reportToSentry(entry.failures));
         }
         return;
       }
@@ -457,6 +465,7 @@ export class MemberPostgresStore extends PostgresStore {
       log: [],
       dirty: false,
       endGameUnsaved: false,
+      failures: 0,
     };
     this.entries.set(matchID, entry);
     return entry;
@@ -473,9 +482,14 @@ export class MemberPostgresStore extends PostgresStore {
     }
   }
 
-  private failed(operation: Parameters<typeof reportPersistenceFailure>[0], matchID: string | undefined, error: unknown) {
+  private failed(
+    operation: Parameters<typeof reportPersistenceFailure>[0],
+    matchID: string | undefined,
+    error: unknown,
+    sentry = true,
+  ) {
     this.lastOperationFailed = true;
-    reportPersistenceFailure(operation, { matchID, error, level: operation === 'write' ? 'warning' : 'error' });
+    reportPersistenceFailure(operation, { matchID, error, sentry, level: operation === 'write' ? 'warning' : 'error' });
   }
 
   private schedule(fn: () => void, ms: number): void {

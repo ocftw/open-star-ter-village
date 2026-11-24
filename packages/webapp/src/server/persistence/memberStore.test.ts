@@ -153,6 +153,9 @@ describe('MemberPostgresStore: mid-game write failure (DB-C8)', () => {
     }
     expect(store.status()).toBe('degraded');
     expect(sql.rows.get('m1')!.state_id).toBe(0);
+    // Every failure is logged; Sentry hears about it once it repeats.
+    expect(logs.filter((line) => line.includes('Match persistence operation failed'))).toHaveLength(3);
+    expect(jest.mocked(Sentry.captureException)).toHaveBeenCalledTimes(1);
     const writesBefore = sql.writes.length;
     await store.setState('m1', makeState(4));
     expect(sql.rows.get('m1')!.state_id).toBe(4);
