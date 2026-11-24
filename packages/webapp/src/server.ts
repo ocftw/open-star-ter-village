@@ -1,12 +1,10 @@
-import { Server, Origins } from "boardgame.io/server";
 import * as Sentry from "@sentry/node";
-import packageJson from "../package.json";
 import game from "./game";
 import { loadWebappEnv } from "./env";
-import { registerLobbyUpdates } from "./server/lobbyUpdates";
+import { exitOnSignals, startGameServer } from "./server/gameServer";
+import { PersistenceConfigError } from "./server/persistence/config";
+import { HostTokenConfigError } from "./server/persistence/hostToken";
 
-const packageVersion = packageJson.version;
-const gameName = 'OpenStarTerVillage';
 const sentryDsn = process.env.SENTRY_DSN;
 
 if (sentryDsn) {
@@ -18,67 +16,47 @@ if (sentryDsn) {
   });
 }
 
-async function captureStartupError(error: unknown) {
+async function captureStartupError(error: Error) {
   if (sentryDsn) {
     Sentry.captureException(error);
     await Sentry.flush(2000);
   }
 }
 
+// Errors whose messages are fixed configuration text, safe to print as-is.
+const configErrors = new WeakSet<object>();
+
 async function serve() {
-  const env = loadWebappEnv();
+  let env: ReturnType<typeof loadWebappEnv>;
+  try {
+    env = loadWebappEnv();
+  } catch (error) {
+    if (error instanceof Error) configErrors.add(error);
+    throw error;
+  }
   const dev = !env.isProduction;
 
   console.log(`Starting server on port ${env.port} in ${dev ? 'dev' : 'production'} mode...`);
 
-  const server = Server({
+  const running = await startGameServer({
     games: [game],
-    origins: [
-      ...env.gameServerOrigins,
-      // Allow localhost to connect, except when NODE_ENV is 'production'.
-      Origins.LOCALHOST_IN_DEVELOPMENT,
-    ],
-  });
-
-  registerLobbyUpdates(server);
-
-  // boardgame.io's playAgain read-check-create-write is not atomic. Serialize
-  // these rare requests so concurrent players receive the same next match.
-  const PLAY_AGAIN_PATH = /^\/games\/[^/]+\/[^/]+\/playAgain\/?$/;
-  let rematchTail = Promise.resolve();
-  server.app.use(async (ctx, next) => {
-    if (ctx.method !== 'POST' || !PLAY_AGAIN_PATH.test(ctx.path)) {
-      return next();
-    }
-
-    const run = rematchTail.then(() => next());
-    rematchTail = run.then(
-      () => undefined,
-      () => undefined,
-    );
-    await run;
-  });
-
-  server.router.get('/health', (ctx) => {
-    ctx.status = 200;
-    ctx.body = {
-      status: 'ok',
-      uptime: process.uptime(),
-      version: packageVersion,
-      gameName,
-    };
-  });
-
-  const config = {
     port: env.port,
+    origins: env.gameServerOrigins,
     callback: () => console.log(`Main server running on port ${env.port}...`),
-  };
+  });
+  console.log(`Match persistence: ${running.persistence.status()}`);
 
-  server.run(config);
+  exitOnSignals(running, () => Sentry.flush(500));
 }
 
-serve().catch(async (error) => {
-  console.error(error);
-  await captureStartupError(error);
+serve().catch(async (error: unknown) => {
+  // Config errors carry fixed messages; any other error may contain secrets
+  // (for example a connection string), so it is replaced before logging.
+  const safe = error instanceof PersistenceConfigError || error instanceof HostTokenConfigError ||
+    (error instanceof Error && configErrors.has(error))
+    ? error
+    : new Error('Game server startup failed');
+  console.error(safe.message);
+  await captureStartupError(safe);
   process.exit(1);
 });

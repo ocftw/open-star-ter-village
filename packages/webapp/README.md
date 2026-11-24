@@ -160,8 +160,9 @@ The alpha runs on `shared-cpu-1x` with 256 MB memory and keeps one machine warm.
 Expect roughly USD $2-5/month depending on region, transfer, and Fly pricing
 changes.
 
-Match state is in memory for alpha. Restarts lose active matches until the
-post-alpha persistence task lands.
+Match persistence (#445, Phase 1) is off unless `DATABASE_URL` is set; see
+[Match persistence](#match-persistence). With it off, restarts lose active
+matches.
 
 Run the [`webapp-deploy-smoke-test` agent skill](skills/webapp-deploy-smoke-test/SKILL.md)
 after every deploy.
@@ -350,6 +351,45 @@ in Redux.
 - `ENABLE_DEV_ROUTE=true` serves `/dev` in a production build (Docker build
   arg, default `false`; set only by per-PR staging).
 - `@/*` maps to `packages/webapp/src/*`.
+- `MATCH_PERSISTENCE` is `member` or `off`. It defaults to `member` when
+  `DATABASE_URL` is set and `off` otherwise; `off` opens no database
+  connection.
+- `DATABASE_URL` is the PostgreSQL connection string for member-hosted match
+  state. Never commit it or print it.
+- `MATCH_RESUME_WINDOW_HOURS` (default `24`) is how long an idle member match
+  can be restored; older unfinished matches are marked abandoned (rows kept).
+- `GAME_SERVER_AUTH_SECRET` verifies member host tokens (HS256). It must be at
+  least 32 bytes (bytes, not characters) or the server refuses to start. Unset
+  means every match is guest-hosted.
+
+### Match persistence
+
+Phase 1 runs one game server with PostgreSQL as the source of truth for
+member-hosted matches (`src/server/persistence/`):
+
+- `MemberPostgresStore` wraps bgio-postgres (`StorageAPI.Async`) and stores
+  the `matches` table. Guest-hosted matches write no row and live only in
+  memory. Every write is a `_stateID` conditional update: older states are
+  rejected, skipped versions are accepted. Migrations are compiled into the
+  server and run on start; running them again is a no-op.
+- `PersistentMaster` (a `Master` subclass, no library patch) attempts the
+  write before broadcasting. A transient failure still publishes the move and
+  the next update writes the latest state; a hard `_stateID` reject is never
+  published and the moving client gets an authoritative sync.
+- If a member match's final state still fails after the end-game write and
+  its retry, `GET /games/:name/:matchID/persistence` returns
+  `{ "endGameUnsaved": true }` until a background retry lands; the 遊戲結束
+  dialog polls it and shows the warning. It is not part of `G`.
+- `/health` reports `persistence`: `on`, `off`, or `degraded` (database
+  unreachable or writes failing while play continues from memory).
+- SIGTERM finishes queued moves and in-flight and pending writes, then exits;
+  `scripts/start-production.sh` forwards signals to both processes.
+- The host is identified only by a verified `Authorization: Bearer` host
+  token on create (audience `open-star-ter-village:game-server`); member
+  sign-in does not issue one yet, so the lobby sends none.
+
+Integration tests against a real database run when `TEST_DATABASE_URL` points
+at a disposable PostgreSQL server; they are skipped otherwise.
 
 ## Coding Constraints
 

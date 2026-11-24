@@ -7,8 +7,9 @@ import { Game } from 'boardgame.io';
 import { GameState, ProjectSlotState } from '@/game';
 import { GameContext } from './GameContextHelpers';
 import { GAME_NAME, GAME_SERVER_URL, lobbyClient } from '@/lib/lobbyClient';
-import { getLobbyErrorMessage, getMatch, hasHostStarted, hasPlayerName, joinRoom } from '@/app/lobby/actions';
+import { getLobbyErrorMessage, getMatch, getPromotedCredentials, hasHostStarted, hasPlayerName, joinRoom } from '@/app/lobby/actions';
 import { usePolling } from '@/lib/usePolling';
+import { declineRematch, fetchEndGameUnsaved } from '@/lib/matchPersistence';
 import { loadCredentials, saveCredentials, type MatchCredentials } from '@/lib/matchCredentials';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
 import {
@@ -44,8 +45,10 @@ import { useIsMobile } from '@/lib/useIsMobile';
 import ProjectCatalogLink from './ProjectCatalogLink';
 import RoundStartOverlay from './board/RoundStartOverlay';
 import { useRoundStartOverlay } from './board/useRoundStartOverlay';
+import { MovePendingIndicator, useMovePending } from './board/useMovePending';
 
-const Board: React.FC<GameContext> = (gameContext) => {
+const Board: React.FC<GameContext> = (boardProps) => {
+  const { gameContext, movePending } = useMovePending(boardProps);
   const { G, playerID, ctx, matchData } = gameContext;
   const dispatch = useAppDispatch();
   const currentAction = useAppSelector(getCurrentAction);
@@ -231,6 +234,7 @@ const Board: React.FC<GameContext> = (gameContext) => {
         <GameHistory entries={history} matchData={matchData} />
       </div>
 
+      <MovePendingIndicator visible={movePending} />
       <GameOverDialog gameContext={gameContext} open={!!gameover && showGameOver} onClose={() => setShowGameOver(false)} />
       {roundStartOverlay}
     </div>
@@ -283,6 +287,7 @@ const Board: React.FC<GameContext> = (gameContext) => {
         {roundStartOverlay}
       </div>
 
+      <MovePendingIndicator visible={movePending} />
       <GameOverDialog gameContext={gameContext} open={!!gameover && showGameOver} onClose={() => setShowGameOver(false)} />
     </div>
   );
@@ -356,6 +361,16 @@ export function GameOverDialog({
     if (invitation !== nextMatchID) setNextMatchID(invitation);
   }, 3_000, isMultiplayer && hasFinished && (savedCredentials !== null || isObserver));
   const invitationVisible = nextMatchID !== null && dismissedInvitation !== nextMatchID;
+
+  // #445: a member-hosted table whose final state could not be saved (after
+  // the end-game write and its retry) shows a warning to every seat and
+  // observer. The server keeps retrying; the warning clears once it lands.
+  // Polled from the game server, outside G, so it never affects gameplay.
+  const [endGameUnsaved, setEndGameUnsaved] = React.useState(false);
+  React.useEffect(() => setEndGameUnsaved(false), [matchID]);
+  usePolling(async () => {
+    setEndGameUnsaved(await fetchEndGameUnsaved(matchID));
+  }, 3_000, isMultiplayer && !isLocalGame && hasFinished);
   React.useEffect(() => {
     if (!isObserver || !keepWatching || !nextMatchID) return;
     sessionStorage.removeItem(keepWatchingKey);
@@ -378,11 +393,18 @@ export function GameOverDialog({
       const playerName = savedCredentials.playerName ?? getPlayerName(matchData, savedCredentials.playerID);
       const existingCredentials = loadCredentials(nextMatchID);
       const nextMatch = await getMatch(nextMatchID);
+      const promoted = existingCredentials && await getPromotedCredentials(nextMatch, existingCredentials);
       const existingSeat = existingCredentials && nextMatch.players.find(
         player => String(player.id) === existingCredentials.playerID && player.name === playerName,
       );
-      if (!existingSeat) {
-        const joined = await joinRoom(nextMatchID, playerName);
+      if (promoted) {
+        saveCredentials(promoted);
+      } else if (!existingSeat) {
+        // Rejoin the same seat (#445 DB-P4); the server keeps seat 0 for the original host.
+        const joined = await joinRoom(
+          nextMatchID, playerName, savedCredentials.playerID,
+          savedCredentials.playerID === '0' ? savedCredentials.credential : undefined,
+        );
         saveCredentials(joined);
       }
       router.push(`/game/${nextMatchID}`);
@@ -409,6 +431,33 @@ export function GameOverDialog({
     <Modal open={open || invitationVisible} onClose={handleClose} ariaLabel="遊戲結束" width="min(440px, 100%)">
       {gameover && (
         <div>
+          {endGameUnsaved && (
+            <div
+              role="alert"
+              data-testid="endgame-persist-warning"
+              style={{
+                display: 'flex',
+                gap: 10,
+                alignItems: 'flex-start',
+                background: 'var(--orange-soft)',
+                border: '2px solid var(--orange)',
+                borderRadius: 12,
+                padding: '10px 12px',
+                marginBottom: 14,
+                overflowWrap: 'anywhere',
+              }}
+            >
+              <span aria-hidden="true" style={{ color: 'var(--orange-deep)', fontWeight: 900 }}>⚠</span>
+              <div style={{ minWidth: 0 }}>
+                <strong style={{ display: 'block', color: 'var(--orange-deep)', fontSize: 14 }}>
+                  對局結果未能儲存。遊戲已結束，但這次紀錄可能無法在伺服器重啟後恢復。
+                </strong>
+                <div style={{ marginTop: 2, fontSize: 12, color: 'var(--ink-soft)' }}>
+                  The end-game result could not be saved. The game has ended, but this record may not survive a server restart.
+                </div>
+              </div>
+            </div>
+          )}
           {invitationVisible && (
             <div role="status" data-testid="rematch-invitation" style={{ background: 'var(--teal-soft)', borderRadius: 12, padding: 12, marginBottom: 14 }}>
               <strong>{isObserver ? '下一局房間已開好，可以加入觀戰了！' : '下一局已開好，一起再玩一局吧！'}</strong>
@@ -508,6 +557,11 @@ export function GameOverDialog({
                 onClick={() => {
                   // Leaving for the lobby drops 繼續觀戰 so Back cannot pull the observer onward.
                   sessionStorage.removeItem(keepWatchingKey);
+                  // The host leaving declines the rematch: the first player to
+                  // join the next room becomes its host (#445 DB-P4).
+                  if (savedCredentials?.playerID === '0' && !isLocalGame) {
+                    void declineRematch(matchID, savedCredentials.playerID, savedCredentials.credential).catch(() => undefined);
+                  }
                   router.push('/lobby');
                 }}
                 disabled={isRematching}

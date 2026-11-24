@@ -63,3 +63,27 @@ test('two lobby clients receive room lifecycle changes and reconnect resynchroni
     await new Promise<void>(resolve => running.appServer.close(() => resolve()));
   }
 }, 15_000);
+
+test('dispose() closes an open lobby stream so the HTTP server can shut down', async () => {
+  const server = Server({ games: [{ name: gameName, setup: () => ({}) }], origins: ['http://localhost'] });
+  const dispose = registerLobbyUpdates(server);
+  const running = await server.run(0);
+  const base = `http://localhost:${(running.appServer.address() as AddressInfo).port}`;
+  try {
+    const response = await fetch(`${base}/lobby/updates`);
+    expect(response.headers.get('content-type')).toContain('text/event-stream');
+    dispose();
+    const closed = response.body!.getReader().read().then((part) => part.done || part.value !== undefined);
+    await expect(closed).resolves.toBeTruthy();
+    running.appServer.close();
+    await new Promise<void>((resolve, reject) => {
+      const timer = setTimeout(() => reject(new Error('HTTP server did not close')), 500);
+      running.appServer.close(() => {
+        clearTimeout(timer);
+        resolve();
+      });
+    });
+  } finally {
+    running.appServer.closeAllConnections();
+  }
+}, 5_000);

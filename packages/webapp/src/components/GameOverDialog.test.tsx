@@ -26,7 +26,13 @@ jest.mock('@/app/lobby/actions', () => ({
     Boolean(match.players.find(player => player.id === 0)?.data?.started),
   joinRoom: (...args: unknown[]) => joinRoomMock(...args),
   getMatch: (...args: unknown[]) => getMatchMock(...args),
+  getPromotedCredentials: jest.fn().mockResolvedValue(null),
   getLobbyErrorMessage: (_e: unknown, fallback: string) => fallback,
+}));
+
+jest.mock('@/lib/matchPersistence', () => ({
+  fetchEndGameUnsaved: jest.fn().mockResolvedValue(false),
+  declineRematch: jest.fn().mockResolvedValue(undefined),
 }));
 
 const CREDS_KEY = 'open-star-ter-village.match-credentials.room-1';
@@ -112,7 +118,7 @@ describe('GameOverDialog (#419 end-game modal)', () => {
       playerID: '0',
       credentials: 'secret',
     });
-    expect(joinRoomMock).toHaveBeenCalledWith('room-2', 'Alice');
+    expect(joinRoomMock).toHaveBeenCalledWith('room-2', 'Alice', '0', 'secret');
     // Fresh credentials for the next room are persisted for re-entry.
     expect(localStorage.getItem('open-star-ter-village.match-credentials.room-2')).toContain('next-secret');
   });
@@ -199,7 +205,7 @@ describe('rematch invitation (#459)', () => {
     await waitFor(() => expect(view.getByTestId('rematch-invitation')).toBeTruthy());
     fireEvent.click(view.getByTestId('play-again'));
     await waitFor(() => expect(pushMock).toHaveBeenCalledWith('/game/room-2'));
-    expect(joinRoomMock).toHaveBeenCalledWith('room-2','Alice');
+    expect(joinRoomMock).toHaveBeenCalledWith('room-2', 'Alice', '0', 'secret');
   });
 
   it('returns to an already joined next room without claiming another seat', async () => {

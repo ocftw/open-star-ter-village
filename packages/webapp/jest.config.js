@@ -6,7 +6,14 @@ const config = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
+  modulePathIgnorePatterns: ['<rootDir>/dist/', '<rootDir>/.next/'],
+  // jose 6 is ESM-only; compile it to CommonJS for these tests.
+  transformIgnorePatterns: [
+    '/node_modules/.pnpm/(?!jose@)',
+    '/node_modules/(?!\\.pnpm/|jose/)',
+  ],
   transform: {
+    '^.+/jose/dist/.+\\.js$': '<rootDir>/jest.esm-transform.js',
     '^.+\\.tsx?$': ['ts-jest', {
       tsconfig: {
         module: 'commonjs',
