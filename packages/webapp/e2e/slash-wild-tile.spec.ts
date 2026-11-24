@@ -1,45 +1,13 @@
 /** 斜槓青年 wild tile (#494 / MK-A7, MK-A1): 9px sub-label centred on the tile face, real game. */
-import { test, expect, type Page } from '@playwright/test';
-import { dismissRoundStartOverlay } from './devTools';
-
-const GS = `http://localhost:${process.env.PLAYWRIGHT_GAME_SERVER_PORT ?? '3001'}`;
-const GAME = 'OpenStarTerVillage';
-
-async function api(request: import('@playwright/test').APIRequestContext, route: string, data: unknown) {
-  const res = await request.post(`${GS}/games/${GAME}${route}`, { data });
-  expect(res.ok(), `${route}: ${res.status()}`).toBeTruthy();
-  return res.json();
-}
-
-/** Real 2-player match whose first event is 斜槓青年; returns Alice (entitled, current player) seat. */
-async function createWildMatch(request: import('@playwright/test').APIRequestContext) {
-  const { matchID } = await api(request, '/create', {
-    numPlayers: 2,
-    setupData: { forcedFirstEvent: 'ignore_first_worker_requirement' },
-  });
-  const joined = await api(request, `/${matchID}/join`, { playerID: '0', playerName: 'Alice', data: { displayName: 'Alice' } });
-  await api(request, `/${matchID}/join`, { playerID: '1', playerName: 'Bob', data: { displayName: 'Bob' } });
-  await api(request, `/${matchID}/update`, {
-    playerID: '0', credentials: joined.playerCredentials, data: { started: true, displayName: 'Alice' },
-  });
-  return { matchID, playerID: '0', credential: joined.playerCredentials, playerName: 'Alice' };
-}
-
-async function openAlice(page: Page, seat: Awaited<ReturnType<typeof createWildMatch>>) {
-  await page.addInitScript((s) => {
-    localStorage.setItem(`open-star-ter-village.match-credentials.${s.matchID}`, JSON.stringify(s));
-    localStorage.setItem('open-star-ter-village.player-name', s.playerName);
-  }, seat);
-  await page.goto(`/game/${seat.matchID}`);
-  await dismissRoundStartOverlay(page);
-}
+import { test, expect } from '@playwright/test';
+import { openWildMatch } from './slashWildMatch';
 
 for (const [width, height] of [[1280, 832], [390, 844]] as const) {
   test.describe(`斜槓青年 wild tile at ${width}x${height}`, () => {
     test.use({ viewport: { width, height } });
 
     test('centres the 88px face and its 9px sub-label within the market slot', async ({ page, request }) => {
-      await openAlice(page, await createWildMatch(request));
+      await openWildMatch(page, request);
       const tile = page.locator('[data-testid^="job-card-slash-0-"]');
       await tile.scrollIntoViewIfNeeded();
       await expect(tile).toHaveAttribute('data-wild', 'true');

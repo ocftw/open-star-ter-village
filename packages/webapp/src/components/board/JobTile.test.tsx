@@ -115,6 +115,31 @@ describe.each([1280, 390])('JobTile at %ipx', (width) => {
   });
 });
 
+describe('JobTile refill motion (#496)', () => {
+  it('marks a deal entry on the wrapper and tile, never push-in', () => {
+    const { container } = render(<JobTile id="n1" name="工程師" motion="deal" motionDelay={60} />);
+    const wrap = container.querySelector('.job-tile-wrap') as HTMLElement;
+    expect(wrap.getAttribute('data-motion')).toBe('deal');
+    expect(screen.getByTestId('job-card-n1').getAttribute('data-motion')).toBe('deal');
+    expect(wrap.style.getPropertyValue('--motion-delay')).toBe('60ms');
+    expect(container.querySelector('.push-in, [data-motion="push-in"]')).toBeNull();
+  });
+
+  it('shrinks the old identity inertly: no × and no body control', () => {
+    const { container } = render(<JobTile id="a" name="工程師" visualState="change" shrinking onRemove={() => undefined} />);
+    expect(screen.queryByTestId('job-remove-a')).toBeNull();
+    expect(container.querySelector('button')).toBeNull();
+    expect(screen.getByTestId('job-card-a').getAttribute('data-shrinking')).toBe('true');
+  });
+
+  it('labels the ×, and the ghost as removed', () => {
+    const { rerender } = render(<JobTile id="a" name="工程師" visualState="change" onRemove={() => undefined} />);
+    expect(screen.getByRole('button', { name: '移除 工程師' })).toBeTruthy();
+    rerender(<JobTile id="a" name="工程師" visualState="ghost" />);
+    expect(screen.getByRole('group', { name: '工程師（已移除）' })).toBeTruthy();
+  });
+});
+
 describe('JobTile 斜槓青年 wild tile', () => {
   it('renders the wild avatar, name and sub-label together on the face', () => {
     render(<JobTile id="slash-0-1" name="斜槓青年" />);

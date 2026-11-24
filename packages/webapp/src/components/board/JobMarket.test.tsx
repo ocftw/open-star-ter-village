@@ -11,7 +11,7 @@ import { RuleMutator } from '@/game/store/slice/rule';
 import { JobSlotsMutator } from '@/game/store/slice/jobSlots';
 import { ProjectBoardMutator } from '@/game/store/slice/projectBoard';
 import { makeStore } from '@/lib/store';
-import { UserActionMoves, setCurrentAction } from '@/lib/reducers/actionStepSlice';
+import { UserActionMoves, setCurrentAction, setJobSlotsInteractive } from '@/lib/reducers/actionStepSlice';
 import JobMarket from './JobMarket';
 
 const NAMES = ['工程師', '美術設計', '公務人員', '法務專家', '文字工作者', '議題工作者', '行銷公關', '工程師'];
@@ -155,5 +155,20 @@ describe('JobMarket', () => {
     const row = screen.getByTestId('job-market-row');
     expect(row.getAttribute('tabindex')).toBe('0');
     expect(row.getAttribute('aria-label')).toBe('人力市場');
+  });
+});
+
+describe('JobMarket refill (#496)', () => {
+  it('resets the carousel on action change and hides every incoming face outside a confirmed refill', () => {
+    const { store } = setup();
+    React.act(() => {
+      store.dispatch(setCurrentAction(UserActionMoves.RemoveAndRefillJobs));
+      store.dispatch(setJobSlotsInteractive());
+    });
+    expect(screen.getByTestId('refill-hint')).toBeTruthy();
+    expect(screen.getAllByTestId(/^job-remove-/)).toHaveLength(8);
+    expect(document.querySelector('[data-motion], [data-testid="job-slot-empty"]')).toBeNull();
+    expect(screen.getByTestId('job-market-count').textContent).toBe('JOB MARKET · 8 CARDS');
+    expect(screen.queryByTestId('score-popup')).toBeNull();
   });
 });
