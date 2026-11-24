@@ -5,10 +5,6 @@ import { GameContext } from '@/components/GameContextHelpers';
 import TurnStrip from './TurnStrip';
 
 const gameContext = { G: { playOrder: ['0', '1'], table: { eventSlot: null } }, ctx: { playOrderPos: 0, turn: 1 } } as GameContext;
-let projectBottom: number;
-let projectTop: number;
-let documentBottom: number;
-let scrollY: number;
 let resize: ResizeObserverCallback;
 const disconnect = jest.fn();
 
@@ -23,115 +19,86 @@ function Harness({ horizontal = false }: { horizontal?: boolean }) {
   );
 }
 
+// jsdom has no layout; the element scroller geometry is supplied through these properties.
+function setGeometry(el: HTMLElement, g: { scrollHeight: number; clientHeight: number }) {
+  Object.defineProperty(el, 'scrollHeight', { configurable: true, get: () => g.scrollHeight });
+  Object.defineProperty(el, 'clientHeight', { configurable: true, get: () => g.clientHeight });
+  return g;
+}
+
 beforeEach(() => {
-  projectBottom = 600;
-  projectTop = 88;
-  documentBottom = 2400;
-  scrollY = 0;
-  Object.defineProperty(document.documentElement, 'scrollHeight', { configurable: true, get: () => documentBottom });
   Object.defineProperties(window, {
-    innerHeight: { configurable: true, value: 800 },
-    scrollY: { configurable: true, get: () => scrollY },
-    scrollTo: { configurable: true, value: jest.fn() },
     matchMedia: { configurable: true, value: jest.fn(() => ({ matches: false })) },
   });
+  HTMLElement.prototype.scrollTo = jest.fn(function (this: HTMLElement, opts: ScrollToOptions) {
+    this.scrollTop = opts.top as number;
+  }) as unknown as typeof HTMLElement.prototype.scrollTo;
   global.ResizeObserver = jest.fn((callback) => {
     resize = callback;
     return { observe: jest.fn(), disconnect, unobserve: jest.fn() };
   });
   jest.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
-    return (this.tagName === 'HEADER'
-      ? { height: 72, top: 0, bottom: 72 }
-      : { top: projectTop - scrollY, bottom: projectBottom - scrollY }) as DOMRect;
+    return (this.tagName === 'HEADER' ? { height: 72 } : {}) as DOMRect;
   });
 });
 
 afterEach(() => { jest.restoreAllMocks(); disconnect.mockClear(); });
 
-it('hides the button when only non-project page content extends beyond the viewport', () => {
-  Object.defineProperty(document.documentElement, 'scrollHeight', { configurable: true, value: 1600 });
+it('hides the button without overflow and sets the strip offset', () => {
   render(<Harness />);
   expect(screen.queryByRole('button')).toBeNull();
   expect(screen.getByTestId('turn-strip').style.getPropertyValue('--turn-strip-top')).toBe('88px');
+  expect(screen.getByTestId('projects').style.getPropertyValue('--turn-strip-top')).toBe('88px');
+  expect(screen.getByTestId('projects').style.getPropertyValue('--project-area-above')).toBe('0px');
 });
 
-it('appears after project resize, scrolls 80%, then flips at the project end and returns to the top', () => {
+it('appears on overflow, scrolls 80% of the box, flips at the end and returns to the top', () => {
   const { unmount } = render(<Harness />);
-  projectBottom = 1800;
-  // A new project can cause overflow without a window resize.
+  const projects = screen.getByTestId('projects');
+  const g = setGeometry(projects, { scrollHeight: 400, clientHeight: 400 });
+  g.scrollHeight = 1000;
   act(() => resize([], {} as ResizeObserver));
   const down = screen.getByRole('button', { name: '專案區往下捲' });
-  down.focus();
-  expect(document.activeElement).toBe(down);
   fireEvent.click(down);
-  expect(window.scrollTo).toHaveBeenLastCalledWith({ top: 640, behavior: 'smooth' });
-  scrollY = 640;
-  fireEvent.scroll(window);
+  expect(projects.scrollTo).toHaveBeenLastCalledWith({ top: 320, behavior: 'smooth' });
+  fireEvent.scroll(projects);
   fireEvent.click(down);
-  expect(window.scrollTo).toHaveBeenLastCalledWith({ top: 1000, behavior: 'smooth' });
-  scrollY = 1000;
-  fireEvent.scroll(window);
+  expect(projects.scrollTo).toHaveBeenLastCalledWith({ top: 600, behavior: 'smooth' });
+  fireEvent.scroll(projects);
   const up = screen.getByRole('button', { name: '專案區回到頂端' });
-  expect(up.querySelector('svg')?.getAttribute('data-direction')).toBe('down');
   expect(up.classList.contains('turn-project-scroll-up')).toBe(true);
   fireEvent.click(up);
-  expect(window.scrollTo).toHaveBeenLastCalledWith({ top: 0, behavior: 'smooth' });
-  scrollY = 0;
-  fireEvent.scroll(window);
+  expect(projects.scrollTo).toHaveBeenLastCalledWith({ top: 0, behavior: 'smooth' });
+  fireEvent.scroll(projects);
   expect(screen.getByRole('button', { name: '專案區往下捲' })).toBeTruthy();
   unmount();
   expect(disconnect).toHaveBeenCalled();
 });
 
-it('uses instant page scroll under reduced motion', () => {
-  projectBottom = 1800;
+it('tolerates 2px of rounding before showing the button', () => {
+  render(<Harness />);
+  const projects = screen.getByTestId('projects');
+  const g = setGeometry(projects, { scrollHeight: 402, clientHeight: 400 });
+  act(() => resize([], {} as ResizeObserver));
+  expect(screen.queryByRole('button')).toBeNull();
+  g.scrollHeight = 403;
+  act(() => resize([], {} as ResizeObserver));
+  expect(screen.getByRole('button')).toBeTruthy();
+});
+
+it('uses instant scroll under reduced motion', () => {
   jest.mocked(window.matchMedia).mockReturnValue({ matches: true } as MediaQueryList);
   render(<Harness />);
+  const projects = screen.getByTestId('projects');
+  setGeometry(projects, { scrollHeight: 1000, clientHeight: 400 });
+  act(() => resize([], {} as ResizeObserver));
   fireEvent.click(screen.getByRole('button', { name: '專案區往下捲' }));
-  expect(window.scrollTo).toHaveBeenCalledWith({ top: 640, behavior: 'instant' });
+  expect(projects.scrollTo).toHaveBeenCalledWith({ top: 320, behavior: 'instant' });
 });
 
-it('flips after a clamped final step within fractional scroll rounding tolerance', () => {
-  projectTop = 140;
-  projectBottom = 1800.5;
-  render(<Harness />);
-  scrollY = 640;
-  fireEvent.scroll(window);
-  fireEvent.click(screen.getByRole('button', { name: '專案區往下捲' }));
-  expect(window.scrollTo).toHaveBeenLastCalledWith({ top: 1000.5, behavior: 'smooth' });
-
-  scrollY = 998;
-  fireEvent.scroll(window);
-  expect(screen.getByRole('button', { name: '專案區往下捲' })).toBeTruthy();
-  scrollY = 999;
-  fireEvent.scroll(window);
-  fireEvent.click(screen.getByRole('button', { name: '專案區回到頂端' }));
-  expect(window.scrollTo).toHaveBeenLastCalledWith({ top: 0, behavior: 'smooth' });
-});
-
-it('uses the reachable document end for both the final step and the end label', () => {
-  projectBottom = 1802.25;
-  documentBottom = 1800;
-  render(<Harness />);
-  scrollY = 640;
-  fireEvent.scroll(window);
-  fireEvent.click(screen.getByRole('button', { name: '專案區往下捲' }));
-  expect(window.scrollTo).toHaveBeenLastCalledWith({ top: 1000, behavior: 'smooth' });
-  scrollY = 1000;
-  fireEvent.scroll(window);
-  expect(screen.getByRole('button', { name: '專案區回到頂端' })).toBeTruthy();
-
-  Object.defineProperty(window, 'innerHeight', { configurable: true, value: 600 });
-  fireEvent.resize(window);
-  expect(screen.getByRole('button', { name: '專案區往下捲' })).toBeTruthy();
-  Object.defineProperty(window, 'innerHeight', { configurable: true, value: 2000 });
-  fireEvent.resize(window);
-  expect(screen.queryByRole('button')).toBeNull();
-});
-
-it('keeps the page-scroll button out of the mobile strip', () => {
-  projectBottom = 1800;
+it('keeps the scroll button out of the mobile strip', () => {
   render(<Harness horizontal />);
+  setGeometry(screen.getByTestId('projects'), { scrollHeight: 1000, clientHeight: 400 });
   expect(screen.queryByRole('button')).toBeNull();
   expect(screen.getByTestId('turn-strip').classList.contains('turn-strip-horizontal')).toBe(true);
 });

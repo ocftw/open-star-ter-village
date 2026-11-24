@@ -87,6 +87,14 @@ test.describe('Mobile layout', () => {
     expect(Math.abs((currentBox!.y + currentBox!.height / 2) - (nextBox!.y + nextBox!.height / 2))).toBeLessThan(1);
     expect(nextBox!.x).toBeGreaterThan(currentBox!.x + currentBox!.width);
     await expect(page.getByRole('button', { name: /專案區往下捲|專案區回到頂端/ })).toHaveCount(0);
+    const yours = page.getByTestId('projects-yours');
+    const others = page.getByTestId('projects-others');
+    await expect(yours).toBeVisible();
+    await expect(others).toBeVisible();
+    const yoursBox = (await yours.boundingBox())!;
+    const othersBox = (await others.boundingBox())!;
+    expect(othersBox.y).toBeGreaterThanOrEqual(yoursBox.y + yoursBox.height);
+    expect(await page.getByTestId('projects-section').evaluate((el) => getComputedStyle(el).overflowY)).toBe('visible');
     expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
   });
 

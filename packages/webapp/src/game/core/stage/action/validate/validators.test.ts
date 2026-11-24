@@ -35,7 +35,12 @@ const PROJECT_CARD: ProjectCard = {
 const JOB_ENGINEER = { id: 'j1', name: '工程師' };
 const JOB_LAWYER = { id: 'j2', name: '法務專家' };
 
-/** Playable baseline: player '0' with tokens, one project card in hand, two job cards on the table. */
+/**
+ * Playable baseline: player '0' with tokens, one project card in hand, two job cards on the table.
+ * NOTE: built from GameStore.initialState(), so it has no Rule.slashWildJobCard marker; the
+ * 斜槓青年 cases below therefore cover the LEGACY (in-flight game) semantics. The per-turn wild
+ * job card of new games is covered in core/slashWildJob.test.ts.
+ */
 const makeG = (): GameState => {
   const G = GameStore.initialState();
   PlayersMutator.initialize(G.players, ['0', '1']);
@@ -118,7 +123,7 @@ describe('validateCreateProject', () => {
     if (!result.valid) expect(result.details).toEqual({ jobName: '法務專家' });
   });
 
-  it('PROFESSION_TARGET_REQUIRED for a mismatched card under 斜槓青年 without a target', () => {
+  it('legacy: PROFESSION_TARGET_REQUIRED for a mismatched card under 斜槓青年 without a target', () => {
     const G = makeG();
     RuleMutator.setEventIgnoreFirstWorkerRequirement(G.rules, ['0'], true);
     expectReason(validateCreateProject(G, '0', 'p1', 'j2'), 'PROFESSION_TARGET_REQUIRED');
@@ -182,7 +187,7 @@ describe('validateRecruit', () => {
     expectReason(validateRecruit(G, '0', 'j2', slot.id), 'PROJECT_JOB_NOT_REQUIRED');
   });
 
-  describe('斜槓青年 target selection', () => {
+  describe('斜槓青年 target selection (legacy unmarked game)', () => {
     const withEvent = () => {
       const G = makeG();
       RuleMutator.setEventIgnoreFirstWorkerRequirement(G.rules, ['0'], true);
@@ -388,7 +393,7 @@ describe('bilingual messages', () => {
   });
 });
 
-describe('recruit move with 斜槓青年 target', () => {
+describe('recruit move with 斜槓青年 target (legacy unmarked game)', () => {
   it('records the contribution under the TARGET profession and settles costs exactly once', () => {
     const G = makeG();
     RuleMutator.setEventIgnoreFirstWorkerRequirement(G.rules, ['0'], true);
@@ -396,7 +401,7 @@ describe('recruit move with 斜槓青年 target', () => {
     const apBefore = G.players['0'].token.actions;
     const workersBefore = G.players['0'].token.workers;
 
-    const result = recruit({ G, playerID: '0' } as never, 'j2', slot.id, '美術設計');
+    const result = recruit({ G, playerID: '0', ctx: { currentPlayer: '0' } } as never, 'j2', slot.id, '美術設計');
 
     expect(result).toBeUndefined(); // move completed, no INVALID_MOVE
     // Contribution lands under the chosen required position — never the card's own name.
@@ -416,7 +421,7 @@ describe('recruit move with 斜槓青年 target', () => {
     const slot = withActiveProject(G);
 
     // Invalid target: throws before any mutation, entitlement intact.
-    expect(() => recruit({ G, playerID: '0' } as never, 'j2', slot.id, '主廚')).toThrow();
+    expect(() => recruit({ G, playerID: '0', ctx: { currentPlayer: '0' } } as never, 'j2', slot.id, '主廚')).toThrow();
     expect(RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, '0')).toBe(true);
     expect(G.table.jobSlots.some((c) => c.id === 'j2')).toBe(true);
   });

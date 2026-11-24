@@ -12,6 +12,7 @@ import { settleProjects } from './core/handler/settleProjects';
 import { scoreLeftoverActionTokens } from './core/handler/scoreLeftoverActionTokens';
 import { refill } from './core/handler/refill';
 import type { Ctx } from 'boardgame.io';
+import { offerSlashWildJobCard, stripSlashWildJobCards } from './core/slashWildJob';
 
 const isLastPlayerOfRound = (ctx: Pick<Ctx, 'playOrderPos' | 'numPlayers'>) =>
   ctx.playOrderPos === ctx.numPlayers - 1;
@@ -63,6 +64,9 @@ export const OpenStarTerVillage: Game<GameState, Record<string, unknown>, GameSe
       if (ctx.playOrderPos === 0 && G.decks.events.drawPile.length > 0) {
         playEventCard(context);
       }
+      // 斜槓青年 (marked games only): after the round event is in play, deal
+      // the entitled current player their per-turn wild job card.
+      offerSlashWildJobCard(context);
     },
     /**
      * send current player to action stage.
@@ -87,6 +91,8 @@ export const OpenStarTerVillage: Game<GameState, Record<string, unknown>, GameSe
     },
     onEnd: (context) => {
       const { ctx } = context;
+      // Expire the unused 斜槓青年 card and its entitlement before settling/refilling.
+      stripSlashWildJobCards(context.G, ctx.currentPlayer);
       settleProjects(context);
       scoreLeftoverActionTokens(context);
       refill(context);
@@ -96,7 +102,12 @@ export const OpenStarTerVillage: Game<GameState, Record<string, unknown>, GameSe
 
         passStartPlayerToken(context);
       }
+      stripSlashWildJobCards(context.G, ctx.currentPlayer);
     },
+  },
+  onEnd: ({ G, ctx }) => {
+    // Direct game end can skip the turn's onEnd hook.
+    stripSlashWildJobCards(G, ctx.currentPlayer);
   },
   playerView,
 };

@@ -5,6 +5,7 @@ import { JobSlotsMutator, JobSlotsSelector } from "@/game/store/slice/jobSlots";
 import { DeckMutator, DeckSelector } from "@/game/store/slice/deck";
 import { PlayersMutator } from "@/game/store/slice/players";
 import { scoreUnfinishedProjects } from "./scoreUnfinishedProjects";
+import { discardJobCards, refillJobSlots } from "../slashWildJob";
 
 type EventCardHandler = {
   start: GameHookHandler;
@@ -29,12 +30,9 @@ const discardAndRefillAllWorkerSlots: EventCardHandler = {
   start: ({ G }) => {
     const allJobCards = [...G.table.jobSlots];
     JobSlotsMutator.removeJobCards(G.table.jobSlots, allJobCards);
-    DeckMutator.discard(G.decks.jobs, allJobCards);
-
-    const maxJobSlots = RuleSelector.getTableMaxJobSlots(G.rules);
-    const jobCards = DeckSelector.peek(G.decks.jobs, maxJobSlots);
-    DeckMutator.draw(G.decks.jobs, maxJobSlots);
-    JobSlotsMutator.addJobCards(G.table.jobSlots, jobCards);
+    // A synthetic 斜槓青年 wild card is never discarded into the job deck.
+    discardJobCards(G, allJobCards);
+    refillJobSlots(G);
   },
 };
 
@@ -98,7 +96,7 @@ const addTwoWorkerSlots: EventCardHandler = {
       );
       if (excess.length > 0) {
         JobSlotsMutator.removeJobCards(G.table.jobSlots, excess);
-        DeckMutator.discard(G.decks.jobs, excess);
+        discardJobCards(G, excess);
       }
       G.table.fourFreedomsPendingDiscards = [];
     }
@@ -106,7 +104,10 @@ const addTwoWorkerSlots: EventCardHandler = {
   },
 };
 
-// 斜槓青年: This round, each player's first job card used in createProject or recruit ignores job type matching
+// 斜槓青年: each player gets one entitlement this round.
+// Marked games (Rule.slashWildJobCard): the engine deals a wild card at turn start.
+// Playing it or ending the turn with it spends the entitlement (core/slashWildJob.ts).
+// Legacy games: the player's first createProject/recruit job card ignores job matching.
 const ignoreFirstWorkerRequirement: EventCardHandler = {
   start: ({ G }) => {
     const playerIds = Object.keys(G.players);

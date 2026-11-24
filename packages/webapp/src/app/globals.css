@@ -1654,3 +1654,30 @@ div.job-tile,
 body:has([data-testid='header-menu'][aria-expanded='true']) [data-testid='dev-tools-open'] {
   visibility: hidden;
 }
+
+/* ===== issue 490: project area ===== */
+.project-area { display: flex; flex-direction: column; gap: 18px; min-width: 0; min-height: 0; }
+.project-area-head { display: flex; align-items: center; gap: 10px; margin: 4px 0 10px; }
+.project-area-head h3 { font-size: 15px; font-weight: 900; }
+.project-area-head::after { content: ""; flex: 1; height: 1px; background: var(--paper-3); order: 1; }
+.project-area-hint {
+  order: 2; font-size: 11px; color: var(--ink-mute); background: white;
+  border: 1.5px solid var(--paper-3); border-radius: 999px; padding: 3px 10px; white-space: nowrap;
+}
+.project-area-hint-full { background: var(--orange-soft); border-color: var(--orange-deep); color: var(--orange-deep); }
+.project-area-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px;
+  /* room for the floating star pill above each card */
+  margin-top: 22px;
+}
+.project-area-empty { margin: 0; padding: 14px 4px; color: var(--ink-mute); font-size: 12px; }
+@media (min-width: 900px) {
+  .project-area {
+    overflow-y: auto;
+    max-height: calc(100vh - var(--turn-strip-top, 88px) - var(--project-area-above, 0px) - 16px);
+  }
+}
+@media (max-width: 899px) {
+  .project-area-grid { grid-template-columns: 1fr; }
+}
+/* ===== end issue 490 ===== */

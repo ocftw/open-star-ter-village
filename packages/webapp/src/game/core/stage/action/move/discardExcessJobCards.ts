@@ -1,5 +1,5 @@
 import { GameMove } from '@/game/core/type';
-import { DeckMutator } from '@/game/store/slice/deck';
+import { discardJobCards } from '@/game/core/slashWildJob';
 import { JobSlotsMutator } from '@/game/store/slice/jobSlots';
 import { ActionValidationError, validateDiscardExcessJobCards } from '@/game/core/stage/action/validate';
 
@@ -20,7 +20,7 @@ export const discardExcessJobCards: GameMove<DiscardExcessJobCards> = ({ G, ctx,
   const cardsToDiscard = cardIds.map((id) => G.table.jobSlots.find((c) => c.id === id)!);
 
   JobSlotsMutator.removeJobCards(G.table.jobSlots, cardsToDiscard);
-  DeckMutator.discard(G.decks.jobs, cardsToDiscard);
+  discardJobCards(G, cardsToDiscard);
   G.table.fourFreedomsPendingDiscards = [];
   if (ctx.playOrderPos === ctx.numPlayers - 1) {
     G.table.actionPhaseDone = true;

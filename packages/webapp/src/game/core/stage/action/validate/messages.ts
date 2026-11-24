@@ -30,7 +30,7 @@ const MESSAGES: Record<ActionErrorCode, (d: Details) => string> = {
   PROJECT_JOB_NOT_REQUIRED: (d) =>
     `這個專案沒有「${d.jobName}」的職業位置。 · This project has no ${d.jobName} position.`,
   PROFESSION_TARGET_REQUIRED: () =>
-    '這張人力卡不符合專案需求 — 請點選要指派的職業位置（斜槓青年）。 · Pick the profession position to assign this worker to (斜槓青年).',
+    '請點選要指派的職業位置（斜槓青年）。 · Pick the profession position to assign this worker to (斜槓青年).',
   PROFESSION_TARGET_UNAVAILABLE: () =>
     '這個職業位置已無法使用，請重新選擇。 · This profession position is no longer available; please select again.',
   PROJECT_SLOT_NOT_FOUND: () =>
@@ -53,6 +53,8 @@ const MESSAGES: Record<ActionErrorCode, (d: Details) => string> = {
     '請先選擇要更換的人力卡。 · Select at least one worker card to replace.',
   JOB_CARDS_NOT_ON_TABLE: () =>
     '至少一張選擇的人力卡已不在市場，請重新選擇。 · A selected worker card is no longer in the market; please select again.',
+  SLASH_WILD_JOB_NOT_REMOVABLE: () =>
+    '斜槓青年是本回合限定的萬用人力卡，不能被更換或棄掉。 · The 斜槓青年 wild card is for this turn only and cannot be replaced or discarded.',
   NO_PENDING_DISCARDS: () =>
     '目前不需要棄牌。 · No discards are pending.',
   DISCARD_COUNT_INVALID: (d) =>
