@@ -21,6 +21,7 @@
     "e2e:report": "PLAYWRIGHT_BROWSERS_PATH=/tmp/pw-browsers playwright show-report"
   },
   "dependencies": {
+    "@auth/pg-adapter": "1.11.3",
     "@emotion/cache": "^11.11.0",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
@@ -35,6 +36,7 @@
     "boardgame.io": "^0.50.2",
     "jose": "^6.2.18",
     "next": "14.2.3",
+    "next-auth": "5.0.0-beta.32",
     "pg": "^8.23.1",
     "react": "^18",
     "react-dom": "^18",
