@@ -160,7 +160,7 @@ describe('斜槓青年 wild job card (marked game)', () => {
   it('renders the wild tile and counts only real market cards', () => {
     setup(marked(true));
     expect(screen.getByTestId('job-card-slash-0-1').getAttribute('data-job-name')).toBe('斜槓青年');
-    expect(screen.getByText(/Job market · 1 cards/)).toBeTruthy();
+    expect(screen.getByTestId('job-market-count').textContent).toBe('JOB MARKET · 1 CARDS');
     expect(actionButton(UserActionMoves.CreateProject).disabled).toBe(false);
   });
 

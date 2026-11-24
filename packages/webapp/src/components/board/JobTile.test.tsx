@@ -5,8 +5,7 @@ import JobTile from './JobTile';
 
 const states = ['default', 'focused', 'generalHint'] as const;
 
-// jsdom checks the component contract at both viewport widths; shots.mjs checks
-// the actual responsive CSS, dimensions and overflow in Chromium.
+// Playwright checks the rendered wild tile dimensions and text alignment.
 describe.each([1280, 390])('JobTile at %ipx', (width) => {
   const originalWidth = window.innerWidth;
 
@@ -113,5 +112,25 @@ describe.each([1280, 390])('JobTile at %ipx', (width) => {
     expect(tile.getAttribute('data-visual-state')).toBe('ghost');
     expect(container.querySelector('button')).toBeNull();
     expect(within(tile).getByText('美術設計')).toBeTruthy();
+  });
+});
+
+describe('JobTile 斜槓青年 wild tile', () => {
+  it('renders the wild avatar, name and sub-label together on the face', () => {
+    render(<JobTile id="slash-0-1" name="斜槓青年" />);
+    const card = screen.getByTestId('job-card-slash-0-1');
+    const face = within(card).getByTestId('job-face-slash-0-1');
+    expect(card.getAttribute('data-wild')).toBe('true');
+    expect(within(face).getByText('斜槓青年')).toBeTruthy();
+    expect(within(face).getByText('可作為任一人力使用')).toBeTruthy();
+    expect(within(face).getByText('斜')).toBeTruthy();
+  });
+
+  it('keeps the wild face and sub-label off ordinary tiles', () => {
+    render(<JobTile id="job-1" name="工程師" />);
+    const card = screen.getByTestId('job-card-job-1');
+    expect(card.hasAttribute('data-wild')).toBe(false);
+    expect(within(card).queryByTestId('job-face-job-1')).toBeNull();
+    expect(screen.queryByText('可作為任一人力使用')).toBeNull();
   });
 });
