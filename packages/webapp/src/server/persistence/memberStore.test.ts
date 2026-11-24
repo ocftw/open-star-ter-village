@@ -256,6 +256,17 @@ describe('MemberPostgresStore: restart restore (DB-A2, DB-A3, DB-A5)', () => {
 });
 
 describe('MemberPostgresStore: health and lifecycle (DB-A5, DB-C6)', () => {
+  it('distinguishes failed lookups from missing matches before and after connecting', async () => {
+    const { store, sql } = makeStore();
+    await expect(store.fetch('unknown', { metadata: true })).rejects.toMatchObject({ status: 503 });
+    await store.connect();
+    sql.failAll = true;
+    await expect(store.fetch('unknown', { metadata: true })).rejects.toMatchObject({ status: 503 });
+    sql.failAll = false;
+    await expect(store.fetch('unknown', { metadata: true })).resolves.toEqual({});
+    await store.flushAndClose();
+  });
+
   it('starts degraded when the database is unreachable and recovers in the background', async () => {
     const sql = new FakeMatchesSql();
     sql.migrateFails = true;

@@ -2,7 +2,7 @@ import type { Game } from 'boardgame.io';
 import { getFilterPlayerView } from 'boardgame.io/internal';
 import { Master } from 'boardgame.io/master';
 import { SocketIO } from 'boardgame.io/server';
-import { StaleStateError } from './memberStore';
+import { MatchUnavailableError, StaleStateError } from './memberStore';
 import { reportPersistenceFailure } from './report';
 
 type MasterArgs = ConstructorParameters<typeof Master>;
@@ -115,6 +115,13 @@ type SocketIOInternals = {
 };
 type InitArgs = Parameters<SocketIO['init']>;
 
+function ignoreUnavailable<T>(request: Promise<T>): Promise<T | { error: 'match unavailable' }> {
+  return request.catch((error: unknown) => {
+    if (!(error instanceof MatchUnavailableError)) throw error;
+    return { error: 'match unavailable' };
+  });
+}
+
 /**
  * boardgame.io's SocketIO transport, with its per-socket handlers re-registered
  * to run {@link PersistentMaster}. Everything else (rooms, pub/sub, per-match
@@ -145,28 +152,28 @@ export class PersistentSocketIO extends SocketIO {
         socket.on('update', async (...args: UpdateArgs) => {
           const [action, stateID, matchID, playerID] = args;
           await this.getMatchQueue(matchID).add(() =>
-            master(matchID, socket).onUpdate(action, stateID, matchID, playerID),
+            ignoreUnavailable(master(matchID, socket).onUpdate(action, stateID, matchID, playerID)),
           );
         });
         socket.on('sync', async (matchID: string, playerID: string, credentials?: string, numPlayers?: number) => {
           socket.join(matchID);
           internals.removeClient(socket.id);
           const m = master(matchID, socket);
-          const syncResponse = await m.onSync(matchID, playerID, credentials, numPlayers);
-          if (syncResponse && syncResponse.error === 'unauthorized') return;
+          const syncResponse = await ignoreUnavailable(m.onSync(matchID, playerID, credentials, numPlayers));
+          if (syncResponse) return;
           internals.addClient({ socket, matchID, playerID, credentials }, game);
-          await m.onConnectionChange(matchID, playerID, credentials, true);
+          await ignoreUnavailable(m.onConnectionChange(matchID, playerID, credentials, true));
         });
         socket.on('disconnect', async () => {
           const client = internals.clientInfo.get(socket.id);
           internals.removeClient(socket.id);
           if (client) {
             const { matchID, playerID, credentials } = client;
-            await master(matchID, socket).onConnectionChange(matchID, playerID, credentials, false);
+            await ignoreUnavailable(master(matchID, socket).onConnectionChange(matchID, playerID, credentials, false));
           }
         });
         socket.on('chat', async (matchID: string, chatMessage: Parameters<Master['onChatMessage']>[1], credentials?: string) => {
-          master(matchID, socket).onChatMessage(matchID, chatMessage, credentials);
+          await ignoreUnavailable(master(matchID, socket).onChatMessage(matchID, chatMessage, credentials));
         });
       });
     }

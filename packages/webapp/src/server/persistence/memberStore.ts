@@ -15,6 +15,14 @@ export class StaleStateError extends Error {
   }
 }
 
+export class MatchUnavailableError extends Error {
+  readonly status = 503;
+
+  constructor() {
+    super('Match storage temporarily unavailable');
+  }
+}
+
 export type MemberStoreStatus = 'on' | 'degraded';
 
 export interface MemberStoreOptions {
@@ -428,7 +436,7 @@ export class MemberPostgresStore extends PostgresStore {
 
   /** Load a member match from PostgreSQL on first use after a restart. */
   private restore(matchID: string): Promise<Entry | undefined> {
-    if (!this.ready) return Promise.resolve(undefined);
+    if (!this.ready) return Promise.reject(new MatchUnavailableError());
     const inFlight = this.restoring.get(matchID);
     if (inFlight) return inFlight;
     const loading = this.loadRow(matchID).finally(() => this.restoring.delete(matchID));
@@ -440,9 +448,10 @@ export class MemberPostgresStore extends PostgresStore {
     let row;
     try {
       row = await this.sql.findRestorable(matchID, this.opts.resumeWindowHours);
+      this.lastOperationFailed = false;
     } catch (error) {
       this.failed('restore', matchID, error);
-      return undefined;
+      throw new MatchUnavailableError();
     }
     if (!row) return undefined;
     if (row.game_version !== GAME_VERSION) {

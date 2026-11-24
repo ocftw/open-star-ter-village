@@ -125,6 +125,24 @@ describe('member host on create (DB-A1, DB-C1)', () => {
 });
 
 describe('restart restore (DB-A2)', () => {
+  it('returns 503 for a saved match until its database lookup can complete', async () => {
+    const sql = new FakeMatchesSql();
+    const first = await start([counter], MEMBER_ENV, sql);
+    const token = await issueTestHostToken(secretBytes, { sub: 'member-1' });
+    const { matchID } = await first.lobby.createMatch('counter', {}, { headers: { Authorization: `Bearer ${token}` } });
+    const [credentials] = await seatTwo(first.lobby, 'counter', matchID);
+    await first.running.stop();
+
+    const second = await start([counter], MEMBER_ENV, sql);
+    sql.failAll = true;
+    await expect(second.lobby.getMatch('counter', matchID)).rejects.toThrow('HTTP status 503');
+    sql.failAll = false;
+    await expect(second.lobby.getMatch('counter', matchID)).resolves.toMatchObject({ matchID });
+    await expect(second.lobby.updatePlayer('counter', matchID, { playerID: '0', credentials, newName: 'Alice' }))
+      .resolves.toBeUndefined();
+    await expect(second.lobby.getMatch('counter', 'missing')).rejects.toThrow('HTTP status 404');
+  });
+
   it('restores a member-hosted match with the original seat credentials; a guest match is gone', async () => {
     const sql = new FakeMatchesSql();
     const first = await start([counter], MEMBER_ENV, sql);
