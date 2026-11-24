@@ -1,5 +1,6 @@
 import { test, expect, type Locator } from '@playwright/test';
 import { dismissRoundStartOverlay } from './devTools';
+import { openWildMatch } from './slashWildMatch';
 
 const handSelector = '[data-testid^="hand-card-"]';
 const marketSelector = '[data-testid^="job-card-"]';
@@ -148,3 +149,54 @@ for (const width of [1280, 390]) {
     });
   });
 }
+
+test('START sorts the real wild tile after matches and commits the chosen profession', async ({ page, request }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await openWildMatch(page, request);
+  const market = page.getByTestId('job-market');
+  const wild = market.locator(`${marketSelector}[data-wild="true"]`);
+  await expect(wild).toBeVisible();
+  const wildId = await wild.getAttribute('data-testid');
+  const jobCards = market.locator(`${marketSelector}:not([data-wild="true"])`);
+  const ordinary = await jobCards.evaluateAll((cards) => cards.map((card) => ({
+    id: card.getAttribute('data-testid')!,
+    name: card.getAttribute('data-job-name')!,
+  })));
+  const projects = await page.getByTestId('hand-panel').locator(handSelector).evaluateAll((cards) => cards.map((card) => ({
+    id: card.getAttribute('data-testid')!,
+    requirements: card.getAttribute('data-requirements')!.split(','),
+  })));
+  const project = projects.find(({ requirements }) => ordinary.some(({ name }) => requirements.includes(name)) &&
+    ordinary.some(({ name }) => !requirements.includes(name)));
+  expect(project).toBeDefined();
+  if (!project) throw new Error('The opening hand needs a project with both matching and mismatched jobs.');
+  const matches = ordinary.filter(({ name }) => project.requirements.includes(name));
+  const mismatches = ordinary.filter(({ name }) => !project.requirements.includes(name));
+
+  await page.getByTestId('action-createProject').click();
+  await page.getByTestId(project.id).click();
+  expect(await ids(market.locator(marketSelector))).toEqual([
+    ...matches.map(({ id }) => id), wildId, ...mismatches.map(({ id }) => id),
+  ]);
+  await expect(wild).toBeEnabled();
+  for (const { id } of mismatches) {
+    await expect(market.getByTestId(id)).toBeDisabled();
+    await expect(market.getByTestId(id)).toHaveAttribute('data-visual-state', 'disabled');
+  }
+  const picker = page.getByTestId('start-wild-picker');
+  const confirm = page.getByTestId('ca-confirm');
+  await expect(picker).toHaveCount(0);
+  await wild.click();
+  await expect(picker).toBeVisible();
+  await expect(picker.getByRole('button')).toHaveText([...project.requirements, '取消']);
+  await expect(confirm).toBeDisabled();
+  const profession = project.requirements.at(-1)!;
+  await picker.getByRole('button', { name: profession, exact: true }).click();
+  await confirm.click();
+
+  await expect(page.getByTestId('start-project-flow')).toHaveCount(0);
+  await expect(wild).toHaveCount(0);
+  const placed = page.getByTestId('projects-yours').locator('[data-start-placed]');
+  const professionRow = placed.locator('.project-card__progress-row').filter({ has: page.getByTitle(profession, { exact: true }) });
+  await expect(professionRow.getByTitle('Alice +1', { exact: true })).toBeVisible();
+});

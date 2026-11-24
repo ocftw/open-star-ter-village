@@ -26,11 +26,18 @@ import { RefillFlowProvider } from './RefillFlow';
 import BoardProjectSlot from './BoardProjectSlot';
 import MobileSheet from './MobileSheet';
 import { isContributionAction, useContributionFeedback } from './useContributionFeedback';
+import { StartProjectContext, useStartProject } from './useStartProject';
 
 const card: ProjectCard = {
   id: 'hand-project', name: '測試專案', type: '開放政府', difficulty: 1,
   description: '', requirements: { 工程師: 8, 美術設計: 4 },
 };
+
+function StartProjectTestProvider({ gameContext, children }: { gameContext: GameContext; children: React.ReactNode }) {
+  const action = useAppSelector(getCurrentAction);
+  const start = useStartProject(gameContext, action === UserActionMoves.CreateProject);
+  return <StartProjectContext.Provider value={start}>{children}</StartProjectContext.Provider>;
+}
 
 function setup(change?: (G: GameState) => void, playerID: string | null = '0') {
   const G = GameStore.initialState();
@@ -60,7 +67,9 @@ function setup(change?: (G: GameState) => void, playerID: string | null = '0') {
   } as unknown as GameContext;
   const store = makeStore();
   const ui = (context: GameContext) => (
-    <Provider store={store}><ActionBoard gameContext={context} /></Provider>
+    <Provider store={store}>
+      <StartProjectTestProvider gameContext={context}><ActionBoard gameContext={context} /></StartProjectTestProvider>
+    </Provider>
   );
   const view = render(ui(gameContext));
   return { ...view, G, moves, store, slots, gameContext, update: (context: GameContext) => view.rerender(ui(context)) };
@@ -190,15 +199,30 @@ describe('斜槓青年 wild job card (marked game)', () => {
     expect(actionButton(UserActionMoves.CreateProject).disabled).toBe(false);
   });
 
+  it('only lets real cards be marked for replacement in refill mode', () => {
+    const { moves } = setup(marked(true));
+    fireEvent.click(screen.getByTestId('refill-jobs'));
+    expect(screen.queryByTestId('job-remove-slash-0-1')).toBeNull();
+    fireEvent.click(screen.getByTestId('job-card-slash-0-1'));
+    expect(confirmButton().disabled).toBe(true);
+
+    fireEvent.click(screen.getByTestId('job-remove-engineer'));
+    fireEvent.click(confirmButton());
+    expect(moves.removeAndRefillJobs).toHaveBeenCalledWith(['engineer'], undefined);
+  });
+
   it('offers the profession picker only for the wild tile and sends assignedJobName', () => {
     const { moves } = setup(marked(true));
     fireEvent.click(actionButton(UserActionMoves.CreateProject));
     fireEvent.click(screen.getByTestId('hand-card-hand-project'));
-    fireEvent.click(screen.getByTestId('job-card-engineer')); // ordinary mismatched (法務專家)
-    expect(screen.queryByTestId('profession-target-工程師')).toBeNull();
+    const mismatch = screen.getByTestId('job-card-engineer') as HTMLButtonElement;
+    expect(mismatch.disabled).toBe(true);
+    fireEvent.click(mismatch);
+    expect(screen.queryByTestId('start-wild-picker')).toBeNull();
 
     fireEvent.click(screen.getByTestId('job-card-slash-0-1'));
-    fireEvent.click(screen.getByTestId('profession-target-美術設計'));
+    const picker = within(screen.getByTestId('start-wild-picker'));
+    fireEvent.click(picker.getByRole('button', { name: '美術設計' }));
     expect(confirmButton().disabled).toBe(false);
     fireEvent.click(confirmButton());
     expect(moves.createProject).toHaveBeenCalledWith('hand-project', 'slash-0-1', '美術設計', undefined);

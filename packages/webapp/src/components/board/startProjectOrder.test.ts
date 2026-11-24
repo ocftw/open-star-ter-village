@@ -1,5 +1,6 @@
-import { reconcileStartPicks, getStartProjectView, isSlashPair, slashTargetNames, pairTier } from './startProjectOrder';
+import { reconcileStartPicks, getStartProjectView, isWildPair, pairTier } from './startProjectOrder';
 import type { JobCard, ProjectCard } from '@/game';
+import { SLASH_WILD_JOB_NAME } from '@/game/core/slashWildJob';
 import type { ValidatableState } from '@/game/core/stage/action/validate';
 import GameStore from '@/game/store/store';
 import { PlayersMutator } from '@/game/store/slice/players';
@@ -17,9 +18,10 @@ const market: JobCard[] = [
   { id: 'J1', name: 'qa' }, { id: 'J2', name: 'dev' }, { id: 'J3', name: 'ops' },
   { id: 'J4', name: 'ux' }, { id: 'J5', name: 'doc' },
 ];
+const wild = { id: 'slash-0-1', name: SLASH_WILD_JOB_NAME };
 
 function makeG(over: {
-  hand?: ProjectCard[]; market?: JobCard[]; slash?: boolean; ap?: number; full?: boolean; workers?: number;
+  hand?: ProjectCard[]; market?: JobCard[]; entitled?: boolean; marked?: boolean; ap?: number; full?: boolean; workers?: number;
 } = {}): ValidatableState {
   const G = GameStore.initialState();
   PlayersMutator.initialize(G.players, ['0', '1']);
@@ -29,7 +31,8 @@ function makeG(over: {
   G.players['1'].hand.projects = [project('OTHER', 'dev')];
   G.table.jobSlots = (over.market ?? market);
   if (over.full) G.table.projectBoard.forEach((slot) => { slot.card = project('X', 'dev'); });
-  if (over.slash) RuleMutator.setEventIgnoreFirstWorkerRequirement(G.rules, ['0'], true);
+  if (over.marked) RuleMutator.enableSlashWildJobCard(G.rules);
+  if (over.entitled) RuleMutator.setEventIgnoreFirstWorkerRequirement(G.rules, ['0'], true);
   return G;
 }
 
@@ -86,19 +89,32 @@ describe('getStartProjectView', () => {
     expect(ids(view.market)).toEqual(['J4', 'J2', 'J1', 'J3']);
   });
 
-  it('entitlement on: slash tier after matches and not greyed; off: disabled', () => {
-    const on = getStartProjectView(makeG({ slash: true }), '0', { projectId: 'P2', jobId: null });
+  it('legacy entitlement sorts usable ordinary mismatches after matches', () => {
+    const on = getStartProjectView(makeG({ entitled: true }), '0', { projectId: 'P2', jobId: null });
     expect(ids(on.market)).toEqual(['J2', 'J4', 'J1', 'J3', 'J5']);
-    expect(on.market.map((e) => e.tier)).toEqual(['match', 'match', 'slash', 'slash', 'slash']);
+    expect(on.market.map((e) => e.tier)).toEqual(['match', 'match', 'wild', 'wild', 'wild']);
     expect(enabled(on.market)).toEqual(ids(on.market));
-    const off = getStartProjectView(makeG({ slash: false }), '0', { projectId: 'P2', jobId: null });
+    const off = getStartProjectView(makeG({ entitled: false }), '0', { projectId: 'P2', jobId: null });
     expect(off.market.map((e) => e.tier)).toEqual(['match', 'match', 'disabled', 'disabled', 'disabled']);
   });
 
-  it('a selected card stays enabled', () => {
-    const view = getStartProjectView(makeG(), '0', { projectId: 'P1', jobId: 'J2' });
-    expect(view.market.find((e) => e.card.id === 'J2')!.tier).not.toBe('disabled');
-    expect(view.hand.find((e) => e.card.id === 'P1')!.tier).not.toBe('disabled');
+  it('in marked games sorts the wild tile after matches and disables ordinary mismatches', () => {
+    const G = makeG({ marked: true, entitled: true, market: [wild, ...market] });
+    const view = getStartProjectView(G, '0', { projectId: 'P2', jobId: null });
+    expect(ids(view.market)).toEqual(['J2', 'J4', wild.id, 'J1', 'J3', 'J5']);
+    expect(view.market.map(({ tier }) => tier)).toEqual(['match', 'match', 'wild', 'disabled', 'disabled', 'disabled']);
+    const jobFirst = getStartProjectView(G, '0', { projectId: null, jobId: wild.id });
+    expect(ids(jobFirst.hand)).toEqual(hand.map(({ id }) => id));
+    expect(jobFirst.hand.map(({ tier }) => tier)).toEqual(hand.map(() => 'wild'));
+  });
+
+  it('a spent or foreign wild tile cannot mask ordinary mismatches', () => {
+    const foreign = { ...wild, id: 'slash-1-1' };
+    const G = makeG({ marked: true, market: [wild, foreign, ...market] });
+    const view = getStartProjectView(G, '0', { projectId: 'P2', jobId: null });
+    expect(enabled(view.market)).toEqual(['J2', 'J4']);
+    RuleMutator.setEventIgnoreFirstWorkerRequirement(G.rules, ['0'], true);
+    expect(pairTier(G, '0', hand[1], foreign)).toBe('disabled');
   });
 
   it('START is a 2-AP action, so an occupied slot (overtime unavailable) is a no-op', () => {
@@ -130,7 +146,7 @@ describe('getStartProjectView', () => {
 
   it('pairTier uses the validator', () => {
     expect(pairTier(makeG(), '0', hand[1], market[1])).toBe('match');
-    expect(pairTier(makeG({ slash: true }), '0', hand[0], market[1])).toBe('slash');
+    expect(pairTier(makeG({ entitled: true }), '0', hand[0], market[1])).toBe('wild');
     expect(pairTier(makeG(), '0', hand[0], market[1])).toBe('disabled');
   });
 });
@@ -146,26 +162,44 @@ describe('reconcileStartPicks', () => {
   });
 
   it('keeps a natural match and clears an unnecessary assignedJobName', () => {
-    const r = reconcileStartPicks(makeG({ slash: true }), '0', both, 'dev', 'project');
+    const r = reconcileStartPicks(makeG({ marked: true, entitled: true }), '0', both, 'dev', 'project');
     expect(r).toEqual({ picks: both, assignedJobName: null });
   });
 
-  it('keeps an eligible mismatch while the entitlement is on', () => {
+  it('keeps an eligible legacy mismatch while the entitlement is on', () => {
     const mismatch = { projectId: 'P1', jobId: 'J2' };
-    expect(reconcileStartPicks(makeG({ slash: true }), '0', mismatch, null, 'project'))
+    expect(reconcileStartPicks(makeG({ entitled: true }), '0', mismatch, null, 'project'))
       .toEqual({ picks: mismatch, assignedJobName: null });
-    expect(reconcileStartPicks(makeG({ slash: true }), '0', mismatch, 'pm', 'project').assignedJobName).toBe('pm');
-    expect(reconcileStartPicks(makeG({ slash: true }), '0', mismatch, 'dev', 'project').assignedJobName).toBeNull();
+    expect(reconcileStartPicks(makeG({ entitled: true }), '0', mismatch, 'pm', 'project').assignedJobName).toBe('pm');
+    expect(reconcileStartPicks(makeG({ entitled: true }), '0', mismatch, 'dev', 'project').assignedJobName).toBeNull();
+  });
+
+  it('drops a marked ordinary mismatch even while the player is entitled', () => {
+    const G = makeG({ marked: true, entitled: true });
+    const pair = { projectId: 'P1', jobId: 'J2' };
+    expect(reconcileStartPicks(G, '0', pair, 'pm', 'project'))
+      .toEqual({ picks: { projectId: 'P1', jobId: null }, assignedJobName: null });
+  });
+
+  it('keeps a wild pair through global blockers and clears its assignment when the tile disappears', () => {
+    const pair = { projectId: 'P2', jobId: wild.id };
+    for (const blocker of [{ full: true }, { ap: 0 }]) {
+      const G = makeG({ ...blocker, marked: true, entitled: true, market: [wild, ...market] });
+      expect(reconcileStartPicks(G, '0', pair, 'ux', 'job')).toEqual({ picks: pair, assignedJobName: 'ux' });
+      expect(reconcileStartPicks(G, '0', pair, 'pm', 'job')).toEqual({ picks: pair, assignedJobName: null });
+    }
+    expect(reconcileStartPicks(makeG({ marked: true }), '0', pair, 'ux', 'job'))
+      .toEqual({ picks: { projectId: 'P2', jobId: null }, assignedJobName: null });
   });
 
   it.each([
     ['project', { projectId: 'P1', jobId: null }],
     ['job', { projectId: null, jobId: 'J2' }],
   ] as const)('entitlement lost on a mismatch keeps the earlier pick (%s first)', (first, expected) => {
-    const r = reconcileStartPicks(makeG({ slash: false }), '0', { projectId: 'P1', jobId: 'J2' }, 'pm', first);
+    const r = reconcileStartPicks(makeG({ entitled: false }), '0', { projectId: 'P1', jobId: 'J2' }, 'pm', first);
     expect(r).toEqual({ picks: expected, assignedJobName: null });
     // the earlier pick drives both lists
-    const view = getStartProjectView(makeG({ slash: false }), '0', r.picks);
+    const view = getStartProjectView(makeG({ entitled: false }), '0', r.picks);
     if (first === 'project') expect(enabled(view.market)).toEqual([]);
     else expect(enabled(view.hand)).toEqual(['P2', 'P3']);
   });
@@ -176,16 +210,22 @@ describe('reconcileStartPicks', () => {
   });
 });
 
-describe('slash helpers', () => {
-  it('isSlashPair needs a mismatch and the entitlement', () => {
+describe('isWildPair', () => {
+  it('in legacy games needs a mismatch and the entitlement', () => {
     const pair = { projectId: 'P1', jobId: 'J2' };
-    expect(isSlashPair(makeG({ slash: true }), '0', pair)).toBe(true);
-    expect(isSlashPair(makeG({ slash: false }), '0', pair)).toBe(false);
-    expect(isSlashPair(makeG({ slash: true }), '0', { projectId: 'P2', jobId: 'J2' })).toBe(false);
-    expect(isSlashPair(makeG({ slash: true }), '0', { projectId: 'P1', jobId: null })).toBe(false);
+    expect(isWildPair(makeG({ entitled: true }), '0', pair)).toBe(true);
+    expect(isWildPair(makeG({ entitled: false }), '0', pair)).toBe(false);
+    expect(isWildPair(makeG({ entitled: true }), '0', { projectId: 'P2', jobId: 'J2' })).toBe(false);
+    expect(isWildPair(makeG({ entitled: true }), '0', { projectId: 'P1', jobId: null })).toBe(false);
   });
 
-  it('slashTargetNames deduplicates requirements', () => {
-    expect(slashTargetNames(hand[1])).toEqual(['dev', 'ux']);
+  it('in marked games requires the player’s own unspent wild tile and a project', () => {
+    const G = makeG({ marked: true, entitled: true, market: [wild, ...market] });
+    expect(isWildPair(G, '0', { projectId: 'P1', jobId: 'J2' })).toBe(false);
+    expect(isWildPair(G, '0', { projectId: null, jobId: wild.id })).toBe(false);
+    const pair = { projectId: 'P1', jobId: wild.id };
+    expect(isWildPair(G, '0', pair)).toBe(true);
+    const spent = makeG({ marked: true, market: [wild, ...market] });
+    expect(isWildPair(spent, '0', pair)).toBe(false);
   });
 });

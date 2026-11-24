@@ -46,7 +46,7 @@ import { ProjectSlotSelector } from '@/game/store/slice/projectSlot/projectSlot'
 import { useRefillFlow } from './RefillFlow';
 import StartProjectFlow from './StartProjectFlow';
 import { useStartProjectSession } from './useStartProject';
-import { isSlashPair } from './startProjectOrder';
+import { isWildPair } from './startProjectOrder';
 import { useStartProjectDeparture } from './useStartProjectDeparture';
 import ContributionConfirmBar from './ContributionConfirmBar';
 import { isContributionAction } from './useContributionFeedback';
@@ -559,7 +559,7 @@ export default function ContextAction({
       cost={RuleSelector.getActionTokenCost(G.rules, 'createProject')}
       project={startProject}
       job={startJob}
-      slash={isSlashPair(G, playerID, { projectId: startProjectId ?? null, jobId: startJobId ?? null })}
+      needsAssignment={isWildPair(G, playerID, { projectId: startProjectId ?? null, jobId: startJobId ?? null })}
       assignment={selectionState.assignedJobName}
       onAssign={(name) => dispatch(setAssignedJobName(name))}
       onClearProject={() => {

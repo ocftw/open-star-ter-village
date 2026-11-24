@@ -24,6 +24,7 @@ import { getContributions } from '@/lib/reducers/contributionSlice';
 import { getTotalContributionValue } from '@/game/core/ContributionAction';
 import { JobSlotsSelector } from '@/game/store/slice/jobSlots';
 import { requiresAssignedJobName } from '@/game/core/slashWildJob';
+import { RuleSelector } from '@/game/store/slice/rule';
 import { ProfessionPicker, getEligibleTargetJobNames } from './board/professionPicker';
 import { Modal, PLAYER_COLORS, StickerButton, Toast } from '@/components/design';
 import { ScoreBoardSelector } from '@/game/store/slice/scoreBoard';

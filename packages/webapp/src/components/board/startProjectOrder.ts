@@ -1,19 +1,19 @@
 import type { PlayerID } from 'boardgame.io';
 import type { JobCard, ProjectCard } from '@/game';
+import { canPlaySlashWildJobCard, isSlashWildJobCard, requiresAssignedJobName } from '@/game/core/slashWildJob';
 import { validateCreateProject, type ValidatableState } from '@/game/core/stage/action/validate';
 import { PlayersSelector } from '@/game/store/slice/players';
-import { RuleSelector } from '@/game/store/slice/rule';
 import { canPass } from './actionPanel';
 
 /**
  * 發起專案 reorder (#497). Pure: everything is derived from the CURRENT G and
  * the pending selections, never stored, so a change in G re-applies.
  *
- * match = the job is one the project names; slash = only usable through the
- * 斜槓青年 event entitlement (an entitlement on a real worker, not a card);
+ * match = the job is one the project names;
+ * wild = the 斜槓青年 card or a legacy override, requiring a profession choice;
  * disabled = unusable with the selected counterpart.
  */
-export type StartTier = 'match' | 'slash' | 'disabled';
+export type StartTier = 'match' | 'wild' | 'disabled';
 export type StartEntry<T> = { card: T; tier: StartTier };
 export type StartPicks = { projectId: string | null; jobId: string | null };
 export type StartPickSide = 'project' | 'job';
@@ -22,7 +22,7 @@ export type StartView = {
   market: StartEntry<JobCard>[];
 };
 
-const TIER_RANK: Record<StartTier, number> = { match: 0, slash: 1, disabled: 2 };
+const TIER_RANK: Record<StartTier, number> = { match: 0, wild: 1, disabled: 2 };
 
 /** Tier of one (project, job) pair, using the same validator the move runs. */
 export function pairTier(
@@ -31,13 +31,14 @@ export function pairTier(
   project: ProjectCard,
   job: JobCard,
 ): StartTier {
-  if (canPass((opts) => validateCreateProject(G, playerID, project.id, job.id, undefined, opts))) {
-    return 'match';
+  const requirements = Object.keys(project.requirements);
+  const wild = requiresAssignedJobName(G.rules, playerID, job, requirements);
+  // START can use any required profession for a wild pair, so one is enough to probe.
+  const assigned = wild ? requirements[0] : undefined;
+  if (!canPass((opts) => validateCreateProject(G, playerID, project.id, job.id, assigned, opts))) {
+    return 'disabled';
   }
-  const viaSlash = Object.keys(project.requirements).some((profession) =>
-    canPass((opts) => validateCreateProject(G, playerID, project.id, job.id, profession, opts)),
-  );
-  return viaSlash ? 'slash' : 'disabled';
+  return wild ? 'wild' : 'match';
 }
 
 /** Stable partition by tier: G order is kept inside each group. */
@@ -60,7 +61,10 @@ export function getStartProjectView(
   // disable the opposite rail when START itself is available.
   if (probe && worker && (project || job) && !canPass((opts) => {
     const result = validateCreateProject(G, playerID, probe.id, worker.id, undefined, opts);
-    if (!result.valid && (result.reason === 'PROJECT_JOB_NOT_REQUIRED' || result.reason === 'PROFESSION_TARGET_REQUIRED')) {
+    if (!result.valid && (
+      result.reason === 'PROJECT_JOB_NOT_REQUIRED' || result.reason === 'PROFESSION_TARGET_REQUIRED' ||
+      result.reason === 'JOB_CARD_NOT_ON_TABLE'
+    )) {
       return { valid: true };
     }
     return result;
@@ -71,45 +75,34 @@ export function getStartProjectView(
     };
   }
 
-  // A selected card stays enabled even if a stale counterpart makes it unusable.
-  const enabled = (tier: StartTier, selected: boolean): StartTier =>
-    selected && tier === 'disabled' ? 'slash' : tier;
   return {
     hand: partition(
       projects.map((card) => ({
         card,
-        tier: job ? enabled(pairTier(G, playerID, card, job), card.id === picks.projectId) : 'match',
+        tier: job ? pairTier(G, playerID, card, job) : 'match',
       })),
     ),
     market: partition(
       jobs.map((card) => ({
         card,
-        tier: project ? enabled(pairTier(G, playerID, project, card), card.id === picks.jobId) : 'match',
+        tier: project ? pairTier(G, playerID, project, card) : 'match',
       })),
     ),
   };
 }
 
-/** Requirement names the 斜槓青年 picker offers (deduplicated, card order). */
-export function slashTargetNames(project: ProjectCard): string[] {
-  return Object.keys(project.requirements);
-}
-
-/** Both slots filled, the job is not one the project names, and the entitlement is on. */
-export function isSlashPair(G: ValidatableState, playerID: PlayerID, picks: StartPicks): boolean {
+/** Whether the selected pair needs a profession choice. */
+export function isWildPair(G: ValidatableState, playerID: PlayerID, picks: StartPicks): boolean {
   const project = picks.projectId ? PlayersSelector.getProjectCardById(G.players, playerID, picks.projectId) : undefined;
   const job = G.table.jobSlots.find((card) => card.id === picks.jobId);
-  if (!project || !job) return false;
-  return !Object.keys(project.requirements).includes(job.name)
-    && RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, playerID);
+  return !!project && !!job && requiresAssignedJobName(G.rules, playerID, job, Object.keys(project.requirements));
 }
 
 export type StartReconcile = { picks: StartPicks; assignedJobName: string | null };
 
 /**
- * Invalidation after G (or the entitlement) changes under a pending pick.
- * `first` is the earlier pick; when a mismatch loses its entitlement the later
- * pick goes and the earlier one drives both lists.
+ * Drop vanished cards first. When the remaining pair is incompatible, the
+ * earlier pick drives both lists.
  */
 export function reconcileStartPicks(
   G: ValidatableState,
@@ -121,17 +114,21 @@ export function reconcileStartPicks(
   const project = current.projectId
     ? PlayersSelector.getProjectCardById(G.players, playerID, current.projectId)
     : undefined;
-  const job = current.jobId ? G.table.jobSlots.find((card) => card.id === current.jobId) : undefined;
+  const job = G.table.jobSlots.find((card) => card.id === current.jobId && (
+    !isSlashWildJobCard(card) || canPlaySlashWildJobCard(G.rules, playerID, card)
+  ));
   const picks = { projectId: project?.id ?? null, jobId: job?.id ?? null };
-  if (!project || !job || Object.keys(project.requirements).includes(job.name)) {
+  if (!project || !job) {
     return { picks, assignedJobName: null };
   }
-  if (RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, playerID)) {
+  const requirements = Object.keys(project.requirements);
+  if (requiresAssignedJobName(G.rules, playerID, job, requirements)) {
     return {
       picks,
-      assignedJobName: assignedJobName && slashTargetNames(project).includes(assignedJobName) ? assignedJobName : null,
+      assignedJobName: assignedJobName && requirements.includes(assignedJobName) ? assignedJobName : null,
     };
   }
+  if (requirements.includes(job.name)) return { picks, assignedJobName: null };
   return {
     picks: first === 'project' ? { ...picks, jobId: null } : { ...picks, projectId: null },
     assignedJobName: null,

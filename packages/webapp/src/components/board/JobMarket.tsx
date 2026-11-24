@@ -120,7 +120,9 @@ export default function JobMarket({
     const next = new Map<string, DOMRect>();
     wraps.forEach((el) => next.set(el.dataset.jobId!, el.getBoundingClientRect()));
     if (phase === 'shifting' && lastPhaseRef.current !== 'shifting') {
+      const wildId = G.table.jobSlots.find(isSlashWildJobCard)?.id;
       wraps.forEach((el) => {
+        if (el.dataset.jobId === wildId) return;
         const before = rectsRef.current.get(el.dataset.jobId!);
         const after = next.get(el.dataset.jobId!);
         if (!before || !after || typeof el.animate !== 'function') return;
