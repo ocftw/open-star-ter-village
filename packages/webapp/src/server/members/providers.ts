@@ -1,6 +1,7 @@
 import type { NextAuthConfig } from 'next-auth';
 import GitHub from 'next-auth/providers/github';
 import Google from 'next-auth/providers/google';
+import { memberFeaturesEnabled } from './database';
 
 export function isTestLoginEnabled(): boolean {
   return process.env.NODE_ENV !== 'production' && process.env.AUTH_TEST_LOGIN === '1';
@@ -29,4 +30,13 @@ export function memberProviders(env = process.env): NextAuthConfig['providers'] 
     }));
   }
   return providers;
+}
+
+export function memberSignInOptions() {
+  const authEnabled = memberFeaturesEnabled() && Boolean(process.env.AUTH_SECRET);
+  return {
+    authEnabled,
+    providers: authEnabled ? memberProviders() : [],
+    showTestLogin: authEnabled && isTestLoginEnabled(),
+  };
 }
