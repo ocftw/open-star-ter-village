@@ -11,6 +11,13 @@ and the server broadcast fills in the result.
 including their draw order) for everyone, and removes `hand` from every player
 except the viewer. Observers see no hands.
 
+**Caveat (pre-existing, tracked separately):** `playerView` filters the state
+that move updates broadcast, but boardgame.io 0.50.2 also sends the match's
+`initialState` unfiltered when a client syncs. That copy includes the starting
+hands, deck order and PRNG state, so hidden information does **not** fully stay
+server-side today. This inventory only decides which moves the client can
+predict; it does not close that leak, which predates #445.
+
 ## How prediction works in boardgame.io 0.50.2
 
 The client reducer (`CreateGameReducer({ isClient: true })`) runs **only the

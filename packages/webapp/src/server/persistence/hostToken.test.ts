@@ -91,19 +91,26 @@ describe('hostIdentityMiddleware', () => {
 
   it('binds each overlapping create to its own verified identity', async () => {
     const middleware = hostIdentityMiddleware(secret);
-    const seen: (string | undefined)[] = [];
-    const slowNext = (ms: number) => async () => {
-      await new Promise((resolve) => setTimeout(resolve, ms));
-      seen.push(currentHostUserId());
+    // Deterministic interleaving: every request parks inside next() until the
+    // test releases it, so all three contexts overlap regardless of timing.
+    const release = new Map<string, () => void>();
+    const seen = new Map<string, string | undefined>();
+    const gatedNext = (label: string) => async () => {
+      await new Promise<void>((resolve) => release.set(label, resolve));
+      seen.set(label, currentHostUserId());
     };
     const tokenA = await issueTestHostToken(secret, { sub: 'member-a' });
     const tokenB = await issueTestHostToken(secret, { sub: 'member-b' });
-    await Promise.all([
-      middleware(ctx('/games/OpenStarTerVillage/create', `Bearer ${tokenA}`), slowNext(20)),
-      middleware(ctx('/games/OpenStarTerVillage/create', `Bearer ${tokenB}`), slowNext(5)),
-      middleware(ctx('/games/OpenStarTerVillage/create'), slowNext(10)),
+    const all = Promise.all([
+      middleware(ctx('/games/OpenStarTerVillage/create', `Bearer ${tokenA}`), gatedNext('a')),
+      middleware(ctx('/games/OpenStarTerVillage/create', `Bearer ${tokenB}`), gatedNext('b')),
+      middleware(ctx('/games/OpenStarTerVillage/create'), gatedNext('guest')),
     ]);
-    expect(seen).toEqual(['member-b', undefined, 'member-a']);
+    while (release.size < 3) await new Promise((resolve) => setImmediate(resolve));
+    // Release in an order different from entry; each request must still see its own identity.
+    for (const label of ['b', 'guest', 'a']) release.get(label)!();
+    await all;
+    expect(Object.fromEntries(seen)).toEqual({ a: 'member-a', b: 'member-b', guest: undefined });
     expect(currentHostUserId()).toBeUndefined();
   });
 
