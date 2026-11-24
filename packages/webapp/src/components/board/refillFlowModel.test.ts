@@ -39,7 +39,7 @@ describe('refill flow helpers', () => {
     const G = gameWith(['A', 'D', 'E', 'n1', 'n2'], 3, true);
     const sequence = { survivors: tiles.filter((t) => !['B', 'C'].includes(t.id)), incoming: [{ id: 'n1', name: 'n1' }, { id: 'n2', name: 'n2' }], dealt: 0 };
     const keys = (phase: Parameters<typeof buildRefillView>[0], s: typeof sequence | null = sequence) =>
-      buildRefillView(phase, pending, s, G, '0').tiles.map((t) => (t.kind === 'card' ? t.id : 'EMPTY'));
+      buildRefillView(phase, pending, s, G, '0', '0').tiles.map((t) => (t.kind === 'card' ? t.id : 'EMPTY'));
     expect(keys('awaiting', null)).toEqual(['A', 'B', 'C', 'D', 'E']);
     expect(keys('emptying')).toEqual(['A', 'EMPTY', 'EMPTY', 'D', 'E']);
     expect(keys('shifting')).toEqual(['A', 'D', 'E', 'EMPTY', 'EMPTY']);
@@ -49,6 +49,7 @@ describe('refill flow helpers', () => {
 
   it('keeps the wild card first and static while real cards empty, shift and deal', () => {
     const G = gameWith(['A', 'D', 'E', 'n1', 'n2'], 3, true);
+    G.table.round = 1;
     G.table.jobSlots.unshift(wild);
     RuleMutator.enableSlashWildJobCard(G.rules);
     RuleMutator.setEventIgnoreFirstWorkerRequirement(G.rules, ['0'], true);
@@ -57,7 +58,7 @@ describe('refill flow helpers', () => {
     expect(sequence.survivors.map(({ id }) => id)).toEqual(['A', 'D', 'E']);
 
     const expectRow = (phase: Parameters<typeof buildRefillView>[0], expected: string[], dealt = 0) => {
-      const view = buildRefillView(phase, wildPending, phase === 'awaiting' ? null : { ...sequence, dealt }, G, '0');
+      const view = buildRefillView(phase, wildPending, phase === 'awaiting' ? null : { ...sequence, dealt }, G, '0', '0');
       expect(view.count).toBe(5);
       expect(view.tiles[0]).toEqual({ kind: 'card', ...wild });
       expect(view.tiles.slice(1).map((tile) => (tile.kind === 'empty' ? 'EMPTY' : tile.id))).toEqual(expected);
@@ -70,6 +71,25 @@ describe('refill flow helpers', () => {
     expect(expectRow('dealing', ['A', 'D', 'E', 'n1', 'n2'], 1)[5]).toMatchObject({ id: 'n2', motion: 'deal' });
   });
 
+  it.each([
+    ['belongs to another player', 'slash-1-1', '0'],
+    ['belongs to another round', 'slash-0-0', '0'],
+    ["is present after the viewer's turn", wild.id, '1'],
+    ['is live for another player', 'slash-1-1', '1'],
+  ])('hides a wild tile that %s', (_, id, currentPlayer) => {
+    const G = gameWith(tiles.map((tile) => tile.id), 4, false);
+    G.table.round = 1;
+    const wildCard = { ...wild, id };
+    G.table.jobSlots.unshift(wildCard);
+    RuleMutator.enableSlashWildJobCard(G.rules);
+    RuleMutator.setEventIgnoreFirstWorkerRequirement(G.rules, ['0', '1'], true);
+
+    const snapshot = { ...pending, tiles: [wildCard, ...tiles] };
+    const view = buildRefillView('awaiting', snapshot, null, G, pending.playerID, currentPlayer);
+    expect(view.count).toBe(tiles.length);
+    expect(view.tiles.map((tile) => tile.kind === 'card' && tile.id)).toEqual(tiles.map((tile) => tile.id));
+  });
+
   it('hides the expired wild card when an accepted refill ends the turn', () => {
     const lastAction = { ...wildPending, apBefore: 1 };
     const G = gameWith(['A', 'D', 'E', 'n1', 'n2'], 0, true);
@@ -78,7 +98,7 @@ describe('refill flow helpers', () => {
     expect(isRefillAccepted(lastAction, G, '0')).toBe(true);
 
     const sequence = { ...splitAccepted(lastAction, G), dealt: 0 };
-    const view = buildRefillView('emptying', lastAction, sequence, G, '0');
+    const view = buildRefillView('emptying', lastAction, sequence, G, '0', '1');
     expect(view.count).toBe(5);
     expect(view.tiles.map((tile) => (tile.kind === 'empty' ? 'EMPTY' : tile.id))).toEqual(['A', 'EMPTY', 'EMPTY', 'D', 'E']);
   });

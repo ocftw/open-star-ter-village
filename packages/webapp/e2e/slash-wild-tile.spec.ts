@@ -6,7 +6,7 @@ for (const [width, height] of [[1280, 832], [390, 844]] as const) {
   test.describe(`斜槓青年 wild tile at ${width}x${height}`, () => {
     test.use({ viewport: { width, height } });
 
-    test('sub-label is 9px and centred on the tile; market still counts 8 real cards', async ({ page, request }) => {
+    test('centres the 88px face and its 9px sub-label within the market slot', async ({ page, request }) => {
       await openWildMatch(page, request);
       const tile = page.locator('[data-testid^="job-card-slash-0-"]');
       await tile.scrollIntoViewIfNeeded();
@@ -14,33 +14,45 @@ for (const [width, height] of [[1280, 832], [390, 844]] as const) {
       await expect(page.getByTestId('job-market-count')).toHaveText('JOB MARKET · 8 CARDS');
       await expect(page.getByTestId('job-market-count')).toHaveAttribute('data-count', '8');
 
-      const sub = tile.locator('.job-tile-sub');
+      const face = tile.getByTestId(/^job-face-slash-0-/);
+      const sub = face.locator('.job-tile-sub');
       await expect(sub).toHaveText('可作為任一人力使用');
-      const m = await tile.evaluate((el) => {
-        const sub = el.querySelector('.job-tile-sub') as HTMLElement;
-        const t = el.getBoundingClientRect();
+      const layout = await tile.evaluate(async (tile) => {
+        await document.fonts.ready;
+        const face = tile.querySelector('.job-tile-face')!;
+        const sub = face.querySelector('.job-tile-sub')!;
+        const avatar = face.querySelector('.job-char--slash')!;
+        const edges = ({ left, right, width }: DOMRect) => ({ left, right, width });
         const range = document.createRange();
         range.selectNodeContents(sub);
-        const lines = Array.from(range.getClientRects()).map((r) => ({ left: r.left, right: r.right }));
         return {
           fontSize: getComputedStyle(sub).fontSize,
-          tile: { left: t.left, right: t.right, width: t.width },
-          lines,
+          tile: edges(tile.getBoundingClientRect()),
+          face: edges(face.getBoundingClientRect()),
+          avatar: edges(avatar.getBoundingClientRect()),
+          avatarHeight: avatar.getBoundingClientRect().height,
+          slotWidth: tile.parentElement!.getBoundingClientRect().width,
+          lines: Array.from(range.getClientRects(), edges),
           overflowX: sub.scrollWidth - sub.clientWidth,
         };
       });
-      expect(m.fontSize).toBe('9px');
-      expect(m.lines.length).toBeGreaterThan(0);
-      for (const l of m.lines) {
-        // |left gap − right gap| ≤ 1px relative to the tile face
-        expect(Math.abs((l.left - m.tile.left) - (m.tile.right - l.right))).toBeLessThanOrEqual(1);
-        expect(l.left).toBeGreaterThanOrEqual(m.tile.left);
-        expect(l.right).toBeLessThanOrEqual(m.tile.right);
+      const gapDifference = (inner: { left: number; right: number }, outer: { left: number; right: number }) =>
+        Math.abs((inner.left - outer.left) - (outer.right - inner.right));
+      expect(layout.slotWidth).toBe(width === 1280 ? 124 : 96);
+      expect(layout.tile.width).toBe(layout.slotWidth);
+      expect(Math.abs(layout.face.width - 88)).toBeLessThanOrEqual(0.5);
+      expect(gapDifference(layout.face, layout.tile)).toBeLessThanOrEqual(1);
+      expect(layout.avatar.width).toBe(44);
+      expect(layout.avatarHeight).toBe(44);
+      expect(gapDifference(layout.avatar, layout.face)).toBeLessThanOrEqual(1);
+      expect(layout.fontSize).toBe('9px');
+      expect(layout.lines.length).toBeGreaterThan(0);
+      for (const line of layout.lines) {
+        expect(gapDifference(line, layout.face)).toBeLessThanOrEqual(1);
+        expect(line.left).toBeGreaterThanOrEqual(layout.face.left);
+        expect(line.right).toBeLessThanOrEqual(layout.face.right);
       }
-      expect(m.overflowX).toBeLessThanOrEqual(0);
-      // slot width is unchanged
-      const slot = await tile.locator('xpath=..').evaluate((e) => e.getBoundingClientRect().width);
-      expect(Math.round(slot)).toBe(width === 1280 ? 124 : 96);
+      expect(layout.overflowX).toBeLessThanOrEqual(0);
     });
   });
 }
