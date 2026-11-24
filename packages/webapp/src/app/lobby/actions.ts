@@ -150,8 +150,8 @@ export async function getMatch(matchID: string): Promise<LobbyMatch> {
   return lobbyClient.getMatch(GAME_NAME, matchID);
 }
 
-export async function createRoom(playerName: string, numPlayers: number): Promise<MatchCredentials> {
-  const { matchID } = await lobbyClient.createMatch(GAME_NAME, { numPlayers }, await hostTokenInit());
+export async function createRoom(playerName: string, numPlayers: number, signedIn = false): Promise<MatchCredentials> {
+  const { matchID } = await lobbyClient.createMatch(GAME_NAME, { numPlayers }, await hostTokenInit(signedIn));
   try {
     return await joinRoom(matchID, playerName, '0');
   } catch (error) {
