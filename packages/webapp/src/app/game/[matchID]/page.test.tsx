@@ -56,7 +56,7 @@ it('keeps the saved seat during a temporary match lookup failure', async () => {
   localStorage.clear();
   const seat = { matchID: 'room-1', playerID: '1', credential: 'bob-fixture', playerName: 'Bob' };
   saveCredentials(seat);
-  mockGetMatch.mockRejectedValue(new LobbyClientError('HTTP status 503'));
+  mockGetMatch.mockRejectedValue(new LobbyClientError('HTTP status 503', { status: 503 }));
   const view = render(<GameRoomPage />);
   await waitFor(() => expect(view.getByText(/HTTP status 503/)).toBeTruthy());
   expect(loadCredentials('room-1')).toEqual(seat);

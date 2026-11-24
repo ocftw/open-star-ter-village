@@ -250,7 +250,10 @@ export function createRematchRules(
       // Lobby polling of a rematch room settles an expired host grace period.
       router.get('/games/:name/:id', async (ctx, next) => {
         const metadata = await fetchMetadata(ctx.params.id);
-        if (!metadata) ctx.throw(404, 'Match ' + ctx.params.id + ' not found');
+        if (!metadata) {
+          ctx.throw(404, 'Match ' + ctx.params.id + ' not found');
+          return;
+        }
         const rematch = metadata[REMATCH];
         if (rematch && !rematch.hostResolved && !rematch.hostDeclined) {
           await serialize(() => expireGrace(ctx.params.id, metadata, rematch));

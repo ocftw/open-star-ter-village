@@ -129,7 +129,7 @@ describe('restart restore (DB-A2)', () => {
     const sql = new FakeMatchesSql();
     const first = await start([counter], MEMBER_ENV, sql);
     const token = await issueTestHostToken(secretBytes, { sub: 'member-1' });
-    const { matchID } = await first.lobby.createMatch('counter', {}, { headers: { Authorization: `Bearer ${token}` } });
+    const { matchID } = await first.lobby.createMatch('counter', { numPlayers: 2 }, { headers: { Authorization: `Bearer ${token}` } });
     const [credentials] = await seatTwo(first.lobby, 'counter', matchID);
     await first.running.stop();
 
@@ -182,7 +182,7 @@ it('closes an open lobby event stream before flushing pending writes', async () 
   const sql = new FakeMatchesSql();
   const { running, url, lobby } = await start([counter], MEMBER_ENV, sql);
   const token = await issueTestHostToken(secretBytes, { sub: 'member-1' });
-  const { matchID } = await lobby.createMatch('counter', {}, { headers: { Authorization: `Bearer ${token}` } });
+  const { matchID } = await lobby.createMatch('counter', { numPlayers: 2 }, { headers: { Authorization: `Bearer ${token}` } });
   const state = (await running.server.db.fetch(matchID, { state: true })).state;
   sql.failNext();
   await running.server.db.setState(matchID, { ...state, _stateID: 1 });
