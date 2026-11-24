@@ -50,8 +50,10 @@ export default function JobMarket({
   const removeMode = refillMode || discardMode;
   const multiSelect = removeMode;
   const removedCount = Object.values(selectedSlots).filter(Boolean).length;
-  const visibleJobs = G.table.jobSlots.filter((job) => !isSlashWildJobCard(job) ||
-    (playerID === ctx.currentPlayer && isLiveSlashWildJobCard(G, ctx.currentPlayer, job)));
+  const wildId = playerID === ctx.currentPlayer
+    ? G.table.jobSlots.find((job) => isLiveSlashWildJobCard(G, ctx.currentPlayer, job))?.id
+    : undefined;
+  const visibleJobs = G.table.jobSlots.filter((job) => !isSlashWildJobCard(job) || job.id === wildId);
 
   const flow = useRefillFlow();
   const sectionRef = React.useRef<HTMLElement>(null);
@@ -116,7 +118,6 @@ export default function JobMarket({
     const next = new Map<string, DOMRect>();
     wraps.forEach((el) => next.set(el.dataset.jobId!, el.getBoundingClientRect()));
     if (phase === 'shifting' && lastPhaseRef.current !== 'shifting') {
-      const wildId = G.table.jobSlots.find(isSlashWildJobCard)?.id;
       wraps.forEach((el) => {
         if (el.dataset.jobId === wildId) return;
         const before = rectsRef.current.get(el.dataset.jobId!);
