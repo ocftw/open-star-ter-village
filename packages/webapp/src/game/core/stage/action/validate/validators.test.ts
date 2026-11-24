@@ -401,7 +401,7 @@ describe('recruit move with 斜槓青年 target (legacy unmarked game)', () => {
     const apBefore = G.players['0'].token.actions;
     const workersBefore = G.players['0'].token.workers;
 
-    const result = recruit({ G, playerID: '0' } as never, 'j2', slot.id, '美術設計');
+    const result = recruit({ G, playerID: '0', ctx: { currentPlayer: '0' } } as never, 'j2', slot.id, '美術設計');
 
     expect(result).toBeUndefined(); // move completed, no INVALID_MOVE
     // Contribution lands under the chosen required position — never the card's own name.
@@ -421,7 +421,7 @@ describe('recruit move with 斜槓青年 target (legacy unmarked game)', () => {
     const slot = withActiveProject(G);
 
     // Invalid target: throws before any mutation, entitlement intact.
-    expect(() => recruit({ G, playerID: '0' } as never, 'j2', slot.id, '主廚')).toThrow();
+    expect(() => recruit({ G, playerID: '0', ctx: { currentPlayer: '0' } } as never, 'j2', slot.id, '主廚')).toThrow();
     expect(RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, '0')).toBe(true);
     expect(G.table.jobSlots.some((c) => c.id === 'j2')).toBe(true);
   });

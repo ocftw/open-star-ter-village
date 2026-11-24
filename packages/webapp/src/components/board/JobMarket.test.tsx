@@ -7,6 +7,7 @@ import { Provider } from 'react-redux';
 import { GameContext } from '@/components/GameContextHelpers';
 import GameStore, { GameState } from '@/game/store/store';
 import { PlayersMutator } from '@/game/store/slice/players';
+import { RuleMutator } from '@/game/store/slice/rule';
 import { JobSlotsMutator } from '@/game/store/slice/jobSlots';
 import { ProjectBoardMutator } from '@/game/store/slice/projectBoard';
 import { makeStore } from '@/lib/store';
@@ -82,13 +83,15 @@ describe('JobMarket', () => {
   it('counts real cards only when the synthetic 斜槓青年 card is present', () => {
     setup({
       change: (G) => {
-        G.table.jobSlots.unshift({ id: 'slash-0-1', name: '斜槓青年' });
+        RuleMutator.enableSlashWildJobCard(G.rules);
+        RuleMutator.setEventIgnoreFirstWorkerRequirement(G.rules, ['0', '1'], true);
+        G.table.jobSlots.unshift({ id: `slash-0-${G.table.round}`, name: '斜槓青年' });
       },
     });
     const count = screen.getByTestId('job-market-count');
     expect(count.textContent).toBe('JOB MARKET · 8 CARDS');
     expect(count.getAttribute('data-count')).toBe('8');
-    expect(screen.getByTestId('job-card-slash-0-1').getAttribute('data-wild')).toBe('true');
+    expect(screen.getByTestId(/^job-card-slash-0-/).getAttribute('data-wild')).toBe('true');
   });
 
   it('names every player on the badge group and hides the dots from assistive tech', () => {

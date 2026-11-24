@@ -15,7 +15,7 @@ import {
 import { Button, PLAYER_COLORS, Toast } from '@/components/design';
 import { RuleSelector } from '@/game/store/slice/rule';
 import { getPlayerName } from '@/components/playerNameMap';
-import { getNumRealJobSlots, isSlashWildJobCard } from '@/game/core/slashWildJob';
+import { getNumRealJobSlots, isLiveSlashWildJobCard, isSlashWildJobCard } from '@/game/core/slashWildJob';
 import JobTile from './JobTile';
 import MarketCarousel from './MarketCarousel';
 import { canSelectAction, remainingActionUses } from './actionPanel';
@@ -52,6 +52,8 @@ export default function JobMarket({
   const removeMode = refillMode || discardMode;
   const multiSelect = removeMode;
   const removedCount = Object.values(selectedSlots).filter(Boolean).length;
+  const visibleJobs = G.table.jobSlots.filter((job) => !isSlashWildJobCard(job) ||
+    (playerID === ctx.currentPlayer && isLiveSlashWildJobCard(G, ctx.currentPlayer, job)));
 
   const flow = useRefillFlow();
   const sectionRef = React.useRef<HTMLElement>(null);
@@ -172,7 +174,7 @@ export default function JobMarket({
         onClick={jobsInteractive && !tile.ghost ? () => handleTap(tile.id) : undefined}
       />
     ),
-  ) : (start?.view.market ?? G.table.jobSlots.map((card) => ({ card, tier: undefined }))).map(({ card: job, tier }) => {
+  ) : (start?.view.market ?? visibleJobs.map((card) => ({ card, tier: undefined }))).map(({ card: job, tier }) => {
       const removed = !!selectedSlots[job.id];
       if (removeMode) {
         // 四大自由 discard: marked tiles leave the row (prototype); the

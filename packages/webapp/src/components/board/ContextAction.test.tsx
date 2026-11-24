@@ -158,6 +158,7 @@ describe('斜槓青年 wild job card (marked game)', () => {
   const WILD = { id: 'slash-0-1', name: '斜槓青年' };
   const marked = (withWild: boolean) => (G: GameState) => {
     RuleMutator.enableSlashWildJobCard(G.rules);
+    G.table.round = 1;
     G.table.jobSlots[0].name = '法務專家'; // the only ordinary card is mismatched
     RuleMutator.setEventIgnoreFirstWorkerRequirement(G.rules, ['0'], true);
     if (withWild) G.table.jobSlots.unshift({ ...WILD });
@@ -186,6 +187,16 @@ describe('斜槓青年 wild job card (marked game)', () => {
     fireEvent.click(screen.getByTestId('job-remove-engineer'));
     fireEvent.click(confirmButton());
     expect(moves.removeAndRefillJobs).toHaveBeenCalledWith(['engineer'], undefined);
+  });
+
+  it('hides an expired wild tile and offers no profession override', () => {
+    setup((G) => {
+      marked(true)(G);
+      G.table.round = 2;
+    });
+    expect(screen.queryByTestId('job-card-slash-0-1')).toBeNull();
+    expect(actionButton(UserActionMoves.CreateProject).disabled).toBe(true);
+    expect(actionButton(UserActionMoves.Recruit).disabled).toBe(true);
   });
 
   it('offers the profession picker only for the wild tile and sends assignedJobName', () => {
