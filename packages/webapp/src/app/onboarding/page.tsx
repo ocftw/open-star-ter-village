@@ -40,6 +40,8 @@ export default async function Onboarding({ searchParams }: { searchParams: { err
     if (memberFeaturesEnabled() && process.env.AUTH_SECRET) await signOut({ redirectTo: '/lobby' });
   }
 
+  const nicknameError = searchParams.error === 'nickname';
+
   return (
     <main>
       <AppHeader />
@@ -48,15 +50,26 @@ export default async function Onboarding({ searchParams }: { searchParams: { err
         <form action={completeOnboarding} className="member-card-actions">
           <label className="member-nickname-field">
             <span>暱稱 · Nickname</span>
-            <input name="nickname" required maxLength={20} autoComplete="nickname" />
-            <small>1 到 20 個字 · Use 1 to 20 characters.</small>
+            <input
+              name="nickname"
+              required
+              maxLength={20}
+              autoComplete="nickname"
+              aria-invalid={nicknameError || undefined}
+              aria-describedby={nicknameError ? 'nickname-help nickname-error' : 'nickname-help'}
+            />
+            <small id="nickname-help">1 到 20 個字 · Use 1 to 20 characters.</small>
+            {nicknameError && (
+              <p id="nickname-error" className="member-error" role="alert">
+                ⚠ 請輸入 1 到 20 個字 · Enter 1 to 20 characters.
+              </p>
+            )}
           </label>
           <label className="member-opt-in">
             <input name="contactOptIn" type="checkbox" defaultChecked={process.env.CONTACT_OPT_IN_DEFAULT === 'true'} />
             <span>寄送 OCF 最新消息與教學素材給我<br />Send me OCF news and teaching materials</span>
           </label>
-          {searchParams.error === 'nickname' && <p role="alert">請輸入 1 到 20 個字 · Enter 1 to 20 characters.</p>}
-          {searchParams.error === 'save' && <p role="alert">儲存失敗，請再試一次。 Could not save. Try again.</p>}
+          {searchParams.error === 'save' && <p className="member-error" role="alert">儲存失敗，請再試一次。 Could not save. Try again.</p>}
           <StickerButton type="submit">儲存並繼續 · Save and continue</StickerButton>
         </form>
         <form action={leaveMemberSession}>
