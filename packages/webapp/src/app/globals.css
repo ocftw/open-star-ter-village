@@ -791,29 +791,43 @@ div.job-tile,
   }
 }
 
-/* 斜槓青年 wild tile: conic avatar + 9px sub-label (plan typography note overrides prototype 10px). */
-.job-char--slash {
+/* MK-A7: The 88px face fits within the 96px mobile tile, including its border. */
+.job-tile[data-wild] {
+  padding: 4px 2px;
+}
+.job-tile-face {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 88px;
+}
+.job-tile-face .job-char--slash {
+  width: 44px;
+  height: 44px;
+  margin-bottom: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 900;
-  line-height: 1;
+  line-height: 24px;
   background: conic-gradient(from 210deg, #f05a1e 0deg, #e8a33a 80deg, #9fbf3c 120deg, #1ea6b9 170deg, #2c8b97 230deg, #8b5a3c 300deg, #f05a1e 360deg);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
 }
-.job-tile[data-wild] { gap: 4px; }
+.job-tile-face .job-tile-name {
+  line-height: 14px;
+}
 .job-tile-sub {
   align-self: stretch;
   font-size: 9px;
   font-weight: 500;
-  line-height: 1.3;
+  line-height: 12px;
   color: var(--ink-mute);
   text-align: center;
   text-wrap: balance;
   overflow-wrap: anywhere;
-  margin-top: -3px;
 }
 
 /* placeholder bg pattern */
