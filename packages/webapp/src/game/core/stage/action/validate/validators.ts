@@ -8,10 +8,7 @@ import { ProjectSlotSelector } from '@/game/store/slice/projectSlot/projectSlot'
 import { ContributionAction, getTotalContributionValue } from '@/game/core/ContributionAction';
 import { ActionMoveName } from '@/game/core/stage/action/move/type';
 import { JobCard } from '@/game/card';
-import {
-  canPlaySlashWildJobCard,
-  isSlashWildJobCard,
-} from '@/game/core/slashWildJob';
+import { isLiveSlashWildJobCard, isSlashWildJobCard } from '@/game/core/slashWildJob';
 import { ActionExecutionOptions, invalid, VALID, ValidatableState, ValidationFailure, ValidationResult } from './types';
 
 /**
@@ -61,45 +58,34 @@ export type JobAssignment = {
  * Resolve which profession `jobCard` fills on a project requiring
  * `requirementNames`. Shared by validators and moves.
  *
- * Marked games (Rule.slashWildJobCard): only the player's own synthetic wild
- * card is wild; it needs an assignedJobName among the requirements and is the
- * only thing that consumes the entitlement. An ordinary card must match.
+ * In marked games, the live wild card needs an assignedJobName among the
+ * requirements and spends the entitlement when played. An ordinary card must match.
  * Legacy games: a mismatched ordinary card is accepted through the entitlement
  * with an assignedJobName, and the first placement consumes it even when matching.
  */
 export const resolveJobAssignment = (
   G: ValidatableState,
   playerID: PlayerID,
+  currentPlayer: PlayerID,
   jobCard: JobCard,
   requirementNames: string[],
   assignedJobName?: string,
 ): JobAssignment | ValidationFailure => {
-  const entitled = RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, playerID);
-
-  if (RuleSelector.isSlashWildJobCardEnabled(G.rules)) {
-    if (isSlashWildJobCard(jobCard)) {
-      // Someone else's / spent wild card is not playable: treat as gone.
-      if (!canPlaySlashWildJobCard(G.rules, playerID, jobCard)) {
-        return invalid('JOB_CARD_NOT_ON_TABLE');
-      }
-      if (!assignedJobName) {
-        return invalid('PROFESSION_TARGET_REQUIRED');
-      }
-      if (!requirementNames.includes(assignedJobName)) {
-        return invalid('PROFESSION_TARGET_UNAVAILABLE');
-      }
-      return { valid: true, jobName: assignedJobName, wild: true, consumesEntitlement: true };
-    }
-    if (!requirementNames.includes(jobCard.name)) {
-      return invalid('PROJECT_JOB_NOT_REQUIRED', { jobName: jobCard.name });
-    }
-    return { valid: true, jobName: jobCard.name, wild: false, consumesEntitlement: false };
-  }
-
-  // Legacy (unmarked) game. A synthetic card can only be stray state here.
   if (isSlashWildJobCard(jobCard)) {
-    return invalid('JOB_CARD_NOT_ON_TABLE');
+    if (playerID !== currentPlayer || !isLiveSlashWildJobCard(G, currentPlayer, jobCard)) {
+      return invalid('JOB_CARD_NOT_ON_TABLE');
+    }
+    if (!assignedJobName) {
+      return invalid('PROFESSION_TARGET_REQUIRED');
+    }
+    if (!requirementNames.includes(assignedJobName)) {
+      return invalid('PROFESSION_TARGET_UNAVAILABLE');
+    }
+    return { valid: true, jobName: assignedJobName, wild: true, consumesEntitlement: true };
   }
+
+  const entitled = !RuleSelector.isSlashWildJobCardEnabled(G.rules) &&
+    RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, playerID);
   // Matching cards use their own profession; assignedJobName is ignored.
   if (requirementNames.includes(jobCard.name)) {
     return { valid: true, jobName: jobCard.name, wild: false, consumesEntitlement: entitled };
@@ -116,6 +102,7 @@ export const resolveJobAssignment = (
   return { valid: true, jobName: assignedJobName, wild: false, consumesEntitlement: true };
 };
 
+// Client preflight runs only for the current player. Moves supply the server's currentPlayer.
 export const validateCreateProject = (
   G: ValidatableState,
   playerID: PlayerID,
@@ -123,6 +110,7 @@ export const validateCreateProject = (
   jobCardId: string,
   assignedJobName?: string,
   opts?: SlotOptions,
+  currentPlayer = playerID,
 ): ValidationResult => {
   const base = validateSlotAndActionTokens(G, playerID, 'createProject', opts);
   if (!base.valid) return base;
@@ -150,7 +138,7 @@ export const validateCreateProject = (
   }
 
   const assignment = resolveJobAssignment(
-    G, playerID, jobCard, Object.keys(projectCard.requirements), assignedJobName,
+    G, playerID, currentPlayer, jobCard, Object.keys(projectCard.requirements), assignedJobName,
   );
   if (!assignment.valid) return assignment;
 
@@ -164,6 +152,7 @@ export const validateRecruit = (
   projectSlotId: string,
   assignedJobName?: string,
   opts?: SlotOptions,
+  currentPlayer = playerID,
 ): ValidationResult => {
   const base = validateSlotAndActionTokens(G, playerID, 'recruit', opts);
   if (!base.valid) return base;
@@ -185,7 +174,7 @@ export const validateRecruit = (
   }
 
   const assignment = resolveJobAssignment(
-    G, playerID, jobCard, Object.keys(activeProject.card.requirements), assignedJobName,
+    G, playerID, currentPlayer, jobCard, Object.keys(activeProject.card.requirements), assignedJobName,
   );
   if (!assignment.valid) return assignment;
   // Per-player duplicate / fulfilled checks apply to the profession actually filled

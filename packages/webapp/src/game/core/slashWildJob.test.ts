@@ -65,6 +65,8 @@ const ENGINEER = { id: 'j1', name: '工程師' };
 const LAWYER = { id: 'j2', name: '法務專家' };
 const WILD_0 = { id: 'slash-0-1', name: SLASH_WILD_JOB_NAME };
 const WILD_1 = { id: 'slash-1-1', name: SLASH_WILD_JOB_NAME };
+const EXPIRED_WILD = { ...WILD_0, id: 'slash-0-0' };
+const STRAY_WILD = { ...WILD_0, id: 'slash-0-invalid' };
 
 const realDeckCards = (n: number, prefix = 'd'): JobCard[] =>
   Array.from({ length: n }, (_, i) => ({ id: `${prefix}${i}`, name: '工程師' }));
@@ -120,7 +122,8 @@ const expectReason = (result: ValidationResult, reason: string) => {
 const inPiles = (G: GameState) =>
   [...G.decks.jobs.drawPile, ...G.decks.jobs.discardPile].some(isSlashWildJobCard);
 
-const moveCtx = (G: GameState, playerID = '0') => ({ G, playerID }) as never;
+const moveCtx = (G: GameState, playerID = '0') =>
+  ({ G, playerID, ctx: { currentPlayer: playerID } }) as never;
 
 describe('slash wild job helpers', () => {
   it('id format is slash-<playerID>-<round> and encodes the owner', () => {
@@ -207,8 +210,16 @@ describe('offerSlashWildJobCard (turn begin)', () => {
     expect(G.table.jobSlots.filter(isSlashWildJobCard)).toHaveLength(1);
   });
 
-  it('is not dealt after the entitlement was used', () => {
+  it('replaces stale and foreign cards with the current player’s card', () => {
     const G = makeG();
+    G.table.jobSlots.unshift(EXPIRED_WILD, STRAY_WILD, WILD_1);
+    offerSlashWildJobCard(hookContext(G, '0'));
+    expect(G.table.jobSlots.filter(isSlashWildJobCard)).toEqual([WILD_0]);
+    expect(RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, '1')).toBe(true);
+  });
+
+  it('is not dealt after the entitlement was used', () => {
+    const G = withWild();
     RuleMutator.consumeIgnoreFirstWorkerRequirement(G.rules, '0');
     offerSlashWildJobCard(hookContext(G, '0'));
     expect(G.table.jobSlots.some(isSlashWildJobCard)).toBe(false);
@@ -223,6 +234,7 @@ describe('offerSlashWildJobCard (turn begin)', () => {
 
   it('is never dealt in an unmarked (legacy) game', () => {
     const G = makeG({ marked: false });
+    G.table.jobSlots.unshift(WILD_0);
     offerSlashWildJobCard(hookContext(G, '0'));
     expect(G.table.jobSlots.some(isSlashWildJobCard)).toBe(false);
   });
@@ -233,28 +245,55 @@ describe('stripSlashWildJobCards (turn end)', () => {
     const G = withWild();
     G.decks.jobs.drawPile.unshift({ ...WILD_1 });
     G.decks.jobs.discardPile.push({ ...WILD_1 });
-    stripSlashWildJobCards(G);
+    stripSlashWildJobCards(G, '0');
     expect(G.table.jobSlots.some(isSlashWildJobCard)).toBe(false);
     expect(inPiles(G)).toBe(false);
     expect(G.table.jobSlots).toHaveLength(8);
   });
 
+  it('forfeits an unused entitlement and skips the offer if the turn returns in the same round', () => {
+    const G = withWild();
+    stripSlashWildJobCards(G, '0');
+    expect(RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, '0')).toBe(false);
+    expect(RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, '1')).toBe(true);
+
+    offerSlashWildJobCard(hookContext(G, '1'));
+    expect(G.table.jobSlots.filter(isSlashWildJobCard)).toEqual([WILD_1]);
+    stripSlashWildJobCards(G, '1');
+    offerSlashWildJobCard(hookContext(G, '0'));
+    expect(G.table.jobSlots.filter(isSlashWildJobCard)).toEqual([]);
+  });
+
+  it('cleans up stale market cards without forfeiting another player’s entitlement', () => {
+    const G = makeG();
+    G.table.jobSlots.unshift(EXPIRED_WILD, WILD_1);
+    stripSlashWildJobCards(G, '0');
+    expect(G.table.jobSlots.filter(isSlashWildJobCard)).toEqual([]);
+    expect(RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, '0')).toBe(true);
+    expect(RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, '1')).toBe(true);
+  });
+
   it('also drops a stray wild card from an unmarked game', () => {
     const G = makeG({ marked: false });
     G.table.jobSlots.unshift({ ...WILD_0 });
-    stripSlashWildJobCards(G);
+    stripSlashWildJobCards(G, '0');
     expect(G.table.jobSlots.some(isSlashWildJobCard)).toBe(false);
+    expect(RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, '0')).toBe(true);
   });
 });
 
 describe('playerView', () => {
-  it('shows the wild card only to its owner', () => {
+  it('shows a live card only to its owner during their turn', () => {
     const G = withWild();
-    const view = (playerID: string | null) =>
-      playerView({ G, ctx: {} as Ctx, playerID }).table.jobSlots.some(isSlashWildJobCard);
+    const view = (playerID: string | null, currentPlayer = '0') =>
+      playerView({ G, ctx: { currentPlayer } as Ctx, playerID }).table.jobSlots.some(isSlashWildJobCard);
     expect(view('0')).toBe(true);
     expect(view('1')).toBe(false);
     expect(view(null)).toBe(false);
+    expect(view('0', '1')).toBe(false);
+    expect(view('1', '1')).toBe(false);
+    G.table.round += 1;
+    expect(view('0')).toBe(false);
     expect(G.table.jobSlots.some(isSlashWildJobCard)).toBe(true); // server state untouched
   });
 });
@@ -281,10 +320,21 @@ describe('validateCreateProject (marked)', () => {
     expectReason(validateCreateProject(G, '0', 'p1', LAWYER.id, '工程師'), 'PROJECT_JOB_NOT_REQUIRED');
   });
 
-  it("another player's wild card is not playable", () => {
+  it.each([WILD_1, EXPIRED_WILD, STRAY_WILD])('rejects non-live card $id still in the market', (card) => {
     const G = makeG();
-    G.table.jobSlots.unshift({ ...WILD_1 });
-    expectReason(validateCreateProject(G, '0', 'p1', WILD_1.id, '工程師'), 'JOB_CARD_NOT_ON_TABLE');
+    G.table.jobSlots.unshift(card);
+    expectReason(validateCreateProject(G, '0', 'p1', card.id, '工程師'), 'JOB_CARD_NOT_ON_TABLE');
+  });
+
+  it('rejects the owner’s card outside their turn', () => {
+    expectReason(
+      validateCreateProject(withWild(), '0', 'p1', WILD_0.id, '工程師', undefined, '1'),
+      'JOB_CARD_NOT_ON_TABLE',
+    );
+  });
+
+  it('rejects a wild card ID missing from the market', () => {
+    expectReason(validateCreateProject(makeG(), '0', 'p1', WILD_0.id, '工程師'), 'JOB_CARD_NOT_ON_TABLE');
   });
 
   it('a wild card is not playable once the entitlement is spent', () => {
@@ -306,6 +356,13 @@ describe('validateRecruit (marked)', () => {
     const slot = withActiveProject(G);
     expectReason(validateRecruit(G, '0', WILD_0.id, slot.id), 'PROFESSION_TARGET_REQUIRED');
     expectReason(validateRecruit(G, '0', WILD_0.id, slot.id, '主廚'), 'PROFESSION_TARGET_UNAVAILABLE');
+  });
+
+  it('rejects a previous round’s wild card still in the market', () => {
+    const G = withWild();
+    const slot = withActiveProject(G);
+    G.table.round += 1;
+    expectReason(validateRecruit(G, '0', WILD_0.id, slot.id, '美術設計'), 'JOB_CARD_NOT_ON_TABLE');
   });
 
   it('per-player duplicate check applies to the assigned profession', () => {
@@ -501,7 +558,7 @@ describe('full game (boardgame.io Client)', () => {
     expect(state().G.table.jobSlots.filter(isSlashWildJobCard)).toHaveLength(1);
     expect(getNumRealJobSlots(state().G.table.jobSlots)).toBe(maxJobSlots);
 
-    // Unused → stripped at turn end; entitlement cleared at round end.
+    // The last turn ends with the round, which clears the event’s entitlement flags.
     client.updatePlayerID('1');
     client.moves.endActionTurn();
     expect(state().G.table.round).toBe(2);
@@ -517,6 +574,36 @@ describe('full game (boardgame.io Client)', () => {
     }
     expect(state().G.table.round).toBe(3);
     assertNeverInPiles();
+    client.stop();
+  });
+
+  it.each([true, false])('handles an unused entitlement at turn end (marked: %s)', (marked) => {
+    const client = Client<GameState>({ game: { ...makeClientGame(marked), playerView }, numPlayers: 2, playerID: '0' });
+    client.start();
+    const state = () => client.getState()!;
+    const visibleWildCards = () => state().G.table.jobSlots.filter(isSlashWildJobCard);
+
+    expect(state().ctx.currentPlayer).toBe('0');
+    expect(visibleWildCards()).toEqual(marked ? [WILD_0] : []);
+    client.updatePlayerID('1');
+    expect(visibleWildCards()).toEqual([]);
+    client.updatePlayerID(null);
+    expect(visibleWildCards()).toEqual([]);
+
+    client.updatePlayerID('0');
+    client.moves.endActionTurn();
+    expect(state().G.table.round).toBe(1);
+    expect(state().ctx.currentPlayer).toBe('1');
+    expect(visibleWildCards()).toEqual([]);
+    expect(RuleSelector.canIgnoreFirstWorkerRequirement(state().G.rules, '0')).toBe(!marked);
+    expect(RuleSelector.canIgnoreFirstWorkerRequirement(state().G.rules, '1')).toBe(true);
+    client.updatePlayerID('1');
+    expect(visibleWildCards()).toEqual(marked ? [WILD_1] : []);
+
+    client.moves.endActionTurn();
+    expect(state().G.table.round).toBe(2);
+    expect(visibleWildCards()).toEqual([]);
+    expect(state().G.rules.event?.ignoreFirstWorkerRequirement).toBeUndefined();
     client.stop();
   });
 

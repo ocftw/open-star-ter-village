@@ -1,7 +1,7 @@
 import { PlayerID } from 'boardgame.io';
 import { JobCard } from '@/game/card';
 import { GameState } from '@/game/store/store';
-import { Rule, RuleSelector } from '@/game/store/slice/rule';
+import { Rule, RuleMutator, RuleSelector } from '@/game/store/slice/rule';
 import { JobSlots } from '@/game/store/slice/jobSlots';
 import { DeckMutator, DeckSelector } from '@/game/store/slice/deck';
 import { GameHookHandler } from './type';
@@ -14,7 +14,8 @@ import { GameHookHandler } from './type';
  * fill any profession the target project requires (the move names it through
  * assignedJobName). It is engine-made and never part of the job deck: it is
  * removed (not discarded) when played, rejected by removeAndRefillJobs /
- * discardExcessJobCards, stripped at turn end, and excluded from every refill count.
+ * discardExcessJobCards, and excluded from every refill count. Ending the turn
+ * with the card still in the market removes it and forfeits the entitlement.
  */
 export const SLASH_WILD_JOB_NAME = '斜槓青年';
 export const SLASH_WILD_JOB_ID_PREFIX = 'slash-';
@@ -48,8 +49,8 @@ export const getRealJobCards = (jobSlots: JobSlots): JobCard[] =>
 export const getNumRealJobSlots = (jobSlots: JobSlots): number => getRealJobCards(jobSlots).length;
 
 /**
- * Whether `jobCard` may be used by `playerID` as a wild card right now:
- * marked game, the player's own synthetic card, entitlement unspent.
+ * Rule-level eligibility for the player's own synthetic card. Use
+ * isLiveSlashWildJobCard when checking turn and round as well.
  */
 export const canPlaySlashWildJobCard = (rules: Rule, playerID: PlayerID, jobCard: JobCard): boolean =>
   RuleSelector.isSlashWildJobCardEnabled(rules) &&
@@ -57,10 +58,19 @@ export const canPlaySlashWildJobCard = (rules: Rule, playerID: PlayerID, jobCard
   getSlashWildJobCardOwner(jobCard) === playerID &&
   RuleSelector.canIgnoreFirstWorkerRequirement(rules, playerID);
 
+/** Only the current player's card for this round can be live. */
+export const isLiveSlashWildJobCard = (
+  G: Pick<GameState, 'rules' | 'table'>,
+  currentPlayer: PlayerID,
+  card: JobCard,
+): boolean =>
+  card.id === getSlashWildJobCardId(currentPlayer, G.table.round) &&
+  canPlaySlashWildJobCard(G.rules, currentPlayer, card);
+
 /**
  * Whether playing `jobCard` onto a project with `requirementNames` needs a
- * player-chosen assignedJobName. UI pickers and validators share this.
- *  - marked games: only for the wild card;
+ * player-chosen assignedJobName based on the rules alone.
+ *  - marked games: only for the player's own wild card, subject to its turn and round;
  *  - legacy games: a mismatched ordinary card while the entitlement is unspent.
  */
 export const requiresAssignedJobName = (
@@ -80,24 +90,35 @@ export const requiresAssignedJobName = (
 
 /** Turn-begin hook: deal the entitled current player their wild card. */
 export const offerSlashWildJobCard: GameHookHandler = ({ G, ctx }) => {
-  if (!RuleSelector.isSlashWildJobCardEnabled(G.rules)) return;
+  const { currentPlayer } = ctx;
+  if (G.table.jobSlots.some(isSlashWildJobCard)) {
+    G.table.jobSlots = G.table.jobSlots.filter(
+      (card) => !isSlashWildJobCard(card) || isLiveSlashWildJobCard(G, currentPlayer, card),
+    );
+  }
   if (G.table.eventSlot?.function_name !== SLASH_EVENT_FUNCTION_NAME) return;
-  if (!RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, ctx.currentPlayer)) return;
-  if (G.table.jobSlots.some(isSlashWildJobCard)) return;
-  G.table.jobSlots.unshift({
-    id: getSlashWildJobCardId(ctx.currentPlayer, G.table.round),
+  const card = {
+    id: getSlashWildJobCardId(currentPlayer, G.table.round),
     name: SLASH_WILD_JOB_NAME,
-  });
+  };
+  if (isLiveSlashWildJobCard(G, currentPlayer, card) && !G.table.jobSlots.some(isSlashWildJobCard)) {
+    G.table.jobSlots.unshift(card);
+  }
 };
 
 /**
  * Remove every synthetic card from the market and (defensively) the job deck.
- * Runs for marked and unmarked games alike: an unmarked game never deals one,
- * so any found there is stray state and is dropped.
+ * The current player forfeits the entitlement if their live card was unused.
  */
-export const stripSlashWildJobCards = (G: Pick<GameState, 'table' | 'decks'>): void => {
+export const stripSlashWildJobCards = (
+  G: Pick<GameState, 'rules' | 'table' | 'decks'>,
+  currentPlayer: PlayerID,
+): void => {
   const keep = (card: JobCard) => !isSlashWildJobCard(card);
   if (G.table.jobSlots.some(isSlashWildJobCard)) {
+    if (G.table.jobSlots.some((card) => isLiveSlashWildJobCard(G, currentPlayer, card))) {
+      RuleMutator.consumeIgnoreFirstWorkerRequirement(G.rules, currentPlayer);
+    }
     G.table.jobSlots = G.table.jobSlots.filter(keep);
   }
   if (G.decks.jobs.drawPile.some(isSlashWildJobCard)) {

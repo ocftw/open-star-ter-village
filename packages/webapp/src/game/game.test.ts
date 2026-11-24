@@ -521,7 +521,7 @@ describe('加班 Overtime token — regular moves with { useOvertime }', () => {
     const jobCard = makeJobCard('j1', '工程師');
     JobSlotsMutator.addJobCards(ctx.G.table.jobSlots, [jobCard]);
     DeckMutator.initialize(ctx.G.decks.jobs, [makeJobCard('d1', '美術設計')]);
-    return { ...ctx, playerID: 'alice' };
+    return { ...ctx, playerID: 'alice', ctx: { currentPlayer: 'alice' } };
   };
 
   const occupyOneApAction = (

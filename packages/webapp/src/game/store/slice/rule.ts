@@ -71,8 +71,8 @@ export interface Rule {
     extraOwnerVictoryPoints?: number;
     /**
      * 斜槓青年 per-player entitlement, granted at the event's start and cleared at its end.
-     * Marked games (slashWildJobCard): one use of the synthetic wild job card, consumed only
-     * when that card is played. Legacy games: the first createProject/recruit ignores job matching.
+     * Marked games (slashWildJobCard): one use of the synthetic wild job card, forfeited
+     * if unused at turn end. Legacy games: the first createProject/recruit ignores job matching.
      */
     ignoreFirstWorkerRequirement?: Record<string, boolean>;
   },
