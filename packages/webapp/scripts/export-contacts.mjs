@@ -1,4 +1,7 @@
 import { Client } from 'pg';
+import contactCsv from './contactCsv.cjs';
+
+const { csvCell } = contactCsv;
 
 if (!process.env.DATABASE_URL) {
   console.error('Set DATABASE_URL to export member contacts.');
@@ -13,7 +16,7 @@ if (!process.env.DATABASE_URL) {
       order by contact_email
     `);
     process.stdout.write('contact_email\n');
-    for (const { contact_email } of rows) process.stdout.write(`"${contact_email.replaceAll('"', '""')}"\n`);
+    for (const { contact_email } of rows) process.stdout.write(`${csvCell(contact_email)}\n`);
   } catch {
     console.error('Could not export member contacts.');
     process.exitCode = 1;

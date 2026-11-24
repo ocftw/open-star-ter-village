@@ -426,8 +426,9 @@ and guests can still create and join rooms.
 
 Run `pnpm --filter @open-star-ter-village/webapp export-contacts` with
 `DATABASE_URL` set after migrations have run. It writes one CSV column,
-`contact_email`, with opted-in addresses to stdout. When opening the CSV in a
-spreadsheet, use its import dialog and set the `contact_email` column to text.
+`contact_email`, with opted-in addresses to stdout. A cell that starts with
+`=`, `+`, `-`, `@`, a tab or a carriage return gets a leading `'` so spreadsheets
+keep it as text; still import the `contact_email` column as text.
 
 ## Coding Constraints
 
