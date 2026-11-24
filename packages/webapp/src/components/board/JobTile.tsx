@@ -37,16 +37,17 @@ export default function JobTile({
     'data-selected': selected || undefined,
     'data-visual-state': state,
   };
-  const content = (
+  const nameLabel = <span className="job-tile-name">{name}</span>;
+  const content = wild ? (
+    <span className="job-tile-face" data-testid={`job-face-${id}`}>
+      <span className="job-char job-char--slash" aria-hidden="true">斜</span>
+      {nameLabel}
+      <span className="job-tile-sub">可作為任一人力使用</span>
+    </span>
+  ) : (
     <>
-      {wild && (
-        <div className="job-char job-char--slash" aria-hidden="true">
-          斜
-        </div>
-      )}
       {meta && <CharacterAvatar role={meta.role} />}
-      <span className="job-tile-name">{name}</span>
-      {wild && <span className="job-tile-sub">可作為任一人力使用</span>}
+      {nameLabel}
     </>
   );
 
