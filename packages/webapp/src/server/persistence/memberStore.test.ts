@@ -305,6 +305,30 @@ describe('MemberPostgresStore: health and lifecycle (DB-A5, DB-C6)', () => {
 });
 
 describe('MemberPostgresStore: host changes and wipe (DB-P4, DB-A3)', () => {
+  it.each(['next move', 'room wipe and shutdown', 'background retry'])(
+    'retries a failed guest succession delete on %s',
+    async (retry) => {
+      const { store, sql } = makeStore();
+      await store.connect();
+      await asMember('member-1', () => create(store, 'm1'));
+      sql.failAll = true;
+      await store.setHost('m1', undefined);
+      expect(sql.rows.has('m1')).toBe(true);
+      expect(store.status()).toBe('degraded');
+      if (retry === 'room wipe and shutdown') {
+        await store.wipe('m1');
+        await expect(store.fetch('m1', { state: true })).resolves.toEqual({});
+        await expect(store.listMatches()).resolves.not.toContain('m1');
+      }
+      sql.failAll = false;
+      if (retry === 'next move') await store.setState('m1', makeState(1));
+      if (retry === 'background retry') await wait(30);
+      if (retry === 'room wipe and shutdown') await expect(store.flushAndClose()).resolves.toBe(true);
+      expect(sql.rows.has('m1')).toBe(false);
+      await store.flushAndClose();
+    },
+  );
+
   it('drops the row when a guest takes over and writes one when a member does', async () => {
     const { store, sql } = makeStore();
     await store.connect();

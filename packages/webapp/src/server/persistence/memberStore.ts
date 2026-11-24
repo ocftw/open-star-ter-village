@@ -59,6 +59,11 @@ interface Entry {
   failures: number;
 }
 
+interface GuestRowRemoval {
+  deleting?: Promise<void>;
+  retryScheduled?: boolean;
+}
+
 /** A mid-game write failure is reported to Sentry when it repeats (2nd, then every 20th). */
 const reportToSentry = (failures: number) => failures === 2 || (failures > 2 && failures % 20 === 0);
 
@@ -88,6 +93,7 @@ export class MemberPostgresStore extends PostgresStore {
   private readonly sql: MatchesSql;
   private readonly entries = new Map<string, Entry>();
   private readonly restoring = new Map<string, Promise<Entry | undefined>>();
+  private readonly guestRowRemovals = new Map<string, GuestRowRemoval>();
   private readonly opts: Required<Omit<MemberStoreOptions, 'sql' | 'sequelizeOptions' | 'databaseUrl'>>;
   private ready = false;
   private lastOperationFailed = false;
@@ -148,7 +154,7 @@ export class MemberPostgresStore extends PostgresStore {
   }
 
   status(): MemberStoreStatus {
-    if (!this.ready || this.lastOperationFailed) return 'degraded';
+    if (!this.ready || this.lastOperationFailed || this.guestRowRemovals.size > 0) return 'degraded';
     for (const entry of Array.from(this.entries.values())) {
       if (entry.hostUserId && entry.dirty) return 'degraded';
     }
@@ -175,8 +181,8 @@ export class MemberPostgresStore extends PostgresStore {
 
   /**
    * Shutdown: stop background timers, finish in-flight writes and write every
-   * pending latest state once, then close the pool. Resolves false if any
-   * member match is still unsaved.
+   * pending latest state once. Retry pending guest row deletions before
+   * closing the pool.
    */
   async flushAndClose(): Promise<boolean> {
     this.closed = true;
@@ -188,8 +194,14 @@ export class MemberPostgresStore extends PostgresStore {
       entry.retryTimer = undefined;
     }
     const pending = Array.from(this.entries).filter(([, e]) => e.hostUserId && (e.dirty || e.writing));
-    await Promise.all(pending.map(([id]) => this.persist(id, { endGameRetries: false }).catch(() => undefined)));
-    const clean = this.unsavedMatchIDs().length === 0;
+    await Promise.all([
+      ...pending.map(([id]) => this.persist(id, { endGameRetries: false }).catch(() => undefined)),
+      ...Array.from(this.guestRowRemovals, async ([id, removal]) => {
+        await removal.deleting;
+        if (this.guestRowRemovals.has(id)) await this.removeGuestRow(id);
+      }),
+    ]);
+    const clean = this.unsavedMatchIDs().length === 0 && this.guestRowRemovals.size === 0;
     await this.sql.close().catch(() => undefined);
     return clean;
   }
@@ -276,7 +288,9 @@ export class MemberPostgresStore extends PostgresStore {
           gameVersion: GAME_VERSION,
           resumeWindowHours: this.opts.resumeWindowHours,
         });
-        restorable.forEach((id) => ids.add(id));
+        restorable.forEach((id) => {
+          if (!this.guestRowRemovals.has(id)) ids.add(id);
+        });
       } catch (error) {
         this.failed('list', undefined, error);
       }
@@ -293,21 +307,46 @@ export class MemberPostgresStore extends PostgresStore {
   async setHost(matchID: string, hostUserId: string | undefined): Promise<void> {
     const entry = this.entries.get(matchID) ?? (await this.restore(matchID));
     if (!entry || entry.hostUserId === hostUserId) return;
-    const wasMember = Boolean(entry.hostUserId);
-    entry.hostUserId = hostUserId;
     if (hostUserId) {
+      const removal = this.guestRowRemovals.get(matchID);
+      if (removal) {
+        await removal.deleting;
+        this.guestRowRemovals.delete(matchID);
+      }
+      entry.hostUserId = hostUserId;
       await this.persist(matchID);
       return;
     }
+    entry.hostUserId = undefined;
     entry.dirty = false;
     entry.endGameUnsaved = false;
-    if (!wasMember || !this.ready) return;
-    try {
-      await entry.writing?.catch(() => undefined);
-      await this.sql.deleteRow(matchID);
-    } catch (error) {
-      this.failed('set-host', matchID, error);
-    }
+    this.guestRowRemovals.set(matchID, {});
+    await this.removeGuestRow(matchID, entry.writing);
+  }
+
+  private removeGuestRow(matchID: string, previousWrite?: Promise<void>): Promise<void> {
+    const removal = this.guestRowRemovals.get(matchID);
+    if (!removal) return Promise.resolve();
+    removal.deleting ??= (async () => {
+      await previousWrite?.catch(() => undefined);
+      try {
+        await this.sql.deleteRow(matchID);
+        this.guestRowRemovals.delete(matchID);
+        this.lastOperationFailed = false;
+      } catch (error) {
+        this.failed('set-host', matchID, error);
+        if (!removal.retryScheduled && !this.closed) {
+          removal.retryScheduled = true;
+          this.schedule(() => {
+            removal.retryScheduled = false;
+            if (this.guestRowRemovals.get(matchID) === removal) void this.removeGuestRow(matchID);
+          }, this.opts.reconnectMs);
+        }
+      }
+    })().finally(() => {
+      removal.deleting = undefined;
+    });
+    return removal.deleting;
   }
 
   // ---- writes ------------------------------------------------------------
@@ -320,7 +359,7 @@ export class MemberPostgresStore extends PostgresStore {
    */
   private persist(matchID: string, { endGameRetries = true } = {}): Promise<void> {
     const entry = this.entries.get(matchID);
-    if (!entry?.hostUserId) return Promise.resolve();
+    if (!entry?.hostUserId) return this.removeGuestRow(matchID);
     entry.dirty = true;
     if (!entry.writing) {
       entry.writing = this.drain(matchID, entry, endGameRetries).finally(() => {
@@ -348,7 +387,7 @@ export class MemberPostgresStore extends PostgresStore {
       } catch (error) {
         if (error instanceof StaleStateError) {
           // Memory holds a state PostgreSQL refused; reload from the database next time.
-          this.entries.delete(matchID);
+          if (entry.hostUserId) this.entries.delete(matchID);
           if (entry.retryTimer) clearTimeout(entry.retryTimer);
           throw error;
         }
@@ -436,6 +475,7 @@ export class MemberPostgresStore extends PostgresStore {
 
   /** Load a member match from PostgreSQL on first use after a restart. */
   private restore(matchID: string): Promise<Entry | undefined> {
+    if (this.guestRowRemovals.has(matchID)) return Promise.resolve(undefined);
     if (!this.ready) return Promise.reject(new MatchUnavailableError());
     const inFlight = this.restoring.get(matchID);
     if (inFlight) return inFlight;

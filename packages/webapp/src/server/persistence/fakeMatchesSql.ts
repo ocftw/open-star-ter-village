@@ -104,6 +104,7 @@ export class FakeMatchesSql implements MatchesSql {
   }
 
   async deleteRow(matchID: string): Promise<void> {
+    this.maybeFail();
     this.rows.delete(matchID);
   }
 
