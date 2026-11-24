@@ -92,10 +92,9 @@ try {
       await slashPage.getByRole('radio', { name: /Alice · Player 1/i }).check();
       await slashPage.getByTestId('dev-tools-close').click();
       await slashPage.getByTestId('action-createProject').click();
-      // The natural three-player seed produces this legal pair in round four.
       await slashPage.getByTestId('hand-card-d15rtg').click();
-      await slashPage.getByTestId('job-card-cehihv').click();
-      const picker = slashPage.getByTestId('start-slash-picker');
+      await slashPage.getByTestId('job-market').locator('[data-wild="true"]').click();
+      const picker = slashPage.getByTestId('start-wild-picker');
       await picker.waitFor({ timeout: 15000 });
       await slashPage.screenshot({ path: `${output}/${width}-slash-picker.png`, animations: 'disabled' });
       await picker.getByRole('button', { name: '工程師' }).click();
