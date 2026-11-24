@@ -5,6 +5,7 @@
  */
 import { test, expect, type Page } from '@playwright/test';
 import { dismissRoundStartOverlay } from './devTools';
+import { openWildMatch } from './slashWildMatch';
 
 type LogEntry = { t: number; kind: string; id: string; phase: string | null; confirmed: boolean };
 
@@ -179,3 +180,45 @@ for (const [width, height] of [[1280, 832], [390, 844]] as const) {
     });
   });
 }
+
+test('refill deals only real cards while 斜槓青年 stays first until the turn ends', async ({ page, request }) => {
+  await openWildMatch(page, request);
+  const market = page.getByTestId('job-market');
+  const count = page.getByTestId('job-market-count');
+  const wild = market.locator('[data-wild="true"]');
+  await expect(wild).toBeVisible();
+  const [wildId, ...realIds] = await cardIds(page);
+  expect(wildId).toMatch(/^slash-0-/);
+  expect(realIds).toHaveLength(8);
+  await observe(page);
+
+  await page.getByTestId('refill-jobs').click();
+  await expect(market.getByTestId(`job-remove-${wildId}`)).toHaveCount(0);
+  await expect(market.getByTestId(/^job-remove-/)).toHaveCount(8);
+  for (const id of realIds.slice(0, 2)) await market.getByTestId(`job-remove-${id}`).click();
+  await expect(wild).toHaveAttribute('data-visual-state', 'change');
+  await markConfirmed(page);
+  await market.getByTestId('ca-confirm').click();
+
+  await expect(page.getByTestId('score-popup')).toHaveText('影響力+1');
+  await expect(market).toHaveAttribute('data-refill-phase', 'dealing');
+  await expect(count).toHaveAttribute('data-count', '8');
+  await expect(wild).not.toHaveAttribute('data-motion', /.*/);
+  expect((await rowIds(page))[0]).toBe(wildId);
+  await expect(page.getByText('已更換成新人力')).toBeVisible();
+
+  const final = await cardIds(page);
+  expect(final).toHaveLength(9);
+  expect(final.slice(0, 7)).toEqual([wildId, ...realIds.slice(2)]);
+  const entries = await log(page);
+  expect(entries.filter((entry) => entry.kind === 'new-card').map(({ id }) => id))
+    .toEqual(final.slice(7).map((id) => `job-card-${id}`));
+
+  await page.getByTestId('end-turn').click();
+  await page.getByTestId('ca-confirm').click();
+  await expect(wild).toHaveCount(0);
+  expect(await rowIds(page)).toEqual(final.slice(1));
+  await expect(count).toHaveAttribute('data-count', '8');
+  await expect(market).not.toHaveAttribute('data-refill-phase', /.*/);
+  expect((await log(page)).slice(entries.length)).toEqual([]);
+});
