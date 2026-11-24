@@ -1,3 +1,4 @@
+import { cookies } from 'next/headers';
 import NextAuth, { type Session } from 'next-auth';
 import PostgresAdapter from '@auth/pg-adapter';
 import type { Pool } from 'pg';
@@ -5,6 +6,8 @@ import { memberDatabase, memberFeaturesEnabled } from './database';
 import { memberProviders } from './providers';
 
 export const SESSION_MAX_AGE_SECONDS = 30 * 24 * 60 * 60;
+export const SESSION_COOKIE_NAME = 'authjs.session-token';
+export const SECURE_SESSION_COOKIE_NAME = `__Secure-${SESSION_COOKIE_NAME}`;
 
 export function memberAdapter(db: Pool): ReturnType<typeof PostgresAdapter> {
   const adapter = PostgresAdapter(db);
@@ -55,5 +58,9 @@ declare module 'next-auth' {
 
 export async function currentMember(): Promise<Session['user'] | undefined> {
   if (!memberFeaturesEnabled() || !process.env.AUTH_SECRET) return undefined;
+  const requestCookies = cookies();
+  if (!requestCookies.get(SESSION_COOKIE_NAME)?.value && !requestCookies.get(SECURE_SESSION_COOKIE_NAME)?.value) {
+    return undefined;
+  }
   return (await auth())?.user;
 }

@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
-import { SESSION_MAX_AGE_SECONDS } from '@/server/members/auth';
+import { SECURE_SESSION_COOKIE_NAME, SESSION_COOKIE_NAME, SESSION_MAX_AGE_SECONDS } from '@/server/members/auth';
 import { memberDatabase, memberFeaturesEnabled } from '@/server/members/database';
 import { isTestLoginEnabled } from '@/server/members/providers';
 
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
   const response = NextResponse.redirect(new URL('/onboarding', origin), 303);
   // Match the Auth.js database-session cookie for the request protocol.
   const secure = origin.protocol === 'https:';
-  response.cookies.set(`${secure ? '__Secure-' : ''}authjs.session-token`, token, {
+  response.cookies.set(secure ? SECURE_SESSION_COOKIE_NAME : SESSION_COOKIE_NAME, token, {
     expires, httpOnly: true, sameSite: 'lax', path: '/', secure,
   });
   return response;

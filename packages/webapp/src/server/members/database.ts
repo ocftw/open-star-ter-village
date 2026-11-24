@@ -30,7 +30,12 @@ export async function memberDatabase(): Promise<Pool> {
   const { databaseUrl } = readPersistenceConfig(process.env);
   if (!databaseUrl) throw new Error('Member features are unavailable');
   if (!pool) {
-    pool = new Pool({ connectionString: databaseUrl, connectionTimeoutMillis: 2_000 });
+    pool = new Pool({
+      connectionString: databaseUrl,
+      connectionTimeoutMillis: 2_000,
+      statement_timeout: 2_000,
+      query_timeout: 2_500,
+    });
     pool.on('error', () => console.warn('Member database connection lost'));
   }
   schemaReady ??= migrate(pool).catch(() => {
