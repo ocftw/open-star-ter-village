@@ -4,9 +4,8 @@ import type { JobCard, ProjectCard } from '@/game';
 import CloseIcon from '@/components/design/CloseIcon';
 import JobTile from './JobTile';
 import ProjectCardFace from './ProjectCardFace';
-import { slashTargetNames } from './startProjectOrder';
 
-function SlashPicker({ project, assignment, onAssign }: {
+function ProfessionPicker({ project, assignment, onAssign }: {
   project: ProjectCard;
   assignment: string | null;
   onAssign: (name: string) => void;
@@ -19,10 +18,10 @@ function SlashPicker({ project, assignment, onAssign }: {
       <Button variant="sec" data-testid="start-assign" onClick={() => setOpen(true)}>
         {assignment ? `已指派：${assignment}` : '選擇指派人力'}
       </Button>
-      <Modal open={open} onClose={close} ariaLabel={title} dataTestid="start-slash-picker">
+      <Modal open={open} onClose={close} ariaLabel={title} dataTestid="start-wild-picker">
         <h2>{title}</h2>
         <div className="start-project__targets">
-          {slashTargetNames(project).map((name) => (
+          {Object.keys(project.requirements).map((name) => (
             <Button key={name} aria-pressed={assignment === name} variant="sec" onClick={() => {
               onAssign(name);
               close();
@@ -38,12 +37,12 @@ function SlashPicker({ project, assignment, onAssign }: {
 }
 
 export default function StartProjectFlow({
-  cost, project, job, slash, assignment, onAssign, onClearProject, onClearJob, hand, market, actions,
+  cost, project, job, needsAssignment, assignment, onAssign, onClearProject, onClearJob, hand, market, actions,
 }: {
   cost: number;
   project?: ProjectCard;
   job?: JobCard;
-  slash: boolean;
+  needsAssignment: boolean;
   assignment: string | null;
   onAssign: (name: string) => void;
   onClearProject: () => void;
@@ -88,8 +87,8 @@ export default function StartProjectFlow({
           ) : <span>點選下方人力卡</span>}
         </div>
       </div>
-      {slash && project && job && (
-        <SlashPicker key={JSON.stringify([project.id, job.id])} project={project} assignment={assignment} onAssign={onAssign} />
+      {needsAssignment && project && job && (
+        <ProfessionPicker key={JSON.stringify([project.id, job.id])} project={project} assignment={assignment} onAssign={onAssign} />
       )}
       {hand}
       {market}

@@ -16,18 +16,26 @@ import { RuleMutator } from '@/game/store/slice/rule';
 import { ActionSlotMutator } from '@/game/store/slice/actionSlot';
 import { ProjectCard } from '@/game/card';
 import { makeStore } from '@/lib/store';
-import { UserActionMoves } from '@/lib/reducers/actionStepSlice';
+import { getCurrentAction, UserActionMoves } from '@/lib/reducers/actionStepSlice';
+import { useAppSelector } from '@/lib/hooks';
 import ContextAction from './ContextAction';
 import HandPanel from './HandPanel';
 import JobMarket from './JobMarket';
 import { RefillFlowProvider } from './RefillFlow';
 import BoardProjectSlot from './BoardProjectSlot';
 import MobileSheet from './MobileSheet';
+import { StartProjectContext, useStartProject } from './useStartProject';
 
 const card: ProjectCard = {
   id: 'hand-project', name: '測試專案', type: '開放政府', difficulty: 1,
   description: '', requirements: { 工程師: 8, 美術設計: 4 },
 };
+
+function StartProjectTestProvider({ gameContext, children }: { gameContext: GameContext; children: React.ReactNode }) {
+  const action = useAppSelector(getCurrentAction);
+  const start = useStartProject(gameContext, action === UserActionMoves.CreateProject);
+  return <StartProjectContext.Provider value={start}>{children}</StartProjectContext.Provider>;
+}
 
 function setup(change?: (G: GameState) => void, playerID: string | null = '0') {
   const G = GameStore.initialState();
@@ -58,12 +66,14 @@ function setup(change?: (G: GameState) => void, playerID: string | null = '0') {
   const store = makeStore();
   const view = render(
     <Provider store={store}>
-      <ContextAction gameContext={gameContext} />
-      {playerID === '0' && <>
-        <HandPanel gameContext={gameContext} />
-        <JobMarket gameContext={gameContext} idle discardActive={false} />
-        {slots.map((slot) => <BoardProjectSlot key={slot.id} slot={slot} playerID="0" idle={false} />)}
-      </>}
+      <StartProjectTestProvider gameContext={gameContext}>
+        <ContextAction gameContext={gameContext} />
+        {playerID === '0' && <>
+          <HandPanel gameContext={gameContext} />
+          <JobMarket gameContext={gameContext} idle discardActive={false} />
+          {slots.map((slot) => <BoardProjectSlot key={slot.id} slot={slot} playerID="0" idle={false} />)}
+        </>}
+      </StartProjectTestProvider>
     </Provider>,
   );
   return { ...view, G, moves, store, slots };
@@ -182,11 +192,14 @@ describe('斜槓青年 wild job card (marked game)', () => {
     const { moves } = setup(marked(true));
     fireEvent.click(actionButton(UserActionMoves.CreateProject));
     fireEvent.click(screen.getByTestId('hand-card-hand-project'));
-    fireEvent.click(screen.getByTestId('job-card-engineer')); // ordinary mismatched (法務專家)
-    expect(screen.queryByTestId('profession-target-工程師')).toBeNull();
+    const mismatch = screen.getByTestId('job-card-engineer') as HTMLButtonElement;
+    expect(mismatch.disabled).toBe(true);
+    fireEvent.click(mismatch);
+    expect(screen.queryByTestId('start-wild-picker')).toBeNull();
 
     fireEvent.click(screen.getByTestId('job-card-slash-0-1'));
-    fireEvent.click(screen.getByTestId('profession-target-美術設計'));
+    const picker = within(screen.getByTestId('start-wild-picker'));
+    fireEvent.click(picker.getByRole('button', { name: '美術設計' }));
     expect(confirmButton().disabled).toBe(false);
     fireEvent.click(confirmButton());
     expect(moves.createProject).toHaveBeenCalledWith('hand-project', 'slash-0-1', '美術設計', undefined);

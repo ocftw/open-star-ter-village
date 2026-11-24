@@ -4,6 +4,7 @@ import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import type { GameContext } from '@/components/GameContextHelpers';
 import type { ProjectCard } from '@/game/card';
+import { SLASH_WILD_JOB_NAME } from '@/game/core/slashWildJob';
 import GameStore from '@/game/store/store';
 import { PlayersMutator } from '@/game/store/slice/players';
 import { ProjectBoardMutator } from '@/game/store/slice/projectBoard';
@@ -26,7 +27,7 @@ const jobs = [
   { id: 'J3', name: '法務專家' }, { id: 'J4', name: '美術設計' },
 ];
 
-function makeGame(slash: boolean) {
+function makeGame(event: 'legacy' | 'wild' | false) {
   const G = GameStore.initialState();
   PlayersMutator.initialize(G.players, ['1', '0']);
   PlayersMutator.resetActionTokens(G.players, '0', 4);
@@ -35,7 +36,11 @@ function makeGame(slash: boolean) {
   PlayersMutator.addProjects(G.players, '1', [project('OTHER', '工程師')]);
   ProjectBoardMutator.initialize(G.table.projectBoard, 8);
   G.table.jobSlots = [...jobs];
-  if (slash) RuleMutator.setEventIgnoreFirstWorkerRequirement(G.rules, ['0'], true);
+  if (event) RuleMutator.setEventIgnoreFirstWorkerRequirement(G.rules, ['0'], true);
+  if (event === 'wild') {
+    RuleMutator.enableSlashWildJobCard(G.rules);
+    G.table.jobSlots.unshift({ id: 'slash-0-1', name: SLASH_WILD_JOB_NAME });
+  }
   return G;
 }
 
@@ -51,7 +56,7 @@ function Table({ gameContext }: { gameContext: GameContext }) {
   );
 }
 
-function setup(slash = false) {
+function setup(event: Parameters<typeof makeGame>[0] = false) {
   const store = makeStore();
   const createProject = jest.fn();
   const tree = (G: ReturnType<typeof makeGame>) => (
@@ -60,7 +65,7 @@ function setup(slash = false) {
         moves: { createProject } } as unknown as GameContext} />
     </Provider>
   );
-  const G = makeGame(slash);
+  const G = makeGame(event);
   const view = render(tree(G));
   tap('action-createProject');
   return { createProject, update: (state: ReturnType<typeof makeGame>) => view.rerender(tree(state)) };
@@ -69,30 +74,14 @@ function setup(slash = false) {
 const tap = (id: string) => fireEvent.click(screen.getByTestId(id));
 const confirm = () => screen.getByTestId('ca-confirm') as HTMLButtonElement;
 const ids = (prefix: 'job' | 'hand') => screen.getAllByTestId(new RegExp(`^${prefix}-card-`))
-  .map((node) => node.getAttribute('data-testid')?.split('-').at(-1));
+  .map((node) => node.getAttribute('data-testid')?.slice(`${prefix}-card-`.length));
 const projectSlot = () => screen.getByTestId('start-project-project-slot');
 const jobSlot = () => screen.getByTestId('start-project-job-slot');
-const picker = () => within(screen.getByTestId('start-slash-picker'));
-let showModal: PropertyDescriptor | undefined;
-let close: PropertyDescriptor | undefined;
-beforeEach(() => {
-  jest.useFakeTimers();
-  showModal = Object.getOwnPropertyDescriptor(HTMLDialogElement.prototype, 'showModal');
-  close = Object.getOwnPropertyDescriptor(HTMLDialogElement.prototype, 'close');
-  Object.defineProperty(HTMLDialogElement.prototype, 'showModal', {
-    configurable: true, value(this: HTMLDialogElement) { this.open = true; },
-  });
-  Object.defineProperty(HTMLDialogElement.prototype, 'close', {
-    configurable: true, value(this: HTMLDialogElement) { this.open = false; },
-  });
-});
+const picker = () => within(screen.getByTestId('start-wild-picker'));
+beforeEach(() => jest.useFakeTimers());
 afterEach(() => {
   jest.clearAllTimers();
   jest.useRealTimers();
-  for (const [name, descriptor] of [['showModal', showModal], ['close', close]] as const) {
-    if (descriptor) Object.defineProperty(HTMLDialogElement.prototype, name, descriptor);
-    else Reflect.deleteProperty(HTMLDialogElement.prototype, name);
-  }
 });
 
 it('opens empty nonmodal slots and filters both rails, with removable selections', () => {
@@ -127,14 +116,39 @@ it('opens empty nonmodal slots and filters both rails, with removable selections
   expect(ids('job')).toEqual(['J1', 'J2', 'J3', 'J4']);
 });
 
-it('replaces the job, clears the assignment, and reopens a canceled picker without losing the pair', () => {
-  const { createProject } = setup(true);
+it.each(['project', 'job'] as const)('opens the marked picker after both slots are filled (%s first)', (first) => {
+  setup('wild');
+  const pair = ['hand-card-P2', 'job-card-slash-0-1'];
+  if (first === 'job') pair.reverse();
+  tap(pair[0]);
+  expect(screen.queryByTestId('start-wild-picker')).toBeNull();
+  if (first === 'project') {
+    expect(ids('job')).toEqual(['J2', 'J4', 'slash-0-1', 'J1', 'J3']);
+    expect((screen.getByTestId('job-card-J3') as HTMLButtonElement).disabled).toBe(true);
+    tap('job-card-J3');
+    expect(jobSlot().textContent).toBe('點選下方人力卡');
+    tap('job-card-J2');
+    expect(confirm().disabled).toBe(false);
+    expect(screen.queryByTestId('start-wild-picker')).toBeNull();
+  }
+  tap(pair[1]);
+  expect(picker().getAllByRole('button').map((button) => button.textContent)).toEqual(['工程師', '美術設計', '取消']);
+  expect(confirm().disabled).toBe(true);
+  fireEvent.click(picker().getByRole('button', { name: '美術設計' }));
+  expect(confirm().disabled).toBe(false);
+  tap('hand-card-P3');
+  expect(picker().getByRole('button', { name: '美術設計' }).getAttribute('aria-pressed')).toBe('false');
+  expect(confirm().disabled).toBe(true);
+});
+
+it('legacy override clears the assignment on replacement and reopens a canceled picker without losing the pair', () => {
+  const { createProject } = setup('legacy');
   tap('job-card-J3');
   expect(ids('hand')).toEqual(['P1', 'P2', 'P3']);
   tap('hand-card-P2');
   expect(picker().getAllByRole('button').map((button) => button.textContent)).toEqual(['工程師', '美術設計', '取消']);
   fireEvent.click(picker().getByRole('button', { name: /^取消$/ }));
-  expect(screen.queryByTestId('start-slash-picker')).toBeNull();
+  expect(screen.queryByTestId('start-wild-picker')).toBeNull();
   expect(projectSlot().textContent).toContain('P2');
   expect(jobSlot().textContent).toContain('法務專家');
   expect(confirm().disabled).toBe(true);
@@ -151,14 +165,14 @@ it('replaces the job, clears the assignment, and reopens a canceled picker witho
   expect(createProject).toHaveBeenCalledWith('P2', 'J1', '美術設計', undefined);
 });
 
-it.each(['project', 'job'] as const)('loses only the later pick on entitlement loss (%s first)', (first) => {
-  const { update } = setup(true);
+it.each(['project', 'job'] as const)('legacy override loses only the later pick on entitlement loss (%s first)', (first) => {
+  const { update } = setup('legacy');
   const pair = ['hand-card-P2', 'job-card-J3'];
   if (first === 'job') pair.reverse();
   pair.forEach(tap);
-  expect(screen.getByTestId('start-slash-picker')).toBeTruthy();
+  expect(screen.getByTestId('start-wild-picker')).toBeTruthy();
   update(makeGame(false));
-  expect(screen.queryByTestId('start-slash-picker')).toBeNull();
+  expect(screen.queryByTestId('start-wild-picker')).toBeNull();
   expect(!!screen.queryByTestId('start-clear-project')).toBe(first === 'project');
   expect(!!screen.queryByTestId('start-clear-job')).toBe(first === 'job');
   expect(confirm().disabled).toBe(true);

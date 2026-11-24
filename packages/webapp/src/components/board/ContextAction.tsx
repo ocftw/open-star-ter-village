@@ -44,7 +44,7 @@ import { PlayersSelector } from '@/game/store/slice/players';
 import { useRefillFlow } from './RefillFlow';
 import StartProjectFlow from './StartProjectFlow';
 import { useStartProjectSession } from './useStartProject';
-import { isSlashPair } from './startProjectOrder';
+import { isWildPair } from './startProjectOrder';
 import { useStartProjectDeparture } from './useStartProjectDeparture';
 
 type ExtendedMoves = ActionMoves & { endActionTurn: () => void };
@@ -475,7 +475,7 @@ export default function ContextAction({
       cost={RuleSelector.getActionTokenCost(G.rules, 'createProject')}
       project={startProject}
       job={startJob}
-      slash={isSlashPair(G, playerID, { projectId: startProjectId ?? null, jobId: startJobId ?? null })}
+      needsAssignment={isWildPair(G, playerID, { projectId: startProjectId ?? null, jobId: startJobId ?? null })}
       assignment={selectionState.assignedJobName}
       onAssign={(name) => dispatch(setAssignedJobName(name))}
       onClearProject={() => {
