@@ -15,6 +15,7 @@ export default defineConfig({
     url: webURL,
     env: {
       PORT: webPort,
+      AUTH_TEST_LOGIN: '1',
     },
     reuseExistingServer: false,
     timeout: 120 * 1000,
