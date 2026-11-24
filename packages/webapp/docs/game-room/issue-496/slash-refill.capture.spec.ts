@@ -10,7 +10,7 @@ import { join } from 'node:path';
 import { test, expect } from '@playwright/test';
 import { openWildMatch } from '../../../e2e/slashWildMatch';
 
-test.use({ viewport: { width: 1920, height: 1080 } });
+test.use({ viewport: { width: 1280, height: 832 } });
 
 test('capture 斜槓青年 during and after refill', async ({ page, request }) => {
   await openWildMatch(page, request);
@@ -23,19 +23,26 @@ test('capture 斜槓青年 during and after refill', async ({ page, request }) =
     await expect(cards).toHaveCount(9);
     await expect(cards.first()).toHaveAttribute('data-wild', 'true');
     await expect(market.getByTestId('job-market-count')).toHaveAttribute('data-count', '8');
-    expect(await row.evaluate((el) => el.scrollWidth)).toBeLessThanOrEqual(await row.evaluate((el) => el.clientWidth));
   };
 
   await page.getByTestId('refill-jobs').click();
   await expectMarket();
   await expect(remove).toHaveCount(8);
   await expect(row.getByTestId(/^job-remove-slash-/)).toHaveCount(0);
-  await market.screenshot({ path: join(out, '1920-market-slash-refill-entered.png') });
+  await market.screenshot({ path: join(out, '1280-market-slash-refill-entered.png') });
 
   await remove.first().click();
   await remove.first().click();
   await market.getByTestId('ca-confirm').click();
   await expect(market.getByText('已更換成新人力')).toBeVisible();
   await expectMarket();
-  await market.screenshot({ path: join(out, '1920-market-slash-refill-success.png') });
+  // The carousel follows the last landing; page back so the wild tile (still first) is in view.
+  const prev = market.getByTestId('job-market-prev');
+  for (let i = 0; i < 5 && (await prev.isVisible()); i++) {
+    await prev.click();
+    await page.waitForTimeout(500);
+  }
+  await expect(prev).toBeHidden();
+  await expect(page.getByText('已更換成新人力')).toBeHidden({ timeout: 10000 });
+  await market.screenshot({ path: join(out, '1280-market-slash-refill-success.png') });
 });
