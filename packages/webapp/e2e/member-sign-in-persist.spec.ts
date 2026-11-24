@@ -107,6 +107,20 @@ test('member sign-in persists a played move across a game-server restart', async
     const optIn = page.getByRole('checkbox', { name: /send me ocf news and teaching materials/i });
     await expect(optIn).not.toBeChecked();
     const field = page.getByRole('textbox', { name: /nickname/i });
+    // A blank (whitespace-only) nickname is rejected and shown as an error.
+    await page.setViewportSize({ width: 390, height: 844 });
+    await field.fill('   ');
+    await page.getByRole('button', { name: /save and continue/i }).click();
+    await expect(page).toHaveURL(/\/onboarding\?error=nickname$/);
+    await expect(field).toHaveAttribute('aria-invalid', 'true');
+    const nicknameError = page.locator('#nickname-error');
+    await expect(nicknameError).toBeVisible();
+    await expect(nicknameError).toHaveClass(/member-error/);
+    const optInRow = (await page.locator('label.member-opt-in').boundingBox())!;
+    expect(optInRow.height).toBeGreaterThanOrEqual(44);
+    await expect(optIn).not.toBeChecked();
+    await evidence(page, 'onboarding-nickname-error.png');
+    await page.setViewportSize({ width: 1280, height: 900 });
     await field.fill(nickname);
     await evidence(page, 'onboarding.png');
     await page.getByRole('button', { name: /save and continue/i }).click();
@@ -153,7 +167,12 @@ test('member sign-in persists a played move across a game-server restart', async
 
     await guestPage.goto('/lobby');
     await guestPage.getByLabel(/player name/i).fill('訪客村長');
+    const guestTokenCalls: string[] = [];
+    guestPage.on('request', (request) => {
+      if (new URL(request.url()).pathname === '/api/game-token') guestTokenCalls.push(request.url());
+    });
     const guestMatch = await createMatch(guestPage);
+    expect(guestTokenCalls).toEqual([]);
     expect((await guestPage.request.get(`${games}/${guestMatch}`)).status()).toBe(200);
     const guestRows = await db.query('select 1 from matches where match_id = $1', [guestMatch]);
     expect(guestRows.rowCount).toBe(0);

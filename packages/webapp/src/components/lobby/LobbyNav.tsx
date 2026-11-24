@@ -8,8 +8,8 @@ export type MemberNotice = 'unavailable' | 'coming-soon';
 
 /** Shared with /sign-in so both pages say the same thing. */
 export const MEMBER_NOTICE_COPY: Record<MemberNotice, { full: string; compact: string }> = {
-  unavailable: { full: '會員功能暫停使用 · Member features are temporarily unavailable', compact: '會員暫停 · Members paused' },
-  'coming-soon': { full: '會員登入尚未開放 · Member sign-in is coming soon', compact: '會員即將開放 · Sign-in soon' },
+  unavailable: { full: '會員功能暫停使用 · Member features are temporarily unavailable', compact: '會員暫停' },
+  'coming-soon': { full: '會員登入尚未開放 · Member sign-in is coming soon', compact: '會員即將開放' },
 };
 
 export default function LobbyNav({

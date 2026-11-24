@@ -1,3 +1,4 @@
+import { join } from 'node:path';
 import { expect, test } from '@playwright/test';
 
 const DEV_URLS = [
@@ -30,4 +31,18 @@ test('the production build excludes test login even with AUTH_TEST_LOGIN enabled
   expect((await request.post('/api/test-login')).status()).toBe(404);
   await page.goto('/sign-in');
   await expect(page.getByRole('button', { name: /test sign in/i })).toHaveCount(0);
+});
+
+test('the 390px lobby header keeps the member notice compact', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/lobby');
+  const header = page.getByTestId('app-header');
+  await expect(header.locator('.member-notice-compact')).toBeVisible();
+  await expect(header.locator('.member-notice-full')).toBeHidden();
+  const box = (await header.boundingBox())!;
+  expect(box.height).toBeLessThanOrEqual(80);
+  const directory = process.env.MEMBER_EVIDENCE_DIR;
+  if (directory) {
+    await page.screenshot({ path: join(directory, 'lobby-header-mobile.png'), clip: { x: 0, y: 0, width: 390, height: 420 }, animations: 'disabled' });
+  }
 });
