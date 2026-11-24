@@ -1,5 +1,6 @@
 import type React from 'react';
 import { CharacterAvatar, getJobMetaByName } from '@/components/design';
+import { isSlashWildJobCard } from '@/game/core/slashWildJob';
 
 type JobTileProps = {
   id: string;
@@ -37,13 +38,15 @@ export default function JobTile({
   motionDelay,
   shrinking = false,
 }: JobTileProps) {
-  const meta = getJobMetaByName(name);
+  const wild = isSlashWildJobCard({ id, name });
+  const meta = wild ? undefined : getJobMetaByName(name);
   const state = visualState ?? (selected ? 'focused' : 'default');
   const showRemove = !!onRemove && state !== 'ghost' && !shrinking;
   const common = {
     className: 'job-tile',
     'data-testid': `job-card-${id}`,
     'data-job-name': name,
+    'data-wild': wild || undefined,
     'data-selected': selected || undefined,
     'data-visual-state': state,
     'data-motion': motion,
@@ -51,8 +54,14 @@ export default function JobTile({
   };
   const content = (
     <>
+      {wild && (
+        <div className="job-char job-char--slash" aria-hidden="true">
+          斜
+        </div>
+      )}
       {meta && <CharacterAvatar role={meta.role} />}
       <span className="job-tile-name">{name}</span>
+      {wild && <span className="job-tile-sub">可作為任一人力使用</span>}
     </>
   );
 

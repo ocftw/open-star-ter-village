@@ -140,3 +140,22 @@ describe('JobTile refill motion (#496)', () => {
     expect(screen.getByRole('group', { name: '工程師（已移除）' })).toBeTruthy();
   });
 });
+
+describe('JobTile 斜槓青年 wild tile', () => {
+  it('renders the wild avatar, name and 9px-class sub-label; ordinary tiles have none', () => {
+    render(<JobTile id="slash-0-1" name="斜槓青年" />);
+    const card = screen.getByTestId('job-card-slash-0-1');
+    expect(card.getAttribute('data-wild')).toBe('true');
+    expect(within(card).getByText('斜槓青年')).toBeTruthy();
+    expect(within(card).getByText('可作為任一人力使用').className).toBe('job-tile-sub');
+    expect(card.querySelector('.job-char--slash')?.textContent).toBe('斜');
+    expect(card.querySelector('img')).toBeNull();
+  });
+
+  it('does not mark an ordinary tile as wild', () => {
+    render(<JobTile id="job-1" name="工程師" />);
+    const card = screen.getByTestId('job-card-job-1');
+    expect(card.hasAttribute('data-wild')).toBe(false);
+    expect(screen.queryByText('可作為任一人力使用')).toBeNull();
+  });
+});
