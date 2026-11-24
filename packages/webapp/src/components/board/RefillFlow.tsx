@@ -144,8 +144,10 @@ export function RefillFlowProvider({ gameContext, children }: { gameContext: Gam
   useEffect(() => () => clearTimers(), [clearTimers]);
 
   const view = useMemo<RefillView | null>(
-    () => (state.phase !== 'idle' && state.pending ? buildRefillView(state.phase, state.pending, state.sequence, G, playerID) : null),
-    [state, G, playerID],
+    () => (state.phase !== 'idle' && state.pending
+      ? buildRefillView(state.phase, state.pending, state.sequence, G, playerID, ctx.currentPlayer)
+      : null),
+    [state, G, playerID, ctx.currentPlayer],
   );
   const closeToast = useCallback(() => setToastKey(null), []);
   const api = useMemo<RefillFlowApi>(

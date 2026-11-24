@@ -39,6 +39,7 @@ function makeGame(event: 'legacy' | 'wild' | false) {
   if (event) RuleMutator.setEventIgnoreFirstWorkerRequirement(G.rules, ['0'], true);
   if (event === 'wild') {
     RuleMutator.enableSlashWildJobCard(G.rules);
+    G.table.round = 1;
     G.table.jobSlots.unshift({ id: 'slash-0-1', name: SLASH_WILD_JOB_NAME });
   }
   return G;

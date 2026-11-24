@@ -1,5 +1,5 @@
 import type { ClientGameState as GameState } from '@/game/store/store';
-import { canPlaySlashWildJobCard, getRealJobCards } from '@/game/core/slashWildJob';
+import { getRealJobCards, isLiveSlashWildJobCard } from '@/game/core/slashWildJob';
 import { ActionSlotSelector } from '@/game/store/slice/actionSlot';
 import { PlayersSelector } from '@/game/store/slice/players';
 
@@ -83,10 +83,13 @@ export function buildRefillView(
   sequence: RefillSequence | null,
   G: GameState,
   playerID: string | null,
+  currentPlayer: string,
 ): RefillView {
   const removed = new Set(pending.removedIds);
   const realTiles = getRealJobCards(pending.tiles);
-  const wild = playerID === null ? undefined : G.table.jobSlots.find((job) => canPlaySlashWildJobCard(G.rules, playerID, job));
+  const wild = playerID === currentPlayer
+    ? G.table.jobSlots.find((job) => isLiveSlashWildJobCard(G, currentPlayer, job))
+    : undefined;
   const total = realTiles.length;
   let tiles: RefillTile[];
   if (phase === 'awaiting' || !sequence) {

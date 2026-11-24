@@ -1,6 +1,6 @@
 import type { PlayerID } from 'boardgame.io';
 import type { JobCard, ProjectCard } from '@/game';
-import { canPlaySlashWildJobCard, isSlashWildJobCard, requiresAssignedJobName } from '@/game/core/slashWildJob';
+import { isLiveSlashWildJobCard, isSlashWildJobCard, requiresAssignedJobName } from '@/game/core/slashWildJob';
 import { validateCreateProject, type ValidatableState } from '@/game/core/stage/action/validate';
 import { PlayersSelector } from '@/game/store/slice/players';
 import { canPass } from './actionPanel';
@@ -24,18 +24,24 @@ export type StartView = {
 
 const TIER_RANK: Record<StartTier, number> = { match: 0, wild: 1, disabled: 2 };
 
+function isAvailableStartJob(G: ValidatableState, playerID: PlayerID, currentPlayer: PlayerID, job: JobCard): boolean {
+  return !isSlashWildJobCard(job) || (playerID === currentPlayer && isLiveSlashWildJobCard(G, currentPlayer, job));
+}
+
 /** Tier of one (project, job) pair, using the same validator the move runs. */
 export function pairTier(
   G: ValidatableState,
   playerID: PlayerID,
+  currentPlayer: PlayerID,
   project: ProjectCard,
   job: JobCard,
 ): StartTier {
+  if (!isAvailableStartJob(G, playerID, currentPlayer, job)) return 'disabled';
   const requirements = Object.keys(project.requirements);
   const wild = requiresAssignedJobName(G.rules, playerID, job, requirements);
   // START can use any required profession for a wild pair, so one is enough to probe.
   const assigned = wild ? requirements[0] : undefined;
-  if (!canPass((opts) => validateCreateProject(G, playerID, project.id, job.id, assigned, opts))) {
+  if (!canPass((opts) => validateCreateProject(G, playerID, project.id, job.id, assigned, opts, currentPlayer))) {
     return 'disabled';
   }
   return wild ? 'wild' : 'match';
@@ -49,10 +55,11 @@ function partition<T>(entries: StartEntry<T>[]): StartEntry<T>[] {
 export function getStartProjectView(
   G: ValidatableState,
   playerID: PlayerID,
+  currentPlayer: PlayerID,
   picks: StartPicks,
 ): StartView {
   const projects = PlayersSelector.getProjectCards(G.players, playerID);
-  const jobs = G.table.jobSlots;
+  const jobs = G.table.jobSlots.filter((card) => isAvailableStartJob(G, playerID, currentPlayer, card));
   const project = projects.find((card) => card.id === picks.projectId);
   const job = jobs.find((card) => card.id === picks.jobId);
   const probe = project ?? projects[0];
@@ -60,7 +67,7 @@ export function getStartProjectView(
   // Global blockers belong to preflight. A pick with no matches must still
   // disable the opposite rail when START itself is available.
   if (probe && worker && (project || job) && !canPass((opts) => {
-    const result = validateCreateProject(G, playerID, probe.id, worker.id, undefined, opts);
+    const result = validateCreateProject(G, playerID, probe.id, worker.id, undefined, opts, currentPlayer);
     if (!result.valid && (
       result.reason === 'PROJECT_JOB_NOT_REQUIRED' || result.reason === 'PROFESSION_TARGET_REQUIRED' ||
       result.reason === 'JOB_CARD_NOT_ON_TABLE'
@@ -79,23 +86,24 @@ export function getStartProjectView(
     hand: partition(
       projects.map((card) => ({
         card,
-        tier: job ? pairTier(G, playerID, card, job) : 'match',
+        tier: job ? pairTier(G, playerID, currentPlayer, card, job) : 'match',
       })),
     ),
     market: partition(
       jobs.map((card) => ({
         card,
-        tier: project ? pairTier(G, playerID, project, card) : 'match',
+        tier: project ? pairTier(G, playerID, currentPlayer, project, card) : 'match',
       })),
     ),
   };
 }
 
 /** Whether the selected pair needs a profession choice. */
-export function isWildPair(G: ValidatableState, playerID: PlayerID, picks: StartPicks): boolean {
+export function isWildPair(G: ValidatableState, playerID: PlayerID, currentPlayer: PlayerID, picks: StartPicks): boolean {
   const project = picks.projectId ? PlayersSelector.getProjectCardById(G.players, playerID, picks.projectId) : undefined;
   const job = G.table.jobSlots.find((card) => card.id === picks.jobId);
-  return !!project && !!job && requiresAssignedJobName(G.rules, playerID, job, Object.keys(project.requirements));
+  return !!project && !!job && isAvailableStartJob(G, playerID, currentPlayer, job) &&
+    requiresAssignedJobName(G.rules, playerID, job, Object.keys(project.requirements));
 }
 
 export type StartReconcile = { picks: StartPicks; assignedJobName: string | null };
@@ -107,6 +115,7 @@ export type StartReconcile = { picks: StartPicks; assignedJobName: string | null
 export function reconcileStartPicks(
   G: ValidatableState,
   playerID: PlayerID,
+  currentPlayer: PlayerID,
   current: StartPicks,
   assignedJobName: string | null,
   first: StartPickSide,
@@ -114,9 +123,9 @@ export function reconcileStartPicks(
   const project = current.projectId
     ? PlayersSelector.getProjectCardById(G.players, playerID, current.projectId)
     : undefined;
-  const job = G.table.jobSlots.find((card) => card.id === current.jobId && (
-    !isSlashWildJobCard(card) || canPlaySlashWildJobCard(G.rules, playerID, card)
-  ));
+  const job = G.table.jobSlots.find((card) =>
+    card.id === current.jobId && isAvailableStartJob(G, playerID, currentPlayer, card),
+  );
   const picks = { projectId: project?.id ?? null, jobId: job?.id ?? null };
   if (!project || !job) {
     return { picks, assignedJobName: null };

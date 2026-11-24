@@ -15,6 +15,7 @@ import {
 import { getStartProjectView, reconcileStartPicks, type StartPickSide } from './startProjectOrder';
 
 export function useStartProject({ G, ctx, playerID }: GameContext, active: boolean) {
+  const { currentPlayer } = ctx;
   const dispatch = useAppDispatch();
   const hand = useAppSelector(getSelectedHandProjectCards);
   const market = useAppSelector(getSelectedJobSlots);
@@ -22,8 +23,8 @@ export function useStartProject({ G, ctx, playerID }: GameContext, active: boole
   const first = useRef<StartPickSide>('project');
   const projectId = Object.keys(hand).find((id) => hand[id]) ?? null;
   const jobId = Object.keys(market).find((id) => market[id]) ?? null;
-  const session = active && playerID === ctx.currentPlayer
-    ? reconcileStartPicks(G, ctx.currentPlayer, { projectId, jobId }, assigned, first.current)
+  const session = active && playerID === currentPlayer
+    ? reconcileStartPicks(G, playerID, currentPlayer, { projectId, jobId }, assigned, first.current)
     : null;
 
   useLayoutEffect(() => {
@@ -35,7 +36,7 @@ export function useStartProject({ G, ctx, playerID }: GameContext, active: boole
 
   if (!session) return null;
   const { picks, assignedJobName } = session;
-  const view = getStartProjectView(G, ctx.currentPlayer, picks);
+  const view = getStartProjectView(G, currentPlayer, currentPlayer, picks);
 
   function pick(side: StartPickSide, id: string) {
     // On replacement the card that stayed in place is now the earlier pick.
