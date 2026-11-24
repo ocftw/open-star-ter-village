@@ -15,11 +15,11 @@ export type Recruit = (
   options?: ActionExecutionOptions,
 ) => void;
 
-export const recruit: GameMove<Recruit> = ({ G, playerID }, jobCardId, projectSlotId, assignedJobName, options) => {
+export const recruit: GameMove<Recruit> = ({ G, ctx, playerID }, jobCardId, projectSlotId, assignedJobName, options) => {
   // Shared validation: same predicates the client preflight runs. Whether
   // assignedJobName may override the requirement is derived from
   // authoritative event state inside the validator.
-  const result = validateRecruit(G, playerID, jobCardId, projectSlotId, assignedJobName, options);
+  const result = validateRecruit(G, playerID, jobCardId, projectSlotId, assignedJobName, options, ctx.currentPlayer);
   if (!result.valid) {
     throw new ActionValidationError(result);
   }
@@ -28,7 +28,7 @@ export const recruit: GameMove<Recruit> = ({ G, playerID }, jobCardId, projectSl
   const jobCard = JobSlotsSelector.getJobCardById(G.table.jobSlots, jobCardId)!;
   const activeProject = ProjectBoardSelector.getBySlotId(G.table.projectBoard, projectSlotId)!;
   const assignment = resolveJobAssignment(
-    G, playerID, jobCard, Object.keys(activeProject.card!.requirements), assignedJobName,
+    G, playerID, ctx.currentPlayer, jobCard, Object.keys(activeProject.card!.requirements), assignedJobName,
   );
   if (!assignment.valid) {
     throw new ActionValidationError(assignment);

@@ -21,7 +21,7 @@ import {
 import { getSelectedJobSlots } from '@/lib/reducers/jobSlotSlice';
 import { getSelectedProjectSlots } from '@/lib/reducers/projectSlotSlice';
 import { JobSlotsSelector } from '@/game/store/slice/jobSlots';
-import { requiresAssignedJobName } from '@/game/core/slashWildJob';
+import { isLiveSlashWildJobCard, isSlashWildJobCard, requiresAssignedJobName } from '@/game/core/slashWildJob';
 import { ProfessionPicker, getEligibleTargetJobNames } from './board/professionPicker';
 import { Modal, PLAYER_COLORS, StickerButton } from '@/components/design';
 import { ScoreBoardSelector } from '@/game/store/slice/scoreBoard';
@@ -118,7 +118,7 @@ const Board: React.FC<GameContext> = (gameContext) => {
   useUpperTrackHeight(shellRef, bottomRowRef, isMobile);
 
   // 斜槓青年 target-position picker: during Recruit, only when the selected
-  // job card is the player's wild card (legacy games: a mismatched card while
+  // job card is the player's live wild card (legacy games: a mismatched card while
   // the entitlement is unspent), the selected project's eligible rows become targets.
   const jobSelectionMap = useAppSelector(getSelectedJobSlots);
   const projectSelectionMap = useAppSelector(getSelectedProjectSlots);
@@ -131,9 +131,10 @@ const Board: React.FC<GameContext> = (gameContext) => {
     if (currentAction !== UserActionMoves.Recruit) return undefined;
     if (playerID === null || !selectedJobCard || !slot.card) return undefined;
     if (!projectSelectionMap[slot.id]) return undefined;
-    if (!requiresAssignedJobName(G.rules, playerID, selectedJobCard, Object.keys(slot.card.requirements))) {
-      return undefined;
-    }
+    const needsProfession = isSlashWildJobCard(selectedJobCard)
+      ? playerID === ctx.currentPlayer && isLiveSlashWildJobCard(G, ctx.currentPlayer, selectedJobCard)
+      : requiresAssignedJobName(G.rules, playerID, selectedJobCard, Object.keys(slot.card.requirements));
+    if (!needsProfession) return undefined;
     return {
       eligibleJobNames: getEligibleTargetJobNames(slot, playerID!),
       selectedJobName: assignedJobName,
