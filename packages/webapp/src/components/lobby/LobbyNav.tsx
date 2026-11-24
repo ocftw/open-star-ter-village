@@ -4,10 +4,18 @@ import Link from 'next/link';
 
 const GITHUB_URL = 'https://github.com/ocftw/open-star-ter-village';
 
+export type MemberNotice = 'unavailable' | 'coming-soon';
+
+/** Shared with /sign-in so both pages say the same thing. */
+export const MEMBER_NOTICE_COPY: Record<MemberNotice, { full: string; compact: string }> = {
+  unavailable: { full: '會員功能暫停使用 · Member features are temporarily unavailable', compact: '會員暫停 · Members paused' },
+  'coming-soon': { full: '會員登入尚未開放 · Member sign-in is coming soon', compact: '會員即將開放 · Sign-in soon' },
+};
+
 export default function LobbyNav({
   member,
 }: {
-  member?: { available: boolean; nickname?: string; signOut: () => Promise<void> };
+  member?: { available: boolean; notice?: MemberNotice; nickname?: string; signOut: () => Promise<void> };
 }) {
   return (
     <AppHeader
@@ -51,8 +59,9 @@ export default function LobbyNav({
             )
           )}
           {member && !member.available && (
-            <small className="lobby-member-notice">
-              會員功能暫停使用 · Member features are temporarily unavailable
+            <small className="lobby-member-notice" title={MEMBER_NOTICE_COPY[member.notice ?? 'unavailable'].full}>
+              <span className="member-notice-full">{MEMBER_NOTICE_COPY[member.notice ?? 'unavailable'].full}</span>
+              <span className="member-notice-compact">{MEMBER_NOTICE_COPY[member.notice ?? 'unavailable'].compact}</span>
             </small>
           )}
         </nav>

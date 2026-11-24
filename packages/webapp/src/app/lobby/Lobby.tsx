@@ -14,6 +14,7 @@ import { useLobbyUpdates } from '@/lib/useLobbyUpdates';
 import { useSnackbar } from '@/lib/useSnackbar';
 import { PLAYER_NAME_STORAGE_KEY, isValidPlayerName } from '@/lib/playerName';
 import GameIntentTracker from '@/components/GameIntentTracker';
+import type { MemberNotice } from '@/components/lobby/LobbyNav';
 import {
   createRoom,
   getLobbyErrorMessage,
@@ -65,9 +66,10 @@ function CardHeading({
 }
 
 export default function Lobby({
-  memberAvailable, nickname, signOut,
+  memberAvailable, memberNotice = 'unavailable', nickname, signOut,
 }: {
   memberAvailable: boolean;
+  memberNotice?: MemberNotice;
   nickname?: string;
   signOut: () => Promise<void>;
 }) {
@@ -159,7 +161,7 @@ export default function Lobby({
     setIsCreating(true);
 
     try {
-      const credentials = await createRoom(trimmedPlayerName, numPlayers);
+      const credentials = await createRoom(trimmedPlayerName, numPlayers, Boolean(nickname));
       saveCredentials(credentials);
       router.push(`/game/${credentials.matchID}`);
     } catch (error) {
@@ -203,7 +205,7 @@ export default function Lobby({
   return (
     <main style={{ minHeight: '100vh' }}>
       <GameIntentTracker />
-      <LobbyNav member={{ available: memberAvailable, nickname, signOut }} />
+      <LobbyNav member={{ available: memberAvailable, notice: memberNotice, nickname, signOut }} />
       <div className="page-pad">
         <h1 style={{ display: 'flex', flexDirection: 'column', gap: 2, fontSize: 22, fontWeight: 800, marginBottom: 28 }}>
           開始一場遊戲 <span className="en-cap">Start a session</span>

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { AppHeader, PaperCard, StickerButton } from '@/components/design';
+import { MEMBER_NOTICE_COPY } from '@/components/lobby/LobbyNav';
 import { currentMember, signIn } from '@/server/members/auth';
 import { memberFeaturesEnabled } from '@/server/members/database';
 import { memberSignInOptions } from '@/server/members/providers';
@@ -30,9 +31,9 @@ export default async function SignInPage({ searchParams }: { searchParams: { err
       <PaperCard className="member-card" padding={28}>
         <h1>會員登入 <span className="en-cap">Sign in</span></h1>
         {searchParams.error && <p role="alert">登入失敗，請再試一次。 Sign-in failed. Try again.</p>}
-        {!authEnabled && <p>會員功能暫停使用 · Member features are temporarily unavailable</p>}
+        {!authEnabled && <p>{MEMBER_NOTICE_COPY.unavailable.full}</p>}
         {authEnabled && providerButtons.length === 0 && !showTestLogin && (
-          <p>會員登入尚未開放 · Member sign-in is coming soon.</p>
+          <p>{MEMBER_NOTICE_COPY['coming-soon'].full}</p>
         )}
         {providerButtons.length > 0 && (
           <form action={signInWithProvider} className="member-card-actions">

@@ -15,14 +15,15 @@ beforeEach(() => {
 afterEach(() => jest.restoreAllMocks());
 
 test.each([
-  { AUTH_TEST_LOGIN: '1' },
-  { AUTH_SECRET: 'configured', AUTH_GOOGLE_ID: 'configured' },
-  { NODE_ENV: 'production', AUTH_SECRET: 'configured', AUTH_TEST_LOGIN: '1' },
-])('hides guest sign-in and persistence prompts without a usable sign-in method (%j)', async (env) => {
+  { env: { AUTH_TEST_LOGIN: '1' }, notice: 'Member features are temporarily unavailable' },
+  { env: { AUTH_SECRET: 'configured', AUTH_GOOGLE_ID: 'configured' }, notice: 'Member sign-in is coming soon' },
+  { env: { NODE_ENV: 'production', AUTH_SECRET: 'configured', AUTH_TEST_LOGIN: '1' }, notice: 'Member sign-in is coming soon' },
+])('hides guest sign-in and persistence prompts without a usable sign-in method (%j)', async ({ env, notice }) => {
   Object.assign(process.env, env);
   const lobby = renderToStaticMarkup(await LobbyPage());
 
-  expect(lobby).toContain('Member features are temporarily unavailable');
+  // Same copy as /sign-in for the same configuration.
+  expect(lobby).toContain(notice);
   expect(lobby).not.toContain('href="/sign-in"');
   expect(lobby).not.toContain('Sign in to keep this game safe');
 });

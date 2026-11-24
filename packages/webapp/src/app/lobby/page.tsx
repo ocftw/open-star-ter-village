@@ -10,13 +10,16 @@ export const dynamic = 'force-dynamic';
 export default async function LobbyPage() {
   const member = await currentMember().catch(() => undefined);
   if (member && !member.nickname) redirect('/onboarding');
-  const { providers, showTestLogin } = memberSignInOptions();
+  const { authEnabled, providers, showTestLogin } = memberSignInOptions();
   const memberAvailable = Boolean(member?.nickname) || providers.length > 0 || showTestLogin;
+  // Same wording as /sign-in: off/unconfigured persistence is "temporarily unavailable";
+  // persistence on but no sign-in provider yet is "coming soon".
+  const memberNotice = authEnabled ? 'coming-soon' : 'unavailable';
 
   async function leaveMemberSession() {
     'use server';
     if (memberFeaturesEnabled() && process.env.AUTH_SECRET) await signOut({ redirectTo: '/lobby' });
   }
 
-  return <Lobby memberAvailable={memberAvailable} nickname={member?.nickname ?? undefined} signOut={leaveMemberSession} />;
+  return <Lobby memberAvailable={memberAvailable} memberNotice={memberNotice} nickname={member?.nickname ?? undefined} signOut={leaveMemberSession} />;
 }

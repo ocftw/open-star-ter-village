@@ -149,6 +149,10 @@ button {
   text-align: end;
 }
 
+.member-notice-compact {
+  display: none;
+}
+
 .catalog-label-compact {
   display: none;
 }
@@ -169,6 +173,15 @@ button {
 
   .catalog-label-compact {
     display: inline;
+  }
+
+  .member-notice-full {
+    display: none;
+  }
+
+  .member-notice-compact {
+    display: inline;
+    white-space: nowrap;
   }
 }
 
@@ -1699,8 +1712,34 @@ body:has([data-testid='header-menu'][aria-expanded='true']) [data-testid='dev-to
   font: inherit;
 }
 
+.member-nickname-field input[aria-invalid="true"] {
+  border-color: var(--orange-deep);
+  box-shadow: 0 0 0 2px var(--orange-soft);
+}
+
+.member-error {
+  margin: 0;
+  padding: 8px 12px;
+  border: 1.5px solid var(--orange-deep);
+  border-radius: 10px;
+  background: var(--orange-soft);
+  color: var(--orange-deep);
+  font-weight: 600;
+}
+
+/* The whole row is the tap target (>= 44px); the box itself is 24px. */
 .member-opt-in {
   display: flex;
-  align-items: baseline;
-  gap: 8px;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.member-opt-in input[type="checkbox"] {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  margin: 10px;
+  accent-color: var(--orange-deep);
 }
