@@ -39,8 +39,8 @@ async function finishedMatch() {
 
 const playAgain = (matchID: string, playerID: string, credentials: string) =>
   lobby.playAgain(GAME, matchID, { playerID, credentials });
-const rejoin = (nextMatchID: string, playerName: string, previousSeat: string, init?: RequestInit) =>
-  lobby.joinMatch(GAME, nextMatchID, { playerID: previousSeat, playerName }, init);
+const rejoin = (nextMatchID: string, playerName: string, previousSeat: string, init?: RequestInit, rematchCredentials?: string) =>
+  lobby.joinMatch(GAME, nextMatchID, { playerID: previousSeat, playerName, rematchCredentials }, init);
 const decline = (matchID: string, credentials: string, playerID = '0') =>
   fetch(`${url}/games/${GAME}/${matchID}/declineRematch`, {
     method: 'POST',
@@ -68,7 +68,7 @@ describe('rematch keeps the host and seats (DB-P4)', () => {
     expect((await rejoin(nextMatchID, 'Carol', '2')).playerID).toBe('2');
     // A newcomer with no seat preference cannot take the reserved host seat.
     expect((await lobby.joinMatch(GAME, nextMatchID, { playerName: 'Dave' })).playerID).toBe('1');
-    expect((await rejoin(nextMatchID, 'Alice', '0')).playerID).toBe('0');
+    expect((await rejoin(nextMatchID, 'Alice', '0', undefined, seats['0'])).playerID).toBe('0');
     expect(await seatsOf(nextMatchID)).toEqual({ 0: 'Alice', 1: 'Dave', 2: 'Carol' });
     // Persistence follows the inherited member host.
     expect(sql.rows.get(nextMatchID)?.host_user_id).toBe('member-1');

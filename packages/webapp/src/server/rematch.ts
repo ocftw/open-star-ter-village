@@ -1,3 +1,4 @@
+import { AsyncLocalStorage } from 'node:async_hooks';
 import type { Server as BgioServer, StorageAPI } from 'boardgame.io';
 import { currentHostUserId, hostIdentity } from './persistence/hostToken';
 
@@ -23,33 +24,40 @@ import { currentHostUserId, hostIdentity } from './persistence/hostToken';
 export const REMATCH_HOST_SEAT = '0';
 export const DEFAULT_HOST_GRACE_MS = 2 * 60 * 1000;
 
-type Metadata = BgioServer.MatchData;
-type PlayerMetadata = Metadata['players'][number];
+// boardgame.io spreads lobby metadata into public responses. Symbols keep
+// server-only fields out of that JSON, including join-time member identities.
+export const REMATCH = Symbol('rematch');
+export const REMATCH_DECLINED = Symbol('rematch declined');
+export const REMATCH_HOST_CHANGE = Symbol('rematch host change');
+export type RematchMetadata = BgioServer.MatchData & {
+  [REMATCH]?: Rematch;
+  [REMATCH_DECLINED]?: true;
+  [REMATCH_HOST_CHANGE]?: { userId?: string };
+};
 
-export interface HostAwareStore {
-  setHost?(matchID: string, hostUserId: string | undefined): Promise<void>;
+type Metadata = RematchMetadata;
+type PlayerMetadata = Metadata['players'][number];
+type MatchStore = StorageAPI.Async | StorageAPI.Sync;
+
+interface HostAwareStore {
   hostUserId?(matchID: string): string | undefined;
 }
 
-interface Rematch {
+export interface Rematch {
   fromMatchID: string;
   createdAt: number;
-  originalHostUserId?: string;
   hostDeclined: boolean;
   hostResolved: boolean;
-  /** Seats in the order they were taken, with the verified identity at join time. */
-  joins: { seat: string; userId?: string }[];
+  /** Join order, with the credential identifying each seat's occupant. */
+  joins: { seat: string; credential: string; userId?: string }[];
 }
 
 interface Ctx {
-  method: string;
-  path: string;
   status: number;
   body: unknown;
   req: NodeJS.ReadableStream;
-  request: { body?: unknown };
   throw(status: number, message?: string): never;
-  app: { context: { db: StorageAPI.Async | StorageAPI.Sync; auth: Auth } };
+  app: { context: { auth: Auth } };
 }
 interface Auth {
   generateCredentials(ctx: unknown): Promise<string> | string;
@@ -80,9 +88,17 @@ async function readJson(req: NodeJS.ReadableStream, limit = 64 * 1024): Promise<
 
 const isSeated = (player: PlayerMetadata | undefined) => Boolean(player?.name);
 
-export function createRematchRules(store: HostAwareStore, { hostGraceMs = DEFAULT_HOST_GRACE_MS, now = Date.now } = {}) {
-  const rematches = new Map<string, Rematch>();
-  const declinedBeforeRematch = new Set<string>();
+export function createRematchRules(
+  db: MatchStore & HostAwareStore,
+  { hostGraceMs = DEFAULT_HOST_GRACE_MS, now = Date.now } = {},
+) {
+  const creatingRematch = new AsyncLocalStorage<Rematch>();
+  const createMatch = db.createMatch.bind(db);
+  db.createMatch = (matchID, options) => {
+    const rematch = creatingRematch.getStore();
+    if (rematch) (options.metadata as Metadata)[REMATCH] = rematch;
+    return createMatch(matchID, options);
+  };
   let tail: Promise<unknown> = Promise.resolve();
 
   const serialize = <T>(run: () => Promise<T>): Promise<T> => {
@@ -91,69 +107,71 @@ export function createRematchRules(store: HostAwareStore, { hostGraceMs = DEFAUL
     return result;
   };
 
-  const fetchMetadata = async (ctx: Ctx, matchID: string) =>
-    (await ctx.app.context.db.fetch(matchID, { metadata: true })).metadata as Metadata | undefined;
+  const fetchMetadata = async (matchID: string) =>
+    (await db.fetch(matchID, { metadata: true })).metadata as Metadata | undefined;
+
+  const authentic = async (ctx: Ctx, metadata: Metadata, playerID: string, credential: unknown) =>
+    typeof credential === 'string' &&
+    Boolean(metadata.players[Number(playerID)]?.credentials) &&
+    await ctx.app.context.auth.authenticateCredentials({ playerID, credentials: credential, metadata });
 
   /** Original host declined: the earliest seated joiner (if any) takes the host seat. */
-  async function resolveDecline(ctx: Ctx, matchID: string, rematch: Rematch) {
+  async function resolveDecline(matchID: string, metadata: Metadata, rematch: Rematch) {
+    if (rematch.hostResolved || rematch.hostDeclined) return;
     rematch.hostDeclined = true;
-    if (rematch.hostResolved) return;
-    const metadata = await fetchMetadata(ctx, matchID);
-    if (!metadata || isSeated(metadata.players[Number(REMATCH_HOST_SEAT)])) return;
-    const first = rematch.joins.find(({ seat }) => seat !== REMATCH_HOST_SEAT && isSeated(metadata.players[Number(seat)]));
-    if (!first) return;
-    const from = metadata.players[Number(first.seat)];
-    metadata.players[Number(REMATCH_HOST_SEAT)] = {
-      ...from,
-      id: Number(REMATCH_HOST_SEAT),
-      // The promoted client finds its new seat through this marker.
-      data: { ...(from.data as object | undefined), promotedFromSeat: first.seat },
-    };
-    metadata.players[Number(first.seat)] = { id: Number(first.seat) };
-    await ctx.app.context.db.setMetadata(matchID, metadata);
-    rematch.hostResolved = true;
-    await store.setHost?.(matchID, first.userId);
+    const first = rematch.joins.find(({ seat, credential }) => metadata.players[Number(seat)]?.credentials === credential);
+    if (first) {
+      const from = metadata.players[Number(first.seat)];
+      metadata.players[Number(REMATCH_HOST_SEAT)] = {
+        ...from,
+        id: Number(REMATCH_HOST_SEAT),
+        // The promoted client uses this marker to request credential verification.
+        data: { ...(from.data as object | undefined), promotedFromSeat: first.seat },
+      };
+      metadata.players[Number(first.seat)] = { id: Number(first.seat) };
+      rematch.hostResolved = true;
+      rematch.joins = [];
+      metadata[REMATCH_HOST_CHANGE] = { userId: first.userId };
+    }
+    await db.setMetadata(matchID, metadata);
   }
 
-  async function expireGrace(ctx: Ctx, matchID: string) {
-    const rematch = rematches.get(matchID);
-    if (!rematch || rematch.hostResolved || rematch.hostDeclined) return;
-    if (now() - rematch.createdAt < hostGraceMs) return;
-    await resolveDecline(ctx, matchID, rematch);
+  async function expireGrace(matchID: string, metadata: Metadata, rematch: Rematch) {
+    if (now() - rematch.createdAt >= hostGraceMs) await resolveDecline(matchID, metadata, rematch);
   }
 
   async function playAgain(ctx: Ctx, next: Next, fromMatchID: string) {
-    // The next match inherits the original host, member or guest.
-    const originalHostUserId = store.hostUserId?.(fromMatchID);
-    await hostIdentity.run({ userId: originalHostUserId }, next);
-    const nextMatchID = (ctx.body as { nextMatchID?: string } | undefined)?.nextMatchID;
-    if (ctx.status !== 200 || !nextMatchID || rematches.has(nextMatchID)) return;
-    rematches.set(nextMatchID, {
+    const previous = await fetchMetadata(fromMatchID);
+    if (!previous) ctx.throw(404, 'Match ' + fromMatchID + ' not found');
+    return hostIdentity.run({ userId: db.hostUserId?.(fromMatchID) }, () => creatingRematch.run({
       fromMatchID,
       createdAt: now(),
-      originalHostUserId,
-      hostDeclined: declinedBeforeRematch.has(fromMatchID),
+      hostDeclined: previous[REMATCH_DECLINED] === true,
       hostResolved: false,
       joins: [],
-    });
+    }, next));
   }
 
-  async function join(ctx: Ctx, matchID: string, rematch: Rematch) {
-    await expireGrace(ctx, matchID);
+  async function join(ctx: Ctx, matchID: string, metadata: Metadata, rematch: Rematch) {
+    await expireGrace(matchID, metadata, rematch);
     const body = await readJson(ctx.req);
-    ctx.request.body = body;
     const playerName = typeof body.playerName === 'string' ? body.playerName : '';
     if (!playerName) ctx.throw(403, 'playerName is required');
-    const metadata = await fetchMetadata(ctx, matchID);
-    if (!metadata) ctx.throw(404, 'Match ' + matchID + ' not found');
-    const open = (seat: string) => metadata.players[Number(seat)] !== undefined && !isSeated(metadata.players[Number(seat)]);
+    const open = (seat: string) => String(Number(seat)) === seat &&
+      metadata.players[Number(seat)] !== undefined && !isSeated(metadata.players[Number(seat)]);
     const requested = body.playerID === undefined || body.playerID === null ? undefined : String(body.playerID);
 
     let seat: string | undefined;
     if (rematch.hostDeclined && open(REMATCH_HOST_SEAT)) {
       seat = REMATCH_HOST_SEAT; // first joiner after a decline becomes host
     } else if (requested !== undefined && open(requested)) {
-      seat = requested; // keep the previous seat; seat 0 is the original host's
+      if (requested === REMATCH_HOST_SEAT) {
+        const previous = await fetchMetadata(rematch.fromMatchID);
+        if (!previous || !await authentic(ctx, previous, REMATCH_HOST_SEAT, body.rematchCredentials)) {
+          ctx.throw(403, 'The rematch host seat is reserved for the original host');
+        }
+      }
+      seat = requested;
     } else {
       seat = Object.keys(metadata.players).find(
         (id) => (rematch.hostDeclined || id !== REMATCH_HOST_SEAT) && open(id),
@@ -166,36 +184,54 @@ export function createRematchRules(store: HostAwareStore, { hostGraceMs = DEFAUL
     player.name = playerName;
     const playerCredentials = await ctx.app.context.auth.generateCredentials(ctx);
     player.credentials = playerCredentials;
-    await ctx.app.context.db.setMetadata(matchID, metadata);
-
-    const userId = currentHostUserId();
-    rematch.joins.push({ seat, userId });
-    if (seat === REMATCH_HOST_SEAT) {
-      rematch.hostResolved = true;
-      // The original host keeps the inherited identity; a successor's own
-      // verified identity (or none, for a guest) decides persistence.
-      if (rematch.hostDeclined) await store.setHost?.(matchID, userId);
+    if (seat === REMATCH_HOST_SEAT && rematch.hostDeclined) {
+      metadata[REMATCH_HOST_CHANGE] = { userId: currentHostUserId() };
     }
+
+    if (!rematch.hostResolved) {
+      if (seat === REMATCH_HOST_SEAT) {
+        rematch.hostResolved = true;
+        rematch.joins = [];
+      } else {
+        rematch.joins.push({ seat, credential: playerCredentials, userId: currentHostUserId() });
+      }
+    }
+    await db.setMetadata(matchID, metadata);
     ctx.body = { playerID: seat, playerCredentials };
   }
 
   async function decline(ctx: Ctx, fromMatchID: string) {
     const body = await readJson(ctx.req);
     const playerID = body.playerID === undefined ? undefined : String(body.playerID);
-    const credentials = typeof body.credentials === 'string' ? body.credentials : undefined;
-    const metadata = await fetchMetadata(ctx, fromMatchID);
+    const metadata = await fetchMetadata(fromMatchID);
     if (!metadata) ctx.throw(404, 'Match ' + fromMatchID + ' not found');
     if (playerID === undefined || !metadata.players[Number(playerID)]) ctx.throw(404, 'Player not found');
-    const authentic = await ctx.app.context.auth.authenticateCredentials({ playerID, credentials, metadata });
-    if (!authentic) ctx.throw(403, 'Invalid credentials');
+    if (!await authentic(ctx, metadata, playerID, body.credentials)) ctx.throw(403, 'Invalid credentials');
     if (playerID === REMATCH_HOST_SEAT) {
-      declinedBeforeRematch.add(fromMatchID);
       const nextMatchID = metadata.nextMatchID;
-      const rematch = nextMatchID ? rematches.get(nextMatchID) : undefined;
-      if (nextMatchID && rematch) await resolveDecline(ctx, nextMatchID, rematch);
+      if (nextMatchID) {
+        const next = await fetchMetadata(nextMatchID);
+        const rematch = next?.[REMATCH];
+        if (next && rematch) await resolveDecline(nextMatchID, next, rematch);
+      } else {
+        metadata[REMATCH_DECLINED] = true;
+        await db.setMetadata(fromMatchID, metadata);
+      }
     }
     ctx.status = 200;
     ctx.body = {};
+  }
+
+  async function recoverPromotedSeat(ctx: Ctx, matchID: string) {
+    const { playerID, credentials } = await readJson(ctx.req);
+    const metadata = await fetchMetadata(matchID);
+    const host = metadata?.players[Number(REMATCH_HOST_SEAT)];
+    if (metadata?.[REMATCH] && host?.data?.promotedFromSeat === playerID &&
+        typeof playerID === 'string' && await authentic(ctx, metadata, REMATCH_HOST_SEAT, credentials)) {
+      ctx.body = { playerID: REMATCH_HOST_SEAT };
+    } else {
+      ctx.throw(403, 'No matching rematch promotion');
+    }
   }
 
   return {
@@ -206,13 +242,19 @@ export function createRematchRules(store: HostAwareStore, { hostGraceMs = DEFAUL
     register(router: Router) {
       router.post('/games/:name/:id/playAgain', (ctx, next) => serialize(() => playAgain(ctx, next, ctx.params.id)));
       router.post('/games/:name/:id/declineRematch', (ctx) => serialize(() => decline(ctx, ctx.params.id)));
-      router.post('/games/:name/:id/join', (ctx, next) => {
-        const rematch = rematches.get(ctx.params.id);
-        return rematch ? serialize(() => join(ctx, ctx.params.id, rematch)) : next();
-      });
+      router.post('/games/:name/:id/rematchSeat', (ctx) => recoverPromotedSeat(ctx, ctx.params.id));
+      router.post('/games/:name/:id/join', (ctx, next) => serialize(async () => {
+        const metadata = await fetchMetadata(ctx.params.id);
+        return metadata?.[REMATCH] ? join(ctx, ctx.params.id, metadata, metadata[REMATCH]) : next();
+      }));
       // Lobby polling of a rematch room settles an expired host grace period.
       router.get('/games/:name/:id', async (ctx, next) => {
-        if (rematches.has(ctx.params.id)) await serialize(() => expireGrace(ctx, ctx.params.id));
+        const metadata = await fetchMetadata(ctx.params.id);
+        if (!metadata) ctx.throw(404, 'Match ' + ctx.params.id + ' not found');
+        const rematch = metadata[REMATCH];
+        if (rematch && !rematch.hostResolved && !rematch.hostDeclined) {
+          await serialize(() => expireGrace(ctx.params.id, metadata, rematch));
+        }
         return next();
       });
     },

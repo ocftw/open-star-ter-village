@@ -1,5 +1,5 @@
 import { LobbyClientError } from 'boardgame.io/client';
-import { GAME_NAME, lobbyClient } from '@/lib/lobbyClient';
+import { GAME_NAME, GAME_SERVER_URL, lobbyClient } from '@/lib/lobbyClient';
 import { hostTokenInit } from '@/lib/getHostToken';
 import type { MatchCredentials } from '@/lib/matchCredentials';
 
@@ -54,17 +54,22 @@ export function getFilledSeatCount(match: Pick<LobbyMatch, 'players'>): number {
  * DB-P4). Returns the credentials re-pointed at seat 0 when that happened to
  * this player, otherwise null.
  */
-export function getPromotedCredentials(
+export async function getPromotedCredentials(
   match: Pick<LobbyMatch, 'players'>,
   credentials: MatchCredentials,
-): MatchCredentials | null {
+): Promise<MatchCredentials | null> {
   if (credentials.playerID === '0') return null;
   const host = match.players.find((player) => player.id === 0);
-  const previous = match.players.find((player) => String(player.id) === credentials.playerID);
-  const data = host?.data as Record<string, unknown> | undefined;
-  if (!host || data?.promotedFromSeat !== credentials.playerID || host.name !== credentials.playerName) return null;
-  if (previous && hasPlayerName(previous)) return null;
-  return { ...credentials, playerID: '0' };
+  if (!host?.name || host.data?.promotedFromSeat !== credentials.playerID) return null;
+  const matchID = encodeURIComponent(credentials.matchID);
+  const response = await fetch(`${GAME_SERVER_URL}/games/${GAME_NAME}/${matchID}/rematchSeat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ playerID: credentials.playerID, credentials: credentials.credential }),
+  });
+  if (response.status === 403) return null;
+  if (!response.ok) throw new Error('Unable to verify the rematch seat.');
+  return { ...credentials, playerID: '0', playerName: host.name };
 }
 
 export function hasHostStarted(match: Pick<LobbyMatch, 'players'>): boolean {
@@ -161,11 +166,13 @@ export async function joinRoom(
   matchID: string,
   playerName: string,
   preferredSeatID?: string,
+  rematchCredentials?: string,
 ): Promise<MatchCredentials> {
   const joinedMatch = await lobbyClient.joinMatch(GAME_NAME, matchID, {
     playerID: preferredSeatID,
     playerName,
     data: { displayName: playerName },
+    rematchCredentials,
   });
 
   return {
@@ -181,13 +188,10 @@ export async function joinPublicMatch(
   playerName: string,
 ): Promise<MatchCredentials> {
   const match = await getMatch(matchID);
-  const openSeatID = getOpenSeatID(match);
-
-  if (!openSeatID) {
+  if (!getOpenSeatID(match)) {
     throw new LobbyError('MATCH_FULL');
   }
-
-  return joinRoom(matchID, playerName, openSeatID);
+  return joinRoom(matchID, playerName);
 }
 
 export async function leaveRoom(matchID: string, playerID: string, credential: string): Promise<void> {
@@ -198,13 +202,14 @@ export async function leaveRoom(matchID: string, playerID: string, credential: s
 }
 
 export async function startRoom(matchID: string, playerID: string, credential: string): Promise<void> {
+  const player = (await lobbyClient.getMatch(GAME_NAME, matchID)).players.find((seat) => String(seat.id) === playerID);
   await lobbyClient.updatePlayer(GAME_NAME, matchID, {
     playerID,
     credentials: credential,
     data: {
       started: true,
-      displayName: (await lobbyClient.getMatch(GAME_NAME, matchID)).players
-        .find((player) => String(player.id) === playerID)?.data?.displayName,
+      displayName: player?.data?.displayName,
+      promotedFromSeat: player?.data?.promotedFromSeat,
     },
   });
 }

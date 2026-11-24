@@ -1,8 +1,10 @@
 /** @jest-environment jsdom */
 import React from 'react';
 import { act, fireEvent, render, waitFor } from '@testing-library/react';
+import { LobbyClientError } from 'boardgame.io/client';
 import GameRoomPage from './page';
 import type { LobbyMatch } from '@/app/lobby/actions';
+import { loadCredentials, saveCredentials } from '@/lib/matchCredentials';
 
 const mockGetMatch = jest.fn();
 const mockJoinRoom = jest.fn();
@@ -48,6 +50,49 @@ const room = (finished: boolean): LobbyMatch => ({
     { id: 2, name: 'Carol' },
   ],
   ...(finished ? { gameover: { winners: ['0'] } } : {}),
+});
+
+it('keeps the saved seat during a temporary match lookup failure', async () => {
+  localStorage.clear();
+  const seat = { matchID: 'room-1', playerID: '1', credential: 'bob-fixture', playerName: 'Bob' };
+  saveCredentials(seat);
+  mockGetMatch.mockRejectedValue(new LobbyClientError('HTTP status 503'));
+  const view = render(<GameRoomPage />);
+  await waitFor(() => expect(view.getByText(/HTTP status 503/)).toBeTruthy());
+  expect(loadCredentials('room-1')).toEqual(seat);
+
+  mockGetMatch.mockResolvedValue(room(false));
+  await act(() => mockPollMatch());
+  expect(view.getByTestId('final-board')).toBeTruthy();
+  expect(loadCredentials('room-1')).toEqual(seat);
+});
+
+it('recovers the promoted host on reload even after the old seat is refilled', async () => {
+  localStorage.clear();
+  const seat = { matchID: 'room-1', playerID: '1', credential: 'bob-fixture', playerName: 'Bob' };
+  saveCredentials(seat);
+  mockGetMatch.mockResolvedValue({
+    ...room(false),
+    players: [
+      { id: 0, name: 'Bob', data: { promotedFromSeat: '1' } },
+      { id: 1, name: 'Dana' },
+      { id: 2, name: 'Carol' },
+    ],
+  });
+  const originalFetch = globalThis.fetch;
+  const verifySeat = jest.fn().mockResolvedValue({ ok: true, status: 200 });
+  globalThis.fetch = verifySeat;
+  try {
+    const view = render(<GameRoomPage />);
+    await waitFor(() => expect(view.getByText(/開始遊戲 · Start game/)).toBeTruthy());
+    expect(loadCredentials('room-1')).toEqual({ ...seat, playerID: '0' });
+    expect(verifySeat).toHaveBeenCalledWith(expect.stringContaining('/room-1/rematchSeat'), expect.objectContaining({
+      method: 'POST',
+      body: JSON.stringify({ playerID: '1', credentials: seat.credential }),
+    }));
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
 });
 
 describe('finished room departures (#458)', () => {

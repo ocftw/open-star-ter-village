@@ -47,14 +47,14 @@ export async function startGameServer(options: GameServerOptions): Promise<Runni
     ],
   });
 
-  const closeLobbyUpdates = registerLobbyUpdates(server);
   server.app.use(hostIdentityMiddleware(persistence.hostTokenSecret));
 
   // boardgame.io's playAgain read-check-create-write is not atomic. The
   // rematch rules serialize playAgain (so concurrent players receive the same
   // next match), joins into rematch rooms, and host declines.
-  createRematchRules(persistence.store ?? {}, { hostGraceMs: options.rematchHostGraceMs })
+  createRematchRules(server.db, { hostGraceMs: options.rematchHostGraceMs })
     .register(server.router as unknown as Parameters<ReturnType<typeof createRematchRules>['register']>[0]);
+  const closeLobbyUpdates = registerLobbyUpdates(server);
 
   server.router.get('/games/:name/:id/persistence', (ctx) => {
     const body: MatchPersistenceStatus = { endGameUnsaved: persistence.endGameUnsaved(ctx.params.id) };

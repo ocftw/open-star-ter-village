@@ -3,6 +3,7 @@ import type { LogEntry, Server, State, StorageAPI } from 'boardgame.io';
 import pg from 'pg';
 import type { Options } from 'sequelize';
 import { GAME_VERSION } from '@/game/gameVersion';
+import { REMATCH, REMATCH_DECLINED, REMATCH_HOST_CHANGE, type Rematch, type RematchMetadata } from '../rematch';
 import { currentHostUserId } from './hostToken';
 import { type MatchesSql, type MatchWrite, SequelizeMatchesSql, type Tx } from './matchesSql';
 import { reportPersistenceFailure } from './report';
@@ -47,7 +48,7 @@ interface Entry {
   hostUserId?: string;
   state: State;
   initialState: State;
-  metadata: Server.MatchData;
+  metadata: RematchMetadata;
   log: LogEntry[];
   /** Memory is ahead of PostgreSQL: the latest-state slot still needs writing. */
   dirty: boolean;
@@ -233,11 +234,14 @@ export class MemberPostgresStore extends PostgresStore {
     await this.persist(matchID);
   }
 
-  async setMetadata(matchID: string, metadata: Server.MatchData): Promise<void> {
+  async setMetadata(matchID: string, metadata: RematchMetadata): Promise<void> {
     const entry = this.entries.get(matchID) ?? (await this.restore(matchID));
     if (!entry) return;
+    const hostChange = metadata[REMATCH_HOST_CHANGE];
+    delete metadata[REMATCH_HOST_CHANGE];
     entry.metadata = metadata;
-    await this.persist(matchID);
+    if (hostChange && hostChange.userId !== entry.hostUserId) await this.setHost(matchID, hostChange.userId);
+    else await this.persist(matchID);
   }
 
   async fetch<O extends StorageAPI.FetchOpts>(matchID: string, opts: O): Promise<StorageAPI.FetchResult<O>> {
@@ -447,7 +451,11 @@ export class MemberPostgresStore extends PostgresStore {
       // The deltalog is per-update transport data, not match state.
       state: { ...state, deltalog: undefined },
       initial_state: entry.initialState,
-      metadata: entry.metadata,
+      metadata: {
+        ...entry.metadata,
+        osvRematch: entry.metadata[REMATCH],
+        osvRematchDeclined: entry.metadata[REMATCH_DECLINED],
+      },
       result: state.ctx.gameover ?? null,
       state_id: state._stateID,
       is_gameover: isGameover(state),
@@ -501,7 +509,12 @@ export class MemberPostgresStore extends PostgresStore {
     }
     const existing = this.entries.get(matchID);
     if (existing) return existing;
-    const metadata = row.metadata as Server.MatchData;
+    const { osvRematch, osvRematchDeclined, ...metadata }: RematchMetadata & {
+      osvRematch?: Rematch;
+      osvRematchDeclined?: true;
+    } = row.metadata as RematchMetadata;
+    if (osvRematch) metadata[REMATCH] = osvRematch;
+    if (osvRematchDeclined) metadata[REMATCH_DECLINED] = true;
     for (const player of Object.values(metadata.players ?? {})) {
       // Nobody is connected to a freshly restarted server.
       if (player.isConnected !== undefined) player.isConnected = false;

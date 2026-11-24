@@ -7,7 +7,7 @@ import { Game } from 'boardgame.io';
 import { GameState, ProjectSlotState } from '@/game';
 import { GameContext } from './GameContextHelpers';
 import { GAME_NAME, GAME_SERVER_URL, lobbyClient } from '@/lib/lobbyClient';
-import { getLobbyErrorMessage, getMatch, hasHostStarted, hasPlayerName, joinRoom } from '@/app/lobby/actions';
+import { getLobbyErrorMessage, getMatch, getPromotedCredentials, hasHostStarted, hasPlayerName, joinRoom } from '@/app/lobby/actions';
 import { usePolling } from '@/lib/usePolling';
 import { declineRematch, fetchEndGameUnsaved } from '@/lib/matchPersistence';
 import { loadCredentials, saveCredentials, type MatchCredentials } from '@/lib/matchCredentials';
@@ -393,12 +393,18 @@ export function GameOverDialog({
       const playerName = savedCredentials.playerName ?? getPlayerName(matchData, savedCredentials.playerID);
       const existingCredentials = loadCredentials(nextMatchID);
       const nextMatch = await getMatch(nextMatchID);
+      const promoted = existingCredentials && await getPromotedCredentials(nextMatch, existingCredentials);
       const existingSeat = existingCredentials && nextMatch.players.find(
         player => String(player.id) === existingCredentials.playerID && player.name === playerName,
       );
-      if (!existingSeat) {
+      if (promoted) {
+        saveCredentials(promoted);
+      } else if (!existingSeat) {
         // Rejoin the same seat (#445 DB-P4); the server keeps seat 0 for the original host.
-        const joined = await joinRoom(nextMatchID, playerName, savedCredentials.playerID);
+        const joined = await joinRoom(
+          nextMatchID, playerName, savedCredentials.playerID,
+          savedCredentials.playerID === '0' ? savedCredentials.credential : undefined,
+        );
         saveCredentials(joined);
       }
       router.push(`/game/${nextMatchID}`);

@@ -120,19 +120,22 @@ export default function GameRoomPage() {
       }
 
       let nextCredentials: MatchCredentials | null = creds;
-      const serverMatch = await getMatch(matchID).catch(() => null);
-
-      if (serverMatch) {
-        const promoted = getPromotedCredentials(serverMatch, creds);
+      try {
+        const serverMatch = await getMatch(matchID);
+        const promoted = await getPromotedCredentials(serverMatch, creds);
+        if (cancelled) return;
         if (promoted) {
           saveCredentials(promoted);
           nextCredentials = promoted;
+        } else {
+          const slot = serverMatch.players.find((player) => player.id === Number(creds.playerID));
+          if (!slot?.name || slot.name !== creds.playerName) {
+            clearCredentials(matchID);
+            nextCredentials = null;
+          }
         }
-        const slot = serverMatch.players.find((player) => player.id === Number(nextCredentials!.playerID));
-        if (!slot?.name || slot.name !== creds.playerName) {
-          clearCredentials(matchID);
-          nextCredentials = null;
-        }
+      } catch {
+        // Keep the saved credential until the server can check it.
       }
 
       if (!cancelled) {
@@ -151,10 +154,13 @@ export default function GameRoomPage() {
   // A rematch host who declined hands the host seat to the earliest joiner (#445).
   React.useEffect(() => {
     if (!match || !credentials) return;
-    const promoted = getPromotedCredentials(match, credentials);
-    if (!promoted) return;
-    saveCredentials(promoted);
-    setCredentials(promoted);
+    let cancelled = false;
+    void getPromotedCredentials(match, credentials).then((promoted) => {
+      if (cancelled || !promoted) return;
+      saveCredentials(promoted);
+      setCredentials(promoted);
+    }).catch(() => undefined);
+    return () => { cancelled = true; };
   }, [match, credentials]);
 
   const allSeatsFilled = match ? getFilledSeatCount(match) === match.players.length : false;
