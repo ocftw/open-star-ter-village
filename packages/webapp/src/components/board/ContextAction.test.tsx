@@ -166,6 +166,18 @@ describe('斜槓青年 wild job card (marked game)', () => {
     expect(actionButton(UserActionMoves.CreateProject).disabled).toBe(false);
   });
 
+  it('only lets real cards be marked for replacement in refill mode', () => {
+    const { moves } = setup(marked(true));
+    fireEvent.click(screen.getByTestId('refill-jobs'));
+    expect(screen.queryByTestId('job-remove-slash-0-1')).toBeNull();
+    fireEvent.click(screen.getByTestId('job-card-slash-0-1'));
+    expect(confirmButton().disabled).toBe(true);
+
+    fireEvent.click(screen.getByTestId('job-remove-engineer'));
+    fireEvent.click(confirmButton());
+    expect(moves.removeAndRefillJobs).toHaveBeenCalledWith(['engineer'], undefined);
+  });
+
   it('offers the profession picker only for the wild tile and sends assignedJobName', () => {
     const { moves } = setup(marked(true));
     fireEvent.click(actionButton(UserActionMoves.CreateProject));

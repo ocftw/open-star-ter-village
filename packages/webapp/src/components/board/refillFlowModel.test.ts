@@ -1,4 +1,5 @@
 import GameStore from '@/game/store/store';
+import { SLASH_WILD_JOB_NAME } from '@/game/core/slashWildJob';
 import { PlayersMutator } from '@/game/store/slice/players';
 import { ActionSlotMutator } from '@/game/store/slice/actionSlot';
 import { JobSlotsMutator } from '@/game/store/slice/jobSlots';
@@ -6,6 +7,8 @@ import { RefillPending, buildRefillView, isRefillAccepted, splitAccepted } from 
 
 const tiles = ['A', 'B', 'C', 'D', 'E'].map((id) => ({ id, name: id }));
 const pending: RefillPending = { removedIds: ['B', 'C'], tiles, apBefore: 4, playerID: '0', currentPlayer: '0', turn: 1 };
+const wild = { id: 'slash-0-1', name: SLASH_WILD_JOB_NAME };
+const wildPending = { ...pending, tiles: [wild, ...tiles] };
 
 function gameWith(ids: string[], ap: number, occupied: boolean) {
   const G = GameStore.initialState();
@@ -40,5 +43,34 @@ describe('refill flow helpers', () => {
     expect(keys('shifting')).toEqual(['A', 'D', 'E', 'EMPTY', 'EMPTY']);
     expect(keys('dealing')).toEqual(['A', 'D', 'E', 'n1', 'EMPTY']);
     expect(keys('dealing', { ...sequence, dealt: 1 })).toEqual(['A', 'D', 'E', 'n1', 'n2']);
+  });
+
+  it('keeps the wild card first and static while real cards empty, shift and deal', () => {
+    const G = gameWith([wild.id, 'A', 'D', 'E', 'n1', 'n2'], 3, true);
+    expect(isRefillAccepted(wildPending, G, '0')).toBe(true);
+    const sequence = { ...splitAccepted(wildPending, G), dealt: 0 };
+    expect(sequence.survivors.map(({ id }) => id)).toEqual(['A', 'D', 'E']);
+
+    const expectRow = (phase: Parameters<typeof buildRefillView>[0], expected: string[], dealt = 0) => {
+      const view = buildRefillView(phase, wildPending, phase === 'awaiting' ? null : { ...sequence, dealt });
+      expect(view.count).toBe(5);
+      expect(view.tiles[0]).toEqual({ kind: 'card', ...wild });
+      expect(view.tiles.slice(1).map((tile) => (tile.kind === 'empty' ? 'EMPTY' : tile.id))).toEqual(expected);
+      return view.tiles;
+    };
+    expect(expectRow('awaiting', ['A', 'B', 'C', 'D', 'E'])[2]).toMatchObject({ id: 'B', ghost: true });
+    expectRow('emptying', ['A', 'EMPTY', 'EMPTY', 'D', 'E']);
+    expectRow('shifting', ['A', 'D', 'E', 'EMPTY', 'EMPTY']);
+    expect(expectRow('dealing', ['A', 'D', 'E', 'n1', 'EMPTY'])[4]).toMatchObject({ id: 'n1', motion: 'deal' });
+    expect(expectRow('dealing', ['A', 'D', 'E', 'n1', 'n2'], 1)[5]).toMatchObject({ id: 'n2', motion: 'deal' });
+  });
+
+  it('excludes synthetic arrivals and rejects strip-only changes as refill acceptance', () => {
+    const nextTurn = gameWith(['slash-1-1', 'A', 'D', 'E', 'n1', 'n2'], 3, true);
+    expect(splitAccepted(wildPending, nextTurn).incoming.map(({ id }) => id)).toEqual(['n1', 'n2']);
+
+    const stripped = gameWith(['A', 'B', 'C', 'D', 'E'], 3, true);
+    expect(isRefillAccepted(wildPending, stripped, '0')).toBe(false);
+    expect(isRefillAccepted({ ...wildPending, removedIds: [wild.id] }, stripped, '0')).toBe(false);
   });
 });
