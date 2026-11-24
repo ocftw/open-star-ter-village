@@ -36,8 +36,10 @@ for (const width of [1024, 1280, 1440]) {
       const filler = document.createElement('div');
       filler.setAttribute('data-testid', 'scroll-filler');
       filler.style.height = '2000px';
-      // Grow the grid row (first column) so the strip has room to stick within it.
-      document.querySelector('[data-game-board]')?.children[1]?.firstElementChild?.appendChild(filler);
+      // The upper track is viewport-bound and its columns scroll locally, so grow the
+      // grid's single row directly (placed in the first cell) to make the page scroll.
+      filler.style.gridArea = '1 / 1';
+      document.querySelector('[data-game-board]')?.children[1]?.appendChild(filler);
     });
 
     await page.mouse.move(width / 2, 400);

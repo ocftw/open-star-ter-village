@@ -45,6 +45,42 @@ import ProjectCatalogLink from './ProjectCatalogLink';
 import RoundStartOverlay from './board/RoundStartOverlay';
 import { useRoundStartOverlay } from './board/useRoundStartOverlay';
 
+/**
+ * Desktop height budget: the upper grid gets whatever the viewport leaves after
+ * the sticky header and the bottom row's real border-box height, so the hand
+ * and market stay on screen while only the projects scroller scrolls. Published
+ * as --board-upper-h and re-measured on resize, font load and content changes.
+ */
+function useUpperTrackHeight(
+  shellRef: React.RefObject<HTMLDivElement>,
+  bottomRowRef: React.RefObject<HTMLDivElement>,
+  isMobile: boolean,
+) {
+  React.useLayoutEffect(() => {
+    const shell = shellRef.current;
+    const bottom = bottomRowRef.current;
+    if (isMobile || !shell || !bottom) return;
+    const header = shell.querySelector('[data-testid="app-header"]');
+    const measure = () => {
+      const headerHeight = header?.getBoundingClientRect().height ?? 72;
+      const upper = window.innerHeight - headerHeight - bottom.getBoundingClientRect().height;
+      shell.style.setProperty('--board-header-h', `${headerHeight}px`);
+      shell.style.setProperty('--board-upper-h', `${Math.max(240, Math.floor(upper))}px`);
+    };
+    measure();
+    const observer = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(measure);
+    observer?.observe(bottom);
+    Array.from(bottom.children).forEach((child) => observer?.observe(child));
+    if (header) observer?.observe(header);
+    window.addEventListener('resize', measure);
+    void document.fonts?.ready.then(measure);
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener('resize', measure);
+    };
+  }, [shellRef, bottomRowRef, isMobile]);
+}
+
 const Board: React.FC<GameContext> = (gameContext) => {
   const { G, playerID, ctx, matchData } = gameContext;
   const dispatch = useAppDispatch();
@@ -76,6 +112,9 @@ const Board: React.FC<GameContext> = (gameContext) => {
   const isMobile = useIsMobile();
   const history = useGameHistory(gameContext);
   const projectsRef = React.useRef<HTMLDivElement>(null);
+  const shellRef = React.useRef<HTMLDivElement>(null);
+  const bottomRowRef = React.useRef<HTMLDivElement>(null);
+  useUpperTrackHeight(shellRef, bottomRowRef, isMobile);
 
   // 斜槓青年 target-position picker: during Recruit, only when the selected
   // job card is the player's live wild card (legacy games: a mismatched card while
@@ -164,8 +203,10 @@ const Board: React.FC<GameContext> = (gameContext) => {
     <div
       data-game-board
       data-round-start-ready={roundStart.ready}
+      ref={shellRef}
+      className="board-desktop"
       style={{
-        minHeight: '100vh',
+        minHeight: '100dvh',
         display: 'flex',
         flexDirection: 'column',
         background: 'var(--paper)',
@@ -176,37 +217,45 @@ const Board: React.FC<GameContext> = (gameContext) => {
       <GameHeader gameContext={gameContext} />
 
       <div
+        className="board-upper"
         style={{
           display: 'grid',
           gridTemplateColumns: '250px minmax(0, 1fr) 76px 231px',
           position: 'relative',
           gap: 16,
           padding: 16,
-          flex: 1,
           alignItems: 'start',
         }}
       >
-        {/* LEFT — ranking, history, then hand (players only) */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 14, minWidth: 0 }}>
+        {/* LEFT — ranking and history */}
+        <div className="board-col board-col--left">
           <ScorePanel gameContext={gameContext} />
           <GameHistory entries={history} matchData={matchData} />
-          {playerID !== null && <HandPanel gameContext={gameContext} />}
         </div>
 
-        {/* CENTER — notices + projects + job market */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 14, minWidth: 0 }}>
+        {/* CENTER — notices + projects */}
+        <div className="board-col board-col--center">
           {actionAreaView !== 'context' && actionArea}
           {projectsSection}
-          {jobMarket}
         </div>
 
         <TurnStrip gameContext={gameContext} projectsRef={projectsRef} />
 
         {/* RIGHT — action panel */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div className="board-col board-col--right">
           {actionAreaView === 'context' && actionArea}
         </div>
         {roundStartOverlay}
+      </div>
+
+      {/* BOTTOM — hand (players only) beside the job market */}
+      <div
+        ref={bottomRowRef}
+        data-testid="board-bottom-row"
+        className={`board-bottom-row${playerID === null ? ' board-bottom-row--observer' : ''}`}
+      >
+        {playerID !== null && <HandPanel gameContext={gameContext} />}
+        <div className="board-bottom-row__market">{jobMarket}</div>
       </div>
 
       <GameOverDialog gameContext={gameContext} open={!!gameover && showGameOver} onClose={() => setShowGameOver(false)} />
