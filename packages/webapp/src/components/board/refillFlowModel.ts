@@ -1,4 +1,5 @@
 import type { ClientGameState as GameState } from '@/game/store/store';
+import { getRealJobCards, isSlashWildJobCard } from '@/game/core/slashWildJob';
 import { ActionSlotSelector } from '@/game/store/slice/actionSlot';
 import { PlayersSelector } from '@/game/store/slice/players';
 
@@ -47,19 +48,21 @@ export type RefillSequence = { survivors: RefillCard[]; incoming: RefillCard[]; 
  */
 export function isRefillAccepted(pending: RefillPending, G: GameState, playerID: string | null): boolean {
   if (playerID === null || playerID !== pending.playerID) return false;
+  const originals = new Set(getRealJobCards(pending.tiles).map((card) => card.id));
   const onTable = new Set(G.table.jobSlots.map((card) => card.id));
-  if (pending.removedIds.some((id) => onTable.has(id))) return false;
+  if (!pending.removedIds.length || pending.removedIds.some((id) => !originals.has(id) || onTable.has(id))) return false;
   if (PlayersSelector.getNumActionTokens(G.players, playerID) >= pending.apBefore) return false;
   return ActionSlotSelector.isOccupied(G.table.actionSlots.removeAndRefillJobs);
 }
 
-/** Frozen at acceptance: survivors keep their relative order, new cards are those never seen before. */
+/** Freeze the real-card queue at acceptance, keeping survivors in table order. */
 export function splitAccepted(pending: RefillPending, G: GameState): Pick<RefillSequence, 'survivors' | 'incoming'> {
   const removed = new Set(pending.removedIds);
-  const seen = new Set(pending.tiles.map((card) => card.id));
+  const originals = getRealJobCards(pending.tiles);
+  const seen = new Set(originals.map((card) => card.id));
   return {
-    survivors: pending.tiles.filter((card) => !removed.has(card.id)),
-    incoming: G.table.jobSlots.filter((card) => !seen.has(card.id)).map(({ id, name }) => ({ id, name })),
+    survivors: originals.filter((card) => !removed.has(card.id)),
+    incoming: getRealJobCards(G.table.jobSlots).filter((card) => !seen.has(card.id)),
   };
 }
 
@@ -80,12 +83,14 @@ export function buildRefillView(
   sequence: RefillSequence | null,
 ): RefillView {
   const removed = new Set(pending.removedIds);
-  const total = pending.tiles.length;
+  const realTiles = getRealJobCards(pending.tiles);
+  const wild = pending.tiles.find(isSlashWildJobCard);
+  const total = realTiles.length;
   let tiles: RefillTile[];
   if (phase === 'awaiting' || !sequence) {
-    tiles = pending.tiles.map((c) => card(c, removed.has(c.id) ? { ghost: true } : {}));
+    tiles = realTiles.map((c) => card(c, removed.has(c.id) ? { ghost: true } : {}));
   } else if (phase === 'emptying') {
-    tiles = pending.tiles.map((c, i) => (removed.has(c.id) ? { kind: 'empty', key: `empty-${i}` } : card(c)));
+    tiles = realTiles.map((c, i) => (removed.has(c.id) ? { kind: 'empty', key: `empty-${i}` } : card(c)));
   } else if (phase === 'shifting') {
     tiles = [...sequence.survivors.map((c) => card(c)), ...empties(total - sequence.survivors.length)];
   } else {
@@ -98,5 +103,5 @@ export function buildRefillView(
     ];
     tiles = [...shown, ...empties(total - shown.length)];
   }
-  return { phase, tiles, count: total };
+  return { phase, tiles: wild ? [card(wild), ...tiles] : tiles, count: total };
 }
