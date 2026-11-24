@@ -10,7 +10,7 @@ jest.mock('./providers', () => ({ memberProviders: jest.fn() }));
 const readSession = jest.mocked(auth as () => Promise<Session | null>);
 
 beforeEach(() => {
-  jest.replaceProperty(process, 'env', { DATABASE_URL: 'configured', AUTH_SECRET: 'configured' });
+  jest.replaceProperty(process, 'env', { NODE_ENV: 'test', DATABASE_URL: 'configured', AUTH_SECRET: 'configured' });
   readSession.mockReset();
 });
 
