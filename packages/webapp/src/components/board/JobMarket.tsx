@@ -11,7 +11,7 @@ import {
   resetJobSlotSelection,
   toggleJobSlotSelection,
 } from '@/lib/reducers/jobSlotSlice';
-import { getNumRealJobSlots, isSlashWildJobCard } from '@/game/core/slashWildJob';
+import { getNumRealJobSlots, isLiveSlashWildJobCard, isSlashWildJobCard } from '@/game/core/slashWildJob';
 import JobTile from './JobTile';
 import { canSelectAction } from './actionPanel';
 
@@ -27,7 +27,7 @@ export default function JobMarket({
   idle: boolean;
   discardActive: boolean;
 }) {
-  const { G, playerID } = gameContext;
+  const { G, ctx, playerID } = gameContext;
   const dispatch = useAppDispatch();
   const jobsInteractive = useAppSelector(isJobSlotsInteractive);
   const selectedSlots = useAppSelector(getSelectedJobSlots);
@@ -38,6 +38,8 @@ export default function JobMarket({
   const removeMode = refillMode || discardMode;
   const multiSelect = removeMode;
   const removedCount = Object.values(selectedSlots).filter(Boolean).length;
+  const visibleJobs = G.table.jobSlots.filter((job) => !isSlashWildJobCard(job) ||
+    (playerID === ctx.currentPlayer && isLiveSlashWildJobCard(G, ctx.currentPlayer, job)));
 
   const handleTap = (id: string) => {
     if (jobsInteractive) {
@@ -87,7 +89,7 @@ export default function JobMarket({
           marginTop: 10,
         }}
       >
-        {G.table.jobSlots.map((job) => {
+        {visibleJobs.map((job) => {
           const removed = !!selectedSlots[job.id];
           if (removeMode) {
             // 四大自由 discard: marked tiles leave the row (prototype); the
