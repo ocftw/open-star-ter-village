@@ -9,9 +9,9 @@
  * body and validator read nothing playerView hides (decks, other hands,
  * server randomness).
  *
- * Note: this is about prediction only. boardgame.io 0.50.2 still sends the
- * unfiltered initialState on sync (pre-existing, tracked separately), so
- * hidden information is not fully server-side.
+ * Note: this is about prediction only. boardgame.io 0.50.2 currently sends
+ * the unfiltered initialState on connect, so hidden information is not fully
+ * server-side; the fix is in progress on the #529 stack.
  */
 import type { Ctx, State } from 'boardgame.io';
 import { CreateGameReducer, InitializeGame } from 'boardgame.io/internal';
