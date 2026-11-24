@@ -91,9 +91,8 @@ export const OpenStarTerVillage: Game<GameState, Record<string, unknown>, GameSe
     },
     onEnd: (context) => {
       const { ctx } = context;
-      // The 斜槓青年 wild card is turn-only: strip it before settling/refilling,
-      // and again at the very end in case any end-of-round handler touched the market.
-      stripSlashWildJobCards(context.G);
+      // Expire the unused 斜槓青年 card and its entitlement before settling/refilling.
+      stripSlashWildJobCards(context.G, ctx.currentPlayer);
       settleProjects(context);
       scoreLeftoverActionTokens(context);
       refill(context);
@@ -103,7 +102,7 @@ export const OpenStarTerVillage: Game<GameState, Record<string, unknown>, GameSe
 
         passStartPlayerToken(context);
       }
-      stripSlashWildJobCards(context.G);
+      stripSlashWildJobCards(context.G, ctx.currentPlayer);
     },
   },
   playerView,

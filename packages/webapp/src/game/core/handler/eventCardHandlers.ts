@@ -105,8 +105,8 @@ const addTwoWorkerSlots: EventCardHandler = {
 };
 
 // 斜槓青年: each player gets one entitlement this round.
-// Marked games (Rule.slashWildJobCard): spent through the synthetic wild job card the
-// engine deals at the start of each entitled player's turn (core/slashWildJob.ts).
+// Marked games (Rule.slashWildJobCard): the engine deals a wild card at turn start.
+// Playing it or ending the turn with it spends the entitlement (core/slashWildJob.ts).
 // Legacy games: the player's first createProject/recruit job card ignores job matching.
 const ignoreFirstWorkerRequirement: EventCardHandler = {
   start: ({ G }) => {
