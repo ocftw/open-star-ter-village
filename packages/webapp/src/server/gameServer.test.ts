@@ -160,6 +160,27 @@ describe('restart restore (DB-A2)', () => {
   });
 });
 
+it('closes an open lobby event stream before flushing pending writes', async () => {
+  const sql = new FakeMatchesSql();
+  const { running, url, lobby } = await start([counter], MEMBER_ENV, sql);
+  const token = await issueTestHostToken(secretBytes, { sub: 'member-1' });
+  const { matchID } = await lobby.createMatch('counter', {}, { headers: { Authorization: `Bearer ${token}` } });
+  const state = (await running.server.db.fetch(matchID, { state: true })).state;
+  sql.failNext();
+  await running.server.db.setState(matchID, { ...state, _stateID: 1 });
+  expect(sql.rows.get(matchID)?.state_id).toBe(0);
+
+  const abort = new AbortController();
+  try {
+    const stream = await fetch(`${url}/lobby/updates`, { signal: abort.signal });
+    expect(stream.headers.get('content-type')).toContain('text/event-stream');
+    await expect(running.stop(500)).resolves.toBe(true);
+    expect(sql.rows.get(matchID)?.state_id).toBe(1);
+  } finally {
+    abort.abort();
+  }
+});
+
 describe('client prediction and reconciliation (DB-C5, DB-C7)', () => {
   it('predicts a public move before the delayed server result, then matches the server', async () => {
     const sql = new FakeMatchesSql();

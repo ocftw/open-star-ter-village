@@ -47,7 +47,7 @@ export async function startGameServer(options: GameServerOptions): Promise<Runni
     ],
   });
 
-  registerLobbyUpdates(server);
+  const closeLobbyUpdates = registerLobbyUpdates(server);
   server.app.use(hostIdentityMiddleware(persistence.hostTokenSecret));
 
   // boardgame.io's playAgain read-check-create-write is not atomic. The
@@ -87,6 +87,7 @@ export async function startGameServer(options: GameServerOptions): Promise<Runni
     stopping ??= shutdownGracefully({
       timeoutMs,
       stopAccepting: async () => {
+        closeLobbyUpdates();
         const io = (server.app as unknown as { _io?: { close(callback?: () => void): void } })._io;
         await new Promise<void>((resolve) => (io ? io.close(() => resolve()) : resolve()));
         server.kill(servers);
