@@ -59,7 +59,7 @@ export default function JobTile({
   const nameLabel = <span className="job-tile-name">{name}</span>;
   const content = wild ? (
     <span className="job-tile-face" data-testid={`job-face-${id}`}>
-      <span className="job-char job-char--slash" aria-hidden="true">斜</span>
+      <span className="job-char job-char--wild" aria-hidden="true">斜</span>
       {nameLabel}
       <span className="job-tile-sub">可作為任一人力使用</span>
     </span>

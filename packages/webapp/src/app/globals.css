@@ -802,7 +802,7 @@ div.job-tile,
   gap: 4px;
   width: 88px;
 }
-.job-tile-face .job-char--slash {
+.job-tile-face .job-char--wild {
   width: 44px;
   height: 44px;
   margin-bottom: 4px;
