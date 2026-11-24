@@ -475,7 +475,10 @@ export default function ContextAction({
       cost={RuleSelector.getActionTokenCost(G.rules, 'createProject')}
       project={startProject}
       job={startJob}
-      needsAssignment={isWildPair(G, playerID, { projectId: startProjectId ?? null, jobId: startJobId ?? null })}
+      needsAssignment={isWildPair(G, playerID, ctx.currentPlayer, {
+        projectId: startProjectId ?? null,
+        jobId: startJobId ?? null,
+      })}
       assignment={selectionState.assignedJobName}
       onAssign={(name) => dispatch(setAssignedJobName(name))}
       onClearProject={() => {
