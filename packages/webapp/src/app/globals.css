@@ -126,8 +126,27 @@ button {
 
 .lobby-nav-links {
   display: flex;
-  gap: 24px;
+  gap: 12px 24px;
   align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.lobby-member {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.lobby-nickname {
+  overflow-wrap: anywhere;
+}
+
+.lobby-member-notice {
+  color: var(--ink-soft);
+  text-align: end;
 }
 
 .catalog-label-compact {
@@ -1653,4 +1672,35 @@ div.job-tile,
 /* Dev-only gear (DevToolsWidget) must not cover the open ⋯ header menu. */
 body:has([data-testid='header-menu'][aria-expanded='true']) [data-testid='dev-tools-open'] {
   visibility: hidden;
+}
+
+.member-card {
+  width: min(100% - 32px, 480px);
+  margin: 48px auto;
+}
+
+.member-card,
+.member-card-actions,
+.member-nickname-field {
+  display: grid;
+  gap: 16px;
+}
+
+.member-nickname-field {
+  gap: 6px;
+}
+
+.member-nickname-field input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid var(--ink);
+  border-radius: 10px;
+  background: white;
+  font: inherit;
+}
+
+.member-opt-in {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
 }

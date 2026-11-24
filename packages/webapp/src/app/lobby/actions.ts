@@ -151,7 +151,6 @@ export async function getMatch(matchID: string): Promise<LobbyMatch> {
 }
 
 export async function createRoom(playerName: string, numPlayers: number): Promise<MatchCredentials> {
-  // A member host token (none until sign-in exists) makes the match member-hosted.
   const { matchID } = await lobbyClient.createMatch(GAME_NAME, { numPlayers }, await hostTokenInit());
   try {
     return await joinRoom(matchID, playerName, '0');

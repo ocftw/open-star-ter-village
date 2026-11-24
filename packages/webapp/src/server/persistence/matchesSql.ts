@@ -1,5 +1,5 @@
 import { QueryTypes, type Sequelize, type Transaction } from 'sequelize';
-import { MIGRATIONS, MIGRATIONS_TABLE, MIGRATION_LOCK_KEY } from './migrations';
+import { applyMigrations } from './migrations';
 
 /** One `matches` row as the store reads and writes it. */
 export interface MatchRow {
@@ -71,21 +71,10 @@ export class SequelizeMatchesSql implements MatchesSql {
   }
 
   async migrate(): Promise<void> {
-    await this.sequelize.transaction(async (tx) => {
-      await this.sequelize.query(`select pg_advisory_xact_lock(${MIGRATION_LOCK_KEY})`, { transaction: tx });
-      await this.sequelize.query(
-        `create table if not exists ${MIGRATIONS_TABLE} (id text primary key, applied_at timestamptz not null default now())`,
-        { transaction: tx },
-      );
-      const applied = new Set(
-        (await this.query<{ id: string }>(`select id from ${MIGRATIONS_TABLE}`, [], tx)).map((row) => row.id),
-      );
-      for (const migration of MIGRATIONS) {
-        if (applied.has(migration.id)) continue;
-        await this.sequelize.query(migration.sql, { transaction: tx });
-        await this.run(`insert into ${MIGRATIONS_TABLE} (id) values ($1)`, [migration.id], tx);
-      }
-    });
+    await this.sequelize.transaction((tx) => applyMigrations(
+      (sql, bind) => this.sequelize.query(sql, { bind, transaction: tx }),
+      (sql) => this.query<{ id: string }>(sql, [], tx),
+    ));
   }
 
   transaction<T>(fn: (tx: Tx) => Promise<T>): Promise<T> {

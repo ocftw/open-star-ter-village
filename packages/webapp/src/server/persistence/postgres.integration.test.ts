@@ -163,7 +163,9 @@ describeDb('PostgreSQL persistence (real database)', () => {
     const second = storeFor();
     await second.connect();
     await second.flushAndClose();
-    expect(await q('select id from osv_schema_migrations')).toEqual([{ id: '0001_matches' }]);
+    expect(await q('select id from osv_schema_migrations order by id')).toEqual([
+      { id: '0001_matches' }, { id: '0002_member_accounts' },
+    ]);
 
     const columns = await q<{ column_name: string; data_type: string; is_nullable: string }>(
       `select column_name, data_type, is_nullable from information_schema.columns

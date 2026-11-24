@@ -14,6 +14,7 @@
     "start:all": "pnpm run start",
     "start:next": "next start",
     "start:server": "node -r ./register-dist-alias.js dist/src/server.js",
+    "export-contacts": "node scripts/export-contacts.mjs",
     "lint": "next lint",
     "test": "jest",
     "e2e": "PLAYWRIGHT_BROWSERS_PATH=/tmp/pw-browsers playwright test",
