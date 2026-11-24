@@ -21,6 +21,8 @@ import MarketCarousel from './MarketCarousel';
 import { canSelectAction, remainingActionUses } from './actionPanel';
 import { useRefillFlow } from './RefillFlow';
 import { REFILL_TIMING } from './refillFlowModel';
+import { useStartProjectSession } from './useStartProject';
+import { useStartProjectReorder } from './useStartProjectReorder';
 
 /** Local shrink of a just-removed OLD card before its ghost appears (ms). */
 const SHRINK_MS = 260;
@@ -57,6 +59,8 @@ export default function JobMarket({
 
   const flow = useRefillFlow();
   const sectionRef = React.useRef<HTMLElement>(null);
+  const start = useStartProjectSession();
+  useStartProjectReorder(sectionRef, '.job-tile-wrap[data-start-id]', start?.picks.projectId ?? null, !!start && !flow.busy);
 
   // × shrinks the OLD identity locally, then it settles as a ghost. The tile
   // body stays inert; selection itself is dispatched immediately.
@@ -92,13 +96,15 @@ export default function JobMarket({
   };
 
   const handleTap = (id: string) => {
-    if (jobsInteractive) {
+    if (start) {
+      start.pick('job', id);
+    } else if (jobsInteractive) {
       if (!multiSelect && !selectedSlots[id]) dispatch(resetJobSlotSelection());
       dispatch(toggleJobSlotSelection(id));
     }
   };
 
-  const playerIds = Object.keys(G.players);
+  const playerIds = ctx.playOrder;
   const playerNames = playerIds.map((id) => getPlayerName(matchData, id));
   const cardCount = flow.view?.count ?? getNumRealJobSlots(G.table.jobSlots);
   const refillName = UserActionMoves.RemoveAndRefillJobs;
@@ -169,7 +175,7 @@ export default function JobMarket({
         onClick={jobsInteractive && !tile.ghost ? () => handleTap(tile.id) : undefined}
       />
     ),
-  ) : visibleJobs.map((job) => {
+  ) : (start?.view.market ?? visibleJobs.map((card) => ({ card, tier: undefined }))).map(({ card: job, tier }) => {
       const removed = !!selectedSlots[job.id];
       if (removeMode) {
         // 四大自由 discard: marked tiles leave the row (prototype); the
@@ -194,8 +200,10 @@ export default function JobMarket({
           key={job.id}
           id={job.id}
           name={job.name}
-          selected={jobsInteractive && removed}
-          onClick={jobsInteractive ? () => handleTap(job.id) : undefined}
+          selected={start ? start.picks.jobId === job.id : jobsInteractive && removed}
+          visualState={tier === 'disabled' ? 'disabled' :
+            start?.picks.projectId && start.picks.jobId !== job.id ? 'generalHint' : undefined}
+          onClick={start || jobsInteractive ? () => handleTap(job.id) : undefined}
         />
       );
     });

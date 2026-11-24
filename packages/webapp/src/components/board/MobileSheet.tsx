@@ -5,19 +5,21 @@ import { DoubleChevron, IconButton } from '@/components/design';
 export default function MobileSheet({
   action,
   hand,
+  startActive = false,
 }: {
   action: ReactNode;
   hand: ReactNode;
+  startActive?: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
   return (
     <div
       data-testid="mobile-sheet"
-      data-expanded={expanded}
+      data-expanded={startActive || expanded}
       style={{ display: 'flex', flexDirection: 'column', gap: 14, padding: 12, minWidth: 0 }}
     >
       {action}
-      {hand && (
+      {hand && !startActive && (
         <>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <IconButton

@@ -30,6 +30,7 @@ import GameHeader from './board/GameHeader';
 import HandPanel from './board/HandPanel';
 import JobMarket from './board/JobMarket';
 import ContextAction from './board/ContextAction';
+import { StartProjectContext, useStartProject } from './board/useStartProject';
 import { RefillFlowProvider } from './board/RefillFlow';
 import DiscardPanel from './board/DiscardPanel';
 import WaitingForPlayerAlert from './board/WaitingForPlayerAlert';
@@ -111,6 +112,9 @@ const Board: React.FC<GameContext> = (gameContext) => {
     if (hasEnded) dispatch(resetAction());
   }, [hasEnded, dispatch]);
   const isMobile = useIsMobile();
+  const startActive = actionAreaView === 'context' && currentAction === UserActionMoves.CreateProject;
+  const start = useStartProject(gameContext, startActive);
+  const startMountRef = React.useRef<HTMLDivElement>(null);
   const history = useGameHistory(gameContext);
   const projectsRef = React.useRef<HTMLDivElement>(null);
   const shellRef = React.useRef<HTMLDivElement>(null);
@@ -142,12 +146,20 @@ const Board: React.FC<GameContext> = (gameContext) => {
     };
   };
 
+  const hand = playerID !== null && <HandPanel gameContext={gameContext} layout={isMobile ? 'strip' : 'rail'} />;
+  const jobMarket = <JobMarket gameContext={gameContext} idle={idle} discardActive={showDiscardPanel} />;
+
   // Shared between the desktop right column and the mobile stack.
   const actionArea =
     actionAreaView === 'discard' ? (
       <DiscardPanel gameContext={gameContext} />
     ) : actionAreaView === 'context' ? (
-      <ContextAction gameContext={gameContext} />
+      <ContextAction
+        gameContext={gameContext}
+        startMountRef={isMobile ? undefined : startMountRef}
+        startHand={isMobile ? hand : undefined}
+        startMarket={isMobile ? jobMarket : undefined}
+      />
     ) : actionAreaView === 'gameover' ? (
       <GameOverNote onShowResults={() => setShowGameOver(true)} />
     ) : (
@@ -158,10 +170,8 @@ const Board: React.FC<GameContext> = (gameContext) => {
     );
 
   const projectsSection = (
-    <ProjectArea gameContext={gameContext} projectsRef={projectsRef} professionPickerFor={professionPickerFor} />
+    <ProjectArea gameContext={gameContext} projectsRef={projectsRef} professionPickerFor={professionPickerFor} veiled={startActive} />
   );
-
-  const jobMarket = <JobMarket gameContext={gameContext} idle={idle} discardActive={showDiscardPanel} />;
 
   const layout = isMobile ? (
     <div
@@ -180,7 +190,8 @@ const Board: React.FC<GameContext> = (gameContext) => {
       <TurnStrip gameContext={gameContext} projectsRef={projectsRef} horizontal />
       <MobileSheet
         action={actionArea}
-        hand={playerID !== null && <HandPanel gameContext={gameContext} layout="strip" />}
+        hand={hand}
+        startActive={startActive}
       />
       <div
         style={{
@@ -192,7 +203,7 @@ const Board: React.FC<GameContext> = (gameContext) => {
         }}
       >
         {projectsSection}
-        {jobMarket}
+        {!startActive && jobMarket}
         <ScorePanel gameContext={gameContext} />
         <GameHistory entries={history} matchData={matchData} />
       </div>
@@ -237,6 +248,7 @@ const Board: React.FC<GameContext> = (gameContext) => {
         {/* CENTER — notices + projects */}
         <div className="board-col board-col--center">
           {actionAreaView !== 'context' && actionArea}
+          <div ref={startMountRef} className="start-project-mount" />
           {projectsSection}
         </div>
 
@@ -255,14 +267,18 @@ const Board: React.FC<GameContext> = (gameContext) => {
         data-testid="board-bottom-row"
         className={`board-bottom-row${playerID === null ? ' board-bottom-row--observer' : ''}`}
       >
-        {playerID !== null && <HandPanel gameContext={gameContext} />}
+        {hand}
         <div className="board-bottom-row__market">{jobMarket}</div>
       </div>
 
       <GameOverDialog gameContext={gameContext} open={!!gameover && showGameOver} onClose={() => setShowGameOver(false)} />
     </div>
   );
-  return <RefillFlowProvider gameContext={gameContext}>{layout}</RefillFlowProvider>;
+  return (
+    <RefillFlowProvider gameContext={gameContext}>
+      <StartProjectContext.Provider value={start}>{layout}</StartProjectContext.Provider>
+    </RefillFlowProvider>
+  );
 };
 
 // Offline dev games run on Local(), where boardgame.io still reports

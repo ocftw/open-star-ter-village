@@ -30,6 +30,7 @@ type BoardProjectSlotProps = {
   professionPicker?: ProfessionPicker;
   /** Presentational override; otherwise the existing selection resolves to Focused. */
   visualState?: ProjectCardVisualState;
+  placed?: boolean;
   hintJobName?: string;
 };
 
@@ -45,6 +46,7 @@ export default function BoardProjectSlot({
   professionPicker,
   visualState,
   hintJobName,
+  placed,
 }: BoardProjectSlotProps) {
   const dispatch = useAppDispatch();
   const slotsInteractive = useAppSelector(isProjectSlotsInteractive);
@@ -93,6 +95,7 @@ export default function BoardProjectSlot({
   return (
     <div
       data-testid={slot.id}
+      data-start-placed={placed || undefined}
       data-visual-state={resolvedState}
       className={`project-card project-card--in-play project-card--compact project-card--${resolvedState}`}
       data-requirements={requiredJobs.join(',')}

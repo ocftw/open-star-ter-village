@@ -802,7 +802,7 @@ div.job-tile,
   gap: 4px;
   width: 88px;
 }
-.job-tile-face .job-char--slash {
+.job-tile-face .job-char--wild {
   width: 44px;
   height: 44px;
   margin-bottom: 4px;
@@ -2048,3 +2048,104 @@ body:has([data-testid='header-menu'][aria-expanded='true']) [data-testid='dev-to
   .job-market__score-popup { animation: none; }
 }
 /* ===== end issue 496 ===== */
+
+/* ===== #497: start project ===== */
+.start-project-mount:empty { display: none; }
+@media (min-width: 900px) {
+  /* Keep the START host inside the #492 upper budget so a tall assignment
+     row cannot overlap the bottom rails or extend the page. */
+  .board-desktop:has(.start-project-mount:not(:empty)) {
+    height: 100dvh;
+    overflow-x: clip;
+    overflow-y: hidden;
+  }
+  .board-desktop:has(.start-project-mount:not(:empty)) .board-upper {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: var(--board-upper-h, calc(100dvh - 320px));
+  }
+  .board-col--center > .start-project-mount:not(:empty) {
+    flex-shrink: 1;
+    min-height: 0;
+    overflow-y: auto;
+  }
+}
+.start-project {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  padding: 12px;
+  border: 2px solid #c9400f;
+  border-radius: 16px;
+  background: #fff0e2;
+  color: var(--ink);
+}
+.start-project h2 { margin: 0; font-size: 18px; }
+.start-project h2:focus-visible,
+.start-project__clear:focus-visible { outline: 3px solid #167580; outline-offset: 2px; }
+.start-project [tabindex='-1'] { scroll-margin-top: 72px; }
+.start-project .en-cap { color: #6e6556; }
+.start-project__slots {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: 10px;
+}
+.start-project__slot {
+  min-height: 96px;
+  min-width: 0;
+  display: grid;
+  align-items: stretch;
+  position: relative;
+  border: 2px dashed #6e6556;
+  border-radius: 12px;
+  padding: 4px;
+  color: #6e6556;
+}
+.start-project__slot:has(.start-project__clear) { border: 2px solid #c9400f; }
+.start-project__slot > span { place-self: center; text-align: center; font-size: 13px; font-weight: 700; }
+.start-project__slot .job-tile-wrap { place-self: center; }
+.start-project__slot .job-tile { min-width: 0; width: 96px; height: 88px; pointer-events: none; }
+.start-project__clear.gr-icon-btn {
+  position: absolute;
+  inset: -8px -5px auto auto;
+  min-width: 36px;
+  width: 36px;
+  height: 36px;
+  color: var(--ink);
+  background: var(--paper);
+}
+.start-project__actions,
+.start-project__targets { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; justify-content: flex-end; }
+.start-project__actions p { flex-basis: 100%; margin: 0; font-size: 13px; }
+.start-project [data-testid='ca-confirm']:enabled { background: #c9400f; color: white; }
+.start-project [data-testid='ca-confirm']:enabled:hover { background: #c53808; }
+.start-project .hand-panel { padding-inline: 0; }
+.start-project .job-market { min-width: 0; }
+.start-project__toast { position: fixed; top: 70px; right: 16px; z-index: 50; }
+.gr-action-panel--start-mobile { display: block; min-height: 0; padding: 0; border: 0; background: transparent; box-shadow: none; }
+.start-project-panel-main:not([hidden]) { display: contents; }
+.project-area[data-start-veiled] { position: relative; opacity: .48; pointer-events: none; }
+.project-area[data-start-veiled]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(135deg, transparent 0 8px, #6e655622 8px 16px);
+  border-radius: inherit;
+}
+.job-tile[data-visual-state='disabled'],
+.project-card--hand.project-card--disabled { opacity: .35; cursor: default; }
+.project-card--hand.project-card--generalHint { box-shadow: 0 0 0 3px #1ea6b959; }
+.hand-row { position: relative; }
+@media (max-width: 899px) {
+  .start-project__slot .project-card--hand { grid-template-columns: minmax(0, 1fr); gap: 4px; padding: 6px; }
+  .start-project__slot .project-card__hand-left { padding: 0; }
+  .start-project__slot .project-card__title { font-size: 13px; }
+}
+@keyframes start-project-placed {
+  from { outline: 4px solid #c9400f; outline-offset: 6px; }
+  to { outline-color: transparent; outline-offset: 0; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  [data-start-placed] { animation: start-project-placed .9s ease-out; }
+}
+/* ===== end #497 ===== */

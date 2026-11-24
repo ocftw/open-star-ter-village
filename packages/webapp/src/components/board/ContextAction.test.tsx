@@ -21,7 +21,8 @@ import { RuleMutator, RuleSelector } from '@/game/store/slice/rule';
 import { ActionSlotMutator } from '@/game/store/slice/actionSlot';
 import { ProjectCard } from '@/game/card';
 import { makeStore } from '@/lib/store';
-import { UserActionMoves } from '@/lib/reducers/actionStepSlice';
+import { getCurrentAction, UserActionMoves } from '@/lib/reducers/actionStepSlice';
+import { useAppSelector } from '@/lib/hooks';
 import ContextAction from './ContextAction';
 import HandPanel from './HandPanel';
 import JobMarket from './JobMarket';
@@ -29,11 +30,18 @@ import { RefillFlowProvider } from './RefillFlow';
 import { REFILL_TIMING } from './refillFlowModel';
 import BoardProjectSlot from './BoardProjectSlot';
 import MobileSheet from './MobileSheet';
+import { StartProjectContext, useStartProject } from './useStartProject';
 
 const card: ProjectCard = {
   id: 'hand-project', name: '測試專案', type: '開放政府', difficulty: 1,
   description: '', requirements: { 工程師: 8, 美術設計: 4 },
 };
+
+function StartProjectTestProvider({ gameContext, children }: { gameContext: GameContext; children: React.ReactNode }) {
+  const action = useAppSelector(getCurrentAction);
+  const start = useStartProject(gameContext, action === UserActionMoves.CreateProject);
+  return <StartProjectContext.Provider value={start}>{children}</StartProjectContext.Provider>;
+}
 
 function setup(change?: (G: GameState) => void, playerID: string | null = '0') {
   const G = GameStore.initialState();
@@ -59,17 +67,19 @@ function setup(change?: (G: GameState) => void, playerID: string | null = '0') {
     removeAndRefillJobs: jest.fn(), endActionTurn: jest.fn(),
   };
   const gameContext = {
-    G, ctx: { currentPlayer: '0', turn: 1, numMoves: 0 }, moves, playerID,
+    G, ctx: { currentPlayer: '0', playOrder: ['0', '1'], turn: 1, numMoves: 0 }, moves, playerID,
   } as unknown as GameContext;
   const store = makeStore();
   const view = render(
     <Provider store={store}>
-      <ContextAction gameContext={gameContext} />
-      {playerID === '0' && <>
-        <HandPanel gameContext={gameContext} />
-        <JobMarket gameContext={gameContext} idle discardActive={false} />
-        {slots.map((slot) => <BoardProjectSlot key={slot.id} slot={slot} playerID="0" idle={false} />)}
-      </>}
+      <StartProjectTestProvider gameContext={gameContext}>
+        <ContextAction gameContext={gameContext} />
+        {playerID === '0' && <>
+          <HandPanel gameContext={gameContext} />
+          <JobMarket gameContext={gameContext} idle discardActive={false} />
+          {slots.map((slot) => <BoardProjectSlot key={slot.id} slot={slot} playerID="0" idle={false} />)}
+        </>}
+      </StartProjectTestProvider>
     </Provider>,
   );
   return { ...view, G, moves, store, slots };
@@ -199,11 +209,14 @@ describe('斜槓青年 wild job card (marked game)', () => {
     const { moves } = setup(marked(true));
     fireEvent.click(actionButton(UserActionMoves.CreateProject));
     fireEvent.click(screen.getByTestId('hand-card-hand-project'));
-    fireEvent.click(screen.getByTestId('job-card-engineer')); // ordinary mismatched (法務專家)
-    expect(screen.queryByTestId('profession-target-工程師')).toBeNull();
+    const mismatch = screen.getByTestId('job-card-engineer') as HTMLButtonElement;
+    expect(mismatch.disabled).toBe(true);
+    fireEvent.click(mismatch);
+    expect(screen.queryByTestId('start-wild-picker')).toBeNull();
 
     fireEvent.click(screen.getByTestId('job-card-slash-0-1'));
-    fireEvent.click(screen.getByTestId('profession-target-美術設計'));
+    const picker = within(screen.getByTestId('start-wild-picker'));
+    fireEvent.click(picker.getByRole('button', { name: '美術設計' }));
     expect(confirmButton().disabled).toBe(false);
     fireEvent.click(confirmButton());
     expect(moves.createProject).toHaveBeenCalledWith('hand-project', 'slash-0-1', '美術設計', undefined);
@@ -241,6 +254,7 @@ it('selects the action first, then cards, and dispatches the existing create mov
   fireEvent.click(screen.getByTestId('job-card-engineer'));
   expect(confirmButton().disabled).toBe(false);
   fireEvent.click(confirmButton());
+  expect(moves.createProject).toHaveBeenCalledTimes(1);
   expect(moves.createProject).toHaveBeenCalledWith('hand-project', 'engineer', undefined, undefined);
   expect(screen.getByTestId('context-action').getAttribute('data-mode')).toBe('idle');
 });
@@ -429,7 +443,7 @@ describe('換人力 refill flow (#496)', () => {
     };
     const store = makeStore();
     const tree = (g: GameState, t = turn, numMoves = g.table.actionSlots.removeAndRefillJobs.isOccupied ? 1 : 0) => {
-      const gameContext = { G: g, ctx: { currentPlayer: '0', turn: t, numMoves }, moves, playerID: '0', log: [] } as unknown as GameContext;
+      const gameContext = { G: g, ctx: { currentPlayer: '0', playOrder: ['0', '1'], turn: t, numMoves }, moves, playerID: '0', log: [] } as unknown as GameContext;
       return refillBoard(store, gameContext);
     };
     const view = render(tree(G));

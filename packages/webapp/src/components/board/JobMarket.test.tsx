@@ -11,8 +11,21 @@ import { RuleMutator } from '@/game/store/slice/rule';
 import { JobSlotsMutator } from '@/game/store/slice/jobSlots';
 import { ProjectBoardMutator } from '@/game/store/slice/projectBoard';
 import { makeStore } from '@/lib/store';
-import { UserActionMoves, setCurrentAction, setJobSlotsInteractive } from '@/lib/reducers/actionStepSlice';
+import { UserActionMoves, getCurrentAction, setCurrentAction, setJobSlotsInteractive } from '@/lib/reducers/actionStepSlice';
 import JobMarket from './JobMarket';
+import { StartProjectContext, useStartProject } from './useStartProject';
+import { useAppSelector } from '@/lib/hooks';
+import { toggleHandProjectCardSelection } from '@/lib/reducers/handProjectCardSlice';
+
+function Market({ gameContext, idle }: { gameContext: GameContext; idle: boolean }) {
+  const action = useAppSelector(getCurrentAction);
+  const start = useStartProject(gameContext, action === UserActionMoves.CreateProject);
+  return (
+    <StartProjectContext.Provider value={start}>
+      <JobMarket gameContext={gameContext} idle={idle} discardActive={false} />
+    </StartProjectContext.Provider>
+  );
+}
 
 const NAMES = ['工程師', '美術設計', '公務人員', '法務專家', '文字工作者', '議題工作者', '行銷公關', '工程師'];
 
@@ -40,14 +53,16 @@ function setup({
     Array.from({ length: jobs }, (_, i) => ({ id: `job-${i}`, name: NAMES[i % NAMES.length] })),
   );
   change?.(G);
-  const matchData = players.map((id, i) => ({ id: Number(id), name: names?.[i] ?? ['Alice', 'Bob', 'Charlie', 'Dana'][i] }));
+  const matchData = players.map((id, i) => ({
+    id: Number(id), name: names?.[i] ?? ['Alice', 'Bob', 'Charlie', 'Dana'][i],
+  })).sort((a, b) => a.id - b.id);
   const gameContext = {
-    G, ctx: { currentPlayer: '0', turn: 1, numMoves: 0 }, moves: {}, playerID, matchData,
+    G, ctx: { currentPlayer: '0', playOrder: players, turn: 1, numMoves: 0 }, moves: {}, playerID, matchData,
   } as unknown as GameContext;
   const store = makeStore();
   const view = render(
     <Provider store={store}>
-      <JobMarket gameContext={gameContext} idle={idle} discardActive={false} />
+      <Market gameContext={gameContext} idle={idle} />
     </Provider>,
   );
   return { ...view, G, store };
@@ -87,6 +102,11 @@ describe('JobMarket', () => {
     const dots = badges.querySelectorAll('.job-market__pdot');
     expect(Array.from(dots).map((d) => d.textContent)).toEqual(['A', 'B', 'C']);
     dots.forEach((d) => expect(d.getAttribute('aria-hidden')).toBe('true'));
+  });
+
+  it('uses the engine play order for the shared market badges', () => {
+    setup({ players: ['2', '0', '1'], names: ['Charlie', 'Alice', 'Bob'] });
+    expect(screen.getByTestId('job-market-players').getAttribute('aria-label')).toBe('共用人力市場：Charlie、Alice、Bob');
   });
 
   it('handles four players with long names', () => {
@@ -171,4 +191,29 @@ describe('JobMarket refill (#496)', () => {
     expect(screen.getByTestId('job-market-count').textContent).toBe('JOB MARKET · 8 CARDS');
     expect(screen.queryByTestId('score-popup')).toBeNull();
   });
+});
+
+it('orders eligible workers first in START and restores market G order on exit', () => {
+  const { store } = setup({ jobs: 4, change: (G) => {
+    PlayersMutator.resetWorkerTokens(G.players, '0', 12);
+    PlayersMutator.addProjects(G.players, '0', [{
+      id: 'project', name: '專案', type: '開放政府', description: '', difficulty: 1, requirements: { 法務專家: 2 },
+    }]);
+  } });
+  const order = () => screen.getAllByTestId(/^job-card-/).map((tile) => tile.getAttribute('data-testid'));
+  const original = order();
+  React.act(() => {
+    store.dispatch(setCurrentAction(UserActionMoves.CreateProject));
+    store.dispatch(toggleHandProjectCardSelection('project'));
+  });
+  expect(order()).toEqual([original[3], ...original.slice(0, 3)]);
+  const legal = screen.getByTestId(original[3]!) as HTMLButtonElement;
+  expect(legal.disabled).toBe(false);
+  fireEvent.click(legal);
+  expect(legal.getAttribute('aria-pressed')).toBe('true');
+  fireEvent.click(legal);
+  expect(legal.getAttribute('aria-pressed')).toBe('false');
+  expect((screen.getByTestId('refill-jobs') as HTMLButtonElement).disabled).toBe(true);
+  React.act(() => { store.dispatch(setCurrentAction(null)); });
+  expect(order()).toEqual(original);
 });

@@ -140,6 +140,18 @@ describe('JobTile refill motion (#496)', () => {
   });
 });
 
+it('makes an explicitly disabled job inert even if passed a click handler', () => {
+  const onClick = jest.fn();
+  render(<JobTile id="blocked" name="工程師" visualState="disabled" onClick={onClick} />);
+  const card = screen.getByTestId('job-card-blocked') as HTMLButtonElement;
+  expect(card.disabled).toBe(true);
+  card.focus();
+  expect(document.activeElement).not.toBe(card);
+  fireEvent.click(card);
+  fireEvent.keyDown(card, { key: 'Enter' });
+  expect(onClick).not.toHaveBeenCalled();
+});
+
 describe('JobTile 斜槓青年 wild tile', () => {
   it('renders the wild avatar, name and sub-label together on the face', () => {
     render(<JobTile id="slash-0-1" name="斜槓青年" />);

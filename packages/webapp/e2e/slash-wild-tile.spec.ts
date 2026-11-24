@@ -21,7 +21,7 @@ for (const [width, height] of [[1280, 832], [390, 844]] as const) {
         await document.fonts.ready;
         const face = tile.querySelector('.job-tile-face')!;
         const sub = face.querySelector('.job-tile-sub')!;
-        const avatar = face.querySelector('.job-char--slash')!;
+        const avatar = face.querySelector('.job-char--wild')!;
         const edges = ({ left, right, width }: DOMRect) => ({ left, right, width });
         const range = document.createRange();
         range.selectNodeContents(sub);

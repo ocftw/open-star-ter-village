@@ -77,3 +77,19 @@ test('profession picker rows are pressable targets that do not select the card',
   expect(onPick).toHaveBeenCalledWith('美術設計');
   expect(onClick).not.toHaveBeenCalled();
 });
+
+test('an ineligible face dims and cannot be picked, then regains interactivity', () => {
+  const onClick = jest.fn();
+  const { rerender } = render(<ProjectCardFace card={card} disabled onClick={onClick} data-testid="face" />);
+  const face = screen.getByTestId('face');
+  expect(face.getAttribute('data-visual-state')).toBe('disabled');
+  expect(face.getAttribute('aria-disabled')).toBe('true');
+  expect(face.hasAttribute('tabindex')).toBe(false);
+  fireEvent.click(face);
+  fireEvent.keyDown(face, { key: 'Enter' });
+  expect(onClick).not.toHaveBeenCalled();
+  rerender(<ProjectCardFace card={card} visualState="generalHint" onClick={onClick} data-testid="face" />);
+  expect(face.getAttribute('data-visual-state')).toBe('generalHint');
+  fireEvent.keyDown(face, { key: 'Enter' });
+  expect(onClick).toHaveBeenCalledTimes(1);
+});
