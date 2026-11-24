@@ -354,13 +354,14 @@ in Redux.
 - `MATCH_PERSISTENCE` is `member` or `off`. It defaults to `member` when
   `DATABASE_URL` is set and `off` otherwise; `off` opens no database
   connection.
-- `DATABASE_URL` is the PostgreSQL connection string for member-hosted match
-  state. Never commit it or print it.
+- `DATABASE_URL` is the shared PostgreSQL connection string for the web app's
+  member accounts and the game server's match state. Never commit or print it.
 - `MATCH_RESUME_WINDOW_HOURS` (default `24`) is how long an idle member match
   can be restored; older unfinished matches are marked abandoned (rows kept).
-- `GAME_SERVER_AUTH_SECRET` verifies member host tokens (HS256). It must be at
-  least 32 bytes (bytes, not characters) or the server refuses to start. Unset
-  means every match is guest-hosted.
+- `GAME_SERVER_AUTH_SECRET` signs and verifies member host tokens (HS256). Give
+  Next.js and the game server the same secret of at least 32 UTF-8 bytes. The
+  game server refuses to start with a shorter configured secret. Without the
+  secret, all matches are guest-hosted.
 
 ### Match persistence
 
@@ -384,12 +385,50 @@ member-hosted matches (`src/server/persistence/`):
   unreachable or writes failing while play continues from memory).
 - SIGTERM finishes queued moves and in-flight and pending writes, then exits;
   `scripts/start-production.sh` forwards signals to both processes.
-- The host is identified only by a verified `Authorization: Bearer` host
-  token on create (audience `open-star-ter-village:game-server`); member
-  sign-in does not issue one yet, so the lobby sends none.
+- When a signed-in member with a nickname creates a room, the lobby requests a
+  five-minute token from `/api/game-token` and sends it in `Authorization: Bearer`.
+  The game server verifies it before storing the match. If the browser cannot
+  get a token, it can still create a guest-hosted match.
 
 Integration tests against a real database run when `TEST_DATABASE_URL` points
-at a disposable PostgreSQL server; they are skipped otherwise.
+at a disposable PostgreSQL server. Set `E2E_REQUIRE_DB=1` to make Playwright
+fail if the database URL is missing. The Playwright member flow also requires
+`AUTH_TEST_LOGIN=1` and throwaway `AUTH_SECRET` and `GAME_SERVER_AUTH_SECRET`
+values. The host-token secret must be at least 32 UTF-8 bytes.
+
+### Member sign-in
+
+Next.js uses Auth.js on the Node runtime with 30-day PostgreSQL sessions.
+Each provider account has its own member record. First sign-in asks the player
+for a nickname and records their contact-list choice with the consent version
+and timestamp. The database keeps the provider's contact email in
+`users.contact_email` and leaves `users.email`, `name`, and `image` empty.
+
+- `AUTH_SECRET` protects Auth.js. Set a long random secret in Next.js.
+- `AUTH_GOOGLE_ID` and `AUTH_GOOGLE_SECRET` enable Google sign-in when both
+  values are set. Register `/api/auth/callback/google` on your web app's origin.
+- `AUTH_GITHUB_ID` and `AUTH_GITHUB_SECRET` enable GitHub sign-in when both
+  values are set. Register `/api/auth/callback/github` on your web app's origin.
+- `AUTH_URL` sets the canonical web app origin, such as `https://game.example.org`.
+  If you omit it behind a trusted proxy, set `AUTH_TRUST_HOST=true` and configure
+  the proxy to supply the correct host and protocol.
+- `AUTH_TEST_LOGIN=1` enables the test sign-in form and its POST endpoint in
+  development. Production builds return 404 at the endpoint regardless of
+  the flag. The route creates an Auth.js-compatible database session.
+- `CONTACT_OPT_IN_DEFAULT=true` starts the contact-list box checked. The
+  shipped default leaves it unchecked.
+
+The game server applies migrations at startup. Next.js also applies them when
+it first connects. Both processes use the same transaction-scoped PostgreSQL
+advisory lock. With `MATCH_PERSISTENCE=off` or no `DATABASE_URL`, the lobby shows
+an availability notice, the Auth.js routes and `/api/game-token` return 503,
+and guests can still create and join rooms.
+
+Run `pnpm --filter @open-star-ter-village/webapp export-contacts` with
+`DATABASE_URL` set after migrations have run. It writes one CSV column,
+`contact_email`, with opted-in addresses to stdout. A cell that starts with
+`=`, `+`, `-`, `@`, a tab or a carriage return gets a leading `'` so spreadsheets
+keep it as text; still import the `contact_email` column as text.
 
 ## Coding Constraints
 

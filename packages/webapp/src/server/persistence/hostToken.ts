@@ -2,7 +2,7 @@ import { AsyncLocalStorage } from 'node:async_hooks';
 import { jwtVerify } from 'jose';
 
 /**
- * Audience shared by the (future, #452) token issuer and this verifier. A host
+ * Audience shared by the token issuer and this verifier. A host
  * token without exactly this `aud` is invalid.
  */
 export const HOST_TOKEN_AUDIENCE = 'open-star-ter-village:game-server';
@@ -100,7 +100,10 @@ export function hostIdentityMiddleware(secret: Uint8Array | undefined) {
       if ('userId' in result) userId = result.userId;
       else console.warn('Host token rejected; continuing as guest host', { reason: result.rejected });
     }
-    if (isCreate && !userId) console.warn('Match created without a verified member host');
+    if (isCreate) {
+      if (userId) console.info('Match create verified a member host');
+      else console.warn('Match created without a verified member host');
+    }
     return hostIdentity.run({ userId }, next);
   };
 }
