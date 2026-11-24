@@ -21,8 +21,11 @@ export const playerView = ({ G, ctx, playerID }: { G: GameState; ctx: Ctx; playe
     ? {
       ...view.table,
       jobSlots: view.table.jobSlots.filter(
-        (card) => !isSlashWildJobCard(card) ||
-          (playerID === ctx.currentPlayer && isLiveSlashWildJobCard(G, ctx.currentPlayer, card)),
+        (card) => !isSlashWildJobCard(card) || (
+          ctx.gameover === undefined &&
+          playerID === ctx.currentPlayer &&
+          isLiveSlashWildJobCard(G, ctx.currentPlayer, card)
+        ),
       ),
     }
     : view.table;

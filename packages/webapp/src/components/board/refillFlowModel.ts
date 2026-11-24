@@ -1,3 +1,4 @@
+import type { LogEntry } from 'boardgame.io';
 import type { ClientGameState as GameState } from '@/game/store/store';
 import { getRealJobCards, isLiveSlashWildJobCard } from '@/game/core/slashWildJob';
 import { ActionSlotSelector } from '@/game/store/slice/actionSlot';
@@ -41,13 +42,22 @@ export type RefillView = { phase: Exclude<RefillPhase, 'idle'>; tiles: RefillTil
 
 export type RefillSequence = { survivors: RefillCard[]; incoming: RefillCard[]; dealt: number };
 
-/**
- * G confirms THIS pending action only when every selected card has left the
- * table, the acting player paid AP and the refill action slot is occupied.
- * ctx.numMoves alone, or unrelated G changes, never count.
- */
-export function isRefillAccepted(pending: RefillPending, G: GameState, playerID: string | null): boolean {
-  if (playerID === null || playerID !== pending.playerID) return false;
+export function isRefillAccepted(
+  pending: RefillPending,
+  { G, playerID, turn, log }: { G: GameState; playerID: string | null; turn: number; log: readonly LogEntry[] },
+): boolean {
+  if (playerID !== pending.playerID) return false;
+  if (turn !== pending.turn) {
+    // Turn end restores AP and frees the slot. The log still records the move on its original turn.
+    return turn === pending.turn + 1 && log.some((entry) => {
+      if (entry.turn !== pending.turn || entry.action.type !== 'MAKE_MOVE') return false;
+      const { type, playerID: actor, args } = entry.action.payload;
+      const ids = args?.[0];
+      return type === 'removeAndRefillJobs' && actor === playerID && Array.isArray(ids) &&
+        ids.length === pending.removedIds.length && pending.removedIds.every((id, index) => id === ids[index]);
+    });
+  }
+
   const originals = new Set(getRealJobCards(pending.tiles).map((card) => card.id));
   const onTable = new Set(G.table.jobSlots.map((card) => card.id));
   if (!pending.removedIds.length || pending.removedIds.some((id) => !originals.has(id) || onTable.has(id))) return false;
