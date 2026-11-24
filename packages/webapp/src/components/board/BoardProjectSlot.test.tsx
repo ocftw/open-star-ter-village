@@ -2,13 +2,15 @@
  * @jest-environment jsdom
  */
 import React from 'react';
-import { fireEvent, render, within } from '@testing-library/react';
+import { act, fireEvent, render, within } from '@testing-library/react';
 import type { FilteredMetadata } from 'boardgame.io';
 import { Provider } from 'react-redux';
 import BoardProjectSlot from './BoardProjectSlot';
 import { makeStore } from '@/lib/store';
 import {
   setOwnedContributionInteractive,
+  setJoinedContributionInteractive,
+  resetAction,
   setProjectSlotsInteractive,
 } from '@/lib/reducers/actionStepSlice';
 import { toggleProjectSlotSelection } from '@/lib/reducers/projectSlotSlice';
@@ -71,6 +73,78 @@ describe('BoardProjectSlot requirement rows', () => {
         expect(el.childElementCount).toBe(0);
       });
   });
+});
+
+it('shares the action budget across rows and projects and signals a cap only from an accepted increment', () => {
+  const store = makeStore();
+  store.dispatch(setOwnedContributionInteractive());
+  const cap = jest.fn();
+  const nearlyFull = {
+    ...slot, contributions: [{ ...slot.contributions[0], value: 7 }, { jobName: '設計師', worker: '0', value: 1 }],
+  };
+  const { getByTestId } = render(
+    <Provider store={store}>
+      <BoardProjectSlot slot={nearlyFull} playerID="0" idle={false} contributionMax={3} onContributionCap={cap} />
+      <BoardProjectSlot slot={{ ...slot, id: 'second' }} playerID="0" idle={false} contributionMax={3} onContributionCap={cap} />
+    </Provider>,
+  );
+  const first = within(getByTestId(slot.id));
+  const second = within(getByTestId('second'));
+  const plus = first.getByLabelText('增加 工程師 貢獻') as HTMLButtonElement;
+  const minus = first.getByLabelText('減少 工程師 貢獻') as HTMLButtonElement;
+  const secondPlus = second.getByTestId('contribution-increment') as HTMLButtonElement;
+  expect(minus.disabled).toBe(true);
+  fireEvent.click(plus);
+  expect(plus.disabled).toBe(true);
+  expect(secondPlus.disabled).toBe(false);
+  expect(cap).toHaveBeenCalledTimes(1);
+  fireEvent.click(first.getByLabelText('增加 設計師 貢獻'));
+  fireEvent.click(secondPlus);
+  expect(cap).toHaveBeenCalledTimes(2);
+  expect(secondPlus.disabled).toBe(true);
+  expect((first.getByLabelText('增加 設計師 貢獻') as HTMLButtonElement).disabled).toBe(true);
+  fireEvent.click(secondPlus);
+  expect(cap).toHaveBeenCalledTimes(2);
+  fireEvent.click(minus);
+  fireEvent.click(plus);
+  expect(cap).toHaveBeenCalledTimes(3);
+  expect(first.getByText('8/8')).toBeTruthy();
+  expect(second.getByText('5/8')).toBeTruthy();
+});
+
+it('gates the joined group on the acting worker, drops controls on eligibility loss, and clears fading outside the mode', () => {
+  const store = makeStore();
+  store.dispatch(setJoinedContributionInteractive());
+  const joined = { ...slot, owner: '3' };
+  const cards = (eligible = true) => (
+    <Provider store={store}>
+      <BoardProjectSlot slot={slot} playerID="0" idle={false} contributionMax={5} />
+      <BoardProjectSlot
+        slot={{ ...joined, id: 'joined', contributions: eligible ? joined.contributions : joined.contributions.slice(1) }}
+        playerID="0"
+        matchData={[{ id: 0, name: 'Alice' }, { id: 1, name: 'Bob' }, { id: 2, name: 'Charlie' },
+          { id: 3, name: 'A fourth player with a long display name' }]}
+        idle={false}
+        contributionMax={5}
+      />
+    </Provider>
+  );
+  const { getByTestId, rerender } = render(cards());
+  const ownCard = getByTestId(slot.id);
+  const joinedCard = getByTestId('joined');
+  expect(ownCard.hasAttribute('data-contribution-faded')).toBe(true);
+  expect(within(ownCard).queryByTestId('contribution-increment')).toBeNull();
+  expect(joinedCard.hasAttribute('data-contribution-faded')).toBe(false);
+  expect(within(joinedCard).getByText('A fourth player with a long display name')).toBeTruthy();
+  fireEvent.click(within(joinedCard).getByLabelText('增加 工程師 貢獻'));
+  expect(within(joinedCard).getByText('5/8')).toBeTruthy();
+  rerender(cards(false));
+  expect(joinedCard.hasAttribute('data-contribution-faded')).toBe(true);
+  expect(within(joinedCard).queryByTestId('contribution-increment')).toBeNull();
+  expect(within(joinedCard).queryByText('5/8')).toBeNull();
+  act(() => store.dispatch(resetAction()));
+  expect(ownCard.hasAttribute('data-contribution-faded')).toBe(false);
+  expect(joinedCard.hasAttribute('data-contribution-faded')).toBe(false);
 });
 
 const visualSlot: ProjectSlotState = {

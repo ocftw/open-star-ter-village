@@ -9,6 +9,9 @@ const PERSPECTIVE_LABELS = {
 
 export type DevPerspective = keyof typeof PERSPECTIVE_LABELS;
 
+/** START, refill, and contribution can mount confirmation outside the action panel. */
+export const confirmButton = (page: Page) => page.getByTestId('ca-confirm');
+
 /** Wait for the show-once decision, including seen rounds and finished games. */
 export async function dismissRoundStartOverlay(page: Page): Promise<void> {
   await expect(page.locator('[data-game-board]')).toHaveAttribute('data-round-start-ready', 'true', { timeout: 20_000 });

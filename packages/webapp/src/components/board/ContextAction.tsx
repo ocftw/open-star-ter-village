@@ -11,6 +11,7 @@ import {
   ValidationFailure,
   ValidationResult,
   getActionErrorMessage,
+  invalid,
   validateContributeJoinedProjects,
   validateContributeOwnedProjects,
   validateCreateProject,
@@ -18,7 +19,7 @@ import {
   validateRecruit,
   validateRemoveAndRefillJobs,
 } from '@/game/core/stage/action/validate';
-import { useAppDispatch, useAppSelector } from '@/lib/hooks';
+import { useAppDispatch, useAppSelector, useAppStore } from '@/lib/hooks';
 import {
   UserActionMoves,
   getAssignedJobName,
@@ -36,16 +37,19 @@ import { getSelectedHandProjectCards, resetHandProjectCardSelection } from '@/li
 import { getSelectedJobSlots, resetJobSlotSelection } from '@/lib/reducers/jobSlotSlice';
 import { getSelectedProjectSlots, resetProjectSlotSelection } from '@/lib/reducers/projectSlotSlice';
 import { getContributions, resetContribution } from '@/lib/reducers/contributionSlice';
-import { getTotalContributionValue } from '@/game/core/ContributionAction';
+import { ContributionAction, getTotalContributionValue } from '@/game/core/ContributionAction';
 import { ActionMoveName, ActionMoves } from '@/game/core/stage/action/move/type';
 import { RuleSelector } from '@/game/store/slice/rule';
 import { ActionSlotSelector } from '@/game/store/slice/actionSlot';
 import { PlayersSelector } from '@/game/store/slice/players';
+import { ProjectSlotSelector } from '@/game/store/slice/projectSlot/projectSlot';
 import { useRefillFlow } from './RefillFlow';
 import StartProjectFlow from './StartProjectFlow';
 import { useStartProjectSession } from './useStartProject';
 import { isWildPair } from './startProjectOrder';
 import { useStartProjectDeparture } from './useStartProjectDeparture';
+import ContributionConfirmBar from './ContributionConfirmBar';
+import { isContributionAction } from './useContributionFeedback';
 
 type ExtendedMoves = ActionMoves & { endActionTurn: () => void };
 type RegularActionName = ActionMoveName;
@@ -60,25 +64,43 @@ type ModeCopy = {
  * Action-first panel with the existing selection, preflight, and move dispatch flow.
  */
 export default function ContextAction({
-  gameContext, startMountRef, startHand, startMarket,
+  gameContext, startMountRef, startHand, startMarket, contributionMount, onContributionSubmit, onContributionCancel,
 }: {
   gameContext: GameContext;
   startMountRef?: React.RefObject<HTMLDivElement>;
   startHand?: React.ReactNode;
   startMarket?: React.ReactNode;
+  contributionMount?: HTMLElement | null;
+  onContributionSubmit?: (
+    name: UserActionMoves.ContributeOwnedProjects | UserActionMoves.ContributeJoinedProjects,
+    contributions: ContributionAction[],
+  ) => void;
+  onContributionCancel?: () => void;
 }) {
   const { G, ctx, moves, playerID } = gameContext;
   const typedMoves = moves as unknown as ExtendedMoves;
   const dispatch = useAppDispatch();
+  const store = useAppStore();
 
   const currentAction = useAppSelector(getCurrentAction);
   const handSelection = useAppSelector(getSelectedHandProjectCards);
   const jobSelection = useAppSelector(getSelectedJobSlots);
   const projectSelection = useAppSelector(getSelectedProjectSlots);
-  const contributions = useAppSelector(getContributions);
+  const pendingContributions = useAppSelector(getContributions);
+  const contributions = pendingContributions.filter(({ value }) => value > 0);
   const assignedJobName = useAppSelector(getAssignedJobName);
   const start = useStartProjectSession();
   const startActive = currentAction === UserActionMoves.CreateProject;
+  const contributionActive = isContributionAction(currentAction);
+  const board = G.table.projectBoard;
+  const pendingCardIds = React.useRef(new Map<string, string | undefined>());
+  React.useLayoutEffect(() => {
+    const previous = pendingCardIds.current;
+    pendingCardIds.current = new Map(contributions.map(({ projectSlotId }) => [
+      projectSlotId,
+      previous.has(projectSlotId) ? previous.get(projectSlotId) : board.find(({ id }) => id === projectSlotId)?.card?.id,
+    ]));
+  });
   const panelRef = React.useRef<HTMLElement>(null);
   const captureDeparture = useStartProjectDeparture(gameContext);
   const wasStarting = React.useRef(false);
@@ -90,6 +112,39 @@ export default function ContextAction({
     }
     wasStarting.current = startActive;
   }, [startActive]);
+
+  const lastContributionStepperRef = React.useRef<HTMLButtonElement | null>(null);
+  React.useEffect(() => {
+    if (!contributionActive) {
+      lastContributionStepperRef.current = null;
+      return;
+    }
+    const remember = (event: FocusEvent) => {
+      const target = event.target;
+      if (
+        target instanceof HTMLButtonElement
+        && (target.dataset.testid === 'contribution-increment' || target.dataset.testid === 'contribution-decrement')
+      ) {
+        lastContributionStepperRef.current = target;
+      }
+    };
+    document.addEventListener('focusin', remember);
+    return () => document.removeEventListener('focusin', remember);
+  }, [contributionActive]);
+
+  const hadPendingContribution = React.useRef(false);
+  const hasPendingContribution = contributions.length > 0;
+  React.useLayoutEffect(() => {
+    const wasPending = hadPendingContribution.current;
+    hadPendingContribution.current = hasPendingContribution;
+    if (!wasPending || hasPendingContribution || !contributionActive) return;
+    const last = lastContributionStepperRef.current;
+    const available = last && last.isConnected && !last.disabled ? last : null;
+    const sibling = last?.closest('[data-testid="contribution-controls"]')
+      ?.querySelector<HTMLButtonElement>('[data-testid="contribution-increment"]:not(:disabled)');
+    const firstPlus = document.querySelector<HTMLButtonElement>('[data-testid="contribution-increment"]:not(:disabled)');
+    (available ?? sibling ?? firstPlus ?? panelRef.current)?.focus();
+  }, [hasPendingContribution, contributionActive]);
 
   useEffect(() => {
     if (!startActive) return;
@@ -239,9 +294,22 @@ export default function ContextAction({
           G, playerID, s.selectedJobSlots[0], s.selectedProjectSlots[0], s.assignedJobName ?? undefined, opts,
         );
       case 'contributeOwnedProjects':
-        return validateContributeOwnedProjects(G, playerID, s.contributions, opts);
-      case 'contributeJoinedProjects':
-        return validateContributeJoinedProjects(G, playerID, s.contributions, opts);
+      case 'contributeJoinedProjects': {
+        const validate = name === 'contributeOwnedProjects' ? validateContributeOwnedProjects : validateContributeJoinedProjects;
+        const result = validate(G, playerID, s.contributions, opts);
+        if (!result.valid) return result;
+        for (const { projectSlotId, jobName, value } of s.contributions) {
+          const slot = board.find(({ id }) => id === projectSlotId);
+          if (!slot?.card || (pendingCardIds.current.has(projectSlotId) &&
+            pendingCardIds.current.get(projectSlotId) !== slot.card.id)) return invalid('PROJECT_SLOT_NOT_FOUND');
+          const required = slot.card.requirements[jobName];
+          if (!Object.hasOwn(slot.card.requirements, jobName)) return invalid('PROJECT_JOB_NOT_REQUIRED', { jobName });
+          if (value > required - ProjectSlotSelector.getJobContribution(slot, jobName)) {
+            return invalid('JOB_REQUIREMENT_FULFILLED', { jobName });
+          }
+        }
+        return result;
+      }
       case 'removeAndRefillJobs':
         return validateRemoveAndRefillJobs(G, playerID, s.selectedJobSlots, opts);
     }
@@ -254,10 +322,8 @@ export default function ContextAction({
       case 'recruit':
         return selectionState.selectedJobSlots.length === 1 && selectionState.selectedProjectSlots.length === 1;
       case 'contributeOwnedProjects':
-      case 'contributeJoinedProjects': {
-        const max = selectionState.getMaxContributionValue(name);
-        return selectionState.totalContributionValue > 0 && selectionState.totalContributionValue <= max;
-      }
+      case 'contributeJoinedProjects':
+        return selectionState.totalContributionValue > 0;
       case 'removeAndRefillJobs':
         return selectionState.selectedJobSlots.length > 0;
     }
@@ -288,6 +354,8 @@ export default function ContextAction({
   };
 
   const handleConfirm = () => {
+    if (contributionActive && (getCurrentAction(store.getState()) !== currentAction ||
+      getContributions(store.getState()) !== pendingContributions)) return;
     if (currentAction === UserActionMoves.EndActionTurn) {
       typedMoves.endActionTurn();
       dispatch(resetAction());
@@ -323,9 +391,11 @@ export default function ContextAction({
         );
         break;
       case 'contributeOwnedProjects':
+        onContributionSubmit?.(UserActionMoves.ContributeOwnedProjects, selectionState.contributions);
         typedMoves.contributeOwnedProjects(selectionState.contributions, options);
         break;
       case 'contributeJoinedProjects':
+        onContributionSubmit?.(UserActionMoves.ContributeJoinedProjects, selectionState.contributions);
         typedMoves.contributeJoinedProjects(selectionState.contributions, options);
         break;
       case 'removeAndRefillJobs':
@@ -355,7 +425,7 @@ export default function ContextAction({
         return `已選人力 ${s.selectedJobSlots.length}/1 · 目標專案 ${s.selectedProjectSlots.length}/1`;
       case 'contributeOwnedProjects':
       case 'contributeJoinedProjects':
-        return `已分配 ${s.totalContributionValue}/${s.getMaxContributionValue(name)} 點`;
+        return `在你有人力的職位旁按 ＋ 分配貢獻（本次 ${s.totalContributionValue}/${s.getMaxContributionValue(name)}）`;
       case 'removeAndRefillJobs':
         return `已選 ${s.selectedJobSlots.length} 張（至少 1 張）`;
       case 'createProject':
@@ -386,13 +456,13 @@ export default function ContextAction({
       case UserActionMoves.ContributeOwnedProjects:
         return {
           title: '貢獻給你的專案？',
-          hint: `用卡片上的＋−分配貢獻值。${selectionProgress('contributeOwnedProjects')}`,
+          hint: selectionProgress('contributeOwnedProjects'),
           cta: '確認貢獻',
         };
       case UserActionMoves.ContributeJoinedProjects:
         return {
           title: '貢獻給參與的專案？',
-          hint: `用卡片上的＋−分配貢獻值。${selectionProgress('contributeJoinedProjects')}`,
+          hint: selectionProgress('contributeJoinedProjects'),
           cta: '確認貢獻',
         };
       case UserActionMoves.RemoveAndRefillJobs:
@@ -444,12 +514,26 @@ export default function ContextAction({
   }
 
   const inMarket = currentAction === UserActionMoves.RemoveAndRefillJobs && !ruleUnavailable;
-  const confirmButton = currentAction && copy.cta && (
+  const confirmButton = currentAction && !contributionActive && copy.cta && (
     <Button data-testid="ca-confirm" onClick={handleConfirm} disabled={!isValid()}>
       {inMarket && !overtime ? (
         <>確認人力 <span className="job-market__en">DONE</span></>
       ) : copy.cta}
     </Button>
+  );
+  const contributionBar = contributionActive && (
+    <ContributionConfirmBar
+      total={selectionState.totalContributionValue}
+      max={selectionState.getMaxContributionValue(currentAction)}
+      canConfirm={isValid()}
+      confirmLabel={copy.cta ?? undefined}
+      error={preflightFailure ? getActionErrorMessage(preflightFailure) : undefined}
+      onCancel={() => {
+        onContributionCancel?.();
+        dispatch(resetContribution());
+      }}
+      onConfirm={handleConfirm}
+    />
   );
   const refillControls = inMarket ? (
     <>
@@ -589,7 +673,7 @@ export default function ContextAction({
             <>
               <strong>{copy.title}</strong>
               <p>{copy.hint}</p>
-              {preflightFailure && (
+              {preflightFailure && !contributionActive && (
                 <p data-testid="preflight-error">{getActionErrorMessage(preflightFailure)}</p>
               )}
             </>
@@ -609,6 +693,7 @@ export default function ContextAction({
         </div>
         </>}
       </div>
+      {contributionMount ? createPortal(contributionBar, contributionMount) : contributionBar}
       {startMountRef?.current ? createPortal(startFlow, startMountRef.current) : startFlow}
       <Toast open={startRejected && snackbar.open} tone="alert" onClose={closeSnackbar} className="start-project__toast">
         {startRejected && snackbar.open && <span data-testid="action-error-toast">{snackbar.message}</span>}
