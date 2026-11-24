@@ -105,5 +105,9 @@ export const OpenStarTerVillage: Game<GameState, Record<string, unknown>, GameSe
       stripSlashWildJobCards(context.G, ctx.currentPlayer);
     },
   },
+  onEnd: ({ G, ctx }) => {
+    // Direct game end can skip the turn's onEnd hook.
+    stripSlashWildJobCards(G, ctx.currentPlayer);
+  },
   playerView,
 };

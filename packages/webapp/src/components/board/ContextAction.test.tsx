@@ -6,9 +6,14 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { Provider } from 'react-redux';
+import { Client } from 'boardgame.io/client';
+import { Local } from 'boardgame.io/multiplayer';
 import { GameContext } from '@/components/GameContextHelpers';
+import { setup as setupGame } from '@/game/core/setup';
+import { getRealJobCards, SLASH_EVENT_FUNCTION_NAME } from '@/game/core/slashWildJob';
+import { OpenStarTerVillage } from '@/game/game';
 import GameStore, { GameState } from '@/game/store/store';
-import { PlayersMutator } from '@/game/store/slice/players';
+import { PlayersMutator, PlayersSelector } from '@/game/store/slice/players';
 import { ProjectBoardMutator, ProjectBoardSelector } from '@/game/store/slice/projectBoard';
 import { ProjectSlotMutator } from '@/game/store/slice/projectSlot/projectSlot';
 import { JobSlotsMutator } from '@/game/store/slice/jobSlots';
@@ -23,6 +28,7 @@ import ContextAction from './ContextAction';
 import HandPanel from './HandPanel';
 import JobMarket from './JobMarket';
 import { RefillFlowProvider } from './RefillFlow';
+import { REFILL_TIMING } from './refillFlowModel';
 import BoardProjectSlot from './BoardProjectSlot';
 import MobileSheet from './MobileSheet';
 import { isContributionAction, useContributionFeedback } from './useContributionFeedback';
@@ -540,6 +546,20 @@ describe('換人力 refill flow (#496)', () => {
     return id ?? 'EMPTY';
   });
   const advance = (ms: number) => React.act(() => { jest.advanceTimersByTime(ms); });
+  const start = () => fireEvent.click(screen.getByTestId('refill-jobs'));
+  const remove = (id: string) => fireEvent.click(screen.getByTestId(`job-remove-${id}`));
+
+  function refillBoard(store: ReturnType<typeof makeStore>, gameContext: GameContext) {
+    const hasTurn = gameContext.playerID === gameContext.ctx.currentPlayer;
+    return (
+      <Provider store={store}>
+        <RefillFlowProvider gameContext={gameContext}>
+          {hasTurn && <ContextAction gameContext={gameContext} />}
+          <JobMarket gameContext={gameContext} idle={hasTurn && store.getState().actionSteps.currentAction === null} discardActive={false} />
+        </RefillFlowProvider>
+      </Provider>
+    );
+  }
 
   function refillSetup({ reduced = false, turn = 1 }: { reduced?: boolean; turn?: number } = {}) {
     window.matchMedia = jest.fn(() => ({ matches: reduced })) as unknown as typeof window.matchMedia;
@@ -554,15 +574,8 @@ describe('換人力 refill flow (#496)', () => {
     };
     const store = makeStore();
     const tree = (g: GameState, t = turn, numMoves = g.table.actionSlots.removeAndRefillJobs.isOccupied ? 1 : 0) => {
-      const gameContext = { G: g, ctx: { currentPlayer: '0', playOrder: ['0', '1'], turn: t, numMoves }, moves, playerID: '0' } as unknown as GameContext;
-      return (
-        <Provider store={store}>
-          <RefillFlowProvider gameContext={gameContext}>
-            <ContextAction gameContext={gameContext} />
-            <JobMarket gameContext={gameContext} idle={store.getState().actionSteps.currentAction === null} discardActive={false} />
-          </RefillFlowProvider>
-        </Provider>
-      );
+      const gameContext = { G: g, ctx: { currentPlayer: '0', playOrder: ['0', '1'], turn: t, numMoves }, moves, playerID: '0', log: [] } as unknown as GameContext;
+      return refillBoard(store, gameContext);
     };
     const view = render(tree(G));
     const accepted = (removed: string[], incoming: string[]) => {
@@ -573,9 +586,35 @@ describe('換人力 refill flow (#496)', () => {
       ActionSlotMutator.occupy(next.table.actionSlots.removeAndRefillJobs);
       return next;
     };
-    const start = () => fireEvent.click(screen.getByTestId('refill-jobs'));
-    const remove = (id: string) => fireEvent.click(screen.getByTestId(`job-remove-${id}`));
     return { G, moves, store, tree, view, accepted, start, remove };
+  }
+
+  function lastApRefillSetup(marked: boolean) {
+    window.matchMedia = jest.fn(() => ({ matches: false })) as unknown as typeof window.matchMedia;
+    const client = Client({
+      game: {
+        ...OpenStarTerVillage,
+        seed: 'last-ap-refill',
+        setup: (context) => {
+          const G = setupGame(context, { forcedFirstEvent: SLASH_EVENT_FUNCTION_NAME });
+          PlayersMutator.resetActionTokens(G.players, '0', 1);
+          if (!marked) delete G.rules.slashWildJobCard;
+          return G;
+        },
+      },
+      numPlayers: 2,
+      playerID: '0',
+      multiplayer: Local(),
+    });
+    client.start();
+    const store = makeStore();
+    const tree = () => refillBoard(store, {
+      ...client,
+      ...client.getState()!,
+      isMultiplayer: true,
+    });
+    const view = render(tree());
+    return { client, rerender: () => view.rerender(tree()) };
   }
   const incomingAbsent = () => {
     expect(screen.queryByTestId('job-card-n1')).toBeNull();
@@ -717,6 +756,70 @@ describe('換人力 refill flow (#496)', () => {
     expect(screen.queryByText('已更換成新人力')).toBeNull();
     expect(screen.queryByTestId('score-popup')).toBeNull();
         expect(jest.getTimerCount()).toBe(0);
+  });
+
+  it.each([false, true])('plays refill feedback after the last AP hands off the turn (marked: %s)', (marked) => {
+    const { client, rerender } = lastApRefillSetup(marked);
+    try {
+      const before = client.getState()!;
+      const oldIds = getRealJobCards(before.G.table.jobSlots).map(({ id }) => id);
+      const [removed, ...survivors] = oldIds;
+      expect(rowIds()).toEqual(marked ? ['slash-0-1', ...oldIds] : oldIds);
+
+      start();
+      remove(removed);
+      fireEvent.click(confirmButton());
+
+      const after = client.getState()!;
+      const liveIds = after.G.table.jobSlots.map(({ id }) => id);
+      const incoming = liveIds[liveIds.length - 1];
+      expect(after.ctx).toMatchObject({ turn: before.ctx.turn + 1, currentPlayer: '1' });
+      expect(PlayersSelector.getNumActionTokens(after.G.players, '0')).toBe(RuleSelector.getPlayerMaxActionTokens(after.G.rules));
+      expect(after.G.table.actionSlots.removeAndRefillJobs.isOccupied).toBe(false);
+      expect(oldIds).not.toContain(incoming);
+      expect(liveIds).toEqual([...survivors, incoming]);
+
+      rerender();
+      expect(rowIds()).toEqual(['EMPTY', ...survivors]);
+      expect(screen.getByTestId('score-popup').textContent).toBe('影響力+1');
+      advance(REFILL_TIMING.empty + REFILL_TIMING.shift);
+      expect(rowIds()).toEqual(liveIds);
+      expect(screen.getByTestId(`job-card-${incoming}`).getAttribute('data-motion')).toBe('deal');
+      expect(screen.queryByText('已更換成新人力')).toBeNull();
+      advance(REFILL_TIMING.deal);
+      expect(screen.getByText('已更換成新人力')).toBeTruthy();
+      expect(rowIds()).toEqual(liveIds);
+    } finally {
+      client.stop();
+    }
+  });
+
+  it('clears a refill rejected after the turn already moved on', () => {
+    const { client, rerender } = lastApRefillSetup(true);
+    const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const refill = jest.spyOn(client.moves, 'removeAndRefillJobs');
+    try {
+      const before = client.getState()!;
+      const oldIds = getRealJobCards(before.G.table.jobSlots).map(({ id }) => id);
+      start();
+      remove(oldIds[0]);
+      client.moves.endActionTurn();
+      const after = client.getState()!;
+      expect(after.ctx).toMatchObject({ turn: before.ctx.turn + 1, currentPlayer: '1' });
+
+      fireEvent.click(confirmButton());
+      expect(refill).toHaveBeenCalledWith([oldIds[0]], undefined);
+      expect(client.getState()!._stateID).toBe(after._stateID);
+      rerender();
+      expect(screen.getByTestId('job-market').getAttribute('data-refill-phase')).toBeNull();
+      expect(rowIds()).toEqual(oldIds);
+      advance(REFILL_TIMING.reject);
+      expect(screen.queryByText('已更換成新人力')).toBeNull();
+      expect(screen.queryByTestId('score-popup')).toBeNull();
+    } finally {
+      error.mockRestore();
+      client.stop();
+    }
   });
 
   it('never enters a refill card with translateY(100%) or the pushUp keyframes', () => {

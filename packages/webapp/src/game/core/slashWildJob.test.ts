@@ -296,6 +296,12 @@ describe('playerView', () => {
     expect(view('0')).toBe(false);
     expect(G.table.jobSlots.some(isSlashWildJobCard)).toBe(true); // server state untouched
   });
+
+  it('hides a leftover wild card from its owner after the game ends', () => {
+    const G = withWild();
+    const ctx = { currentPlayer: '0', gameover: true } as Ctx;
+    expect(playerView({ G, ctx, playerID: '0' }).table.jobSlots).toEqual(getRealJobCards(G.table.jobSlots));
+  });
 });
 
 describe('validateCreateProject (marked)', () => {
@@ -604,6 +610,24 @@ describe('full game (boardgame.io Client)', () => {
     expect(state().G.table.round).toBe(2);
     expect(visibleWildCards()).toEqual([]);
     expect(state().G.rules.event?.ignoreFirstWorkerRequirement).toBeUndefined();
+    client.stop();
+  });
+
+  it('forfeits the unused wild card when the game ends directly', () => {
+    const client = startClient();
+    const { G: before, ctx: beforeCtx } = client.getState()!;
+    const playerID = beforeCtx.currentPlayer;
+    expect(playerView({ G: before, ctx: beforeCtx, playerID }).table.jobSlots).toContainEqual(WILD_0);
+    expect(RuleSelector.canIgnoreFirstWorkerRequirement(before.rules, playerID)).toBe(true);
+
+    client.events.endGame!();
+
+    const { G, ctx } = client.getState()!;
+    expect(ctx.gameover).toBe(true);
+    expect(G.table.jobSlots).toEqual(getRealJobCards(before.table.jobSlots));
+    expect(inPiles(G)).toBe(false);
+    expect(RuleSelector.canIgnoreFirstWorkerRequirement(G.rules, playerID)).toBe(false);
+    expect(playerView({ G, ctx, playerID }).table.jobSlots.some(isSlashWildJobCard)).toBe(false);
     client.stop();
   });
 

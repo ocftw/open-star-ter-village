@@ -20,13 +20,16 @@ function gameWith(ids: string[], ap: number, occupied: boolean) {
   return G;
 }
 
+const acceptedThisTurn = (snapshot: RefillPending, G: ReturnType<typeof gameWith>, playerID: string) =>
+  isRefillAccepted(snapshot, { G, playerID, turn: snapshot.turn, log: [] });
+
 describe('refill flow helpers', () => {
   it('accepts only removal + AP + occupied slot for this player', () => {
-    expect(isRefillAccepted(pending, gameWith(['A', 'D', 'E', 'n1', 'n2'], 3, true), '0')).toBe(true);
-    expect(isRefillAccepted(pending, gameWith(['A', 'D', 'E', 'n1', 'n2'], 4, true), '0')).toBe(false);
-    expect(isRefillAccepted(pending, gameWith(['A', 'D', 'E', 'n1', 'n2'], 3, false), '0')).toBe(false);
-    expect(isRefillAccepted(pending, gameWith(['A', 'B', 'D', 'E'], 3, true), '0')).toBe(false);
-    expect(isRefillAccepted(pending, gameWith(['A', 'D', 'E'], 3, true), '1')).toBe(false);
+    expect(acceptedThisTurn(pending, gameWith(['A', 'D', 'E', 'n1', 'n2'], 3, true), '0')).toBe(true);
+    expect(acceptedThisTurn(pending, gameWith(['A', 'D', 'E', 'n1', 'n2'], 4, true), '0')).toBe(false);
+    expect(acceptedThisTurn(pending, gameWith(['A', 'D', 'E', 'n1', 'n2'], 3, false), '0')).toBe(false);
+    expect(acceptedThisTurn(pending, gameWith(['A', 'B', 'D', 'E'], 3, true), '0')).toBe(false);
+    expect(acceptedThisTurn(pending, gameWith(['A', 'D', 'E'], 3, true), '1')).toBe(false);
   });
 
   it('keeps survivors in order and finds incoming cards by identity', () => {
@@ -53,7 +56,7 @@ describe('refill flow helpers', () => {
     G.table.jobSlots.unshift(wild);
     RuleMutator.enableSlashWildJobCard(G.rules);
     RuleMutator.setEventIgnoreFirstWorkerRequirement(G.rules, ['0'], true);
-    expect(isRefillAccepted(wildPending, G, '0')).toBe(true);
+    expect(acceptedThisTurn(wildPending, G, '0')).toBe(true);
     const sequence = { ...splitAccepted(wildPending, G), dealt: 0 };
     expect(sequence.survivors.map(({ id }) => id)).toEqual(['A', 'D', 'E']);
 
@@ -90,25 +93,12 @@ describe('refill flow helpers', () => {
     expect(view.tiles.map((tile) => tile.kind === 'card' && tile.id)).toEqual(tiles.map((tile) => tile.id));
   });
 
-  it('hides the expired wild card when an accepted refill ends the turn', () => {
-    const lastAction = { ...wildPending, apBefore: 1 };
-    const G = gameWith(['A', 'D', 'E', 'n1', 'n2'], 0, true);
-    RuleMutator.enableSlashWildJobCard(G.rules);
-    RuleMutator.setEventIgnoreFirstWorkerRequirement(G.rules, ['0', '1'], true);
-    expect(isRefillAccepted(lastAction, G, '0')).toBe(true);
-
-    const sequence = { ...splitAccepted(lastAction, G), dealt: 0 };
-    const view = buildRefillView('emptying', lastAction, sequence, G, '0', '1');
-    expect(view.count).toBe(5);
-    expect(view.tiles.map((tile) => (tile.kind === 'empty' ? 'EMPTY' : tile.id))).toEqual(['A', 'EMPTY', 'EMPTY', 'D', 'E']);
-  });
-
   it('excludes synthetic arrivals and rejects strip-only changes as refill acceptance', () => {
     const nextTurn = gameWith(['slash-1-1', 'A', 'D', 'E', 'n1', 'n2'], 3, true);
     expect(splitAccepted(wildPending, nextTurn).incoming.map(({ id }) => id)).toEqual(['n1', 'n2']);
 
     const stripped = gameWith(['A', 'B', 'C', 'D', 'E'], 3, true);
-    expect(isRefillAccepted(wildPending, stripped, '0')).toBe(false);
-    expect(isRefillAccepted({ ...wildPending, removedIds: [wild.id] }, stripped, '0')).toBe(false);
+    expect(acceptedThisTurn(wildPending, stripped, '0')).toBe(false);
+    expect(acceptedThisTurn({ ...wildPending, removedIds: [wild.id] }, stripped, '0')).toBe(false);
   });
 });

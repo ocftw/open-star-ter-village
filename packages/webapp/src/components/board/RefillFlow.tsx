@@ -48,7 +48,7 @@ const prefersReducedMotion = () =>
  * empty → slide-left → one-at-a-time deal sequence that ends in the toast.
  */
 export function RefillFlowProvider({ gameContext, children }: { gameContext: GameContext; children: React.ReactNode }) {
-  const { G, ctx, playerID } = gameContext;
+  const { G, ctx, playerID, log } = gameContext;
   const currentAction = useAppSelector(getCurrentAction);
   const [state, setState] = useState<FlowState>(IDLE);
   const [toastKey, setToastKey] = useState<number | null>(null);
@@ -117,7 +117,7 @@ export function RefillFlowProvider({ gameContext, children }: { gameContext: Gam
   useEffect(() => {
     const current = stateRef.current;
     if (current.phase === 'idle' || !current.pending) return;
-    if (current.phase === 'awaiting' && isRefillAccepted(current.pending, G, playerID)) {
+    if (current.phase === 'awaiting' && isRefillAccepted(current.pending, { G, playerID, turn: ctx.turn, log })) {
       clearTimers();
       guard.current = { turn: ctx.turn, playerID, currentPlayer: ctx.currentPlayer };
       const split = splitAccepted(current.pending, G);
@@ -134,7 +134,7 @@ export function RefillFlowProvider({ gameContext, children }: { gameContext: Gam
     }
     const g = guard.current;
     if (g && (g.turn !== ctx.turn || g.playerID !== playerID || g.currentPlayer !== ctx.currentPlayer)) reset();
-  }, [G, ctx.turn, ctx.currentPlayer, playerID, clearTimers, finish, later, reset, runSequence]);
+  }, [G, ctx.turn, ctx.currentPlayer, playerID, log, clearTimers, finish, later, reset, runSequence]);
 
   // Choosing another action while a refill is in flight drops the animation.
   useEffect(() => {
