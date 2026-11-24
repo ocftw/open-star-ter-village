@@ -75,6 +75,10 @@ test('member sign-in persists a played move across a game-server restart', async
     test.skip(true, 'Set TEST_DATABASE_URL to run the real PostgreSQL member flow');
     return;
   }
+  const hostSecret = readHostTokenSecret(process.env.GAME_SERVER_AUTH_SECRET);
+  if (!process.env.AUTH_SECRET || process.env.AUTH_TEST_LOGIN !== '1' || !hostSecret) {
+    throw new Error('The PostgreSQL member flow requires AUTH_TEST_LOGIN=1 and throwaway AUTH_SECRET and GAME_SERVER_AUTH_SECRET values.');
+  }
   const db = new Pool({ connectionString: databaseUrl });
   const guest = await browser.newContext({ baseURL });
   const guestPage = await guest.newPage();
@@ -121,7 +125,7 @@ test('member sign-in persists a played move across a game-server restart', async
     expect(tokenResponse.status()).toBe(200);
     const { token, expiresAt } = await tokenResponse.json();
     expect(expiresAt).toBeGreaterThan(Math.floor(Date.now() / 1000));
-    expect(await verifyHostToken(token, readHostTokenSecret(process.env.GAME_SERVER_AUTH_SECRET)!)).toEqual({ userId: memberId });
+    expect(await verifyHostToken(token, hostSecret)).toEqual({ userId: memberId });
 
     matchId = await createMatch(page);
     const storedMatch = async () => (await db.query(

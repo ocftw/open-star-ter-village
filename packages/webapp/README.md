@@ -392,7 +392,9 @@ member-hosted matches (`src/server/persistence/`):
 
 Integration tests against a real database run when `TEST_DATABASE_URL` points
 at a disposable PostgreSQL server. Set `E2E_REQUIRE_DB=1` to make Playwright
-fail if the database URL is missing.
+fail if the database URL is missing. The Playwright member flow also requires
+`AUTH_TEST_LOGIN=1` and throwaway `AUTH_SECRET` and `GAME_SERVER_AUTH_SECRET`
+values. The host-token secret must be at least 32 UTF-8 bytes.
 
 ### Member sign-in
 
