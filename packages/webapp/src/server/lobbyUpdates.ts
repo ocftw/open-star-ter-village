@@ -1,4 +1,5 @@
 import { PassThrough } from 'node:stream';
+import type { Socket } from 'node:net';
 import type { Server } from 'boardgame.io/server';
 
 type GameServer = ReturnType<typeof Server>;
@@ -6,6 +7,8 @@ type GameServer = ReturnType<typeof Server>;
 /** Public invalidations only: clients fetch the normal filtered lobby API. */
 export function registerLobbyUpdates(server: GameServer): () => void {
   const clients = new Set<PassThrough>();
+  const sockets = new Set<Socket>();
+  const heartbeats = new Set<ReturnType<typeof setInterval>>();
   let pending = false;
   const notify = () => {
     if (pending) return;
@@ -37,13 +40,18 @@ export function registerLobbyUpdates(server: GameServer): () => void {
     ctx.set('Connection', 'keep-alive');
     ctx.body = stream;
     clients.add(stream);
+    const socket = ctx.res.socket;
+    if (socket) sockets.add(socket);
     // Every connection, including reconnects, asks for a fresh room list.
     stream.write('retry: 1000\ndata: changed\n\n');
     const heartbeat = setInterval(() => stream.write(': keep-alive\n\n'), 15_000);
     heartbeat.unref();
+    heartbeats.add(heartbeat);
     ctx.res.once('close', () => {
       clearInterval(heartbeat);
+      heartbeats.delete(heartbeat);
       clients.delete(stream);
+      if (socket) sockets.delete(socket);
       stream.destroy();
     });
   });
@@ -52,7 +60,18 @@ export function registerLobbyUpdates(server: GameServer): () => void {
     db.createMatch = createMatch;
     db.setMetadata = setMetadata;
     db.wipe = wipe;
-    clients.forEach((client) => client.end());
+    heartbeats.forEach(clearInterval);
+    heartbeats.clear();
+    clients.forEach((client) => {
+      client.end();
+      client.destroy();
+    });
     clients.clear();
+    // Ending the stream is not enough while the client still holds the fetch:
+    // Node keeps the HTTP connection open, so Socket.IO's close never settles.
+    sockets.forEach((socket) => {
+      if (!socket.destroyed) socket.destroy();
+    });
+    sockets.clear();
   };
 }
