@@ -18,12 +18,12 @@ const cards: ProjectCard[] = ['a', 'b', 'c'].map((id, i) => ({
   id, name: `專案${id}`, type: '開放政府', difficulty: i + 1, description: '', requirements: { 工程師: 2 + i },
 }));
 
-function setup(opts: { slash?: boolean; hand?: ProjectCard[]; playerID?: string | null; layout?: 'rail' | 'strip' } = {}) {
-  const { hand = cards, playerID = '0', layout, slash = false } = opts;
+function setup(opts: { wild?: boolean; hand?: ProjectCard[]; playerID?: string | null; layout?: 'rail' | 'strip' } = {}) {
+  const { hand = cards, playerID = '0', layout, wild = false } = opts;
   const G = GameStore.initialState();
   PlayersMutator.initialize(G.players, ['0', '1']);
   PlayersMutator.addProjects(G.players, '0', hand);
-  if (slash) {
+  if (wild) {
     RuleMutator.setEventIgnoreFirstWorkerRequirement(G.rules, ['0'], true);
     G.table.jobSlots = [{ id: 'legal', name: '法務專家' }];
   }
@@ -93,7 +93,7 @@ test('while creating a project the hand is single-select and keyboard operable',
 });
 
 test('START leaves profession target controls out of the hand', () => {
-  const { store } = setup({ slash: true });
+  const { store } = setup({ wild: true });
   act(() => {
     store.dispatch(setCurrentAction(UserActionMoves.CreateProject));
     store.dispatch(setHandProjectCardsInteractive());
