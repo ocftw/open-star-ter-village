@@ -8,6 +8,10 @@
  * server and arrive with its broadcast. So a move is public-only when its
  * body and validator read nothing playerView hides (decks, other hands,
  * server randomness).
+ *
+ * Note: this is about prediction only. boardgame.io 0.50.2 still sends the
+ * unfiltered initialState on sync (pre-existing, tracked separately), so
+ * hidden information is not fully server-side.
  */
 import type { Ctx, State } from 'boardgame.io';
 import { CreateGameReducer, InitializeGame } from 'boardgame.io/internal';
