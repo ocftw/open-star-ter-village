@@ -18,7 +18,6 @@ on:
       - '.github/workflows/deploy.yml'
       - '.github/workflows/update-homepage-visual-baselines.yml'
   pull_request:
-    branches: [main]
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -88,6 +87,20 @@ jobs:
     needs: changes
     if: ${{ needs.changes.outputs.webapp == 'true' }}
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: osv_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d osv_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - uses: actions/checkout@v4
@@ -102,6 +115,8 @@ jobs:
       - run: pnpm webapp lint
       - run: pnpm webapp exec tsc --noEmit
       - run: pnpm webapp test --runInBand
+        env:
+          TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/osv_test
       - name: Install Chromium
         env:
           PLAYWRIGHT_BROWSERS_PATH: /tmp/pw-browsers
