@@ -2,7 +2,6 @@ name: PR Evidence
 
 on:
   pull_request_target:
-    branches: [main]
     types: [opened, edited, reopened, synchronize, ready_for_review, converted_to_draft]
 
 permissions:
